@@ -123,7 +123,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
@@ -231,6 +230,15 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;create&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cre&quot;</span><span class="p">,</span> <span class="s2">&quot;cr&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedCreate.at_pre_cmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.email_login.html#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.at_pre_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify that account creation is enabled.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">NEW_ACCOUNT_REGISTRATION_ENABLED</span><span class="p">:</span>
+            <span class="c1"># truthy return cancels the command</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Registration is currently disabled.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_cmd</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CmdUnconnectedCreate.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.email_login.html#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
