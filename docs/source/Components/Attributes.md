@@ -294,6 +294,20 @@ A lock is no good if nothing checks it -- and by default Evennia does not check 
 
 The same keywords are available to use with `obj.attributes.set()` and `obj.attributes.remove()`, those will check for the `attredit` lock type.
 
+## Querying by Attribute 
+
+While you can get attributes using the `obj.attributes.get` handler, you can also find objects based on the Attributes they have through the `db_attributes` many-to-many field available on each typeclassed entity:
+
+```python
+# find objects by attribue assigned (regardless of value)
+objs = evennia.ObjectDB.objects.filter(db_attributes__db_key="foo")
+# find objects with attribute of particular value assigned to them
+objs = evennia.ObjectDB.objects.filter(db_attributes__db_key="foo", db_attributes__db_value="bar")
+```
+
+```{important}
+Internally, Attribute values are stored as _pickled strings_ (see next section). When querying, your search string is converted to the same format and matched in that form. While this means Attributes can store arbitrary Python structures, the drawback is that you cannot do more advanced database comparisons on them. For example doing `db_attributes__db__value__lt=4` or `__gt=0` will not work since less-than and greater-than doesn't do what you want between strings.
+```
 
 ## What types of data can I save in an Attribute?
 
