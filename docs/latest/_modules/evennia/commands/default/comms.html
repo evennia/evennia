@@ -717,7 +717,7 @@
         <span class="c1"># find all of target&#39;s nicks linked to this channel and delete them</span>
         <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">nick</span>
-            <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
         <span class="p">]:</span>
             <span class="n">nick</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>

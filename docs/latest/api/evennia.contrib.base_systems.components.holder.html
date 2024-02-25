@@ -119,7 +119,7 @@
 <p>This file contains the classes that allow a typeclass to use components.</p>
 <dl class="py class">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentProperty">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.holder.</code><code class="sig-name descname">ComponentProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component_name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.holder.</code><code class="sig-name descname">ComponentProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This allows you to register a component on a typeclass.
 Components registered with this property are automatically added
@@ -127,12 +127,12 @@ to any instance of this typeclass.</p>
 <p>Defaults can be overridden for this typeclass by passing kwargs</p>
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentProperty.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component_name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentProperty.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes the descriptor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>component_name</strong> (<em>str</em>) – The name of the component</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the component</p></li>
 <li><p><strong>**kwargs</strong> (<em>any</em>) – Key=Values overriding default values of the component</p></li>
 </ul>
 </dd>
@@ -156,7 +156,7 @@ It stores the list of registered components on the host .db with component_names
 
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n"><a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component">evennia.contrib.base_systems.components.component.Component</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to add a Component to a host.
 It caches the loaded component and appends its name to the host’s component name list.
 It will also call the component’s ‘at_added’ method, passing its host.</p>
@@ -171,7 +171,7 @@ It will also call the component’s ‘at_added’ method, passing its host.</p>
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.add_default">
 <code class="sig-name descname">add_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.add_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.add_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to add a Component initialized to default values on a host.
-It will retrieve the proper component and instanciate it with ‘default_create’.
+It will retrieve the proper component and instantiate it with ‘default_create’.
 It will cache this new component and add it to its list.
 It will also call the component’s ‘at_added’ method, passing its host.</p>
 <dl class="field-list simple">
@@ -183,7 +183,7 @@ It will also call the component’s ‘at_added’ method, passing its host.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n"><a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component">evennia.contrib.base_systems.components.component.Component</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to remove a component instance from a host.
 It removes the component from the cache and listing.
 It will call the component’s ‘at_removed’ method.</p>
@@ -202,29 +202,23 @@ It removes the component from the cache and listing.
 It will call the component’s ‘at_removed’ method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the component to remove.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the component to remove or its slot.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to retrieve a cached Component instance by its name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the component to retrieve.</p>
-</dd>
-</dl>
-</dd></dl>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; evennia.contrib.base_systems.components.component.Component | None<a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.has">
-<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.has" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.has" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to check if a component is registered and ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the component.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the component or the slot.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -240,7 +234,7 @@ prototype class that can be found from this listing.</p>
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHandler.db_names">
 <em class="property">property </em><code class="sig-name descname">db_names</code><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHandler.db_names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property shortcut to retrieve the registered component names</p>
+<dd><p>Property shortcut to retrieve the registered component keys</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>component_names (iterable)</em> – The name of each component that is registered</p>
@@ -282,12 +276,6 @@ components that were set on the typeclass using ComponentProperty.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.base_systems.components.holder.ComponentHolderMixin.basetype_posthook_setup">
-<code class="sig-name descname">basetype_posthook_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentHolderMixin.basetype_posthook_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.basetype_posthook_setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method that add component related tags that were set using ComponentProperty.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.contrib.base_systems.components.holder.ComponentHolderMixin.components">
 <em class="property">property </em><code class="sig-name descname">components</code><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.components" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property getter to retrieve the component_handler.
@@ -306,18 +294,6 @@ components that were set on the typeclass using ComponentProperty.</p>
 <em class="property">property </em><code class="sig-name descname">signals</code><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.signals" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.contrib.base_systems.components.holder.ComponentDoesNotExist">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.holder.</code><code class="sig-name descname">ComponentDoesNotExist</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentDoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.contrib.base_systems.components.holder.ComponentIsNotRegistered">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.holder.</code><code class="sig-name descname">ComponentIsNotRegistered</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/holder.html#ComponentIsNotRegistered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.holder.ComponentIsNotRegistered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 </section>

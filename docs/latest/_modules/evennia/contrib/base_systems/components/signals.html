@@ -32,8 +32,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
       </ul>
     </div>  
@@ -270,8 +269,15 @@
 <span class="sd">        Args:</span>
 <span class="sd">            obj (object): The instance of an object to connect to this handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">type_host</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">att_name</span><span class="p">,</span> <span class="n">att_obj</span> <span class="ow">in</span> <span class="n">type_host</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">obj_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">att_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj_type</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">att_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">att_obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj_type</span><span class="p">,</span> <span class="n">att_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">att_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
             <span class="n">listener_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_listener_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">listener_signal_name</span><span class="p">:</span>
                 <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
@@ -289,8 +295,14 @@
 <span class="sd">        Args:</span>
 <span class="sd">            obj (object): The instance of an object to disconnect from this handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">type_host</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">att_name</span><span class="p">,</span> <span class="n">att_obj</span> <span class="ow">in</span> <span class="n">type_host</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">att_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">att_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">att_obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">att_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
             <span class="n">listener_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_listener_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">listener_signal_name</span><span class="p">:</span>
                 <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
@@ -319,7 +331,6 @@
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
       </ul>
     </div>

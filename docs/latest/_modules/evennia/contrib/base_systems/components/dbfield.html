@@ -32,8 +32,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.dbfield</a></li> 
       </ul>
     </div>  
@@ -94,7 +93,12 @@
 
 <span class="sd">This file contains the Descriptors used to set Fields in Components</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">NAttributeProperty</span>
+
+<span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span>
 
 
 <div class="viewcode-block" id="DBField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.DBField">[docs]</a><span class="k">class</span> <span class="nc">DBField</span><span class="p">(</span><span class="n">AttributeProperty</span><span class="p">):</span>
@@ -104,21 +108,40 @@
 <span class="sd">    It uses AttributeProperty under the hood but prefixes the key with the component name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="DBField.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.DBField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="n">autocreate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="s1">&#39;Component&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when descriptor is first assigned to the class.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            owner (object): The component classF on which this is set</span>
+<span class="sd">            owner (Component): The component classF on which this is set</span>
 <span class="sd">            name (str): The name that was used to set the DBField.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="n">db_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_db_fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">db_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">db_fields</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_db_fields&quot;</span><span class="p">,</span> <span class="n">db_fields</span><span class="p">)</span>
-        <span class="n">db_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">get_component_slot</span><span class="p">()</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DBField.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.DBField.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is added to a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">component</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DBField.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.DBField.at_removed">[docs]</a>    <span class="k">def</span> <span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is removed from a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__delete__</span><span class="p">(</span><span class="n">component</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="NDBField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.NDBField">[docs]</a><span class="k">class</span> <span class="nc">NDBField</span><span class="p">(</span><span class="n">NAttributeProperty</span><span class="p">):</span>
@@ -128,21 +151,35 @@
 <span class="sd">    It uses NAttributeProperty under the hood but prefixes the key with the component name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="s1">&#39;Component&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when descriptor is first assigned to the class.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            owner (object): The component class on which this is set</span>
+<span class="sd">            owner (Component): The component class on which this is set</span>
 <span class="sd">            name (str): The name that was used to set the DBField.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="n">ndb_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_ndb_fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ndb_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ndb_fields</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_ndb_fields&quot;</span><span class="p">,</span> <span class="n">ndb_fields</span><span class="p">)</span>
-        <span class="n">ndb_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">get_component_slot</span><span class="p">()</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NDBField.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.NDBField.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is added to a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NDBField.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.NDBField.at_removed">[docs]</a>    <span class="k">def</span> <span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is removed from a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__delete__</span><span class="p">(</span><span class="n">component</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TagField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.TagField">[docs]</a><span class="k">class</span> <span class="nc">TagField</span><span class="p">:</span>
@@ -161,17 +198,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="n">default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_single</span> <span class="o">=</span> <span class="n">enforce_single</span></div>
 
-    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="s1">&#39;Component&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when TagField is first assigned to the class.</span>
 <span class="sd">        It is called with the component class and the name of the field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_category_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">tag_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_tag_fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tag_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tag_fields</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;_tag_fields&quot;</span><span class="p">,</span> <span class="n">tag_fields</span><span class="p">)</span>
-        <span class="n">tag_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">get_component_slot</span><span class="p">()</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -204,7 +237,26 @@
 <span class="sd">        Used when &#39;del&#39; is called on the TagField.</span>
 <span class="sd">        It is called with the component instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category_key</span><span class="p">)</span></div>
+        <span class="n">instance</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TagField.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.TagField.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is added to a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagField.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.TagField.at_removed">[docs]</a>    <span class="k">def</span> <span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the parent component is removed from a host.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component (Component): The component instance being removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__delete__</span><span class="p">(</span><span class="n">component</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -224,7 +276,6 @@
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.dbfield</a></li> 
       </ul>
     </div>

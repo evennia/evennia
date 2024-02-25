@@ -32,8 +32,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.component</a></li> 
       </ul>
     </div>  
@@ -94,10 +93,41 @@
 
 <span class="sd">This file contains the base class to inherit for creating new components.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">COMPONENT_LISTING</span><span class="p">,</span> <span class="n">exceptions</span>
 
 
-<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseComponent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.BaseComponent">[docs]</a><span class="k">class</span> <span class="nc">BaseComponent</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the metaclass for components,</span>
+<span class="sd">    responsible for registering components to the listing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Every class that uses this metaclass will be registered</span>
+<span class="sd">        as a component in the Component Listing using its name.</span>
+<span class="sd">        All of them require a unique name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_type</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_type</span><span class="o">.</span><span class="n">__base__</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">new_type</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_type</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="n">new_type</span><span class="si">}</span><span class="s2"> requires a name.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">existing_type</span> <span class="o">:=</span> <span class="n">COMPONENT_LISTING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">existing_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Component name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is a duplicate, must be unique.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">COMPONENT_LISTING</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_type</span>
+
+        <span class="k">return</span> <span class="n">new_type</span></div>
+
+
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">BaseComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for components.</span>
 <span class="sd">    Any component must inherit from this class to be considered for usage.</span>
@@ -105,10 +135,15 @@
 <span class="sd">    Each Component must supply the name, it is used as a slot name but also part of the attribute key.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">,)</span>
+
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">slot</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_fields</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Component.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;All Components must have a Name&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;All Components must have a name&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span></div>
 
 <div class="viewcode-block" id="Component.default_create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.default_create">[docs]</a>    <span class="nd">@classmethod</span>
@@ -152,8 +187,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This deletes all component attributes from the host&#39;s db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_db_field_names</span><span class="p">:</span>
-            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Component.load"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.load">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
@@ -168,7 +203,6 @@
 <span class="sd">            Component: The loaded instance of the component</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Component.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
@@ -179,12 +213,8 @@
 <span class="sd">            host (object): The host typeclass instance</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">host</span><span class="p">:</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ComponentRegisterError</span><span class="p">(</span><span class="s2">&quot;Components must not register twice!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">host</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidComponentError</span><span class="p">(</span><span class="s2">&quot;Components must not register twice!&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span></div>
 
@@ -197,7 +227,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">host</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentRegisterError</span><span class="p">(</span><span class="s2">&quot;Component attempted to remove from the wrong host.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component attempted to remove from the wrong host.&quot;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="nd">@property</span>
@@ -222,28 +253,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">nattributes</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_all_db_field_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_field_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb_field_names</span><span class="p">)</span>
+<div class="viewcode-block" id="Component.add_field"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.add_field">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">db_field_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">db_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_db_fields&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">return</span> <span class="n">db_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<div class="viewcode-block" id="Component.get_fields"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.get_fields">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ndb_field_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">ndb_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_ndb_fields&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">return</span> <span class="n">ndb_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tag_field_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">tag_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_tag_fields&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">return</span> <span class="n">tag_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="ComponentRegisterError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.ComponentRegisterError">[docs]</a><span class="k">class</span> <span class="nc">ComponentRegisterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<div class="viewcode-block" id="Component.get_component_slot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.get_component_slot">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_component_slot</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span></div></div>
 </pre></div>
 
           </div>
@@ -263,7 +283,6 @@
         <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.component</a></li> 
       </ul>
     </div>

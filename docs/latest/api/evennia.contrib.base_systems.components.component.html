@@ -118,6 +118,14 @@
 <p>Components - ChrisLR 2022</p>
 <p>This file contains the base class to inherit for creating new components.</p>
 <dl class="py class">
+<dt id="evennia.contrib.base_systems.components.component.BaseComponent">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.component.</code><code class="sig-name descname">BaseComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#BaseComponent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.BaseComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>This is the metaclass for components,
+responsible for registering components to the listing.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.contrib.base_systems.components.component.Component">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.component.</code><code class="sig-name descname">Component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#Component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -129,11 +137,21 @@ Any component must inherit from this class to be considered for usage.</p>
 <code class="sig-name descname">name</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.component.Component.slot">
+<code class="sig-name descname">slot</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.component.Component.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#Component.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.component.Component.host">
+<code class="sig-name descname">host</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.host" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.component.Component.default_create">
@@ -238,26 +256,20 @@ To persist the value, the key must correspond to a DBField.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.base_systems.components.component.Component.db_field_names">
-<em class="property">property </em><code class="sig-name descname">db_field_names</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.db_field_names" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.base_systems.components.component.Component.add_field">
+<em class="property">classmethod </em><code class="sig-name descname">add_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">field</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#Component.add_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.add_field" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.base_systems.components.component.Component.ndb_field_names">
-<em class="property">property </em><code class="sig-name descname">ndb_field_names</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.ndb_field_names" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.base_systems.components.component.Component.get_fields">
+<em class="property">classmethod </em><code class="sig-name descname">get_fields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#Component.get_fields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.get_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.base_systems.components.component.Component.tag_field_names">
-<em class="property">property </em><code class="sig-name descname">tag_field_names</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.tag_field_names" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.base_systems.components.component.Component.get_component_slot">
+<em class="property">classmethod </em><code class="sig-name descname">get_component_slot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#Component.get_component_slot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.get_component_slot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.contrib.base_systems.components.component.ComponentRegisterError">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.component.</code><code class="sig-name descname">ComponentRegisterError</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/component.html#ComponentRegisterError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.component.ComponentRegisterError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 </section>

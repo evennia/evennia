@@ -119,11 +119,70 @@
 <p>This file contains the Descriptors used to set Fields in Components</p>
 <dl class="py class">
 <dt id="evennia.contrib.base_systems.components.dbfield.DBField">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">DBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">DBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty" title="evennia.typeclasses.attributes.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.AttributeProperty</span></code></a></p>
 <p>Component Attribute Descriptor.
 Allows you to set attributes related to a component on the class.
 It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.DBField.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for specifying Attributes as Django-like ‘fields’ on the class level. Note that while
+one can set a lock on the Attribute, there is no way to <em>check</em> said lock when accessing via
+the property - use the full <strong>AttributeHandler</strong> if you need to do access checks. Note however
+that if you use the full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong>
+methods on this class will _not_ fire (because you are bypassing the <strong>AttributeProperty</strong>
+entirely in that case).</p>
+<p>Initialize an Attribute as a property descriptor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default</strong> (<em>any</em>) – A default value if the attr is not set. If a callable, this will be
+run without any arguments and is expected to return the default value.</p></li>
+<li><p><strong>category</strong> (<em>str</em>) – The attribute’s category. If unset, use class default.</p></li>
+<li><p><strong>strattr</strong> (<em>bool</em>) – If set, this Attribute <em>must</em> be a simple string, and will be
+stored more efficiently.</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – This is not itself useful with the property, but only if
+using the full AttributeHandler.get(accessing_obj=…) to access the
+Attribute.</p></li>
+<li><p><strong>autocreate</strong> (<em>bool</em>) – True by default; this means Evennia makes sure to create a new
+copy of the Attribute (with the default value) whenever a new object with this
+property is created. If <strong>False</strong>, no Attribute will be created until the property
+is explicitly assigned a value. This makes it more efficient while it retains
+its default (there’s no db access), but without an actual Attribute generated,
+one cannot access it via .db, the AttributeHandler or see it with <strong>examine</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.DBField.at_added">
+<code class="sig-name descname">at_added</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField.at_added"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField.at_added" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is added to a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.DBField.at_removed">
+<code class="sig-name descname">at_removed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField.at_removed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField.at_removed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is removed from a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -133,6 +192,28 @@ It uses AttributeProperty under the hood but prefixes the key with the component
 <p>Component In-Memory Attribute Descriptor.
 Allows you to set in-memory attributes related to a component on the class.
 It uses NAttributeProperty under the hood but prefixes the key with the component name.</p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.NDBField.at_added">
+<code class="sig-name descname">at_added</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#NDBField.at_added"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.NDBField.at_added" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is added to a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.NDBField.at_removed">
+<code class="sig-name descname">at_removed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#NDBField.at_removed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.NDBField.at_removed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is removed from a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -149,6 +230,28 @@ Tags are removed if the component itself is removed.</p>
 <dt id="evennia.contrib.base_systems.components.dbfield.TagField.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_single</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.TagField.at_added">
+<code class="sig-name descname">at_added</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField.at_added"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField.at_added" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is added to a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.TagField.at_removed">
+<code class="sig-name descname">at_removed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField.at_removed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField.at_removed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the parent component is removed from a host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><em>Component</em></a>) – The component instance being removed.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

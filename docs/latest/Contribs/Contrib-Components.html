@@ -70,6 +70,7 @@
 <li><a class="reference internal" href="#pros">Pros</a></li>
 <li><a class="reference internal" href="#cons">Cons</a></li>
 <li><a class="reference internal" href="#how-to-install">How to install</a></li>
+<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
 <li><a class="reference internal" href="#full-example">Full Example</a></li>
 </ul>
 </li>
@@ -155,11 +156,19 @@ import and inherit the ComponentHolderMixin, similar to this</p>
 <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>Components need to inherit the Component class directly and require a name.</p>
+<p>Components need to inherit the Component class and require a unique name.
+Components may inherit from other components but must specify another name.
+You can assign the same ‘slot’ to both components to have alternative implementations.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span>
+
 
 <span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
+
+    
+<span class="k">class</span> <span class="nc">ItemHealth</span><span class="p">(</span><span class="n">Health</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;item_health&quot;</span>
+    <span class="n">slot</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
 </pre></div>
 </div>
 <p>Components may define DBFields or NDBFields at the class level.
@@ -215,7 +224,10 @@ Example</p>
 
 <span class="o">...</span>
 
-<span class="n">vampirism_from_elsewhere</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vampirism&quot;</span><span class="p">)</span>
+<span class="n">vampirism</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vampirism&quot;</span><span class="p">)</span>
+
+<span class="c1"># Alternatively</span>
+<span class="n">vampirism</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">cmp</span><span class="o">.</span><span class="n">vampirism</span>
 </pre></div>
 </div>
 <p>Keep in mind that all components must be imported to be visible in the listing.
@@ -238,6 +250,14 @@ You only need to import each module/file from there but importing the right clas
 </pre></div>
 </div>
 <p>Both of the above examples will work.</p>
+</section>
+<section id="known-issues">
+<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<p>Assigning mutable default values such as a list to a DBField will share it across instances.
+To avoid this, you must set autocreate=True on the field, like this.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">health</span> <span class="o">=</span> <span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="full-example">
 <h2>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline">¶</a></h2>
