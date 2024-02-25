@@ -116,6 +116,9 @@ class TelnetOOB:
         """
         self.MSDP = True
         self.protocol.protocol_flags["OOB"] = True
+        self.protocol.protocol_flags["MSDP"] = True
+        self.protocol.render_types.add("msdp")
+        self.protocol.render_types.add("oob")
         self.protocol.handshake_done()
 
     def no_gmcp(self, option):
@@ -139,6 +142,9 @@ class TelnetOOB:
         """
         self.GMCP = True
         self.protocol.protocol_flags["OOB"] = True
+        self.protocol.protocol_flags["GMCP"] = True
+        self.protocol.render_types.add("gmcp")
+        self.protocol.render_types.add("oob")
         self.protocol.handshake_done()
 
     # encoders
@@ -446,3 +452,25 @@ class TelnetOOB:
         if self.GMCP:
             encoded_oob = self.encode_gmcp(cmdname, *args, **kwargs)
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)
+
+    def send_gmcp(self, command: str, data=None):
+        """
+        Method which sends raw GMCP messages to the client, if it's enabled.
+
+        Args:
+            command (str): The GMCP command/package to target. this might be a single word, or dot-separated words.
+            data (any): JSON-serializable data to send to the client.
+        """
+        if not self.GMCP:
+            return
+        if " " in command:
+            raise ValueError("GMCP command cannot contain spaces")
+        if data:
+            try:
+                jdata = f" {json.dumps(data)}"
+            except (TypeError, ValueError):
+                raise ValueError("GMCP data must be JSON-serializable")
+        else:
+            jdata = ""
+        out = f"{command}{jdata}".encode()
+        self.protocol._write(IAC + SB + GMCP + out + IAC + SE)

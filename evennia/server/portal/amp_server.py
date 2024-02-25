@@ -389,6 +389,26 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             logger.log_trace("packed_data len {}".format(len(packed_data)))
         return {}
 
+    @amp.MsgSendables2Portal.responder
+    @amp.catch_traceback
+    def portal_receive_sendables2portal(self, packed_data):
+        """
+        Receives message arriving to Portal from Server.
+        This method is executed on the Portal.
+
+        Args:
+            packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
+
+        """
+        try:
+            session_ids, data = self.data_in(packed_data)
+            sessions = [evennia.PORTAL_SESSION_HANDLER.get(sessid, None) for sessid in session_ids]
+            if sessions:
+                evennia.PORTAL_SESSION_HANDLER.sendables_out(sessions, data)
+        except Exception:
+            logger.log_trace("packed_data len {}".format(len(packed_data)))
+        return {}
+
     @amp.AdminServer2Portal.responder
     @amp.catch_traceback
     def portal_receive_adminserver2portal(self, packed_data):

@@ -260,13 +260,14 @@ class TestDefaultAccount(TestCase):
         evennia.SESSION_HANDLER[self.s1.uid] = self.s1
 
         self.s1.logged_in = True
-        self.s1.data_out = Mock(return_value=None)
+        evennia.SERVER_SESSION_HANDLER.sendables_out = Mock(return_value=None)
 
         obj = Mock()
         self.s1.puppet = obj
         account.puppet_object(self.s1, obj)
-        self.s1.data_out.assert_called_with(
-            options=None, text="You are already puppeting this object."
+        self.assertEqual(
+            evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][0].original,
+            "You are already puppeting this object.",
         )
         self.assertIsNone(obj.at_post_puppet.call_args)
 
@@ -282,14 +283,16 @@ class TestDefaultAccount(TestCase):
         self.s1.uid = account.uid
         evennia.SESSION_HANDLER[self.s1.uid] = self.s1
 
-        self.s1.data_out = MagicMock()
+        evennia.SERVER_SESSION_HANDLER.sendables_out = MagicMock()
         obj = Mock()
         obj.access = Mock(return_value=False)
 
         account.puppet_object(self.s1, obj)
 
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].startswith("You don't have permission to puppet")
+            evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][0].original.startswith(
+                "You don't have permission to puppet"
+            )
         )
         self.assertIsNone(obj.at_post_puppet.call_args)
 
@@ -313,12 +316,14 @@ class TestDefaultAccount(TestCase):
         obj = Mock()
         obj.access = Mock(return_value=True)
         obj.account = account
-        obj.sessions.all = MagicMock(return_value=[self.s1])
+        evennia.SERVER_SESSION_HANDLER.sendables_out = MagicMock(return_value=[self.s1])
 
         account.puppet_object(self.s1, obj)
         # works because django.conf.settings.MULTISESSION_MODE is not in (1, 3)
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].endswith("from another of your sessions.|n")
+            evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][0].original.endswith(
+                "from another of your sessions.|n"
+            )
         )
         self.assertTrue(obj.at_post_puppet.call_args[1] == {})
 
@@ -337,7 +342,7 @@ class TestDefaultAccount(TestCase):
 
         self.s1.puppet = None
         self.s1.logged_in = True
-        self.s1.data_out = Mock(return_value=None)
+        evennia.SERVER_SESSION_HANDLER.sendables_out = Mock(return_value=None)
 
         obj = Mock()
         obj.access = Mock(return_value=True)
@@ -345,8 +350,9 @@ class TestDefaultAccount(TestCase):
         obj.at_post_puppet = Mock()
 
         account.puppet_object(self.s1, obj)
+
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].endswith(
+            evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][0].original.endswith(
                 "is already puppeted by another Account."
             )
         )

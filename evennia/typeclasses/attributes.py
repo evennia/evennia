@@ -1768,3 +1768,13 @@ class NickHandler(AttributeHandler):
             if is_match:
                 break
         return raw_string
+
+
+class HasNAttributes:
+    pass
+
+
+class HasRealAttributes:
+    @lazy_property
+    def attributes(self):
+        return AttributeHandler(self, ModelAttributeBackend)

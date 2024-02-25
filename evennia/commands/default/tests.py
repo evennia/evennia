@@ -341,8 +341,22 @@ class TestSystem(BaseEvenniaCommandTest):
     def test_py(self):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
-        self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
-        self.call(system.CmdPy(), "/clientraw 1+2", ">>> 1+2|3")
+        self.call(
+            system.CmdPy(),
+            "1+2",
+            "3",
+            alternate_msg=lambda: evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][
+                0
+            ].data,
+        )
+        self.call(
+            system.CmdPy(),
+            "/clientraw 1+2",
+            "3",
+            alternate_msg=lambda: evennia.SERVER_SESSION_HANDLER.sendables_out.call_args[0][1][
+                0
+            ].data,
+        )
 
     def test_scripts(self):
         self.call(building.CmdScripts(), "", "dbref ")

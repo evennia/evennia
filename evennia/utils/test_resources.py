@@ -330,6 +330,7 @@ class EvenniaCommandTestMixin:
         obj=None,
         inputs=None,
         raw_string=None,
+        alternate_msg: callable = None,
     ):
         """
         Test a command by assigning all the needed properties to a cmdobj and
@@ -388,6 +389,8 @@ class EvenniaCommandTestMixin:
                 a combination of your `key/cmdname` and `input_args`. This allows
                 direct control of what this is, for example for testing edge cases
                 or malformed inputs.
+            alternate_msg (bool, optional): If provided, this callable is used to retrieve the pattern
+            instead of standard .msg calls.
 
         Returns:
             str or dict: The message sent to `receiver`, or a dict of
@@ -422,6 +425,8 @@ class EvenniaCommandTestMixin:
         cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + input_args
         cmdobj.obj = obj or (caller if caller else self.char1)
         inputs = inputs or []
+
+        evennia.SERVER_SESSION_HANDLER.sendables_out = Mock()
 
         # set up receivers
         receiver_mapping = {}
@@ -492,10 +497,14 @@ class EvenniaCommandTestMixin:
         returned_msgs = {}
         for receiver, expected_msg in receiver_mapping.items():
             # get the stored messages from the Mock with Mock.mock_calls.
-            stored_msg = [
-                args[0] if args and args[0] else kwargs.get("text", to_str(kwargs))
-                for name, args, kwargs in receiver.msg.mock_calls
-            ]
+            stored_msg = (
+                [
+                    args[0] if args and args[0] else kwargs.get("text", to_str(kwargs))
+                    for name, args, kwargs in receiver.msg.mock_calls
+                ]
+                if not alternate_msg
+                else str(alternate_msg())
+            )
             # we can return this now, we are done using the mock
             receiver.msg = unmocked_msg_methods[receiver]
 

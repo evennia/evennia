@@ -424,7 +424,28 @@ class Command(metaclass=CommandMeta):
                 session = self.session
             else:
                 session = to_obj.sessions.get()
+
+        # Commands from the webclient set a cmdid. Here, we'll ensure they're sent
+        # with the response.
+        if (cmdid := getattr(self, "cmdid", None)) is not None:
+            metadata = kwargs.get("metadata", {})
+            metadata["cmdid"] = cmdid
+            kwargs["metadata"] = metadata
+
         to_obj.msg(text=text, from_obj=from_obj, session=session, **kwargs)
+
+    def send(self, sendables: list["Any"], metadata: dict = None, **kwargs):
+        """
+        Send a list of sendables to the caller.
+
+        Args:
+            sendables (list): A list of sendables to send to the caller.
+            metadata (dict, optional): Metadata about the sendables.
+            **kwargs (dict): Arbitrary, additional data to send to the caller.
+
+        """
+        metadata = metadata or {}
+        self.caller.send(sendables, metadata=metadata)
 
     def execute_cmd(self, raw_string, session=None, obj=None, **kwargs):
         """
