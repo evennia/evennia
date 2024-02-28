@@ -133,7 +133,7 @@ These all use whatever setting you pass to them and works well for testing code 
    can be accesses as properties on the class:
   - `.account` - A fake [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount".
   - `.account2` - Another account named "TestAccount2"
-  - `char1` - A [Character](evennia.objects.objects.DefaultCharacter) linked to `.account`, named `Char`. 
+  - `.char1` - A [Character](evennia.objects.objects.DefaultCharacter) linked to `.account`, named `Char`. 
     This has 'Developer' permissions but is not a superuser.
   - `.char2` - Another character linked to `account`, named `Char2`. This has base permissions (player).
   - `.obj1` - A regular [Object](evennia.objects.objects.DefaultObject) named "Obj". 
