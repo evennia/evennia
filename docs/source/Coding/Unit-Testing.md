@@ -132,7 +132,7 @@ These all use whatever setting you pass to them and works well for testing code 
 - `EvenniaTest` - this sets up a full object environment for your test. All the created entities 
    can be accesses as properties on the class:
   - `.account` - A fake [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount".
-  - `.account2` - Another [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount2"
+  - `.account2` - Another [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount2".
   - `.char1` - A [Character](evennia.objects.objects.DefaultCharacter) linked to `.account`, named `Char`. 
     This has 'Developer' permissions but is not a superuser.
   - `.char2` - Another [Character](evennia.objects.objects.DefaultCharacter) linked to `account2`, named `Char2`.
