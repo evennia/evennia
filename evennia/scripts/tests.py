@@ -6,8 +6,6 @@ Unit tests for the scripts package
 from collections import defaultdict
 from unittest import TestCase, mock
 
-from parameterized import parameterized
-
 from evennia import DefaultScript
 from evennia.objects.objects import DefaultObject
 from evennia.scripts.manager import ScriptDBManager
@@ -19,6 +17,7 @@ from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.create import create_script
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
+from parameterized import parameterized
 
 
 class TestScript(BaseEvenniaTest):
@@ -628,3 +627,51 @@ class TestOnDemandHandler(EvenniaTest):
         self.assertEqual(self.handler.get_dt("daffodil", "flower"), 10000)
         self.assertEqual(self.handler.get_stage("rose", "flower"), "dead")
         self.assertEqual(self.handler.get_stage("daffodil", "flower"), "dead")
+
+    @mock.patch("evennia.scripts.ondemandhandler.OnDemandTask.runtime")
+    def test_set_dt(self, mock_runtime):
+        START_TIME = 0
+
+        mock_runtime.return_value = START_TIME
+        self.handler.batch_add(self.task1, self.task2)
+
+        for task in self.handler.tasks.values():
+            task.start_time = START_TIME
+
+        self.assertEqual(self.handler.get_stage("rose", "flower"), "seedling")
+        self.assertEqual(self.handler.get_stage("daffodil", "flower"), "seedling")
+
+        self.handler.set_dt("rose", "flower", 100)
+        self.handler.set_dt("daffodil", "flower", 150)
+        self.assertEquals(
+            [task.start_time for task in self.handler.tasks.values()],
+            [START_TIME - 100, START_TIME - 150],
+        )
+        self.assertEqual(self.handler.get_dt("rose", "flower"), 100)
+        self.assertEqual(self.handler.get_dt("daffodil", "flower"), 150)
+        self.assertEqual(self.handler.get_stage("rose", "flower"), "bud")
+        self.assertEqual(self.handler.get_stage("daffodil", "flower"), "wilted")
+
+    @mock.patch("evennia.scripts.ondemandhandler.OnDemandTask.runtime")
+    def test_set_stage(self, mock_runtime):
+        START_TIME = 0
+
+        mock_runtime.return_value = START_TIME
+        self.handler.batch_add(self.task1, self.task2)
+
+        for task in self.handler.tasks.values():
+            task.start_time = START_TIME
+
+        self.assertEqual(self.handler.get_stage("rose", "flower"), "seedling")
+        self.assertEqual(self.handler.get_stage("daffodil", "flower"), "seedling")
+
+        self.handler.set_stage("rose", "flower", "bud")
+        self.handler.set_stage("daffodil", "flower", "wilted")
+        self.assertEquals(
+            [task.start_time for task in self.handler.tasks.values()],
+            [START_TIME - 100, START_TIME - 150],
+        )
+        self.assertEqual(self.handler.get_dt("rose", "flower"), 100)
+        self.assertEqual(self.handler.get_dt("daffodil", "flower"), 150)
+        self.assertEqual(self.handler.get_stage("rose", "flower"), "bud")
+        self.assertEqual(self.handler.get_stage("daffodil", "flower"), "wilted")
