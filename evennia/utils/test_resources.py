@@ -26,27 +26,21 @@ import re
 import sys
 import types
 
+import evennia
 from django.conf import settings
 from django.test import TestCase, override_settings
-from mock import MagicMock, Mock, patch
-from twisted.internet.defer import Deferred
-
-import evennia
 from evennia import settings_default
 from evennia.accounts.accounts import DefaultAccount
 from evennia.commands.command import InterruptCommand
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.objects.objects import (
-    DefaultCharacter,
-    DefaultExit,
-    DefaultObject,
-    DefaultRoom,
-)
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
 from evennia.utils import ansi, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
+from mock import MagicMock, Mock, patch
+from twisted.internet.defer import Deferred
 
 _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
@@ -336,6 +330,7 @@ class EvenniaCommandTestMixin:
         obj=None,
         inputs=None,
         raw_string=None,
+        use_assertequal=False,
     ):
         """
         Test a command by assigning all the needed properties to a cmdobj and
@@ -394,6 +389,9 @@ class EvenniaCommandTestMixin:
                 a combination of your `key/cmdname` and `input_args`. This allows
                 direct control of what this is, for example for testing edge cases
                 or malformed inputs.
+            use_assertequal (bool, optional): If `True`, the error message will use
+                a regular assertEqual. This will show show whitepace differences easier, but
+                doesn't allow for only matching against the start of the returned message.
 
         Returns:
             str or dict: The message sent to `receiver`, or a dict of
@@ -529,6 +527,11 @@ class EvenniaCommandTestMixin:
                 ).strip()
 
                 # this is the actual test
+
+                if use_assertequal:
+                    # regular django assert shows whitespace differences better
+                    self.assertEqual(returned_msg, expected_msg)
+
                 if expected_msg == "" and returned_msg or not returned_msg.startswith(expected_msg):
                     # failed the test
                     raise AssertionError(
