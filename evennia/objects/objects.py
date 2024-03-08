@@ -26,6 +26,7 @@ from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
 from evennia.utils.utils import (
     class_from_module,
+    dbref,
     is_iter,
     iter_to_str,
     lazy_property,
@@ -326,7 +327,213 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return [exi for exi in self.contents if exi.destination]
 
-    # main methods
+    # search methods and hooks
+
+    def get_search_query_replacement(self, searchdata, **kwargs):
+        """
+        This method is called by the search method to allow for direct
+        replacements of the search string before it is used in the search.
+
+        Args:
+            searchdata (str): The search string to replace.
+            **kwargs (any): These are the same as passed to the `search` method.
+
+        Returns:
+            str: The (potentially modified) search string.
+
+        """
+        if kwargs.get("use_nicks"):
+            return self.nicks.nickreplace(
+                searchdata, categories=("object", "account"), include_account=True
+            )
+        return searchdata
+
+    def get_search_direct_match(self, searchdata, **kwargs):
+        """
+        This method is called by the search method to allow for direct
+        replacements, such as 'me' always being an alias for this object.
+
+        Args:
+            searchdata (str): The search string to replace.
+            **kwargs (any): These are the same as passed to the `search` method.
+
+        Returns:
+            tuple: `(should_return, str or Obj)`, where `should_return` is a boolean indicating
+            the `.search` method should return the result immediately without further
+            processing. If `should_return` is `True`, the second element of the tuple is the result
+            that is returned.
+
+        """
+        if isinstance(searchdata, str):
+            match searchdata.lower():
+                case "me" | "self":
+                    return True, self
+                case "here":
+                    return True, self.location
+        return False, searchdata
+
+    def get_search_candidates(self, searchdata, **kwargs):
+        """
+        Get the candidates for a search. Also the `candidates` provided to the
+        search function is included, and could be modified in-place here.
+
+        Args:
+            searchdata (str): The search criterion (could be modified by `get_search_query_replacement`).
+            **kwargs (any): These are the same as passed to the `search` method.
+
+        Returns:
+            list: A list of objects to search between.
+
+        Notes:
+            If `searchdata` is a #dbref, this method should always return `None`. This is because
+            the search should always be global in this case. If `candidates` were already given,
+            they should be used as is. If `location` was given, the candidates should be based on
+            that.
+
+        """
+        if kwargs.get("global_search") or dbref(searchdata):
+            # global searches (dbref-searches are always global too) should not have any candidates
+            return None
+
+        # if candidates were already given, use them
+        candidates = kwargs.get("candidates")
+        if candidates:
+            return candidates
+
+        # find candidates based on location
+        location = kwargs.get("location")
+
+        if location:
+            # location(s) were given
+            candidates = []
+            for obj in make_iter(location):
+                candidates.extend(obj.contents)
+        else:
+            # local search. Candidates are taken from
+            # self.contents, self.location and
+            # self.location.contents
+            location = self.location
+            candidates = self.contents
+            if location:
+                candidates = candidates + [location] + location.contents
+            else:
+                # normally we don't need this since we are
+                # included in location.contents
+                candidates.append(self)
+        return candidates
+
+    def get_search_result(
+        self,
+        searchdata,
+        attribute_name=None,
+        typeclass=None,
+        candidates=None,
+        exact=False,
+        use_dbref=None,
+        tags=None,
+        **kwargs,
+    ):
+        """
+        This is a wrapper for actually searching for objects, used by the `search` method.
+        This is broken out into a separate method to allow for easier overriding in child classes.
+
+        Args:
+            searchdata (str): The search criterion.
+            attribute_name (str): The attribute to search on (default is `.
+            typeclass (Typeclass or list): The typeclass to search for.
+            candidates (list): A list of objects to search between.
+            exact (bool): Require exact match.
+            use_dbref (bool): Allow dbref search.
+            tags (list): Tags to search for.
+
+        """
+
+        return ObjectDB.objects.search_object(
+            searchdata,
+            attribute_name=attribute_name,
+            typeclass=typeclass,
+            candidates=candidates,
+            exact=exact,
+            use_dbref=use_dbref,
+            tags=tags,
+        )
+
+    def get_stacked_results(self, results, **kwargs):
+        """
+        This method is called by the search method to allow for handling of multi-match
+        results that should be stacked.
+
+        Args:
+            results (list): The list of results from the search.
+
+        Returns:
+            tuple: `(stacked, results)`, where `stacked` is a boolean indicating if the
+                result is stacked and `results` is the list of results to return. If `stacked`
+                is True, the ".search" method will return `results` immediately without further
+                processing (it will not result in a multimatch-error).
+
+        Notes:
+            The `stacked` keyword argument is an integer that controls the max size of each stack
+            (if >0). It's important to make sure to only stack _identical_ objects, otherwise we
+            risk losing track of objects.
+
+        """
+        nresults = len(results)
+        max_stack_size = kwargs.get("stacked", 0)
+        typeclass = kwargs.get("typeclass")
+        exact = kwargs.get("exact", False)
+
+        if max_stack_size > 0 and nresults > 1:
+            nstack = nresults
+            if not exact:
+                # we re-run exact match against one of the matches to make sure all are indeed
+                # equal and we were not catching partial matches not belonging to the stack
+                nstack = len(
+                    ObjectDB.objects.get_objs_with_key_or_alias(
+                        results[0].key,
+                        exact=True,
+                        candidates=list(results),
+                        typeclasses=[typeclass] if typeclass else None,
+                    )
+                )
+            if nstack == nresults:
+                # a valid stack of identical items, return multiple results
+                return True, list(results)[:max_stack_size]
+
+        return False, results
+
+    def handle_search_results(self, searchdata, results, **kwargs):
+        """
+        This method is called by the search method to allow for handling of the final search result.
+
+        Args:
+            searchdata (str): The original search criterion (potentially modified by
+                `get_search_query_replacement`).
+            results (list): The list of results from the search.
+            **kwargs (any): These are the same as passed to the `search` method.
+
+        Returns:
+            Object, None or list: Normally this is a single object, but if `quiet=True` it should be
+            a list.  If quiet=False and we have to handle a no/multi-match error (directly messaging
+            the user), this should return `None`.
+
+        """
+        if kwargs.get("quiet"):
+            # don't care about no/multi-match errors, just return list of whatever we have
+            return list(results)
+
+        # handle any error messages, otherwise return a single result
+
+        nofound_string = kwargs.get("nofound_string")
+        multimatch_string = kwargs.get("multimatch_string")
+
+        return _AT_SEARCH_RESULT(
+            results,
+            self,
+            query=searchdata,
+            nofound_string=nofound_string,
+            multimatch_string=multimatch_string,
+        )
 
     def search(
         self,
@@ -411,10 +618,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 more tag definitions on the form `tagname` or `(tagname, tagcategory)`.
             stacked (int, optional): If > 0, multimatches will be analyzed to determine if they
                 only contains identical objects; these are then assumed 'stacked' and no multi-match
-                error will be generated, instead `stacked` number of matches will be returned. If
-                `stacked` is larger than number of matches, returns that number of matches. If
-                the found stack is a mix of objects, return None and handle the multi-match
-                error depending on the value of `quiet`.
+                error will be generated, instead `stacked` number of matches will be returned as a
+                list. If `stacked` is larger than number of matches, returns that number of matches.
+                If the found stack is a mix of objects, return None and handle the multi-match error
+                depending on the value of `quiet`.
 
         Returns:
             Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
@@ -429,59 +636,40 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, str)
+        # store input kwargs for sub-methods (this must be done first in this method)
+        input_kwargs = {
+            key: value for key, value in locals().items() if key not in ("self", "searchdata")
+        }
 
-        if is_string:
-            # searchdata is a string; wrap some common self-references
-            if searchdata.lower() in ("here",):
-                return [self.location] if quiet else self.location
-            if searchdata.lower() in ("me", "self"):
-                return [self] if quiet else self
+        # replace incoming searchdata string with a potentially modified version
+        searchdata = self.get_search_query_replacement(searchdata, **input_kwargs)
 
-        if use_dbref is None:
-            use_dbref = self.locks.check_lockstring(self, "_dummy:perm(Builder)")
+        # handle special input strings, like "me" or "here".
+        should_return, searchdata = self.get_search_direct_match(searchdata, **input_kwargs)
+        if should_return:
+            # we got an actual result, return it immediately
+            return [searchdata] if quiet else searchdata
 
-        if use_nicks:
-            # do nick-replacement on search
-            searchdata = self.nicks.nickreplace(
-                searchdata, categories=("object", "account"), include_account=True
-            )
+        # if use_dbref is None, we use a lock to determine if dbref search is allowed
+        use_dbref = (
+            self.locks.check_lockstring(self, "_dummy:perm(Builder)")
+            if use_dbref is None
+            else use_dbref
+        )
 
-        if global_search or (
-            is_string
-            and searchdata.startswith("#")
-            and len(searchdata) > 1
-            and searchdata[1:].isdigit()
-        ):
-            # only allow exact matching if searching the entire database
-            # or unique #dbrefs
-            exact = True
-            candidates = None
+        # convert tags into tag tuples suitable for query
+        tags = [
+            (tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags or [])
+        ]
 
-        elif candidates is None:
-            # no custom candidates given - get them automatically
-            if location:
-                # location(s) were given
-                candidates = []
-                for obj in make_iter(location):
-                    candidates.extend(obj.contents)
-            else:
-                # local search. Candidates are taken from
-                # self.contents, self.location and
-                # self.location.contents
-                location = self.location
-                candidates = self.contents
-                if location:
-                    candidates = candidates + [location] + location.contents
-                else:
-                    # normally we don't need this since we are
-                    # included in location.contents
-                    candidates.append(self)
+        # always use exact match for dbref/global searches
+        exact = True if global_search or dbref(searchdata) else exact
 
-        if tags:
-            tags = [(tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags)]
+        # get candidates
+        candidates = self.get_search_candidates(searchdata, **input_kwargs)
 
-        results = ObjectDB.objects.search_object(
+        # do the actual search
+        results = self.get_search_result(
             searchdata,
             attribute_name=attribute_name,
             typeclass=typeclass,
@@ -491,41 +679,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             tags=tags,
         )
 
+        # filter out objects we are not allowed to search
         if use_locks:
             results = [x for x in list(results) if x.access(self, "search", default=True)]
 
-        nresults = len(results)
-        if stacked > 0 and nresults > 1:
-            # handle stacks, disable multimatch errors
-            nstack = nresults
-            if not exact:
-                # we re-run exact match against one of the matches to
-                # make sure we were not catching partial matches not belonging
-                # to the stack
-                nstack = len(
-                    ObjectDB.objects.get_objs_with_key_or_alias(
-                        results[0].key,
-                        exact=True,
-                        candidates=list(results),
-                        typeclasses=[typeclass] if typeclass else None,
-                    )
-                )
-            if nstack == nresults:
-                # a valid stack, return multiple results
-                return list(results)[:stacked]
+        # handle stacked objects
+        is_stacked, results = self.get_stacked_results(results, **input_kwargs)
+        if is_stacked:
+            # we have a stacked result, return it immediately (a list)
+            return results
 
-        if quiet:
-            # don't auto-handle error messaging
-            return list(results)
-
-        # handle error messages
-        return _AT_SEARCH_RESULT(
-            results,
-            self,
-            query=searchdata,
-            nofound_string=nofound_string,
-            multimatch_string=multimatch_string,
-        )
+        # handle the end (unstacked) results, returning a single object, a list or None
+        return self.handle_search_results(searchdata, results, **input_kwargs)
 
     def search_account(self, searchdata, quiet=False):
         """
@@ -2588,7 +2753,14 @@ class DefaultCharacter(DefaultObject):
         return ";".join([puppet, delete, edit])
 
     @classmethod
-    def create(cls, key, account=None, **kwargs):
+    def create(
+        cls,
+        key,
+        account: "DefaultAccount" = None,
+        caller: "DefaultObject" = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic Character with default parameters, unless otherwise
         specified or extended.

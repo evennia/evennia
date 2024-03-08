@@ -330,6 +330,7 @@ class EvenniaCommandTestMixin:
         obj=None,
         inputs=None,
         raw_string=None,
+        use_assertequal=False,
     ):
         """
         Test a command by assigning all the needed properties to a cmdobj and
@@ -388,6 +389,9 @@ class EvenniaCommandTestMixin:
                 a combination of your `key/cmdname` and `input_args`. This allows
                 direct control of what this is, for example for testing edge cases
                 or malformed inputs.
+            use_assertequal (bool, optional): If `True`, the error message will use
+                a regular assertEqual. This will show show whitepace differences easier, but
+                doesn't allow for only matching against the start of the returned message.
 
         Returns:
             str or dict: The message sent to `receiver`, or a dict of
@@ -523,6 +527,11 @@ class EvenniaCommandTestMixin:
                 ).strip()
 
                 # this is the actual test
+
+                if use_assertequal:
+                    # regular django assert shows whitespace differences better
+                    self.assertEqual(returned_msg, expected_msg)
+
                 if expected_msg == "" and returned_msg or not returned_msg.startswith(expected_msg):
                     # failed the test
                     raise AssertionError(

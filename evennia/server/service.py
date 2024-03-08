@@ -7,18 +7,19 @@ import time
 import traceback
 
 import django
-import evennia
 from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
-from evennia.utils import logger
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
+
+import evennia
+from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
@@ -152,8 +153,7 @@ class EvenniaServerService(MultiService):
         except OperationalError:
             print("Server server_starting_mode couldn't be set - database not set up.")
 
-        if settings.AMP_ENABLED:
-            self.register_amp()
+        self.register_amp()
 
         if settings.WEBSERVER_ENABLED:
             self.register_webserver()
@@ -481,6 +481,9 @@ class EvenniaServerService(MultiService):
         # always call this regardless of start type
         self.at_server_start()
 
+        # initialize and start global scripts
+        evennia.GLOBAL_SCRIPTS.start()
+
     @defer.inlineCallbacks
     def shutdown(self, mode="reload", _reactor_stopping=False):
         """
@@ -549,6 +552,11 @@ class EvenniaServerService(MultiService):
         from evennia.scripts.tickerhandler import TICKER_HANDLER
 
         TICKER_HANDLER.save()
+
+        # on-demand handler state should always be saved.
+        from evennia.scripts.ondemandhandler import ON_DEMAND_HANDLER
+
+        ON_DEMAND_HANDLER.save()
 
         # always called, also for a reload
         self.at_server_stop()
@@ -640,6 +648,11 @@ class EvenniaServerService(MultiService):
 
         TASK_HANDLER.load()
         TASK_HANDLER.create_delays()
+
+        # start the On-demand handler
+        from evennia.scripts.ondemandhandler import ON_DEMAND_HANDLER
+
+        ON_DEMAND_HANDLER.load()
 
         # create/update channels
         self.create_default_channels()

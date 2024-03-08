@@ -15,6 +15,7 @@ evennia.scripts
    evennia.scripts.manager
    evennia.scripts.models
    evennia.scripts.monitorhandler
+   evennia.scripts.ondemandhandler
    evennia.scripts.scripthandler
    evennia.scripts.scripts
    evennia.scripts.taskhandler

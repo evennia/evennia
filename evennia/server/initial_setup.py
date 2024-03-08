@@ -9,9 +9,10 @@ Everything starts at handle_setup()
 
 import time
 
-import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create, logger

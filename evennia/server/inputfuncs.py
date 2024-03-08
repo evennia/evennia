@@ -425,7 +425,7 @@ def _on_monitor_change(**kwargs):
     # the object as "db_value" with a separate "category" field.
     if hasattr(obj, "db_category") and obj.db_category != None:
         category = obj.db_category
-        fieldname = fieldname.replace("[{}]".format(obj.db_category), '')
+        fieldname = fieldname.replace("[{}]".format(obj.db_category), "")
 
     # the session may be None if the char quits and someone
     # else then edits the object
@@ -435,9 +435,9 @@ def _on_monitor_change(**kwargs):
             outputfunc_name: {
                 "name": name,
                 **({"category": category} if category is not None else {}),
-                "value": _GA(obj, fieldname)
-                }
+                "value": _GA(obj, fieldname),
             }
+        }
         session.msg(**callsign)
 
 

@@ -345,5 +345,5 @@ def start_chargen(caller, session=None):
         menutree,
         startnode="node_chargen",
         session=session,
-        startnode_input=("sgsg", {"tmp_character": tmp_character}),
+        startnode_input=("", {"tmp_character": tmp_character}),
     )

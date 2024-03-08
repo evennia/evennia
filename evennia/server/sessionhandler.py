@@ -15,9 +15,10 @@ There are two similar but separate stores of sessions:
 import time
 from codecs import decode as codecs_decode
 
-import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.server.portal import amp
 from evennia.server.signals import (
@@ -27,7 +28,13 @@ from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_LOGOUT,
 )
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import callables_from_module, class_from_module, delay, is_iter, make_iter
+from evennia.utils.utils import (
+    callables_from_module,
+    class_from_module,
+    delay,
+    is_iter,
+    make_iter,
+)
 
 _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
 _BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES

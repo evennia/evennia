@@ -4,9 +4,10 @@ Test the main server component
 """
 from unittest import TestCase
 
-import evennia
 from django.test import override_settings
 from mock import DEFAULT, MagicMock, call, patch
+
+import evennia
 
 
 @patch("evennia.server.service.LoopingCall", new=MagicMock())

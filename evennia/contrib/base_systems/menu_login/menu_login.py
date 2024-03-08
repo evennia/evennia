@@ -11,7 +11,7 @@ To install, add these lines to the settings file (`mygame/server/conf/settings.p
     CMDSET_UNLOGGEDIN = "evennia.contrib.base_systems.menu_login.UnloggedinCmdSet"
     CONNECTION_SCREEN_MODULE = "evennia.contrib.base_systems.menu_login.connection_screens"
 
-Reload the server and the new connection method will be active. If you want to modify the 
+Reload the server and the new connection method will be active. If you want to modify the
 way the connection screen looks, use the current one as a guide and create a new one in your
 game folder. Then update the settings file CONNECTION_SCREEN_MODULE to point to yours.
 
@@ -89,6 +89,10 @@ def node_enter_username(caller, raw_text, **kwargs):
             new_user = True
         else:
             new_user = False
+
+        if new_user and not settings.ACCOUNT_REGISTRATION_ENABLED:
+            caller.msg("Registration is currently disabled.")
+            return None
 
         # pass username/new_user into next node as kwargs
         return "node_enter_password", {"new_user": new_user, "username": username}

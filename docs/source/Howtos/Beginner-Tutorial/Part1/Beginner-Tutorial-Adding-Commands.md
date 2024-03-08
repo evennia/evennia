@@ -8,9 +8,7 @@ what is in it.
 
 ```{sidebar} Commands are not typeclassed
 
-If you just came from the previous lesson, you might want to know that Commands and
-CommandSets are not `typeclassed`. That is, instances of them are not saved to the
-database. They are "just" normal Python classes.
+If you just came from the previous lesson, you might want to know that Commands and CommandSets are not `typeclassed`. That is, instances of them are not saved to the database. They are "just" normal Python classes.
 ```
 
 In Evennia, a Command is a Python _class_. If you are unsure about what a class is, review the
@@ -214,8 +212,7 @@ You will get the docstring you put in your Command-class!
 
 ### Making our cmdset persistent
 
-It's getting a little annoying to have to re-add our cmdset every time we reload, right? It's simple
-enough to make `echo` a _persistent_ change though:
+It's getting a little annoying to have to re-add our cmdset every time we reload, right? It's simple enough to make `echo` a _persistent_ change though:
 
     > py self.cmdset.add("commands.mycommands.MyCmdSet", persistent=True)
 
@@ -335,10 +332,7 @@ A lot of things to dissect here:
 - **Line 3**: The normal `class` header. We inherit from `Command` which we imported at the top of this file.
 - **Lines 4-10**: The docstring and help-entry for the command. You could expand on this as much as you wanted.
 - **Line 11**: We want to write `hit` to use this command.
-- **Line 14**: We strip the whitespace from the argument like before. Since we don't want to have to do
-    `self.args.strip()` over and over, we store the stripped version
-    in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still
-    have the whitespace and is not the same as `args` in this example.
+- **Line 14**: We strip the whitespace from the argument like before. Since we don't want to have to do `self.args.strip()` over and over, we store the stripped version in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still have the whitespace and is not the same as `args` in this example.
 
 ```{sidebar} if-statements
 

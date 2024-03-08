@@ -205,7 +205,7 @@ class TagCategoryProperty:
         ::
 
                 class RogueCharacter(DefaultCharacter):
-                    guild = TagProperty("thieves_guild", "merchant_guild")
+                    guild = TagCategoryProperty("thieves_guild", "merchant_guild")
 
         """
         self._category = ""

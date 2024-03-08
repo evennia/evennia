@@ -25,7 +25,7 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         self.test_scarf.db.clothing_type = "accessory"
 
     def test_clothingcommands(self):
-        # Test inventory command.
+        # Test inventory command with no items
         self.call(
             clothing.CmdInventory(),
             "",
@@ -33,9 +33,19 @@ class TestClothingCmd(BaseEvenniaCommandTest):
             caller=self.wearer,
         )
 
-        # Test wear command
+        # add the hat and scarf to the wearer
         self.test_scarf.location = self.wearer
         self.test_hat.location = self.wearer
+
+        self.call(
+            clothing.CmdInventory(),
+            "",
+            "You are carrying:\n a test scarf   \n a test hat     \nYou are wearing:\n Nothing.",
+            caller=self.wearer,
+            use_assertequal=True,
+        )
+
+        # Test wear command
         self.call(clothing.CmdWear(), "", "Usage: wear <obj> [=] [wear style]", caller=self.wearer)
         self.call(clothing.CmdWear(), "hat", "You put on test hat.", caller=self.wearer)
         self.call(
@@ -57,6 +67,15 @@ class TestClothingCmd(BaseEvenniaCommandTest):
             "You cover test hat with test scarf.",
             caller=self.wearer,
         )
+
+        self.call(
+            clothing.CmdInventory(),
+            "",
+            "You are carrying:\n Nothing.\nYou are wearing:\n a test scarf   \n a test hat     ",
+            caller=self.wearer,
+            use_assertequal=True,
+        )
+
         # Test remove command.
         self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.wearer)
         self.call(

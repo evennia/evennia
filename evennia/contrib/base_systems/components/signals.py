@@ -179,8 +179,15 @@ class SignalsHandler(object):
         Args:
             obj (object): The instance of an object to connect to this handler.
         """
-        type_host = type(obj)
-        for att_name, att_obj in type_host.__dict__.items():
+        obj_type = type(obj)
+        for att_name in dir(obj_type):
+            if att_name.startswith("__"):
+                continue
+
+            att_obj = getattr(obj_type, att_name, None)
+            if att_obj is None:
+                continue
+
             listener_signal_name = getattr(att_obj, "_listener_signal_name", None)
             if listener_signal_name:
                 callback = getattr(obj, att_name)
@@ -198,8 +205,14 @@ class SignalsHandler(object):
         Args:
             obj (object): The instance of an object to disconnect from this handler.
         """
-        type_host = type(obj)
-        for att_name, att_obj in type_host.__dict__.items():
+        for att_name in dir(obj):
+            if att_name.startswith("__"):
+                continue
+
+            att_obj = getattr(obj, att_name, None)
+            if att_obj is None:
+                continue
+
             listener_signal_name = getattr(att_obj, "_listener_signal_name", None)
             if listener_signal_name:
                 callback = getattr(obj, att_name)

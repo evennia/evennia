@@ -30,12 +30,20 @@ class Character(ComponentHolderMixin, DefaultCharacter):
 # ...
 ```
 
-Components need to inherit the Component class directly and require a name.
+Components need to inherit the Component class and require a unique name.
+Components may inherit from other components but must specify another name.
+You can assign the same 'slot' to both components to have alternative implementations.
 ```python
 from evennia.contrib.base_systems.components import Component
 
+
 class Health(Component):
     name = "health"
+
+    
+class ItemHealth(Health):
+    name = "item_health"
+    slot = "health"
 ```
 
 Components may define DBFields or NDBFields at the class level.
@@ -103,7 +111,10 @@ character.components.add(vampirism)
 
 ...
 
-vampirism_from_elsewhere = character.components.get("vampirism")
+vampirism = character.components.get("vampirism")
+
+# Alternatively
+vampirism = character.cmp.vampirism
 ```
 
 Keep in mind that all components must be imported to be visible in the listing.
@@ -127,6 +138,14 @@ from typeclasses.components.health import Health
 from typeclasses.components import health
 ```
 Both of the above examples will work.
+
+## Known Issues
+
+Assigning mutable default values such as a list to a DBField will share it across instances.
+To avoid this, you must set autocreate=True on the field, like this.
+```python
+health = DBField(default=[], autocreate=True)
+```
 
 ## Full Example
 ```python

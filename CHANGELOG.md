@@ -1,5 +1,107 @@
 # Changelog
 
+## Evennia Main branch
+
+- Feature: Add `ON_DEMAND_HANDLER.set_dt(key, category, dt)` and
+  `.set_stage(key, category, stage)` to allow manual tweaking of task timings,
+  for example for a spell speeding a plant's growth (Griatch)
+- Feature: Add `use_assertequal` kwarg to the `EvenniaCommandTestMixin` testing
+  class; this uses django's `assertEqual` over the default more lenient checker,
+  which can be useful for testing table whitespace (Griatch)
+- [Fix][pull3420]: Refactor Clothing contrib's inventory command align with
+  Evennia core's version (michaelfaith84, Griatch)
+- Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
+- Doc fixes (iLPdev, Griatch)
+
+[pull3420]: https://github.com/evennia/evennia/pull/3420
+
+## Evennia 3.2.0
+
+Feb 25, 2024
+
+- Feature: Add [`evennia.ON_DEMAND_HANDLER`][new-ondemandhandler] for making it
+  easier to implement changes that are calculated on-demand (Griatch)
+- [Feature][pull3412]: Make it possible to add custom webclient css in
+  `webclient/css/custom.css`, same as for website (InspectorCaracal)
+- [Feature][pull3367]: [Component contrib][pull3367extra] got better
+  inheritance, slot names to choose attr storage, speedups and fixes (ChrisLR)
+- Feature: Break up `DefaultObject.search` method into several helpers to make
+  it easier to override (Griatch)
+- Fix: Resolve multimatch error with rpsystem contrib (Griatch)
+- Fix: Remove `AMP_ENABLED` setting since it services no real purpose and
+  erroring out on setting it would make it even less useful (Griatch).
+- Feature: Remove too-strict password restrictions for Evennia logins, using
+  django defaults instead for passwords with more varied characters.
+- Fix `services` command with no args would traceback (regression) (Griatch)
+- [Fix][pull3423]: Fix wilderness contrib error moving to an already existing
+  wilderness room (InspectorCaracal)
+- [Fix][pull3425]: Don't always include example the crafting recipe when
+  using the crafting contrib (InspectorCaracal)
+- [Fix][pull3426]: Traceback banning a channel using with only one nick
+  (InspectorCaracal)
+- [Fix][pull3434]: Adjust lunr search weights to void clashing of cmd-aliases over
+  keys which caused some help entries to shadow others (InspectorCaracal)
+- Fix: Make `menu/email_login` contribs honor `NEW_ACCOUNT_REGISTRATION_ENABLED`
+  setting (Griatch)
+- Doc fixes (InspectorCaracal, Griatch)
+
+[new-ondemandhandler]: https://www.evennia.com/docs/latest/Components/OnDemandHandler.html
+[pull3412]: https://github.com/evennia/evennia/pull/3412
+[pull3423]: https://github.com/evennia/evennia/pull/3423
+[pull3425]: https://github.com/evennia/evennia/pull/3425
+[pull3426]: https://github.com/evennia/evennia/pull/3426
+[pull3434]: https://github.com/evennia/evennia/pull/3434
+[pull3367]: https://github.com/evennia/evennia/pull/3367
+[pull3367extra]: https://www.evennia.com/docs/latest/Contribs/Contrib-Components.html
+
+## Evennia 3.1.1
+
+Jan 14, 2024
+
+- [Fix][pull3398]: Fix to make e.g. `elvish"Hello"` work correctly in language rp
+  contrib (InspectorCaracal)
+- [Fix][pull3405]: Fix/update of Godot client contrib to support Godot4 and
+  latest Evennia portal changes (ChrisLR)
+- Updated doc on wiki install (InspectorCaracal)
+- Docstring fixes (bradleymarques, Griatch)
+- Doc tutorial fixes (Griatch)
+
+[pull3398]: https://github.com/evennia/evennia/pull/3398
+[pull3405]: https://github.com/evennia/evennia/pull/3405
+
+
+## Evennia 3.1.0
+
+Jan 8, 2024
+
+- [Feature][pull3393]: EvMenu will only use one column of options in
+  screenreader mode (InspectorCaracal)
+- [Feature][pull3386]: Add VS code files to default gitignore (InspectorCaracal)
+- [Fix][pull3373]: Errors when using the default `create` command (InspectorCaracal).
+- [Fix][pull3375]: `tunnel` command didn't work with custom prefix (chromancer).
+- [Fix][pull3376]: Error when falling back to default cmdset fallback
+  (InspectorCaracal)
+- [Fix][pull3377]: `character_creator` updated with new chargen system refactor
+  in Evennia 3.0.0; fix issue not repspecting `START_LOCATION`
+(InspectorCaracal)
+- [Fix][pull3378]: Default-add 'where' as a LUNR search exception, since it's a
+  common mud command that should not be ignored. (alephate)
+- [Fix][pull3382]: Make sure global scripts start properly on restart
+  (InspectorCaracal)
+- [Fix][pull3394]: Fix time-of-day issue in ExpandedRoom contrib (jaborsh)
+- Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal, Griatch)
+
+[pull3373]: https://github.com/evennia/evennia/pull/3373
+[pull3375]: https://github.com/evennia/evennia/pull/3375
+[pull3376]: https://github.com/evennia/evennia/pull/3376
+[pull3377]: https://github.com/evennia/evennia/pull/3377
+[pull3378]: https://github.com/evennia/evennia/pull/3378
+[pull3382]: https://github.com/evennia/evennia/pull/3382
+[pull3393]: https://github.com/evennia/evennia/pull/3393
+[pull3394]: https://github.com/evennia/evennia/pull/3394
+[pull3386]: https://github.com/evennia/evennia/pull/3386
+
+
 ## Evennia 3.0.0
 
 Dec 20, 2023
@@ -75,9 +177,9 @@ Dec 20, 2023
   other objects than oneself (InspectorCaracal)
 - [Fix][pull3361]: Fix of monitoring Attributes with categories (scyfris)
 - Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
-  HouseOfPoe etc)
+  HouseOfPoe, Griatch etc)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
-  the default cmdsets.
+  the default cmdsets (Griatch).
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
@@ -126,8 +228,8 @@ Sept 3, 2023
 - Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
 - Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
-  in-game.
-- Docs: Plenty of typo fixes (iLPDev, moldikins, others)
+  in-game (Griatch).
+- Docs: Plenty of typo fixes (iLPDev, moldikins, Griatch), others)
 
 ## Evennia 2.2.0
 

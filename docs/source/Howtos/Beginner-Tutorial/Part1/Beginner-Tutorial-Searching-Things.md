@@ -2,58 +2,32 @@
 
 We have gone through how to create the various entities in Evennia. But creating something is of little use if we cannot find and use it afterwards.
 
-## Main search functions
-
-The base tools are the `evennia.search_*` functions, such as `evennia.search_object`.
-
-```python
-import evennia 
-
-roses = evennia.search_object("rose")
-accts = evennia.search_account("MyAccountName", email="foo@bar.com")
+```{sidebar} Python code vs using the py command
+Most of these tools are intended to be used in Python code, as you create your game. We 
+give examples of how to test things out from the `py` command, but that's just for experimenting and normally not how you code your game. 
 ```
 
-```{sidebar} Querysets
+To test out the examples in this tutorial, let's create a few objects we can search for in the current location. 
 
-What is returned from the main search functions is actually a `queryset`. They can be treated like lists except that they can't modified in-place. We'll discuss querysets in the `next lesson` <Django-queries>`_.
-```
-
-This searches by `key` of the object. Strings are always case-insensitive, so searching for `"rose"`, `"Rose"` or `"rOsE"` give the same results. It's important to remember that what is returned from these search methods is a _listing_ of zero, one or more elements - all the matches to your search. To get the first match:
-
-    rose = roses[0]
-
-Often you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself.
-
-```python
-    the_one_ring = evennia.search_object("The one Ring")
-    if not the_one_ring:
-        # handle not finding the ring at all
-    elif len(the_one_ring) > 1:
-        # handle finding more than one ring
-    else:
-        # ok - exactly one ring found
-        the_one_ring = the_one_ring[0]
-```
-
-There are equivalent search functions for all the main resources. You can find a listing of them
-[in the Search functions section](../../../Evennia-API.md) of the API frontpage.
-
+    > create/drop Rose 
+    
 ## Searching using Object.search
 
-On the `DefaultObject` is a `.search` method which we have already tried out when we made Commands. For this to be used you must already have an object available:
+On the `DefaultObject` is a `.search` method which we have already tried out when we made Commands. For this to be used you must already have an object available, and if you are using `py` you can use yourself: 
 
-    obj = evennia.search_object("My Object")[0]  # assuming this exists
-    rose = obj.search("rose")
+    py self.search("rose")
+    Rose
 
-This searches for objects based on `key` or aliases.  The `.search` method wraps `evennia.search_object` and handles its output in various ways.
-
+- This searches by `key` or `alias` of the object. Strings are always case-insensitive, so searching for `"rose"`, `"Rose"` or `"rOsE"` give the same results. 
 - By default it will always search for objects among those in `obj.location.contents` and `obj.contents` (that is, things in obj's inventory or in the same room).
-- It will always return exactly one match. If it found zero or more than one match, the return is `None`. This is different from `evennia.search`, which always returns a list.
+- It will always return exactly one match. If it found zero or more than one match, the return is `None`. This is different from `evennia.search` (see below), which always returns a list.
 - On a no-match or multimatch, `.search` will automatically send an error message to `obj`. So you don't have to worry about reporting messages if the result is `None`.
 
-So this method handles error messaging for you. A very common way to use it is in commands:
+In other words, this method handles error messaging for you. A very common way to use it is in commands:
 
 ```python
+# in for example mygame/commands/command.py
+
 from evennia import Command
 
 class CmdQuickFind(Command):
@@ -75,6 +49,24 @@ class CmdQuickFind(Command):
         self.caller.msg(f"Found match for {query}: {result}")
 ```
 
+If you want to test this command out, add it to the default cmdset (see [the Command tutorial](./Beginner-Tutorial-Adding-Commands.md) for more details) and then reload the server with `reload`: 
+
+```python
+# in mygame/commands/default_cmdsets.py
+
+# ...
+
+from commands.command import CmdQuickFind    # <-------
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
+    # ... 
+    def at_cmdset_creation(self): 
+        # ... 
+        self.add(CmdQuickFind())   # <------
+
+```
+
+
 Remember, `self.caller` is the one calling the command. This is usually a Character, which
 inherits from `DefaultObject`. So it has `.search()` available on it.
 
@@ -82,25 +74,80 @@ This simple little Command takes its arguments and searches for a match. If it c
 
 With the `global_search` flag, you can use `.search` to find anything, not just stuff in the same room:
 
-    volcano = self.caller.search("Vesuvio", global_search=True)
+```python
+volcano = self.caller.search("Vesuvio", global_search=True)
+```
 
 You can limit your matches to particular typeclasses: 
 
-	water_glass = self.caller.search("glass", typeclass="typeclasses.objects.WaterGlass")
+```python
+water_glass = self.caller.search("glass", typeclass="typeclasses.objects.WaterGlass")
+```
 
 If you only want to search for a specific list of things, you can do so too:
 
-    stone = self.caller.search("MyStone", candidates=[obj1, obj2, obj3, obj4])
+```python
+stone = self.caller.search("MyStone", candidates=[obj1, obj2, obj3, obj4])
+```
 
 This will only return a match if "MyStone"  is in the room (or in your inventory) _and_ is one of the four provided candidate objects. This is quite powerful, here's how you'd find something only in your inventory:
 
-    potion = self.caller.search("Healing potion", candidates=self.caller.contents)
+```python
+potion = self.caller.search("Healing potion", candidates=self.caller.contents)
+```
 
 You can also turn off the automatic error handling:
 
-    swords = self.caller.search("Sword", quiet=True)
+```python
+swords = self.caller.search("Sword", quiet=True)  # returns a list!
+```
 
 With `quiet=True` the user will not be notified on zero or multi-match errors. Instead you are expected to handle this yourself. Furthermore, what is returned is now a list of zero, one or more matches!
+    
+## Main search functions
+
+The base search tools of Evennia are the `evennia.search_*` functions, such as `evennia.search_object`. These are normally used in your code, but you can also try them out in-game using `py`:
+
+     > py evennia.search_object("rose")
+     <Queryset [Rose]>
+
+```{sidebar} Querysets
+
+What is returned from the main search functions is actually a `queryset`. They can be treated like lists except that they can't modified in-place. We'll discuss querysets in the [next lesson](./Beginner-Tutorial-Django-queries.md)
+
+```
+This searches for objects based on `key` or `alias`.  The `.search` method we talked about in the previous section in fact wraps `evennia.search_object` and handles its output in various ways. Here's the same example in Python code, for example as part of a command or coded system: 
+
+```python
+import evennia 
+
+roses = evennia.search_object("rose")
+accts = evennia.search_account("YourName")
+```
+
+Above we find first the rose and then an Account. You can try both using `py`: 
+
+    > py evennia.search_object("rose")[0]
+    Rose
+    > py evennia.search_account("YourName")[0]
+    <Player: YourName>
+
+In the example above we used `[0]` to only get the first match of the queryset, which in this case gives us the rose and your Account respectively. Note that if you don't find any matches, using `[0]` like this leads to an error, so it's mostly useful for debugging.
+
+If you you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself. This is too detailed for testing out just with `py`, but good to know if you want to make your own search methods:
+
+```python
+    the_one_ring = evennia.search_object("The one Ring")
+    if not the_one_ring:
+        # handle not finding the ring at all
+    elif len(the_one_ring) > 1:
+        # handle finding more than one ring
+    else:
+        # ok - exactly one ring found
+        the_one_ring = the_one_ring[0]
+```
+
+There are equivalent search functions for all the main resources. You can find a listing of them [in the Search functions section](../../../Evennia-API.md) of the API front page.
 
 ## What can be searched for
 
@@ -123,50 +170,87 @@ The `key` is the name of the entity. Searching for this is always case-insensiti
 
 ### Search by aliases
 
-Objects and Accounts can have any number of aliases. When searching for `key` these will searched too, you can't easily search only for aliases.
+Objects and Accounts can have any number of aliases. When searching for `key` these will searched too, you can't easily search only for aliases. Let's add an alias to our rose with the default `alias` command:
 
-    rose.aliases.add("flower")
+    > alias rose = flower
 
-If the above `rose` has a `key` `"Rose"`, it can now also be found by searching for `flower`. In-game
-you can assign new aliases to things with the `alias` command.
+Alternatively you can achieve the same thing manually (this is what the `alias` command does for you automatically):
+
+    > py self.search("rose").aliases.add("flower")
+
+If the above example `rose` has a `key` `"Rose"`, it can now also be found by searching for its alias `flower`.
+
+    > py self.search("flower")
+    Rose 
+
+> All default commands uses the same search functionality, so you can now do `look flower` to look at the rose as well.
 
 ### Search by location
 
-Only Objects (things inheriting from `evennia.DefaultObject`) has a location. The location is usually a room. The `Object.search` method will automatically limit it search by location, but it also works for the general search function. If we assume `room` is a particular Room instance,
+Only Objects (things inheriting from `evennia.DefaultObject`) has a `.location` property. 
 
-    chest = evennia.search_object("Treasure chest", location=room)
+The `Object.search` method will automatically limit its search by the object's location, so assuming you are in the same room as the rose, this will work:
+
+    > py self.search("rose")
+    Rose
+
+Let's make another location and move to it - you will no longer find the rose:
+
+    > tunnel n = kitchen
+    north 
+    > py self.search("rose")
+    Could not find "rose"
+
+However, using `search_object` will find the rose wherever it's located: 
+
+     > py evennia.search_object("rose") 
+     <QuerySet [Rose]> 
+
+However, if you demand that the room is in the current room, it won't be found: 
+
+    > py evennia.search_object("rose", location=here)
+    <QuerySet []>
+
+In general, the `Object.search` is a shortcut for doing the very common searches of things in the same location, whereas the `search_object` finds objects anywhere.
 
 ### Search by Tags
 
-Think of a [Tag](../../../Components/Tags.md) as the label the airport puts on your luggage when flying. Everyone going on the same plane gets a tag grouping them together so the airport can know what should go to which plane. Entities in Evennia can be grouped in the same way. Any number of tags can be attached
-to each object.
+Think of a [Tag](../../../Components/Tags.md) as the label the airport puts on your luggage when flying. Everyone going on the same plane gets a tag, grouping them together so the airport can know what should go to which plane. Entities in Evennia can be grouped in the same way. Any number of tags can be attached to each object.
 
-    rose.tags.add("flowers")
-	rose.tags.add("thorny")
-    daffodil.tags.add("flowers")
-    tulip.tags.add("flowers")
-    cactus.tags.add("flowers")
-    cactus.tags.add("thorny")	
+Go back to the location of your `rose` and let's create a few more plants:
+
+    > create/drop Daffodil
+    > create/drop Tulip
+    > create/drop Cactus
+
+Then let's add the "thorny" and "flowers" tags as ways to group these based on if they are flowers and/or have thorns: 
+
+    py self.search("rose").tags.add("flowers")
+	py self.search("rose").tags.add("thorny")
+    py self.search("daffodil").tags.add("flowers")
+    py self.search("tulip").tags.add("flowers")
+    py self.search("cactus").tags.add("flowers")
+    py self.search("cactus").tags.add("thorny")	
 
 You can now find all flowers using the `search_tag` function:
 
-    all_flowers = evennia.search_tag("flowers")
-    roses_and_cactii = evennia.search_tag("thorny")
+    py evennia.search_tag("flowers")
+    <QuerySet [Rose, Daffodil, Tulip, Cactus]>
+    py evennia.search_tag("thorny")
+    <QuerySet [Rose, Cactus]>
 
-Tags can also have categories. By default this category is `None` which is also considered a category.
+Tags can also have categories. By default this category is `None` , which is considered a category of its own.  Here are some examples of using categories in plain Python code (you can also try this out with `py` if you want to create the objects first): 
 
     silmarillion.tags.add("fantasy", category="books")
     ice_and_fire.tags.add("fantasy", category="books")
     mona_lisa_overdrive.tags.add("cyberpunk", category="books")
 
-Note that if you specify the tag you _must_ also include its category, otherwise that category
-will be `None` and find no matches.
+Note that if you specify the tag  with a category, you _must_ also include its category when searching, otherwise the tag-category of `None` will be searched. 
 
     all_fantasy_books = evennia.search_tag("fantasy")  # no matches!
     all_fantasy_books = evennia.search_tag("fantasy", category="books")
 
-Only the second line above returns the two fantasy books. If we specify a category however,
-we can get all tagged entities within that category:
+Only the second line above returns the two fantasy books. 
 
     all_books = evennia.search_tag(category="books")
 
@@ -176,35 +260,41 @@ This gets all three books.
 
 We can also search by the [Attributes](../../../Components/Attributes.md) associated with entities.
 
-For example, let's give our rose thorns:
+For example, let's say our plants have a 'growth state' that updates as it grows: 
 
-    rose.db.has_thorns = True
-    wines.db.has_thorns = True
-    daffodil.db.has_thorns = False
+    > py self.search("rose").db.growth_state = "blooming"
+    > py self.search("daffodil").db.growth_state = "withering"
 
-Now we can find things attribute and the value we want it to have:
+Now we can find the things that have a given growth state:
 
-    is_ouch = evennia.search_object_attribute("has_thorns", True)
+    > py evennia.search_object_attribute("growth_state", "withering")
+    <QuerySet [Rose]> 
 
-This returns the rose and the wines.
-
-> Searching by Attribute can be very practical. But if you plan to do a search very often, searching
-> by-tag is generally faster.
-
+> Searching by Attribute can be very practical. But if you want to group entities or search very often, using Tags and search by Tags is faster and more resource-efficient.
 
 ### Search by Typeclass
 
-Sometimes it's useful to find all objects of a specific Typeclass. All of Evennia's search tools support this.
+Sometimes it's useful to limit your search by which Typeclass they have. 
 
-    all_roses = evennia.search_object(typeclass="typeclasses.flowers.Rose")
+Let's say you for example have two types of flower, `CursedFlower` and `BlessedFlower` defined under `mygame/typeclasses.flowers.py`. Each class contains custom code that grants curses and blessings respectively. You may have two `rose` objects, and the player doesn't know which one is the bad or the good one. To separate them in your search, you can make sure to get the right one like this (in Python code)
 
-If you have the `Rose` class already imported you can also pass it directly:
+```python
+cursed_roses = evennia.search_object("rose", typeclass="typeclasses.flowers.CursedFlower")
+```
 
-    all_roses = evennia.search_object(typeclass=Rose)
+If you e.g. have the `BlessedRose` class already imported you can also pass it directly:
 
-You can also search using the typeclass itself:
+```python
+from typeclasses.flowers import BlessedFlower
+blessed_roses = evennia.search_object("rose", typeclass=BlessedFlower)
+```
 
-    all_roses = Rose.objects.all()
+A common use case is finding _all_ items of a given typeclass, no matter what they are named. For this you don't use `search_object`, but search with the typeclass directly: 
+
+```python
+from typeclasses.objects.flowers import Rose
+all_roses = Rose.objects.all()
+```
 
 This last way of searching is a simple form of a Django _query_. This is a way to express SQL queries using Python. See [the next lesson](./Beginner-Tutorial-Django-queries.md), where we'll explore this way to searching in more detail.
 
@@ -230,7 +320,7 @@ In legacy code bases you may be used to relying a lot on #dbrefs to find and tra
 ## Finding objects relative each other
 
 It's important to understand how objects relate to one another when searching. 
-Let's consider a `chest` with a `coin` inside it. The chests stand in a room `dungeon`. In the dungeon is also a `door`. This is an exit leading outside.
+Let's consider a `chest` with a `coin` inside it. The chest stands in a room `dungeon`. In the dungeon is also a `door`. This is an exit leading outside.
 
 ```
 ┌───────────────────────┐
@@ -251,7 +341,7 @@ Let's consider a `chest` with a `coin` inside it. The chests stand in a room `du
 - `door.location` is `dungeon`.
 - `room.location` is `None` since it's not inside something else.
 
-One can use this to find what is inside what. For example, `coin.location.location` is the `room`.
+One can use this to find what is inside what. For example, `coin.location.location` is the `dungeon`.
 We can also find what is inside each object. This is a list of things.
 
 - `room.contents` is `[chest, door]`

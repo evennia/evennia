@@ -10,7 +10,7 @@ from django.db.models import Max, Min, Q
 
 import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import get_and_merge_cmdsets, generate_cmdset_providers
+from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -660,7 +660,13 @@ class CmdCreate(ObjManipCommand):
                 continue
 
             obj, errors = obj_typeclass.create(
-                name, caller, home=caller, aliases=aliases, report_to=caller, caller=caller
+                name,
+                account=caller.account,
+                location=caller,
+                home=caller,
+                aliases=aliases,
+                report_to=caller,
+                caller=caller,
             )
             if errors:
                 self.msg(errors)
@@ -1187,7 +1193,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
             backstring = f", {backname};{backshort}"
 
         # build the string we will use to call dig
-        digstring = f"dig{telswitch} {roomname} = {exitname};{exitshort}{backstring}"
+        digstring = f"@dig{telswitch} {roomname} = {exitname};{exitshort}{backstring}"
         self.execute_cmd(digstring)
 
 

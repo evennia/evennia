@@ -627,7 +627,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         # find all of target's nicks linked to this channel and delete them
         for nick in [
             nick
-            for nick in target.nicks.get(category="channel") or []
+            for nick in target.nicks.get(category="channel", return_tuple=True) or []
             if nick.value[3].lower() == channel.key
         ]:
             nick.delete()

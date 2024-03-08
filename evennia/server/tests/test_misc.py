@@ -10,7 +10,6 @@ from django.test import TestCase
 from django.test.runner import DiscoverRunner
 
 from evennia.server.throttle import Throttle
-from evennia.server.validators import EvenniaPasswordValidator
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from ..deprecations import check_errors
@@ -67,20 +66,6 @@ class TestDeprecations(TestCase):
         self.assertRaises(
             DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"])
         )
-
-
-class ValidatorTest(BaseEvenniaTest):
-    def test_validator(self):
-        # Validator returns None on success and ValidationError on failure.
-        validator = EvenniaPasswordValidator()
-
-        # This password should meet Evennia standards.
-        self.assertFalse(validator.validate("testpassword", user=self.account))
-
-        # This password contains illegal characters and should raise an Exception.
-        from django.core.exceptions import ValidationError
-
-        self.assertRaises(ValidationError, validator.validate, "(#)[#]<>", user=self.account)
 
 
 class ThrottleTest(BaseEvenniaTest):

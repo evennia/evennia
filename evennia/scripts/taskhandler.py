@@ -204,7 +204,7 @@ class TaskHandlerTask:
         return self.task_id
 
 
-class TaskHandler(object):
+class TaskHandler:
 
     """A light singleton wrapper allowing to access permanent tasks.
 
@@ -236,7 +236,7 @@ class TaskHandler(object):
 
         """
         to_save = False
-        value = ServerConfig.objects.conf("delayed_tasks", default={})
+        value = ServerConfig.objects.conf("delayed_tasks", default=dict)
         if isinstance(value, str):
             tasks = dbunserialize(value)
         else:

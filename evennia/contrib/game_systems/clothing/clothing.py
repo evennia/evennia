@@ -75,10 +75,10 @@ with which to test the system:
 from collections import defaultdict
 
 from django.conf import settings
-
 from evennia import DefaultCharacter, DefaultObject, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils import at_search_result, evtable, inherits_from, iter_to_str
+from evennia.utils import at_search_result, crop, evtable, inherits_from, int2str, iter_to_str
+from evennia.utils.ansi import raw as raw_ansi
 
 # Options start here.
 # Maximum character length of 'wear style' strings, or None for unlimited.
@@ -468,7 +468,8 @@ class CmdWear(MuxCommand):
                 return
             elif len(self.rhs) > WEARSTYLE_MAXLENGTH:
                 self.caller.msg(
-                    f"Please keep your wear style message to less than {WEARSTYLE_MAXLENGTH} characters."
+                    "Please keep your wear style message to less than"
+                    f" {WEARSTYLE_MAXLENGTH} characters."
                 )
                 return
             else:
@@ -652,33 +653,38 @@ class CmdInventory(MuxCommand):
 
         message_list = []
 
+        # all our items
         items = self.caller.contents
 
-        carry_table = evtable.EvTable(border="header")
-        wear_table = evtable.EvTable(border="header")
-
+        # carried items
         carried = [obj for obj in items if not obj.db.worn]
-        worn = [obj for obj in items if obj.db.worn]
+        carry_table = self.styled_table(border="header")
 
-        message_list.append("|wYou are carrying:|n")
         for item in carried:
+            singular, _ = item.get_numbered_name(1, self.caller)
             carry_table.add_row(
-                item.get_display_name(self.caller), item.get_display_desc(self.caller)
+                f"{singular}|n",
+                "{}|n".format(crop(raw_ansi(item.db.desc or ""), width=50) or ""),
             )
-        if carry_table.nrows == 0:
-            carry_table.add_row("Nothing.", "")
-        message_list.append(str(carry_table))
+        message_list.extend(
+            ["|wYou are carrying:|n", str(carry_table) if carry_table.nrows > 0 else " Nothing."]
+        )
 
-        message_list.append("|wYou are wearing:|n")
+        # worn items
+        worn = [obj for obj in items if obj.db.worn]
+        wear_table = self.styled_table(border="header")
+
         for item in worn:
-            item_name = item.get_display_name(self.caller)
-            if item.db.covered_by:
-                item_name += " (hidden)"
-            wear_table.add_row(item_name, item.get_display_desc(self.caller))
-        if wear_table.nrows == 0:
-            wear_table.add_row("Nothing.", "")
-        message_list.append(str(wear_table))
+            singular, _ = item.get_numbered_name(1, self.caller)
+            wear_table.add_row(
+                f"{singular}|n",
+                "{}|n".format(crop(raw_ansi(item.db.desc or ""), width=50) or ""),
+            )
+        message_list.extend(
+            ["You are wearing:|n", str(wear_table) if wear_table.nrows > 0 else " Nothing."]
+        )
 
+        # return the composite message
         self.caller.msg("\n".join(message_list))
 
 

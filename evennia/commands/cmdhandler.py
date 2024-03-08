@@ -40,8 +40,8 @@ from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import deferLater
 
-from evennia.commands.command import InterruptCommand
 from evennia.commands.cmdset import CmdSet
+from evennia.commands.command import InterruptCommand
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
 
@@ -410,7 +410,7 @@ def get_and_merge_cmdsets(
             try:
                 returnValue(obj.get_cmdsets(caller=caller, current=current))
             except AttributeError:
-                returnValue(((None, None, None), []))
+                returnValue((CmdSet(), []))
 
         local_obj_cmdsets = []
 

@@ -18,8 +18,9 @@ Use `evennia xyzgrid help` for usage help.
 
 from os.path import join as pathjoin
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.utils import ansi
 
