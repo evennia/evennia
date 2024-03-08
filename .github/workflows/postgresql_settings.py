@@ -41,14 +41,14 @@ SERVERNAME = "testing_mygame"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "evennia",
+        "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "localhost",
         "CONN_MAX_AGE": None,
         'PORT': '5432',
         "TEST": {
-            "NAME": "evennia",
+            "NAME": "postgres",
             "CONN_MAX_AGE": None,
             "USER": "postgres",
             "PASSWORD": "postgres",
