@@ -119,6 +119,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set postgres params to Non-Durable
+        run: |
+          docker exec -i postgres bash << EOF
+            sed -i -e 's/fsync = on/fsync = off/' /var/lib/postgresql/data/postgresql.conf
+            sed -i -e 's/synchronous_commit = on/synchronous_commit = off/' /var/lib/postgresql/data/postgresql.conf
+            sed -i -e 's/full_page_writes = on/full_page_writes = off/' /var/lib/postgresql/data/postgresql.conf
+          EOF
+
+      - name: Restart postgres to apply changes
+        run: docker restart --time 0 postgres
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
