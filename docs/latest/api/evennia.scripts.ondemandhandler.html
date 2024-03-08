@@ -301,6 +301,23 @@ current stage. If no stages are defined, <strong>stage</strong> will always be <
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.scripts.ondemandhandler.OnDemandTask.set_dt">
+<code class="sig-name descname">set_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.set_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.set_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the time-delta since the task started manually. This allows you to ‘cheat’ the system
+and set the time manually. This is useful for testing or when a system manipulates the state
+somehow (like using a potion that speeds up the growth of a plant).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<em>int</em>) – The time-delta to set. This is an absolute value in seconds, same as returned
+by <strong>get_dt</strong>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Setting this will not on its own trigger any stage functions - this will only happen
+as normal, next time the state is checked and the stage is found to have changed.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.get_stage">
 <code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.get_stage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current stage of the task. If no stage was given, this will return <strong>None</strong> but
@@ -310,6 +327,24 @@ still update the last_checked time.</p>
 <dd class="field-odd"><p><em>str or None</em> – The current stage of the task, or <strong>None</strong> if no stages are set.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.ondemandhandler.OnDemandTask.set_stage">
+<code class="sig-name descname">set_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stage</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.set_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.set_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the stage of the task manually. This allows you to ‘cheat’ the system and set the stage
+manually. This is useful for testing or when a system manipulates the state somehow (like
+using a potion that speeds up the growth of a plant). The given stage must be previously
+created for the given task. If task has no stages, this will do nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stage</strong> (<em>str</em><em>, </em><em>optional</em>) – The stage to set. If <strong>None</strong>, the task will be reset to its
+initial (first) state.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Setting this will not on its own trigger any stage functions - this will only happen
+as normal, next time the state is checked and the stage is found to have changed.</p>
 </dd></dl>
 
 </dd></dl>
@@ -495,6 +530,30 @@ to identify the task to get the time-delta from.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.scripts.ondemandhandler.OnDemandHandler.set_dt">
+<code class="sig-name descname">set_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">dt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.set_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.set_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the time-delta since the task started manually. This allows you to ‘cheat’ the system
+and set the time manually. This is useful for testing or when a system manipulates the state
+somehow (like using a potion that speeds up the growth of a plant).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
+callable, will be called without arguments. If an Object, will be converted to a string.
+If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will be used
+to identify the task to set the time-delta for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the task.</p></li>
+<li><p><strong>dt</strong> (<em>int</em>) – The time-delta to set. This is an absolute value in seconds, same as returned
+by <strong>get_dt</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Setting this will not on its own trigger any stage functions - this will only happen
+as normal, next time the state is checked and the stage is found to have changed.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandHandler.get_stage">
 <code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.get_stage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current stage of an on-demand task.</p>
@@ -509,6 +568,31 @@ to identify the task to get the stage from.</p>
 <dd class="field-even"><p><em>str or None</em> – The current stage of the task, or <strong>None</strong> if no task was found.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.ondemandhandler.OnDemandHandler.set_stage">
+<code class="sig-name descname">set_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stage</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.set_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.set_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the stage of an on-demand task manually. This allows you to ‘cheat’ the system and set
+the stage manually. This is useful for testing or when a system manipulates the state
+somehow (like using a potion that speeds up the growth of a plant). The given stage must
+be previously created for the given task. If task has no stages, this will do nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
+callable, will be called without arguments. If an Object, will be converted to a
+string.  If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task
+will be used to identify the task to set the stage for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the task.</p></li>
+<li><p><strong>stage</strong> (<em>str</em><em>, </em><em>optional</em>) – The stage to set. If <strong>None</strong>, the task will be reset to its
+initial (first) state.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Setting this will not on its own trigger any stage functions - this will only happen
+as normal, next time the state is checked and the stage is found to have changed.</p>
 </dd></dl>
 
 </dd></dl>

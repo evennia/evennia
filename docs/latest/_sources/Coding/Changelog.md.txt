@@ -1,5 +1,12 @@
 # Changelog
 
+## Evennia Main branch
+
+- Feature: Add `ON_DEMAND_HANDLER.set_dt(key, category, dt)` and
+  `.set_stage(key, category, stage)` to allow manual tweaking of task timings,
+  for example for a spell speeding a plant's growth. (Griatch)
+- Fix: Resolve a bug when loading on-demand-handler data from database.
+
 ## Evennia 3.2.0
 
 Feb 25, 2024
