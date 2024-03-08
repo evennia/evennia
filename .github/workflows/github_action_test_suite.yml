@@ -97,7 +97,7 @@ jobs:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres:alpine3.19
+        image: postgres:13.14-alpine3.19
         # Provide the password for postgres
         env:
           POSTGRES_DB: postgres
@@ -107,7 +107,7 @@ jobs:
           - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd pg_isready
+          --health-cmd pg_isready -U postgres
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
