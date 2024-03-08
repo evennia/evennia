@@ -100,8 +100,8 @@ jobs:
         image: postgres:alpine3.19
         # Provide the password for postgres
         env:
-          POSTGRES_USER: evennia
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -115,7 +115,7 @@ jobs:
     timeout-minutes: 35
 
     env:
-      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
+      UNIT_TEST_SETTINGS: "--settings=settings --keepdb"
 
     steps:
       - uses: actions/checkout@v4
@@ -126,6 +126,7 @@ jobs:
             sed -i -e 's/fsync = on/fsync = off/' /var/lib/postgresql/data/postgresql.conf
             sed -i -e 's/synchronous_commit = on/synchronous_commit = off/' /var/lib/postgresql/data/postgresql.conf
             sed -i -e 's/full_page_writes = on/full_page_writes = off/' /var/lib/postgresql/data/postgresql.conf
+            sed -i -e 's/client_encoding = SQL_ASCII/client_encoding = off/' /var/lib/postgresql/data/postgresql.conf
           EOF
 
       - name: Restart postgres to apply changes

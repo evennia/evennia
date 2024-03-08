@@ -42,11 +42,17 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "evennia",
-        "USER": "evennia",
-        "PASSWORD": "password",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
         "HOST": "localhost",
+        "CONN_MAX_AGE": None,
+        'PORT': '5432',
         "TEST": {
             "NAME": "evennia",
+            "CONN_MAX_AGE": None,
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            'PORT': '5432',
         },
     }
 }
