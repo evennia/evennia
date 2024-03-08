@@ -93,6 +93,7 @@ jobs:
     name: TestPostgres
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       fail-fast: false
       matrix:
         python-version: [ "3.10", "3.11" ]
@@ -131,7 +132,6 @@ jobs:
             sed -i -e 's/fsync = on/fsync = off/' /var/lib/postgresql/data/postgresql.conf
             sed -i -e 's/synchronous_commit = on/synchronous_commit = off/' /var/lib/postgresql/data/postgresql.conf
             sed -i -e 's/full_page_writes = on/full_page_writes = off/' /var/lib/postgresql/data/postgresql.conf
-            sed -i -e 's/client_encoding = SQL_ASCII/client_encoding = off/' /var/lib/postgresql/data/postgresql.conf
           EOF
 
       - name: Restart postgres to apply changes
