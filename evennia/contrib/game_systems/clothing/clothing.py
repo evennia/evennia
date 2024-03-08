@@ -78,7 +78,7 @@ from django.conf import settings
 
 from evennia import DefaultCharacter, DefaultObject, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils import at_search_result, evtable, inherits_from, iter_to_str
+from evennia.utils import at_search_result, evtable, inherits_from, iter_to_str, int2str
 
 # Options start here.
 # Maximum character length of 'wear style' strings, or None for unlimited.
@@ -658,13 +658,19 @@ class CmdInventory(MuxCommand):
         wear_table = evtable.EvTable(border="header")
 
         carried = [obj for obj in items if not obj.db.worn]
+
+        names_and_descs = [(obj.get_display_name(self.caller), obj.get_display_desc(self.caller))
+                           for obj in set(carried)]
+        carried_sums = {tup: names_and_descs.count(tup) for tup in set(names_and_descs)}
+
         worn = [obj for obj in items if obj.db.worn]
 
         message_list.append("|wYou are carrying:|n")
-        for item in carried:
+        for (name, desc), count in carried_sums.items():
             carry_table.add_row(
-                item.get_display_name(self.caller), item.get_display_desc(self.caller)
+                f"{int2str(count)} {name}", desc
             )
+
         if carry_table.nrows == 0:
             carry_table.add_row("Nothing.", "")
         message_list.append(str(carry_table))
