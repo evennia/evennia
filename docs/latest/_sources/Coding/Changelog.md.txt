@@ -4,8 +4,16 @@
 
 - Feature: Add `ON_DEMAND_HANDLER.set_dt(key, category, dt)` and
   `.set_stage(key, category, stage)` to allow manual tweaking of task timings,
-  for example for a spell speeding a plant's growth. (Griatch)
-- Fix: Resolve a bug when loading on-demand-handler data from database.
+  for example for a spell speeding a plant's growth (Griatch)
+- Feature: Add `use_assertequal` kwarg to the `EvenniaCommandTestMixin` testing
+  class; this uses django's `assertEqual` over the default more lenient checker,
+  which can be useful for testing table whitespace (Griatch)
+- [Fix][pull3420]: Refactor Clothing contrib's inventory command align with
+  Evennia core's version (michaelfaith84, Griatch)
+- Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
+- Doc fixes (iLPdev, Griatch)
+
+[pull3420]: https://github.com/evennia/evennia/pull/3420
 
 ## Evennia 3.2.0
 

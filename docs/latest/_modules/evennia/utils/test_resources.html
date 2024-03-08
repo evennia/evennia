@@ -116,27 +116,21 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">types</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings_default</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DefaultCharacter</span><span class="p">,</span>
-    <span class="n">DefaultExit</span><span class="p">,</span>
-    <span class="n">DefaultObject</span><span class="p">,</span>
-    <span class="n">DefaultRoom</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 
 <span class="n">_RE_STRIP_EVMENU</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
@@ -426,6 +420,7 @@
         <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_assertequal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a command by assigning all the needed properties to a cmdobj and</span>
@@ -484,6 +479,9 @@
 <span class="sd">                a combination of your `key/cmdname` and `input_args`. This allows</span>
 <span class="sd">                direct control of what this is, for example for testing edge cases</span>
 <span class="sd">                or malformed inputs.</span>
+<span class="sd">            use_assertequal (bool, optional): If `True`, the error message will use</span>
+<span class="sd">                a regular assertEqual. This will show show whitepace differences easier, but</span>
+<span class="sd">                doesn&#39;t allow for only matching against the start of the returned message.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str or dict: The message sent to `receiver`, or a dict of</span>
@@ -619,6 +617,11 @@
                 <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
                 <span class="c1"># this is the actual test</span>
+
+                <span class="k">if</span> <span class="n">use_assertequal</span><span class="p">:</span>
+                    <span class="c1"># regular django assert shows whitespace differences better</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">expected_msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">expected_msg</span><span class="p">):</span>
                     <span class="c1"># failed the test</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>

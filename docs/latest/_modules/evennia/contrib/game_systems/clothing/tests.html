@@ -115,7 +115,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;accessory&quot;</span></div>
 
 <div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Test inventory command.</span>
+        <span class="c1"># Test inventory command with no items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -123,9 +123,19 @@
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Test wear command</span>
+        <span class="c1"># add the hat and scarf to the wearer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> a test scarf   </span><span class="se">\n</span><span class="s2"> a test hat     </span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> Nothing.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
+            <span class="n">use_assertequal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Test wear command</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: wear &lt;obj&gt; [=] [wear style]&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You put on test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -147,6 +157,15 @@
             <span class="s2">&quot;You cover test hat with test scarf.&quot;</span><span class="p">,</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> Nothing.</span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> a test scarf   </span><span class="se">\n</span><span class="s2"> a test hat     &quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
+            <span class="n">use_assertequal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="c1"># Test remove command.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;&#39;.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
