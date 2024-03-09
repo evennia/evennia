@@ -1249,6 +1249,31 @@ array) instead of strings.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="evennia.utils.utils.group_objects_by_key_and_desc">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">group_objects_by_key_and_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objects</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#group_objects_by_key_and_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.group_objects_by_key_and_desc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Groups a list of objects by their key and description. This is used to group
+visibly identical objects together, for example for inventory listings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>objects</strong> (<em>list</em>) – A list of objects to group. These must be DefaultObject.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>optional</em>) – The object looking at the objects, used to get the
+description and key of each object.</p></li>
+<li><p><strong>**kwargs</strong> – Passed into each object’s <strong>get_display_name/desc</strong> methods.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>iterable</em> –</p>
+<dl class="simple">
+<dt>An iterable of tuples, where each tuple is on the form</dt><dd><p><strong>(numbered_name, description, [objects])</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.utils.format_table">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">extra_space</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a 2D array of strings into a multi-column table.</p>

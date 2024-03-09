@@ -104,13 +104,10 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
@@ -122,14 +119,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">account</span><span class="p">,</span>
-    <span class="n">admin</span><span class="p">,</span>
-    <span class="n">batchprocess</span><span class="p">,</span>
-    <span class="n">building</span><span class="p">,</span>
-    <span class="n">comms</span><span class="p">,</span>
-    <span class="n">general</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">general</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">syscommands</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">unloggedin</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
@@ -138,6 +128,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
@@ -206,13 +198,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdNick</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Defined Nicks:&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestGeneral.test_get_and_drop"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_get_and_drop">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_and_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You pick up an Obj.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdDrop</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You drop an Obj.&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You pick up an Obj&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdDrop</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You drop an Obj&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestGeneral.test_give"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_give">[docs]</a>    <span class="k">def</span> <span class="nf">test_give</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;Obj to Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;You aren&#39;t carrying Obj.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;Obj = Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;You aren&#39;t carrying Obj.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You pick up an Obj.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You pick up an Obj&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;Obj to Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;You give&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;Obj = Char&quot;</span><span class="p">,</span> <span class="s2">&quot;You give&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span></div>
 
@@ -659,7 +651,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">admin</span><span class="o">.</span><span class="n">CmdForce</span><span class="p">(),</span>
             <span class="s2">&quot;Char2=say test&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;Char2(#</span><span class="si">{}</span><span class="s1">) says, &quot;test&quot;|You have forced Char2 to: say test&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cid</span><span class="p">),</span>
+            <span class="s1">&#39;Char2 says, &quot;test&quot;|You have forced Char2 to: say test&#39;</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
@@ -871,17 +863,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_set_obj_alias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_set_obj_alias">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_obj_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;Cleared aliases from Obj&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj = TestObj1b&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Alias(es) for &#39;Obj(#</span><span class="si">{}</span><span class="s2">)&#39; set to &#39;testobj1b&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">),</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj = TestObj1b&quot;</span><span class="p">,</span> <span class="s2">&quot;Alias(es) for &#39;Obj&#39; set to &#39;testobj1b&#39;.&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;NotFound =&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Aliases for Obj(#</span><span class="si">{}</span><span class="s2">): &#39;testobj1b&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Aliases for Obj: &#39;testobj1b&#39;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj2 =&quot;</span><span class="p">,</span> <span class="s2">&quot;Cleared aliases from Obj2&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj2 =&quot;</span><span class="p">,</span> <span class="s2">&quot;No aliases to clear.&quot;</span><span class="p">)</span></div>
 
@@ -1318,9 +1307,7 @@
 
 <div class="viewcode-block" id="TestBuilding.test_desc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_desc">[docs]</a>    <span class="k">def</span> <span class="nf">test_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2=TestDesc&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Obj2(#</span><span class="si">{}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2=TestDesc&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Obj2.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
@@ -1341,7 +1328,7 @@
         <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">id</span>
         <span class="n">o2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
         <span class="n">r1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2=&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Obj2(#</span><span class="si">{}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2=&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Obj2.&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">o2d</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="n">r1d</span></div>
 
@@ -1350,7 +1337,7 @@
         <span class="n">rid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
         <span class="n">o2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
         <span class="n">r1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Room(#</span><span class="si">{}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rid</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;Obj2&quot;</span><span class="p">,</span> <span class="s2">&quot;The description was set on Room.&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="n">o2d</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="s2">&quot;Obj2&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">r1d</span></div>
 
@@ -1373,16 +1360,11 @@
             <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="p">(),</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="s2">&quot;You are trying to delete&quot;</span>
         <span class="p">)</span>  <span class="c1"># DEFAULT_HOME should not be deleted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span>
-        <span class="n">charid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">room1id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">room2id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
-            <span class="s2">&quot;Char2(#</span><span class="si">{}</span><span class="s2">) arrives to Room(#</span><span class="si">{}</span><span class="s2">) from Room2(#</span><span class="si">{}</span><span class="s2">).|Room2 was destroyed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">charid</span><span class="p">,</span> <span class="n">room1id</span><span class="p">,</span> <span class="n">room2id</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
+            <span class="s2">&quot;Char2 arrives to Room from Room2.|Room2 was destroyed.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span> <span class="o">=</span> <span class="n">confirm</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_destroy_sequence"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_destroy_sequence">[docs]</a>    <span class="k">def</span> <span class="nf">test_destroy_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1730,9 +1712,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">script3</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_teleport"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_teleport">[docs]</a>    <span class="k">def</span> <span class="nf">test_teleport</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rid2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;Obj = Room&quot;</span><span class="p">,</span> <span class="s2">&quot;Obj is already at Room.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1743,9 +1722,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span>
-            <span class="p">),</span>
+            <span class="s2">&quot;Obj is leaving Room, heading for Room2.|Teleported Obj -&gt; Room2.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;NotFound = Room&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1753,7 +1730,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;/tonone Obj2&quot;</span><span class="p">,</span> <span class="s2">&quot;Teleported Obj2 -&gt; None-location.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;/quiet Room2&quot;</span><span class="p">,</span> <span class="s2">&quot;Room2(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rid2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;/quiet Room2&quot;</span><span class="p">,</span> <span class="s2">&quot;Room2&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span>
             <span class="s2">&quot;/t&quot;</span><span class="p">,</span>  <span class="c1"># /t switch is abbreviated form of /tonone</span>
@@ -1867,7 +1844,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;{&#39;prototype_key&#39;:&#39;GOBLIN&#39;, &#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned goblin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">goblin</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
@@ -1915,7 +1893,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;/noloc {&#39;prototype_parent&#39;:&#39;TESTBALL&#39;, &#39;key&#39;: &#39;Ball&#39;, &#39;prototype_key&#39;: &#39;foo&#39;,&quot;</span>
-            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>

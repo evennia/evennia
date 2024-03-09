@@ -109,9 +109,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span>
         <span class="c1"># Make a test hat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test hat&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A test hat.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;hat&quot;</span>
         <span class="c1"># Make a test scarf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test scarf&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A test scarf.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;accessory&quot;</span></div>
 
 <div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -130,7 +132,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> a test scarf   </span><span class="se">\n</span><span class="s2"> a test hat     </span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> Nothing.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> a test hat    A test hat.   </span><span class="se">\n</span><span class="s2"> a test scarf  A test&quot;</span>
+                <span class="s2">&quot; scarf. </span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> Nothing.&quot;</span>
+            <span class="p">),</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
             <span class="n">use_assertequal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -161,7 +166,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> Nothing.</span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> a test scarf   </span><span class="se">\n</span><span class="s2"> a test hat     &quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You are carrying:</span><span class="se">\n</span><span class="s2"> Nothing.</span><span class="se">\n</span><span class="s2">You are wearing:</span><span class="se">\n</span><span class="s2"> a test hat    A test hat.   </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot; a test scarf  A test scarf. &quot;</span>
+            <span class="p">),</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
             <span class="n">use_assertequal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>

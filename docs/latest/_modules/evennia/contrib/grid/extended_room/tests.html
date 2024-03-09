@@ -96,11 +96,10 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">EvenniaTestCase</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">extended_room</span>
 
@@ -285,7 +284,7 @@
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDesc</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Room Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) Season: autumn. Time: afternoon. States: None</span>
+<span class="s2">Room Room Season: autumn. Time: afternoon. States: None</span>
 
 <span class="s2">Room state (default) (active):</span>
 <span class="s2">Base room description.</span>
@@ -308,7 +307,7 @@
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDesc</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Room Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) Season: autumn. Time: afternoon. States: None</span>
+<span class="s2">Room Room Season: autumn. Time: afternoon. States: None</span>
 
 <span class="s2">Room state burning:</span>
 <span class="s2">Burning description.</span>
@@ -325,8 +324,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDesc</span><span class="p">(),</span>
             <span class="s2">&quot;/del/burning/spring&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;The burning-description was deleted, if it existed.|The spring-description was&quot;</span>
-            <span class="s2">&quot; deleted, if it existed&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;The burning-description was deleted, if it existed.|The spring-description was&quot;</span>
+                <span class="s2">&quot; deleted, if it existed&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># add autumn, which should be active</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -338,7 +339,7 @@
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDesc</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Room Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) Season: autumn. Time: afternoon. States: None</span>
+<span class="s2">Room Room Season: autumn. Time: afternoon. States: None</span>
 
 <span class="s2">Room state autumn (active):</span>
 <span class="s2">Autumn description.</span>
@@ -375,9 +376,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">The room Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) doesn&#39;t have any details.</span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The room Room doesn&#39;t have any details.</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_roomstate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomstate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
@@ -396,7 +397,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomState</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Room states (not counting automatic time/season) on Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2"> None&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Room states (not counting automatic time/season) on Room:</span><span class="se">\n</span><span class="s2"> None&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># add room states</span>
@@ -413,8 +414,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomState</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Room states (not counting automatic time/season) on Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;&#39;burning&#39; and &#39;windy&#39;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Room states (not counting automatic time/season) on Room:</span><span class="se">\n</span><span class="s2"> &#39;burning&#39; and &#39;windy&#39;&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># toggle windy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -425,8 +425,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomState</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Room states (not counting automatic time/season) on Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;&#39;burning&#39;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Room states (not counting automatic time/season) on Room:</span><span class="se">\n</span><span class="s2"> &#39;burning&#39;&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># add a autumn state and make sure we override it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">add_desc</span><span class="p">(</span><span class="s2">&quot;Autumn description.&quot;</span><span class="p">,</span> <span class="n">room_state</span><span class="o">=</span><span class="s2">&quot;autumn&quot;</span><span class="p">)</span>
@@ -477,15 +476,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">This is a nice autumnal forest. The afternoon sun is&quot;</span>
-            <span class="s2">&quot; shining through the trees.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">This is a nice autumnal forest. The afternoon sun is&quot;</span>
+                <span class="s2">&quot; shining through the trees.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">add_room_state</span><span class="p">(</span><span class="s2">&quot;burning&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">This is a nice autumnal forest. The afternoon sun is&quot;</span>
-            <span class="s2">&quot; shining through the trees and this place is on fire!&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Room(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">This is a nice autumnal forest. The afternoon sun is&quot;</span>
+                <span class="s2">&quot; shining through the trees and this place is on fire!&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span></div></div>
 </pre></div>
 

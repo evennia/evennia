@@ -244,18 +244,12 @@
 
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">iter_to_str</span><span class="p">,</span>
-    <span class="n">lazy_property</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">iter_to_str</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
 <span class="n">_INFLECT</span> <span class="o">=</span> <span class="n">inflect</span><span class="o">.</span><span class="n">engine</span><span class="p">()</span>
 
@@ -1433,13 +1427,15 @@
                 <span class="c1"># in eventual error reporting later (not their keys). Doing</span>
                 <span class="c1"># it like this e.g. allows for use of the typeclass kwarg</span>
                 <span class="c1"># limiter.</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">and</span> <span class="n">is_builder</span><span class="p">:</span>
-                <span class="c1"># builders get a chance to search only by key+alias</span>
-                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="c1"># builders get to do a global search by key+alias</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># global searches / #drefs end up here. Global searches are</span>
+            <span class="c1"># global searches with #drefs end up here. Global searches are</span>
             <span class="c1"># only done in code, so is controlled, #dbrefs are turned off</span>
             <span class="c1"># for non-Builders.</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1498,10 +1494,6 @@
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="c1"># use own sdesc as a fallback</span>
                 <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-
-        <span class="c1"># add dbref is looker has control access and `noid` is not set</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;noid&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_posed_sdesc</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">sdesc</span></div>
 
@@ -1634,10 +1626,6 @@
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="c1"># use own sdesc as a fallback</span>
                 <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-
-        <span class="c1"># add dbref is looker has control access and `noid` is not set</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;noid&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_posed_sdesc</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">sdesc</span></div>
 

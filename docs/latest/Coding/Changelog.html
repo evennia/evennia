@@ -194,16 +194,30 @@
 <section id="evennia-main-branch">
 <h2>Evennia Main branch<a class="headerlink" href="#evennia-main-branch" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Feature: <em>Backwards incompatible</em>: <code class="docutils literal notranslate"><span class="pre">DefaultObject.get_numbered_name</span></code> now gets object’s
+name via <code class="docutils literal notranslate"><span class="pre">.get_display_name</span></code> for better compatibility with recog systems.</p></li>
+<li><p>Feature: <em>Backwards incompatible</em>: Removed the (#dbref) display from
+<code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_name</span></code>, instead using new <code class="docutils literal notranslate"><span class="pre">.get_extra_display_name_info</span></code>
+method for getting this info. The Object’s display template was extended for
+optionally adding this information. This makes showing extra object info to
+admins an explicit action and opens up <code class="docutils literal notranslate"><span class="pre">get_display_name</span></code> for general use.</p></li>
 <li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">ON_DEMAND_HANDLER.set_dt(key,</span> <span class="pre">category,</span> <span class="pre">dt)</span></code> and
 <code class="docutils literal notranslate"><span class="pre">.set_stage(key,</span> <span class="pre">category,</span> <span class="pre">stage)</span></code> to allow manual tweaking of task timings,
 for example for a spell speeding a plant’s growth (Griatch)</p></li>
 <li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">use_assertequal</span></code> kwarg to the <code class="docutils literal notranslate"><span class="pre">EvenniaCommandTestMixin</span></code> testing
 class; this uses django’s <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> over the default more lenient checker,
 which can be useful for testing table whitespace (Griatch)</p></li>
+<li><p>Feature: New <code class="docutils literal notranslate"><span class="pre">utils.group_objects_by_key_and_desc</span></code> for grouping a list of
+objects based on the visible key and desc. Useful for inventory listings (Griatch)</p></li>
+<li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">DefaultObject.get_numbered_name</span></code> <code class="docutils literal notranslate"><span class="pre">return_string</span></code> bool kwarg, for only
+returning singular/plural based on count instead of a tuple with both (Griatch)</p></li>
+<li><p>Fix: <code class="docutils literal notranslate"><span class="pre">DefaultObject.get_numbered_name</span></code> used <code class="docutils literal notranslate"><span class="pre">.name</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">.get_display_name</span></code> which broke recog systems. May lead to object’s #dbref
+will show for admins in some more places (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3420">Fix</a>: Refactor Clothing contrib’s inventory command align with
 Evennia core’s version (michaelfaith84, Griatch)</p></li>
 <li><p>Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)</p></li>
-<li><p>Doc fixes (iLPdev, Griatch)</p></li>
+<li><p>Doc fixes (iLPdev, Griatch, CloudKeeper)</p></li>
 </ul>
 </section>
 <section id="evennia-3-2-0">

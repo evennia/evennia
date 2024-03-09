@@ -309,7 +309,7 @@
     <span class="c1"># populated by `return_appearance`</span>
     <span class="n">appearance_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{header}</span>
-<span class="s2">|c</span><span class="si">{name}</span><span class="s2">|n</span>
+<span class="s2">|c</span><span class="si">{name}{extra_name_info}</span><span class="s2">|n</span>
 <span class="si">{desc}</span>
 <span class="si">{exits}{characters}{things}</span>
 <span class="si">{footer}</span>
@@ -406,7 +406,7 @@
             <span class="s2">&quot;obj.location to move an object here.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-    <span class="n">contents</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">contents_get</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">)</span>
+    <span class="n">contents</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">contents_get</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">exits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -916,6 +916,16 @@
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">session</span><span class="p">)</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="n">session</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_contents_unique"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_contents_unique">[docs]</a>    <span class="k">def</span> <span class="nf">get_contents_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a mapping of contents  that are visually unique to the caller, along with</span>
+<span class="sd">        how many of each there are.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caller (Object, optional): The object to check visibility from. If not given,</span>
+<span class="sd">                the current object will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultObject.for_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.for_contents">[docs]</a>    <span class="k">def</span> <span class="nf">for_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1526,9 +1536,27 @@
 <span class="sd">            and is expected to produce something useful for builders.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">looker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_extra_display_name_info"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_extra_display_name_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_display_name_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds any extra display information to the object&#39;s name. By default this is is the</span>
+<span class="sd">        object&#39;s dbref in parentheses, if the looker has permission to see it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (Object): The object looking at this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The dbref of this object, if the looker has permission to see it. Otherwise, an</span>
+<span class="sd">                empty string is returned.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            By default, this becomes a string (#dbref) attached to the object&#39;s name.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">looker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_numbered_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_numbered_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_numbered_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1543,8 +1571,10 @@
 <span class="sd">            looker (Object): Onlooker. Not used by default.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            key (str): Optional key to pluralize. If not given, the object&#39;s `.name` property is</span>
-<span class="sd">                used.</span>
+<span class="sd">            key (str): Optional key to pluralize. If not given, the object&#39;s `.get_display_name()`</span>
+<span class="sd">                method is used.</span>
+<span class="sd">            return_string (bool): If `True`, return only the singular form if count is 0,1 or</span>
+<span class="sd">                the plural form otherwise. If `False` (default), return both forms as a tuple.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: This is a tuple `(str, str)` with the singular and plural forms of the key</span>
@@ -1556,7 +1586,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plural_category</span> <span class="o">=</span> <span class="s2">&quot;plural_key&quot;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">))</span>
+        <span class="n">raw_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># this is needed to allow inflection of colored names</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">plural</span> <span class="o">=</span> <span class="n">_INFLECT</span><span class="o">.</span><span class="n">plural</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
@@ -1572,6 +1603,10 @@
             <span class="c1"># save the singular form as an alias here too so we can display &quot;an egg&quot; and also</span>
             <span class="c1"># look at &#39;an egg&#39;.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_string&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">singular</span> <span class="k">if</span> <span class="n">count</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">plural</span>
+
         <span class="k">return</span> <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_display_header"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1735,6 +1770,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_appearance</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">appearance_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                <span class="n">extra_name_info</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_extra_display_name_info</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
                 <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
                 <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_header</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
                 <span class="n">footer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_footer</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
