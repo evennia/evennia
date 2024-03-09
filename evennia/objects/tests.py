@@ -9,7 +9,7 @@ from evennia.typeclasses.tags import (
     TagCategoryProperty,
     TagProperty,
 )
-from evennia.utils import create
+from evennia.utils import create, search
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
 
@@ -136,6 +136,23 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(
             DefaultObject.get_default_lockstring(account=self.account, caller=self.char1), pattern
         )
+
+    def test_search_by_tag_kwarg(self):
+        "Test the by_tag method"
+
+        self.obj1.tags.add("plugh", category="adventure")
+
+        self.assertEqual(self.char1.search("Obj", quiet=True), [self.obj1])
+        # should not find a match
+        self.assertEqual(self.char1.search("Dummy", quiet=True), [])
+        # should still not find a match
+        self.assertEqual(self.char1.search("Dummy", tags=[("plugh", "adventure")], quiet=True), [])
+
+        self.assertEqual(list(search.search_object("Dummy", tags=[("plugh", "adventure")])), [])
+        self.assertEqual(
+            list(search.search_object("Obj", tags=[("plugh", "adventure")])), [self.obj1]
+        )
+        self.assertEqual(list(search.search_object("Obj", tags=[("dummy", "adventure")])), [])
 
     def test_get_default_lockstring_room(self):
         pattern = (
