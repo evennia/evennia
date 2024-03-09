@@ -1410,12 +1410,7 @@
 <div class="viewcode-block" id="ContribRPObject.get_search_result"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_search_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_result</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">searchdata</span><span class="p">,</span>
-        <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1442,12 +1437,12 @@
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">and</span> <span class="n">is_builder</span><span class="p">:</span>
                 <span class="c1"># builders get a chance to search only by key+alias</span>
-                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># global searches / #drefs end up here. Global searches are</span>
             <span class="c1"># only done in code, so is controlled, #dbrefs are turned off</span>
             <span class="c1"># for non-Builders.</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.get_posed_sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_posed_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">get_posed_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
