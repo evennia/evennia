@@ -26,11 +26,13 @@
   Evennia core's version (michaelfaith84, Griatch)
 - [Fix][issue3438]: Limiting search by tag didn't take search-string into
   account (Griatch)
+- [Fix][issue4311]: SSH connection caused a traceback in protocol (Griatch)
 - Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
 - Doc fixes (iLPdev, Griatch, CloudKeeper)
 
 [pull3420]: https://github.com/evennia/evennia/pull/3420
 [issue3438]: https://github.com/evennia/evennia/issues/3438
+[issue3411]: https://github.com/evennia/evennia/issues/3411
 
 ## Evennia 3.2.0
 
