@@ -7,14 +7,16 @@ entities.
 This is the v1.0 develop version (for ref in doc building).
 
 """
+import re
 import time
 import typing
 from collections import defaultdict
 
-import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -23,7 +25,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.signals import SIGNAL_EXIT_TRAVERSED
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
-from evennia.utils import ansi, create, funcparser, logger, search
+from evennia.utils import create, funcparser, logger, search
 from evennia.utils.utils import (
     class_from_module,
     dbref,
@@ -1442,11 +1444,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def get_numbered_name(self, count, looker, **kwargs):
         """
-        Return the numbered (singular, plural) forms of this object's key. This is by default called
-        by return_appearance and is used for grouping multiple same-named of this object. Note that
-        this will be called on *every* member of a group even though the plural name will be only
-        shown once. Also the singular display version, such as 'an apple', 'a tree' is determined
-        from this method.
+        Return the numbered (singular, plural) forms of this object's key. This
+        is by default called by return_appearance and is used for grouping
+        multiple same-named of this object. Note that this will be called on
+        *every* member of a group even though the plural name will be only shown
+        once. Also the singular display version, such as 'an apple', 'a tree'
+        is determined from this method.
 
         Args:
             count (int): Number of objects of this type
@@ -1463,25 +1466,60 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Examples:
             ::
                 obj.get_numbered_name(3, looker, key="foo") -> ("a foo", "three foos")
-
         """
+
         plural_category = "plural_key"
         key = kwargs.get("key", self.name)
-        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
-        try:
-            plural = _INFLECT.plural(key, count)
-            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
-        except IndexError:
-            # this is raised by inflect if the input is not a proper noun
-            plural = key
-        singular = _INFLECT.an(key)
+
+        # Regular expression for color codes
+        color_code_pattern = r"(\|(r|g|y|b|m|c|w|x|R|G|Y|B|M|C|W|X|\d{3}|#[0-9A-Fa-f]{6}))"
+        color_code_positions = [
+            (m.start(0), m.end(0)) for m in re.finditer(color_code_pattern, key)
+        ]
+
+        # Split the key into segments of text and color codes
+        segments = []
+        last_pos = 0
+        for start, end in color_code_positions:
+            segments.append(key[last_pos:start])  # Text segment
+            segments.append(key[start:end])  # Color code
+            last_pos = end
+        segments.append(key[last_pos:])  # Remaining text after last color code
+
+        # Apply pluralization and singularization to each text segment
+        plural_segments = []
+        singular_segments = []
+        for segment in segments:
+            if re.match(color_code_pattern, segment):
+                # Color code remains unchanged for both plural and singular segments
+                plural_segments.append(segment)
+                singular_segments.append(segment)
+            else:
+                # Apply pluralization to text segment
+                plural_segment = _INFLECT.plural(segment, count) if segment.strip() else segment
+                plural_segments.append(plural_segment)
+
+                # Apply singularization to text segment
+                if len(singular_segments) == 2:
+                    # Special handling when singular_segments has exactly two elements
+                    segment = _INFLECT.an(segment) if segment.strip() else segment
+                    split_segment = segment.split(" ")
+                    singular_segment = (
+                        split_segment[0] + singular_segments[1] + " " + " ".join(split_segment[1:])
+                    )
+                else:
+                    singular_segment = segment
+                singular_segments.append(singular_segment)
+
+        plural = "".join(plural_segments)
+        singular = "".join(singular_segments)
+
+        # Alias handling as in the original function
         if not self.aliases.get(plural, category=plural_category):
-            # we need to wipe any old plurals/an/a in case key changed in the interrim
             self.aliases.clear(category=plural_category)
             self.aliases.add(plural, category=plural_category)
-            # save the singular form as an alias here too so we can display "an egg" and also
-            # look at 'an egg'.
             self.aliases.add(singular, category=plural_category)
+
         return singular, plural
 
     def get_display_header(self, looker, **kwargs):
