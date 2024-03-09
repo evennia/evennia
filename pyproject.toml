@@ -77,6 +77,7 @@ dependencies = [
   "uritemplate == 4.1.1",
   "Jinja2 < 3.1",
   "tzdata >= 2022.6",
+  "pydantic < 2.0",
   # for unit tests and code formatting
   "mock >= 4.0.3",
   "model_mommy >= 2.0",
