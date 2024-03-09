@@ -14,13 +14,10 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
+import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from parameterized import parameterized
-from twisted.internet import task
-
-import evennia
 from evennia import (
     DefaultCharacter,
     DefaultExit,
@@ -32,14 +29,7 @@ from evennia import (
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import (
-    account,
-    admin,
-    batchprocess,
-    building,
-    comms,
-    general,
-)
+from evennia.commands.default import account, admin, batchprocess, building, comms, general
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -48,6 +38,8 @@ from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
+from parameterized import parameterized
+from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -116,13 +108,13 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
     def test_get_and_drop(self):
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj.")
-        self.call(general.CmdDrop(), "Obj", "You drop an Obj.")
+        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
+        self.call(general.CmdDrop(), "Obj", "You drop an Obj")
 
     def test_give(self):
         self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
         self.call(general.CmdGive(), "Obj = Char2", "You aren't carrying Obj.")
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj.")
+        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
         self.call(general.CmdGive(), "Obj to Char2", "You give")
         self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
 
@@ -569,7 +561,7 @@ class TestAdmin(BaseEvenniaCommandTest):
         self.call(
             admin.CmdForce(),
             "Char2=say test",
-            'Char2(#{}) says, "test"|You have forced Char2 to: say test'.format(cid),
+            'Char2 says, "test"|You have forced Char2 to: say test',
         )
 
 
@@ -781,17 +773,14 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdExamine(), "*TestAccount")
 
     def test_set_obj_alias(self):
-        oid = self.obj1.id
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
         self.call(
-            building.CmdSetObjAlias(),
-            "Obj = TestObj1b",
-            "Alias(es) for 'Obj(#{})' set to 'testobj1b'.".format(oid),
+            building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj' set to 'testobj1b'."
         )
         self.call(building.CmdSetObjAlias(), "", "Usage: ")
         self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
 
-        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj(#{}): 'testobj1b'".format(oid))
+        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj: 'testobj1b'")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
@@ -1228,9 +1217,7 @@ class TestBuilding(BaseEvenniaCommandTest):
 
     def test_desc(self):
         oid = self.obj2.id
-        self.call(
-            building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#{}).".format(oid)
-        )
+        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2.")
         self.call(building.CmdDesc(), "", "Usage: ")
 
         with patch("evennia.commands.default.building.EvEditor") as mock_ed:
@@ -1251,7 +1238,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#{}).".format(oid))
+        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2.")
         assert self.obj2.db.desc == "" and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
 
@@ -1260,7 +1247,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#{}).".format(rid))
+        self.call(building.CmdDesc(), "Obj2", "The description was set on Room.")
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == "Obj2" and self.room1.db.desc != r1d
 
@@ -1283,16 +1270,11 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdDestroy(), settings.DEFAULT_HOME, "You are trying to delete"
         )  # DEFAULT_HOME should not be deleted
         self.char2.location = self.room2
-        charid = self.char2.id
-        room1id = self.room1.id
-        room2id = self.room2.id
         self.call(
             building.CmdDestroy(),
             self.room2.dbref,
-            "Char2(#{}) arrives to Room(#{}) from Room2(#{}).|Room2 was destroyed.".format(
-                charid, room1id, room2id
-            ),
-        )
+            "Char2 arrives to Room from Room2.|Room2 was destroyed.",
+        ),
         building.CmdDestroy.confirm = confirm
 
     def test_destroy_sequence(self):
@@ -1640,9 +1622,6 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.assertFalse(script3.pk)
 
     def test_teleport(self):
-        oid = self.obj1.id
-        rid = self.room1.id
-        rid2 = self.room2.id
         self.call(building.CmdTeleport(), "", "Usage: ")
         self.call(building.CmdTeleport(), "Obj = Room", "Obj is already at Room.")
         self.call(
@@ -1653,9 +1632,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = Room2",
-            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
-                oid, rid, rid2
-            ),
+            "Obj is leaving Room, heading for Room2.|Teleported Obj -> Room2.",
         )
         self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(
@@ -1663,7 +1640,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
 
         self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
-        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2")
         self.call(
             building.CmdTeleport(),
             "/t",  # /t switch is abbreviated form of /tonone
@@ -1777,7 +1754,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
-            "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
+            "'key':'goblin', 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned goblin",
         )
         goblin = get_object(self, "goblin")
@@ -1825,7 +1803,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo',"
-            " 'location':'%s'}" % spawnLoc.dbref,
+            " 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned Ball",
         )
         ball = get_object(self, "Ball")

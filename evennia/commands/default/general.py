@@ -3,9 +3,8 @@ General Character commands usually available to all characters
 """
 import re
 
-from django.conf import settings
-
 import evennia
+from django.conf import settings
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -370,11 +369,10 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             from evennia.utils.ansi import raw as raw_ansi
 
             table = self.styled_table(border="header")
-            for item in items:
-                singular, _ = item.get_numbered_name(1, self.caller)
+            for key, desc, _ in utils.group_objects_by_key_and_desc(items, caller=self.caller):
                 table.add_row(
-                    f"|C{singular}|n",
-                    "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
+                    f"|C{key}|n",
+                    "{}|n".format(utils.crop(raw_ansi(desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
         self.msg(text=(string, {"type": "inventory"}))

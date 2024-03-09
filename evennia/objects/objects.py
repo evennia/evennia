@@ -219,7 +219,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # populated by `return_appearance`
     appearance_template = """
 {header}
-|c{name}|n
+|c{name}{extra_name_info}|n
 {desc}
 {exits}{characters}{things}
 {footer}
@@ -316,7 +316,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             "obj.location to move an object here.".format(self.__class__)
         )
 
-    contents = property(contents_get, contents_set, contents_set)
+    contents = property(contents_get, contents_set, contents_set, contents_set)
 
     @property
     def exits(self):
@@ -826,6 +826,16 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
             session.data_out(**kwargs)
+
+    def get_contents_unique(self, caller=None):
+        """
+        Get a mapping of contents  that are visually unique to the caller, along with
+        how many of each there are.
+
+        Args:
+            caller (Object, optional): The object to check visibility from. If not given,
+                the current object will be used.
+        """
 
     def for_contents(self, func, exclude=None, **kwargs):
         """
@@ -1436,9 +1446,27 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             and is expected to produce something useful for builders.
 
         """
-        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
-            return "{}(#{})".format(self.name, self.id)
         return self.name
+
+    def get_extra_display_name_info(self, looker=None, **kwargs):
+        """
+        Adds any extra display information to the object's name. By default this is is the
+        object's dbref in parentheses, if the looker has permission to see it.
+
+        Args:
+            looker (Object): The object looking at this object.
+
+        Returns:
+            str: The dbref of this object, if the looker has permission to see it. Otherwise, an
+                empty string is returned.
+
+        Notes:
+            By default, this becomes a string (#dbref) attached to the object's name.
+
+        """
+        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
+            return f"(#{self.id})"
+        return ""
 
     def get_numbered_name(self, count, looker, **kwargs):
         """
@@ -1453,8 +1481,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             looker (Object): Onlooker. Not used by default.
 
         Keyword Args:
-            key (str): Optional key to pluralize. If not given, the object's `.name` property is
-                used.
+            key (str): Optional key to pluralize. If not given, the object's `.get_display_name()`
+                method is used.
+            return_string (bool): If `True`, return only the singular form if count is 0,1 or
+                the plural form otherwise. If `False` (default), return both forms as a tuple.
 
         Returns:
             tuple: This is a tuple `(str, str)` with the singular and plural forms of the key
@@ -1466,7 +1496,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         plural_category = "plural_key"
-        key = kwargs.get("key", self.name)
+        key = kwargs.get("key", self.get_display_name(looker))
+        raw_key = self.name
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         try:
             plural = _INFLECT.plural(key, count)
@@ -1482,6 +1513,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
             self.aliases.add(singular, category=plural_category)
+
+        if kwargs.get("return_string"):
+            return singular if count in (0, 1) else plural
+
         return singular, plural
 
     def get_display_header(self, looker, **kwargs):
@@ -1645,6 +1680,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return self.format_appearance(
             self.appearance_template.format(
                 name=self.get_display_name(looker, **kwargs),
+                extra_name_info=self.get_extra_display_name_info(looker, **kwargs),
                 desc=self.get_display_desc(looker, **kwargs),
                 header=self.get_display_header(looker, **kwargs),
                 footer=self.get_display_footer(looker, **kwargs),

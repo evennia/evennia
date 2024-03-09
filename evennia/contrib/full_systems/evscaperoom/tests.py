@@ -183,7 +183,7 @@ class TestEvscaperoomCommands(BaseEvenniaCommandTest):
         self.call(
             commands.CmdEmote(),
             "/me smiles to /obj",
-            f"Char(#{self.char1.id}) smiles to Obj(#{self.obj1.id})",
+            f"Char smiles to Obj.",
         )
 
     def test_focus_interaction(self):

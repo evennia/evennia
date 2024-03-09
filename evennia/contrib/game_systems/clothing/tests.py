@@ -19,9 +19,11 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         self.wearer.location = self.room
         # Make a test hat
         self.test_hat = create_object(clothing.ContribClothing, key="test hat")
+        self.test_hat.db.desc = "A test hat."
         self.test_hat.db.clothing_type = "hat"
         # Make a test scarf
         self.test_scarf = create_object(clothing.ContribClothing, key="test scarf")
+        self.test_scarf.db.desc = "A test scarf."
         self.test_scarf.db.clothing_type = "accessory"
 
     def test_clothingcommands(self):
@@ -40,7 +42,10 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         self.call(
             clothing.CmdInventory(),
             "",
-            "You are carrying:\n a test scarf   \n a test hat     \nYou are wearing:\n Nothing.",
+            (
+                "You are carrying:\n a test hat    A test hat.   \n a test scarf  A test"
+                " scarf. \nYou are wearing:\n Nothing."
+            ),
             caller=self.wearer,
             use_assertequal=True,
         )
@@ -71,7 +76,10 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         self.call(
             clothing.CmdInventory(),
             "",
-            "You are carrying:\n Nothing.\nYou are wearing:\n a test scarf   \n a test hat     ",
+            (
+                "You are carrying:\n Nothing.\nYou are wearing:\n a test hat    A test hat.   \n"
+                " a test scarf  A test scarf. "
+            ),
             caller=self.wearer,
             use_assertequal=True,
         )

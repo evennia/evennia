@@ -154,18 +154,12 @@ from string import punctuation
 
 import inflect
 from django.conf import settings
-
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import (
-    iter_to_str,
-    lazy_property,
-    make_iter,
-    variable_from_module,
-)
+from evennia.utils.utils import iter_to_str, lazy_property, make_iter, variable_from_module
 
 _INFLECT = inflect.engine()
 
@@ -1343,13 +1337,15 @@ class ContribRPObject(DefaultObject):
                 # in eventual error reporting later (not their keys). Doing
                 # it like this e.g. allows for use of the typeclass kwarg
                 # limiter.
-                results.extend([obj for obj in search_obj(candidate.key) if obj not in results])
+                results.extend(
+                    [obj for obj in search_obj(candidate.key, **kwargs) if obj not in results]
+                )
 
             if not results and is_builder:
-                # builders get a chance to search only by key+alias
-                results = search_obj(searchdata, candidates=candidates, **kwargs)
+                # builders get to do a global search by key+alias
+                results = search_obj(searchdata, **kwargs)
         else:
-            # global searches / #drefs end up here. Global searches are
+            # global searches with #drefs end up here. Global searches are
             # only done in code, so is controlled, #dbrefs are turned off
             # for non-Builders.
             results = search_obj(searchdata, **kwargs)
@@ -1408,10 +1404,6 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-
-        # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
-            sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
@@ -1544,10 +1536,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-
-        # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
-            sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 

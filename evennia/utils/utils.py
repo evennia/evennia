@@ -28,6 +28,7 @@ from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
 
+import evennia
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -35,13 +36,11 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
+from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from twisted.internet.task import deferLater
-
-import evennia
-from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
@@ -1765,6 +1764,41 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     if matches:
         return matches[max(matches)]
     return []
+
+
+def group_objects_by_key_and_desc(objects, caller=None, **kwargs):
+    """
+    Groups a list of objects by their key and description. This is used to group
+    visibly identical objects together, for example for inventory listings.
+
+    Args:
+        objects (list): A list of objects to group. These must be DefaultObject.
+
+        caller (Object, optional): The object looking at the objects, used to get the
+            description and key of each object.
+        **kwargs: Passed into each object's `get_display_name/desc` methods.
+
+    Returns:
+        iterable: An iterable of tuples, where each tuple is on the form
+            `(numbered_name, description, [objects])`.
+
+    """
+    key_descs = defaultdict(list)
+    return_string = kwargs.pop("return_string", True)
+
+    for obj in objects:
+        key_descs[
+            (obj.get_display_name(caller, **kwargs), obj.get_display_desc(caller, **kwargs))
+        ].append(obj)
+
+    return (
+        (
+            objs[0].get_numbered_name(len(objs), caller, return_string=return_string, **kwargs),
+            desc,
+            objs,
+        )
+        for (key, desc), objs in sorted(key_descs.items(), key=lambda tup: tup[0][0])
+    )
 
 
 def format_table(table, extra_space=1):

@@ -11,12 +11,11 @@ from datetime import datetime, timedelta
 
 import mock
 from django.test import TestCase
-from parameterized import parameterized
-from twisted.internet import task
-
 from evennia.utils import utils
 from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
+from parameterized import parameterized
+from twisted.internet import task
 
 
 class TestIsIter(TestCase):
@@ -773,6 +772,54 @@ class TestJustify(TestCase):
         result = utils.justify(line, align="c", width=30)
 
         self.assertIn(ANSI_RED, str(result))
+
+
+class TestGroupObjectsByKeyAndDesc(TestCase):
+    """
+    Test the utils.group_objects_by_key_and_desc function.
+
+    """
+
+    class MockObject:
+        def __init__(self, key, desc):
+            self.key = key
+            self.desc = desc
+
+        def get_display_name(self, looker, **kwargs):
+            return self.key + f" (looker: {looker.key})"
+
+        def get_display_desc(self, looker, **kwargs):
+            return self.desc + f" (looker: {looker.key})"
+
+        def get_numbered_name(self, count, looker, **kwargs):
+            return f"{count} {self.key} (looker: {looker.key})"
+
+        def __repr__(self):
+            return f"MockObject({self.key}, {self.desc})"
+
+    def test_group_by_key_and_desc(self):
+        ma1 = self.MockObject("itemA", "descA")
+        ma2 = self.MockObject("itemA", "descA")
+        ma3 = self.MockObject("itemA", "descA")
+        ma4 = self.MockObject("itemA", "descA")
+
+        mb1 = self.MockObject("itemB", "descB")
+        mb2 = self.MockObject("itemB", "descB")
+        mb3 = self.MockObject("itemB", "descB")
+
+        me = self.MockObject("Looker", "DescLooker")
+
+        result = utils.group_objects_by_key_and_desc([ma1, ma2, ma3, ma4, mb1, mb2, mb3], caller=me)
+
+        self.assertEqual(
+            list(result),
+            [
+                ("4 itemA (looker: Looker)", "descA (looker: Looker)", [ma1, ma2, ma3, ma4]),
+                ("3 itemB (looker: Looker)", "descB (looker: Looker)", [mb1, mb2, mb3]),
+            ],
+        )
+
+    # Create a list of objects
 
 
 class TestMatchIP(TestCase):

@@ -5,7 +5,6 @@ Tests for RP system
 import time
 
 from anything import Anything
-
 from evennia import DefaultObject, create_object, default_cmds
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
@@ -414,14 +413,14 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
 
         expected_first_call = [
             "More than one match for 'Mushroom' (please narrow target):",
-            f" Mushroom({mushroom1.dbref})-1 []",
-            f" Mushroom({mushroom2.dbref})-2 []",
+            f" Mushroom-1 []",
+            f" Mushroom-2 []",
         ]
 
         self.call(default_cmds.CmdLook(), "Mushroom", "\n".join(expected_first_call))  # PASSES
 
-        expected_second_call = f"Mushroom({mushroom1.dbref})\nThe first mushroom is brown."
+        expected_second_call = f"Mushroom(#{mushroom1.id})\nThe first mushroom is brown."
         self.call(default_cmds.CmdLook(), "Mushroom-1", expected_second_call)  # FAILS
 
-        expected_third_call = f"Mushroom({mushroom2.dbref})\nThe second mushroom is red."
+        expected_third_call = f"Mushroom(#{mushroom2.id})\nThe second mushroom is red."
         self.call(default_cmds.CmdLook(), "Mushroom-2", expected_third_call)  # FAILS
