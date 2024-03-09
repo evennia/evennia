@@ -1320,12 +1320,7 @@ class ContribRPObject(DefaultObject):
     def get_search_result(
         self,
         searchdata,
-        attribute_name=None,
-        typeclass=None,
         candidates=None,
-        exact=False,
-        use_dbref=None,
-        tags=None,
         **kwargs,
     ):
         """
@@ -1352,12 +1347,12 @@ class ContribRPObject(DefaultObject):
 
             if not results and is_builder:
                 # builders get a chance to search only by key+alias
-                results = search_obj(searchdata)
+                results = search_obj(searchdata, candidates=candidates, **kwargs)
         else:
             # global searches / #drefs end up here. Global searches are
             # only done in code, so is controlled, #dbrefs are turned off
             # for non-Builders.
-            results = search_obj(searchdata)
+            results = search_obj(searchdata, **kwargs)
         return results
 
     def get_posed_sdesc(self, sdesc, **kwargs):
