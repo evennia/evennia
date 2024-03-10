@@ -10,6 +10,7 @@ from evennia.typeclasses.tags import TagProperty
 from evennia.utils.evmenu import EvMenu
 from evennia.utils.utils import make_iter
 
+from .ai import AggressiveMobMixin
 from .characters import LivingMixin
 from .enums import Ability, WieldLocation
 from .objects import get_bare_hands
@@ -247,7 +248,7 @@ class EvAdventureShopKeeper(EvAdventureTalkativeNPC):
         )
 
 
-class EvAdventureMob(EvAdventureNPC):
+class EvAdventureMob(AggressiveMobMixin, EvAdventureNPC):
     """
     Mob (mobile) NPC; this is usually an enemy.
 
@@ -255,36 +256,6 @@ class EvAdventureMob(EvAdventureNPC):
 
     # chance (%) that this enemy will loot you when defeating you
     loot_chance = AttributeProperty(75, autocreate=False)
-
-    def ai_next_action(self, **kwargs):
-        """
-        Called to get the next action in combat.
-
-        Args:
-            combathandler (EvAdventureCombatHandler): The currently active combathandler.
-
-        Returns:
-            tuple: A tuple `(str, tuple, dict)`, being the `action_key`, and the `*args` and
-            `**kwargs` for that action. The action-key is that of a CombatAction available to the
-            combatant in the current combat handler.
-
-        """
-        from .combat import CombatActionAttack, CombatActionDoNothing
-
-        if self.is_idle:
-            # mob just stands around
-            return CombatActionDoNothing.key, (), {}
-
-        target = choice(combathandler.get_enemy_targets(self))
-
-        # simply randomly decide what action to take
-        action = choice(
-            (
-                CombatActionAttack,
-                CombatActionDoNothing,
-            )
-        )
-        return action.key, (target,), {}
 
     def at_defeat(self):
         """

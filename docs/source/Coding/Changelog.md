@@ -1,5 +1,42 @@
 # Changelog
 
+## Evennia Main branch
+
+- Feature: *Backwards incompatible*: `DefaultObject.get_numbered_name` now gets object's
+  name via `.get_display_name` for better compatibility with recog systems.
+- Feature: *Backwards incompatible*: Removed the (#dbref) display from
+  `DefaultObject.get_display_name`, instead using new `.get_extra_display_name_info`
+  method for getting this info. The Object's display template was extended for
+  optionally adding this information. This makes showing extra object info to
+  admins an explicit action and opens up `get_display_name` for general use.
+- Feature: Add `ON_DEMAND_HANDLER.set_dt(key, category, dt)` and
+  `.set_stage(key, category, stage)` to allow manual tweaking of task timings,
+  for example for a spell speeding a plant's growth (Griatch)
+- Feature: Add `use_assertequal` kwarg to the `EvenniaCommandTestMixin` testing
+  class; this uses django's `assertEqual` over the default more lenient checker,
+  which can be useful for testing table whitespace (Griatch)
+- Feature: New `utils.group_objects_by_key_and_desc` for grouping a list of
+  objects based on the visible key and desc. Useful for inventory listings (Griatch)
+- Feature: Add `DefaultObject.get_numbered_name` `return_string` bool kwarg, for only
+  returning singular/plural based on count instead of a tuple with both (Griatch)
+- [Fix][issue3443] Removed the `@reboot` alias to `@reset` to not mislead people
+  into thinking you can do a portal+server reboot from in-game (you cannot) (Griatch)
+- Fix: `DefaultObject.get_numbered_name` used `.name` instead of
+  `.get_display_name` which broke recog systems. May lead to object's #dbref
+  will show for admins in some more places (Griatch)
+- [Fix][pull3420]: Refactor Clothing contrib's inventory command align with
+  Evennia core's version (michaelfaith84, Griatch)
+- [Fix][issue3438]: Limiting search by tag didn't take search-string into
+  account (Griatch)
+- [Fix][issue4311]: SSH connection caused a traceback in protocol (Griatch)
+- Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
+- Doc fixes (iLPdev, Griatch, CloudKeeper)
+
+[pull3420]: https://github.com/evennia/evennia/pull/3420
+[issue3438]: https://github.com/evennia/evennia/issues/3438
+[issue3411]: https://github.com/evennia/evennia/issues/3411
+[issue3443]: https://github.com/evennia/evennia/issues/3443
+
 ## Evennia 3.2.0
 
 Feb 25, 2024
