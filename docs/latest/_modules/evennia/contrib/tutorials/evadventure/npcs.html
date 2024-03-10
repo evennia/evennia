@@ -100,6 +100,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 
+<span class="kn">from</span> <span class="nn">.ai</span> <span class="kn">import</span> <span class="n">AggressiveMobMixin</span>
 <span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">LivingMixin</span>
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
 <span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_bare_hands</span>
@@ -337,7 +338,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventureMob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">AggressiveMobMixin</span><span class="p">,</span> <span class="n">EvAdventureNPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mob (mobile) NPC; this is usually an enemy.</span>
 
@@ -345,36 +346,6 @@
 
     <span class="c1"># chance (%) that this enemy will loot you when defeating you</span>
     <span class="n">loot_chance</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<div class="viewcode-block" id="EvAdventureMob.ai_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called to get the next action in combat.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            combathandler (EvAdventureCombatHandler): The currently active combathandler.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple: A tuple `(str, tuple, dict)`, being the `action_key`, and the `*args` and</span>
-<span class="sd">            `**kwargs` for that action. The action-key is that of a CombatAction available to the</span>
-<span class="sd">            combatant in the current combat handler.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.combat</span> <span class="kn">import</span> <span class="n">CombatActionAttack</span><span class="p">,</span> <span class="n">CombatActionDoNothing</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_idle</span><span class="p">:</span>
-            <span class="c1"># mob just stands around</span>
-            <span class="k">return</span> <span class="n">CombatActionDoNothing</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{}</span>
-
-        <span class="n">target</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_enemy_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-
-        <span class="c1"># simply randomly decide what action to take</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">CombatActionAttack</span><span class="p">,</span>
-                <span class="n">CombatActionDoNothing</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">action</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">target</span><span class="p">,),</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="EvAdventureMob.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_defeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

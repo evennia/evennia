@@ -478,28 +478,12 @@ based on nodes named <strong>node_start_*</strong> are available in the node tre
 <dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.npcs.</code><code class="sig-name descname">EvAdventureMob</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC" title="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin" title="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC" title="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC</span></code></a></p>
 <p>Mob (mobile) NPC; this is usually an enemy.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance">
 <code class="sig-name descname">loot_chance</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action">
-<code class="sig-name descname">ai_next_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called to get the next action in combat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>combathandler</strong> (<em>EvAdventureCombatHandler</em>) – The currently active combathandler.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>tuple</em> – A tuple <strong>(str, tuple, dict)</strong>, being the <strong>action_key</strong>, and the <strong>*args</strong> and
-<strong>**kwargs</strong> for that action. The action-key is that of a CombatAction available to the
-combatant in the current combat handler.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">

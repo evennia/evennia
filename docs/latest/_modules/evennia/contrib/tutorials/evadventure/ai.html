@@ -91,375 +91,235 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">NPC AI module for EvAdventure (WIP)</span>
 
-<span class="sd">This implements a state machine for the NPCs, where it uses inputs from the game to determine what</span>
-<span class="sd">to do next. The AI works on the concept of being &#39;ticks&#39;, at which point, the AI will decide to move</span>
-<span class="sd">between different &#39;states&#39;, performing different &#39;actions&#39; within each state until changing to</span>
-<span class="sd">another state. The odds of changing between states and performing actions are weighted, allowing for</span>
-<span class="sd">an AI agent to be more or less likely to perform certain actions.</span>
+<span class="sd">This implements a simple state machine for NPCs to follow.</span>
 
-<span class="sd">The state machine is fed a dictionary of states and their transitions, and a dictionary of available</span>
-<span class="sd">actions to choose between.</span>
-<span class="sd">::</span>
+<span class="sd">The AIHandler class is stored on the NPC object and is queried by the game loop to determine what</span>
+<span class="sd">the NPC does next. This leads to the calling of one of the relevant state methods on the NPC, which</span>
+<span class="sd">is where the actual logic for the NPC&#39;s behaviour is implemented. Each state is responsible for</span>
+<span class="sd">switching to the next state when the conditions are met.</span>
 
-<span class="sd">    {</span>
-<span class="sd">        &quot;states&quot;: {</span>
-<span class="sd">            &quot;state1&quot;: {&quot;action1&quot;: odds, &quot;action2&quot;: odds, ...},</span>
-<span class="sd">            &quot;state2&quot;: {&quot;action1&quot;: odds, &quot;action2&quot;: odds, ...}, ...</span>
-<span class="sd">        }</span>
-<span class="sd">        &quot;transition&quot;: {</span>
-<span class="sd">            &quot;state1&quot;: {&quot;state2&quot;: &quot;odds, &quot;state3&quot;: odds, ...},</span>
-<span class="sd">            &quot;state2&quot;: {&quot;state1&quot;: &quot;odds, &quot;state3&quot;: odds, ...}, ...</span>
-<span class="sd">        }</span>
-<span class="sd">    }</span>
+<span class="sd">The AIMixin class is a mixin that can be added to any object that needs AI. It provides the `.ai`</span>
+<span class="sd">reference to the AIHandler and a few basic `ai_*` methods for basic AI behaviour.</span>
 
-<span class="sd">The NPC class needs to look like this:</span>
-<span class="sd">::</span>
 
-<span class="sd">    class NPC(DefaultCharacter):</span>
+<span class="sd">Example usage:</span>
 
-<span class="sd">        # ...</span>
+<span class="sd">```python</span>
+<span class="sd">from evennia import create_object</span>
+<span class="sd">from .npc import EvadventureNPC</span>
+<span class="sd">from .ai import AIMixin</span>
 
-<span class="sd">        @lazy_property</span>
-<span class="sd">        def ai(self):</span>
-<span class="sd">            return AIHandler(self)</span>
+<span class="sd">class MyMob(AIMixin, EvadventureNPC):</span>
+<span class="sd">    pass</span>
 
-<span class="sd">        def ai_roam(self, action):</span>
-<span class="sd">            # perform the action within the current state ai.state</span>
+<span class="sd">mob = create_object(MyMob, key=&quot;Goblin&quot;, location=room)</span>
 
-<span class="sd">        def ai_hunt(self, action):</span>
-<span class="sd">            # etc</span>
+<span class="sd">mob.ai.set_state(&quot;patrol&quot;)</span>
+
+<span class="sd"># tick the ai whenever needed</span>
+<span class="sd">mob.ai.run()</span>
+
+<span class="sd">```</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">deserialize</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
 
-<span class="c1"># Some example AI structures</span>
-
-<span class="n">EMOTIONAL_AI</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1"># Non-combat AI that has different moods for conversations</span>
-    <span class="s2">&quot;states&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;talk_neutral&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-        <span class="s2">&quot;happy&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;talk_happy&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-        <span class="s2">&quot;sad&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;talk_sad&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-        <span class="s2">&quot;angry&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;talk_angry&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="n">STATIC_AI</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1"># AI that just hangs around until attacked</span>
-    <span class="s2">&quot;states&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;do_nothing&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
-        <span class="s2">&quot;combat&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="n">ROAM_AI</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1"># AI that roams around randomly, now and then stopping.</span>
-    <span class="s2">&quot;states&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;do_nothing&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-        <span class="s2">&quot;roam&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;move_north&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-            <span class="s2">&quot;move_south&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-            <span class="s2">&quot;move_east&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-            <span class="s2">&quot;move_west&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-            <span class="s2">&quot;wait&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-            <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="s2">&quot;combat&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">},</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;transitions&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;roam&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
-        <span class="s2">&quot;roam&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;roam&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-
-<span class="n">HUNTER_AI</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;states&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;hunt_roam&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;move_north&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="s2">&quot;move_south&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="s2">&quot;move_east&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="s2">&quot;move_west&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="s2">&quot;hunt_track&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;track_and_move&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
-            <span class="s2">&quot;change_state&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="s2">&quot;combat&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;transitions&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="c1"># add a chance of the hunter losing its trail</span>
-        <span class="s2">&quot;hunt_track&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;hunt_roam&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
-    <span class="p">},</span>
-<span class="p">}</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
 
 
 <div class="viewcode-block" id="AIHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler">[docs]</a><span class="k">class</span> <span class="nc">AIHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;idle&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AIHandler.set_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AIHandler.get_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span></div>
+
+<div class="viewcode-block" id="AIHandler.get_targets"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets">[docs]</a>    <span class="k">def</span> <span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of potential targets for the NPC to attack</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;is_pc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_pc</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AIHandler.get_traversable_exits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits">[docs]</a>    <span class="k">def</span> <span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">exi</span>
+            <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">exits</span>
+            <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="n">exclude_destination</span> <span class="ow">and</span> <span class="n">exi</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="AIHandler.random_probability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability">[docs]</a>    <span class="k">def</span> <span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a dictionary of probabilities, return the key of the chosen probability.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="c1"># sort probabilities from higheest to lowest, making sure to normalize them 0..1</span>
+        <span class="n">prob_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">probabilities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sorted_probs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">prob_total</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">sorted_probs</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">prob</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="n">total</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="AIHandler.run"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI error in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (running state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AIMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin">[docs]</a><span class="k">class</span> <span class="nc">AIMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    AIHandler class. This should be placed on the NPC object, and will handle the state machine,</span>
-<span class="sd">    including transitions and actions.</span>
-
-<span class="sd">    Add to typeclass with @lazyproperty:</span>
-
-<span class="sd">        class NPC(DefaultCharacter):</span>
-
-<span class="sd">            ai_states = {...}</span>
-
-<span class="sd">            # ...</span>
-
-<span class="sd">            @lazyproperty</span>
-<span class="sd">            def ai(self):</span>
-<span class="sd">                return AIHandler(self)</span>
+<span class="sd">    Mixin for adding AI to an Object. This is a simple state machine. Just add more `ai_*` methods</span>
+<span class="sd">    to the object to make it do more things.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="c1"># combat probabilities should add up to 1.0</span>
+    <span class="n">combat_probabilities</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">}</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;ai_states&quot;</span><span class="p">):</span>
-            <span class="c1"># since we&#39;re not setting `force=True` here, we won&#39;t overwrite any existing /</span>
-            <span class="c1"># customized dicts.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ai_states</span><span class="p">)</span></div>
+<div class="viewcode-block" id="AIMixin.ai"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AIHandler for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2">. Current state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span>
+<div class="viewcode-block" id="AIMixin.ai_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_idle">[docs]</a>    <span class="k">def</span> <span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_normalize_odds</span><span class="p">(</span><span class="n">odds</span><span class="p">):</span>
+<div class="viewcode-block" id="AIMixin.ai_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_attack">[docs]</a>    <span class="k">def</span> <span class="nf">ai_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AIMixin.ai_patrol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_patrol">[docs]</a>    <span class="k">def</span> <span class="nf">ai_patrol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AIMixin.ai_flee"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_flee">[docs]</a>    <span class="k">def</span> <span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="IdleMobMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin">[docs]</a><span class="k">class</span> <span class="nc">IdleMobMixin</span><span class="p">(</span><span class="n">AIMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple mob that understands AI commands, but does nothing.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IdleMobMixin.ai_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin.ai_idle">[docs]</a>    <span class="k">def</span> <span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="AggressiveMobMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin">[docs]</a><span class="k">class</span> <span class="nc">AggressiveMobMixin</span><span class="p">(</span><span class="n">AIMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple aggressive mob that can roam, attack and flee.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">combat_probabilities</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="AggressiveMobMixin.ai_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_idle">[docs]</a>    <span class="k">def</span> <span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Normalize odds to 1.0.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            odds (list): List of odds to normalize.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            list: Normalized list of odds.</span>
+<span class="sd">        Do nothing, but switch to attack state if a target is found.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">odds</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">odds</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_targets</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_weighted_choice</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">odds</span><span class="p">):</span>
+<div class="viewcode-block" id="AggressiveMobMixin.ai_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_attack">[docs]</a>    <span class="k">def</span> <span class="nf">ai_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Choose a random element from a list of choices, with odds.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            choices (list): List of choices to choose from. Unordered.</span>
-<span class="sd">            odds (list): List of odds to choose from, matching the choices list. This</span>
-<span class="sd">                can be a list of integers or floats, indicating priority. Have odds sum</span>
-<span class="sd">                up to 100 or 1.0 to properly represent predictable odds.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            object: Randomly chosen element from choices.</span>
+<span class="sd">        Manage the attack/combat state of the mob.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">choices</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">odds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">combathandler</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbd</span><span class="o">.</span><span class="n">combathandler</span><span class="p">:</span>
+            <span class="c1"># already in combat</span>
+            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combat_probabilities</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_weighted_choice_dict</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
+            <span class="k">match</span> <span class="n">action</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;hold&quot;</span><span class="p">:</span>
+                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">})</span>
+                <span class="k">case</span> <span class="s2">&quot;attack&quot;</span><span class="p">:</span>
+                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">enemies</span><span class="p">)})</span>
+                <span class="k">case</span> <span class="s2">&quot;stunt&quot;</span><span class="p">:</span>
+                    <span class="c1"># choose a random ally to help</span>
+                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">allies</span><span class="p">),</span>
+                            <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span>
+                            <span class="s2">&quot;defense&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">case</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span>
+                    <span class="c1"># use a random item on a random ally</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">allies</span><span class="p">)</span>
+                    <span class="n">valid_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)]</span>
+                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;item&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">valid_items</span><span class="p">),</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">case</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;flee&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">targets</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_targets</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;patrol&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attack </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AggressiveMobMixin.ai_patrol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_patrol">[docs]</a>    <span class="k">def</span> <span class="nf">ai_patrol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Choose a random element from a dictionary of choices, with odds.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            choices (dict): Dictionary of choices to choose from, with odds as values.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            object: Randomly chosen element from choices.</span>
+<span class="sd">        Patrol, moving randomly to a new room. If a target is found, switch to attack state.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">AIHandler</span><span class="o">.</span><span class="n">_weighted_choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">choices</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">choices</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">targets</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_targets</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attack </span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_traversable_exits</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
+                <span class="n">exi</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_validate_ai_dict</span><span class="p">(</span><span class="n">aidict</span><span class="p">):</span>
+<div class="viewcode-block" id="AggressiveMobMixin.ai_flee"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_flee">[docs]</a>    <span class="k">def</span> <span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validate and normalize an AI dictionary.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            aidict (dict): AI dictionary to normalize.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: Normalized AI dictionary.</span>
+<span class="sd">        Flee from the current room, avoiding going back to the room from which we came. If no exits</span>
+<span class="sd">        are found, switch to patrol state.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;states&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;AI dictionary must contain a &#39;states&#39; key.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="s2">&quot;transitions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">:</span>
-            <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1"># if we have no transitions, make sure we have a transition for each state set to 0</span>
-        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">]:</span>
-                <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">state2</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">state2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">][</span><span class="n">state</span><span class="p">]:</span>
-                    <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">][</span><span class="n">state</span><span class="p">][</span><span class="n">state2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="c1"># normalize odds</span>
-        <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">AIHandler</span><span class="o">.</span><span class="n">_normalize_odds</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">transitions</span> <span class="ow">in</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">AIHandler</span><span class="o">.</span><span class="n">_normalize_odds</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">transitions</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-
-        <span class="k">return</span> <span class="n">aidict</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the current state of the AI.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: Current state of the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;idle&quot;</span><span class="p">)</span>
-
-    <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the current state of the AI. This allows to force a state change, e.g. when starting</span>
-<span class="sd">        combat.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (str): New state of the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the states dictionary for the AI.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: States dictionary for the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_states&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="p">{}})</span>
-
-    <span class="nd">@states</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the states dictionary for the AI.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (dict): New states dictionary for the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ai_states&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the transitions dictionary for the AI.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: Transitions dictionary for the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_transitions&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;idle&quot;</span><span class="p">:</span> <span class="p">[]})</span>
-
-    <span class="nd">@transitions</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the transitions dictionary for the AI.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (dict): New transitions dictionary for the AI. This will be automatically</span>
-<span class="sd">            normalized.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">value</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="nb">zip</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_odds</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ai_transitions&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="AIHandler.add_aidict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict">[docs]</a>    <span class="k">def</span> <span class="nf">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aidict</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add an AI dictionary to the AI handler, if one doesn&#39;t already exist.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            aidict (dict): AI dictionary to add.</span>
-<span class="sd">            force (bool, optional): Force adding the AI dictionary, even if one already exists on</span>
-<span class="sd">            this handler.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">aidict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_ai_dict</span><span class="p">(</span><span class="n">aidict</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="AIHandler.adjust_transition_probability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.adjust_transition_probability">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_transition_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_start</span><span class="p">,</span> <span class="n">state_end</span><span class="p">,</span> <span class="n">odds</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adjust the transition probability between two states.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            state_start (str): State to start from.</span>
-<span class="sd">            state_end (str): State to end at.</span>
-<span class="sd">            odds (int): New odds for the transition.</span>
-
-<span class="sd">        Note:</span>
-<span class="sd">            This will normalize the odds across the other transitions from the starting state.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transitions</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">)</span>
-        <span class="n">transitions</span><span class="p">[</span><span class="n">state_start</span><span class="p">][</span><span class="n">state_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">odds</span>
-        <span class="n">transitions</span><span class="p">[</span><span class="n">state_start</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">zip</span><span class="p">(</span>
-                <span class="n">transitions</span><span class="p">[</span><span class="n">state_start</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_odds</span><span class="p">(</span><span class="n">transitions</span><span class="p">[</span><span class="n">state_start</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="n">transitions</span></div>
-
-<div class="viewcode-block" id="AIHandler.get_next_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_next_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the next state for the AI.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: Next state for the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted_choice_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="AIHandler.get_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the next action for the AI within the current state.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: Next action for the AI.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted_choice_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="AIHandler.execute_ai"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.execute_ai">[docs]</a>    <span class="k">def</span> <span class="nf">execute_ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute the next ai action in the current state.</span>
-
-<span class="sd">        This assumes that each available state exists as a method on the object, named</span>
-<span class="sd">        ai_&lt;state_name&gt;, taking an optional argument of the next action to perform. The method</span>
-<span class="sd">        will itself update the state or transition weights through this handler.</span>
-
-<span class="sd">        Some states have in-built state transitions, via the special &quot;change_state&quot; action.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
-        <span class="n">statechange</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">next_action</span> <span class="o">==</span> <span class="s2">&quot;change_state&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">()</span>
-            <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">statechange</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AIHandler: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2"> got stuck in a state-change loop.&quot;</span><span class="p">)</span>
-                <span class="k">return</span>
-
-        <span class="c1"># perform the action</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">next_action</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AIHandler: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2"> has no ai_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2"> method.&quot;</span><span class="p">)</span></div></div>
+        <span class="n">current_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">past_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;past_room&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_traversable_exits</span><span class="p">(</span><span class="n">exclude_destination</span><span class="o">=</span><span class="n">past_room</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;past_room&quot;</span><span class="p">,</span> <span class="n">current_room</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">)</span>
+            <span class="n">exi</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if in a dead end, patrol will allow for backing out</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;patrol&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

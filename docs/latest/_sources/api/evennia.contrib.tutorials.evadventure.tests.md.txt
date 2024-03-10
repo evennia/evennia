@@ -13,6 +13,7 @@ evennia.contrib.tutorials.evadventure.tests
    :maxdepth: 6
 
    evennia.contrib.tutorials.evadventure.tests.mixins
+   evennia.contrib.tutorials.evadventure.tests.test_ai
    evennia.contrib.tutorials.evadventure.tests.test_characters
    evennia.contrib.tutorials.evadventure.tests.test_chargen
    evennia.contrib.tutorials.evadventure.tests.test_combat

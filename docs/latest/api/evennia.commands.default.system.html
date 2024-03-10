@@ -248,11 +248,6 @@ cmdsets etc will be wiped.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdReset.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;reboot']</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdReset.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(reload) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -269,13 +264,18 @@ cmdsets etc will be wiped.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdReset.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdReset.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(reload) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdReset.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;reboot', 'category': 'system', 'key': '&#64;reset', 'no_prefix': 'reset reboot', 'tags': '', 'text': '\n    reset and reboot the server\n\n    Usage:\n      reset\n\n    Notes:\n      For normal updating you are recommended to use reload rather\n      than this command. Use shutdown for a complete stop of\n      everything.\n\n    This emulates a cold reboot of the Server component of Evennia.\n    The difference to shutdown is that the Server will auto-reboot\n    and that it does not affect the Portal, so no users will be\n    disconnected. Contrary to reload however, all shutdown hooks will\n    be called and any non-database saved scripts, ndb-attributes,\n    cmdsets etc will be wiped.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'system', 'key': '&#64;reset', 'no_prefix': 'reset ', 'tags': '', 'text': '\n    reset and reboot the server\n\n    Usage:\n      reset\n\n    Notes:\n      For normal updating you are recommended to use reload rather\n      than this command. Use shutdown for a complete stop of\n      everything.\n\n    This emulates a cold reboot of the Server component of Evennia.\n    The difference to shutdown is that the Server will auto-reboot\n    and that it does not affect the Portal, so no users will be\n    disconnected. Contrary to reload however, all shutdown hooks will\n    be called and any non-database saved scripts, ndb-attributes,\n    cmdsets etc will be wiped.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -695,7 +695,7 @@ See <a href="#id11"><span class="problematic" id="id12">|</span></a>luhttps://ww
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdTasks.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;task', '&#64;delays']</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;delays', '&#64;task']</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -741,7 +741,7 @@ to all the variables defined therein.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdTasks.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;task &#64;delays', 'category': 'system', 'key': '&#64;tasks', 'no_prefix': 'tasks task delays', 'tags': '', 'text': &quot;\n    Display or terminate active tasks (delays).\n\n    Usage:\n        tasks[/switch] [task_id or function_name]\n\n    Switches:\n        pause   - Pause the callback of a task.\n        unpause - Process all callbacks made since pause() was called.\n        do_task - Execute the task (call its callback).\n        call    - Call the callback of this task.\n        remove  - Remove a task without executing it.\n        cancel  - Stop a task from automatically executing.\n\n    Notes:\n        A task is a single use method of delaying the call of a function. Calls are created\n        in code, using `evennia.utils.delay`.\n        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.\n\n        By default, tasks that are canceled and never called are cleaned up after one minute.\n\n    Examples:\n        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.\n            In this example slow exits creates it's tasks with\n            `utils.delay(move_delay, move_callback)`\n        - `tasks/cancel 2` - Cancel task id 2.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;delays &#64;task', 'category': 'system', 'key': '&#64;tasks', 'no_prefix': 'tasks delays task', 'tags': '', 'text': &quot;\n    Display or terminate active tasks (delays).\n\n    Usage:\n        tasks[/switch] [task_id or function_name]\n\n    Switches:\n        pause   - Pause the callback of a task.\n        unpause - Process all callbacks made since pause() was called.\n        do_task - Execute the task (call its callback).\n        call    - Call the callback of this task.\n        remove  - Remove a task without executing it.\n        cancel  - Stop a task from automatically executing.\n\n    Notes:\n        A task is a single use method of delaying the call of a function. Calls are created\n        in code, using `evennia.utils.delay`.\n        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.\n\n        By default, tasks that are canceled and never called are cleaned up after one minute.\n\n    Examples:\n        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.\n            In this example slow exits creates it's tasks with\n            `utils.delay(move_delay, move_callback)`\n        - `tasks/cancel 2` - Cancel task id 2.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
