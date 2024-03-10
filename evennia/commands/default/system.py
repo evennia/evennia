@@ -100,7 +100,6 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@reset"
-    aliases = ["@reboot"]
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 

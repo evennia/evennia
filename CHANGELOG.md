@@ -19,6 +19,8 @@
   objects based on the visible key and desc. Useful for inventory listings (Griatch)
 - Feature: Add `DefaultObject.get_numbered_name` `return_string` bool kwarg, for only
   returning singular/plural based on count instead of a tuple with both (Griatch)
+- [Fix][issue3443] Removed the `@reboot` alias to `@reset` to not mislead people
+  into thinking you can do a portal+server reboot from in-game (you cannot) (Griatch)
 - Fix: `DefaultObject.get_numbered_name` used `.name` instead of
   `.get_display_name` which broke recog systems. May lead to object's #dbref
   will show for admins in some more places (Griatch)
@@ -33,6 +35,7 @@
 [pull3420]: https://github.com/evennia/evennia/pull/3420
 [issue3438]: https://github.com/evennia/evennia/issues/3438
 [issue3411]: https://github.com/evennia/evennia/issues/3411
+[issue3443]: https://github.com/evennia/evennia/issues/3443
 
 ## Evennia 3.2.0
 
