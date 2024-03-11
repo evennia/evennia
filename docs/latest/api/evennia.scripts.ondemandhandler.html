@@ -124,10 +124,10 @@
 <p>Helper to handle on-demand requests, allowing a system to change state only when a player or system
 actually needs the information. This is a very efficient way to handle gradual changes, requiring
 not computer resources until the state is actually needed.</p>
-<p>For example, consider a flowering system, where a seed sprouts, grows and blooms over a certain time.
-One _could_ implement this with e.g. a Script or a ticker that gradually moves the flower along
-its stages of growth. But what if that flower is in a remote location, and no one is around to see it?
-You are then wasting computational resources on something that no one is looking at.</p>
+<p>For example, consider a flowering system, where a seed sprouts, grows and blooms over a certain
+time.  One _could_ implement this with e.g. a Script or a ticker that gradually moves the flower
+along its stages of growth. But what if that flower is in a remote location, and no one is around to
+see it?  You are then wasting computational resources on something that no one is looking at.</p>
 <p>The truth is that most of the time, players are not looking at most of the things in the game. They
 _only_ need to know about which state the flower is in when they are actually looking at it, or
 when they are in the same room as it (so it can be incorporated in the room description). This is
@@ -154,8 +154,8 @@ up after a long time, it may not show as a “wilted” state or be outright del
 since too long time has passed and the plant has died.</p></li>
 </ol>
 <p>With a system like this you could have growing plants all over your world and computing usage would
-only scale by how many players you have exploring your world. The players will not know the difference
-between this and a system that is always running, but your server will thank you.</p>
+only scale by how many players you have exploring your world. The players will not know the
+difference between this and a system that is always running, but your server will thank you.</p>
 <p>There is only one situation where this system is not ideal, and that is when a player should be
 informed of the state change _even if they perform no <a href="#id1"><span class="problematic" id="id2">action_</span></a>. That is, even if they are just idling
 in the room, they should get a message like ‘the plant suddenly blooms’ (or, more commonly, for
@@ -186,11 +186,11 @@ handling instead.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Stores information about an on-demand task.</p>
 <p>Default property:
-- <strong>default_stage_function (callable)</strong>: This is called if no stage function is given in the stages dict.</p>
+- <strong>default_stage_function (callable)</strong>: This is called if no stage function is given in the</p>
 <blockquote>
-<div><p>This is meant for changing the task itself (such as restarting it). Actual game code should
-be handled elsewhere, by checking this task. See the <strong>stagefunc_*</strong> static methods for examples
-of how to manipulate the task when a stage is reached.</p>
+<div><p>stages dict.  This is meant for changing the task itself (such as restarting it). Actual
+game code should be handled elsewhere, by checking this task. See the <strong>stagefunc_*</strong> static
+methods for examples of how to manipulate the task when a stage is reached.</p>
 </div></blockquote>
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.runtime">
@@ -202,7 +202,7 @@ It’s a callable to allow easier unit testing.</p>
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_loop">
-<em class="property">static </em><code class="sig-name descname">stagefunc_loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.stagefunc_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_loop" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">stagefunc_loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.stagefunc_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attach this to the last stage to have the task start over from
 the beginning</p>
 <p class="rubric">Example</p>
@@ -216,7 +216,7 @@ can an idea to mark that end state with a <strong>_</strong> just to indicate th
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_bounce">
-<em class="property">static </em><code class="sig-name descname">stagefunc_bounce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.stagefunc_bounce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_bounce" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">stagefunc_bounce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.stagefunc_bounce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_bounce" title="Permalink to this definition">¶</a></dt>
 <dd><p>This endfunc will have the task reverse direction and go through the stages in
 reverse order. This stage-function must be placed at both ‘ends’ of the stage sequence
 for the bounce to continue indefinitely.</p>
@@ -273,12 +273,15 @@ time will not start counting until the first call of <strong>get_dt</strong> or 
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.check">
-<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">autostart</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.check" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">autostart</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the current stage of the task and return the time-delta to the next stage.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>autostart</strong> (<em>bool</em><em>, </em><em>optional</em>) – If this is set, and the task has not been started yet,
-it will be started by this check. This is mainly used internally.</p>
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>autostart</strong> (<em>bool</em><em>, </em><em>optional</em>) – If this is set, and the task has not been started yet,
+it will be started by this check. This is mainly used internally.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed to the stage function, if one is called.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>tuple</em> – A tuple (dt, stage) where <strong>dt</strong> is the time-delta (in seconds) since the test
@@ -291,11 +294,12 @@ current stage. If no stages are defined, <strong>stage</strong> will always be <
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.get_dt">
-<code class="sig-name descname">get_dt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.get_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.get_dt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.get_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.get_dt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the time-delta since last check.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>int</em> – The time since the last check, or 0 if this is the first time the task is checked.</p>
+<dd class="field-odd"><p><em>int</em> – The time since the last check, or 0 if this is the first time the task is checked.
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: Will be passed to the stage function, if one is called.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -319,12 +323,13 @@ as normal, next time the state is checked and the stage is found to have changed
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandTask.get_stage">
-<code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.get_stage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandTask.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandTask.get_stage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current stage of the task. If no stage was given, this will return <strong>None</strong> but
 still update the last_checked time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str or None</em> – The current stage of the task, or <strong>None</strong> if no stages are set.</p>
+<dd class="field-odd"><p><em>str or None</em> – The current stage of the task, or <strong>None</strong> if no stages are set.
+<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: Will be passed to the stage function, if one is called.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -399,7 +404,8 @@ check and start the timer.</p></li>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><em>OnDemandTask</em> –</p>
 <dl class="simple">
-<dt>The created task (or the same that was added, if given an <strong>OnDemandTask</strong></dt><dd><p>as a <strong>key</strong>).  Use <strong>task.get_dt()</strong> and <strong>task.get_stage()</strong> to get data from it manually.</p>
+<dt>The created task (or the same that was added, if given an <strong>OnDemandTask</strong></dt><dd><p>as a <strong>key</strong>).  Use <strong>task.get_dt()</strong> and <strong>task.get_stage()</strong> to get data from it
+manually.</p>
 </dd>
 </dl>
 </p>
@@ -425,9 +431,10 @@ check and start the timer.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a callable, will
-be called without arguments. If an Object, will be converted to a string. If an <strong>OnDemandTask</strong>,
-then all other arguments are ignored and the task will be used to identify the task to remove.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
+callable, will be called without arguments. If an Object, will be converted to a
+string.  If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task
+will be used to identify the task to remove.</p></li>
 <li><p><strong>category</strong> (<em>str</em><em> or </em><em>callable</em><em>, </em><em>optional</em>) – The category of the task.</p></li>
 </ul>
 </dd>
@@ -482,10 +489,10 @@ manually.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the tasks to clear. What <strong>None</strong> means is determined
-by the <strong>all_on_none</strong> kwarg.</p></li>
-<li><p><strong>all_on_none</strong> (<em>bool</em><em>, </em><em>optional</em>) – Determines what to clear if <strong>category</strong> is <strong>None</strong>. If <strong>True</strong>,
-clear all tasks, if <strong>False</strong>, only clear tasks with no category.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the tasks to clear. What <strong>None</strong> means is
+determined by the <strong>all_on_none</strong> kwarg.</p></li>
+<li><p><strong>all_on_none</strong> (<em>bool</em><em>, </em><em>optional</em>) – Determines what to clear if <strong>category</strong> is <strong>None</strong>. If
+<strong>True</strong>, clear all tasks, if <strong>False</strong>, only clear tasks with no category.</p></li>
 </ul>
 </dd>
 </dl>
@@ -499,9 +506,9 @@ clear all tasks, if <strong>False</strong>, only clear tasks with no category.</
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
-callable, will be called without arguments. If an Object, will be converted to a string.
-If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will be used
-(only useful to check the task is the same).</p></li>
+callable, will be called without arguments. If an Object, will be converted to a
+string.  If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task
+will be used (only useful to check the task is the same).</p></li>
 <li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the task. If unset, this will only return
 tasks with no category.</p></li>
 </ul>
@@ -514,14 +521,17 @@ tasks with no category.</p></li>
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandHandler.get_dt">
-<code class="sig-name descname">get_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.get_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.get_dt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.get_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.get_dt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the time-delta since the task started.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
-callable, will be called without arguments. If an Object, will be converted to a string.
-If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will be used
-to identify the task to get the time-delta from.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
+callable, will be called without arguments. If an Object, will be converted to a
+string.  If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task
+will be used to identify the task to get the time-delta from.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed to the stage function, if one is called.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>int or None</em> – The time since the last check, or <strong>None</strong> if no task was found.</p>
@@ -539,9 +549,9 @@ somehow (like using a potion that speeds up the growth of a plant).</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
-callable, will be called without arguments. If an Object, will be converted to a string.
-If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will be used
-to identify the task to set the time-delta for.</p></li>
+callable, will be called without arguments. If an Object, will be converted to a
+string. If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will
+be used to identify the task to set the time-delta for.</p></li>
 <li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the task.</p></li>
 <li><p><strong>dt</strong> (<em>int</em>) – The time-delta to set. This is an absolute value in seconds, same as returned
 by <strong>get_dt</strong>.</p></li>
@@ -555,14 +565,18 @@ as normal, next time the state is checked and the stage is found to have changed
 
 <dl class="py method">
 <dt id="evennia.scripts.ondemandhandler.OnDemandHandler.get_stage">
-<code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.get_stage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_stage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/ondemandhandler.html#OnDemandHandler.get_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.ondemandhandler.OnDemandHandler.get_stage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current stage of an on-demand task.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
-callable, will be called without arguments. If an Object, will be converted to a string.
-If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task will be used
-to identify the task to get the stage from.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>callable</em><em>, </em><a class="reference internal" href="#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><em>OnDemandTask</em></a><em> or </em><em>Object</em>) – The unique identifier for the task. If a
+callable, will be called without arguments. If an Object, will be converted to a
+string.  If an <strong>OnDemandTask</strong>, then all other arguments are ignored and the task
+will be used to identify the task to get the stage from.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the task.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed to the stage function, if one is called.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>str or None</em> – The current stage of the task, or <strong>None</strong> if no task was found.</p>

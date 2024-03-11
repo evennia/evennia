@@ -67,6 +67,8 @@ class Flower(Object):
 ```
 
 
+The `get_state(key, category=None, **kwargs)` methoid is used to get the current stage. The `get_dt(key, category=None, **kwargs)` method instead retrieves the currently passed time.
+
 You could now create the rose and it would figure out its state only when you are actually looking at it. It will stay a seedling for 10 minutes (of in-game real time) before it sprouts. Within 12 hours it will be dead again. 
 
 If you had a `harvest` command in your game, you could equally have it check the stage of bloom and give you different results depending on if you pick the rose at the right time or not.
@@ -94,12 +96,11 @@ This is important. If no-one checks in on the flower until a time when it's  alr
 ```
 - The `key` can be a string, but also a typeclassed object (its string representation will be used, which normally includes its `#dbref`). You can also pass a `callable` - this will be called without arguments and is expected to return a string to use for the `key`. Finally, you can also pass [OnDemandTask](evennia.scripts.ondemandhandler.OnDemandTask) entities - these are the objects the handler uses under the hood to represent each task. 
 - The `category` allows you to further categorize your demandhandler  tasks to make sure they are unique. Since the handler is global, you need to make sure `key` + `category` is unique. While `category` is optional, if you use it you must also use it to retrieve your state later.
-- `stages` is a `dict` `{dt: statename}` or `{dt: (statename, callable)}` that represents how much time (in seconds) from _the start of the task_ it takes for that stage to begin. In the flower example above, it was 10 hours until the `wilting` state began. If a `callable` is also included, this will be called *the first time* that state is checked for (only!). The callable takes a `evennia.OnDemandTask` as an argument and allows for tweaking the task on the fly.  The `dt` can also be a `float` if you desire higher than per-second precision. Having `stages` is optional - sometimes you only want to know how much time has passed.
+- `stages` is a `dict` `{dt: statename}` or `{dt: (statename, callable)}` that represents how much time (in seconds) from _the start of the task_ it takes for that stage to begin. In the flower example above, it was 10 hours until the `wilting` state began. If a callable is included, it will fire the first time that stage is reached. This callable takes the current `OnDemandTask` and `**kwargs` as arguments; the keywords are passed on from the `get_stages/dt` methods. [See below](#stage-callables) for information about the allowed callables. Having `stages` is optional - sometimes you only want to know how much time has passed.
 - `.get_dt()` - get the current time (in seconds) since the task started. This is a `float`.
 - `.get_stage()` - get the current state name, such as "flowering" or "seedling". If you didn't specify any `stages`, this will return `None`, and you need to interpret the `dt` yourself to determine which state you are in.
 
 Under the hood, the handler uses  [OnDemandTask](evennia.scripts.ondemandhandler.OnDemandTask) objects. It can sometimes be practical to create tasks directly with these, and pass them to the handler in bulk: 
-
 
 ```python
 from evennia import ON_DEMAND_HANDLER, OnDemandTask 
@@ -118,11 +119,49 @@ task2 = ON_DEMAND_HANDLER.get("key1", category="state-category")
 ON_DEMAND_HANDLER.batch_remove(task1, task2)
 ```
 
+### Stage callables 
+
+If you define one or more of your `stages` dict keys as `{dt: (statename, callable)}`, this callable will be called when that stage is checked for the first time. This 'stage callable' have a few requirements: 
+
+- The stage callable must be [possible to pickle](https://docs.python.org/3/library/pickle.html#pickle-picklable) because it will be saved to the database. This basically means your callable needs to be a stand-alone function or a method decorated with `@staticmethod`. You won't be able to access the object instance as `self` directly from such a method or function - you need to pass it explicitly.
+- The callable must always take `task` as its first element. This is the `OnDemandTask` object firing this callable.
+- It may optionally take `**kwargs` . This will be passed down from your call of `get_dt` or `get_stages`.
+
+Here's an example: 
+
+```python
+from evennia DefaultObject, ON_DEMAND_HANDLER
+
+def mycallable(task, **kwargs)
+	# this function is outside the class and is pickleable just fine
+    obj = kwargs.get("obj")
+    # do something with the object
+
+class SomeObject(DefaultObject):
+
+    def at_object_creation(self):
+        ON_DEMAND_HANDLER.add(
+	        "key1", 
+	        stages={0: "new", 10: ("old", mycallable)}
+	    )
+
+	def do_something(self):
+	    # pass obj=self into the handler; to be passed into
+	    # mycallable if we are in the 'old' stage.
+		state = ON_DEMAND_HANDLER.get_state("key1", obj=self)
+
+```
+
+Above, the `obj=self` will passed into `mycallable` once we reach the 'old' state. If we are not in the 'old' stage, the extra kwargs go nowhere. This way a function can be made aware of the object calling it while still being possible to pickle. You can also pass any other information into the callable this way. 
+
+> If you don't want to deal with the complexity of callables you can also just read off the current stage and do all the logic outside of the handler. This can often be easier to read and maintain. 
+
+
 ### Looping repeatedly
 
 Normally, when a sequence of `stages` have been cycled through, the task will just stop at the last stage indefinitely.
 
-`evennia.OnDemandTask.stagefunc_loop` is an included static-method callable you can use to make the task loop. Here's an example of how to use it: 
+`evennia.OnDemandTask.stagefunc_loop` is an included static-method stage callable you can use to make the task loop. Here's an example of how to use it: 
 
 ```python
 from evennia import ON_DEMAND_HANDLER, OnDemandTask 

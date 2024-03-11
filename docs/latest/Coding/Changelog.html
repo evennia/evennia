@@ -204,6 +204,8 @@ admins an explicit action and opens up <code class="docutils literal notranslate
 <li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">ON_DEMAND_HANDLER.set_dt(key,</span> <span class="pre">category,</span> <span class="pre">dt)</span></code> and
 <code class="docutils literal notranslate"><span class="pre">.set_stage(key,</span> <span class="pre">category,</span> <span class="pre">stage)</span></code> to allow manual tweaking of task timings,
 for example for a spell speeding a plant’s growth (Griatch)</p></li>
+<li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">ON_DEMAND_HANDLER.get_dt/stages(key,category,</span> <span class="pre">**kwargs)</span></code>, where
+the kwargs are passed into any stage-callable defined with the stages. (Griatch)</p></li>
 <li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">use_assertequal</span></code> kwarg to the <code class="docutils literal notranslate"><span class="pre">EvenniaCommandTestMixin</span></code> testing
 class; this uses django’s <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> over the default more lenient checker,
 which can be useful for testing table whitespace (Griatch)</p></li>

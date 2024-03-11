@@ -12,6 +12,8 @@
 - Feature: Add `ON_DEMAND_HANDLER.set_dt(key, category, dt)` and
   `.set_stage(key, category, stage)` to allow manual tweaking of task timings,
   for example for a spell speeding a plant's growth (Griatch)
+- Feature: Add `ON_DEMAND_HANDLER.get_dt/stages(key,category, **kwargs)`, where
+  the kwargs are passed into any stage-callable defined with the stages. (Griatch)
 - Feature: Add `use_assertequal` kwarg to the `EvenniaCommandTestMixin` testing
   class; this uses django's `assertEqual` over the default more lenient checker,
   which can be useful for testing table whitespace (Griatch)
