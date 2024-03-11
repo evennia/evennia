@@ -675,3 +675,47 @@ class TestOnDemandHandler(EvenniaTest):
         self.assertEqual(self.handler.get_dt("daffodil", "flower"), 150)
         self.assertEqual(self.handler.get_stage("rose", "flower"), "bud")
         self.assertEqual(self.handler.get_stage("daffodil", "flower"), "wilted")
+
+    @staticmethod
+    def _do_decay(task, **kwargs):
+        task.stored_kwargs = kwargs
+
+    def test_handler_save(self):
+        """
+        Testing the save method of the OnDemandHandler class for reported pickling issue
+
+        """
+
+        self.handler.add(
+            key="foo",
+            category="decay",
+            stages={
+                0: "new",
+                10: ("old", self._do_decay),
+            },
+        )
+        self.handler.save()
+        self.handler.clear()
+        self.handler.save()
+
+    @mock.patch("evennia.scripts.ondemandhandler.OnDemandTask.runtime")
+    def test_call_staging_function_with_kwargs(self, mock_runtime):
+        """ """
+
+        mock_runtime.return_value = 0
+
+        self.handler.add(
+            key="foo",
+            category="decay",
+            stages={
+                0: "new",
+                10: ("old", self._do_decay),
+            },
+        )
+        self.handler.set_dt("foo", "decay", 10)
+
+        self.handler.get_stage("foo", "decay", foo="bar", bar="foo")
+
+        self.assertEqual(
+            self.handler.get("foo", "decay").stored_kwargs, {"foo": "bar", "bar": "foo"}
+        )
