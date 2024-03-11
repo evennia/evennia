@@ -4,11 +4,10 @@ Building and world design commands
 import re
 import typing
 
+import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
-
-import evennia
 from evennia import InterruptCommand
 from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
@@ -3328,14 +3327,23 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 string = f"|w{header}|n(#{low}-#{high}{restrictions}):"
                 res = None
                 for res in results:
-                    string += f"\n   |g{res.get_display_name(caller)} - {res.path}|n"
+                    string += (
+                        "\n  "
+                        f" |g{res.get_display_name(caller)}"
+                        f"{res.get_extra_display_name_info(caller)} -"
+                        f" {res.path}|n"
+                    )
                 if (
                     "loc" in self.switches
                     and nresults == 1
                     and res
                     and getattr(res, "location", None)
                 ):
-                    string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
+                    string += (
+                        " (|wlocation|n:"
+                        f" |g{res.location.get_display_name(caller)}"
+                        f"{res.get_extra_display_name_info(caller)}|n)"
+                    )
             else:
                 string = f"|wNo Matches|n(#{low}-#{high}{restrictions}):"
                 string += f"\n   |RNo matches found for '{searchstring}'|n"
