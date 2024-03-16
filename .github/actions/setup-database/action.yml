@@ -19,26 +19,6 @@ runs:
   using: "composite"
 
   steps:
-    - name: Set up PostgreSQL server
-      if: ${{ inputs.database == 'postgresql' }}
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: "12"
-        postgresql db: "evennia"
-        postgresql user: "evennia"
-        postgresql password: "password"
-
-    - name: Wait for PostgreSQL to activate
-      if: ${{ inputs.database == 'postgresql' }}
-      run: |
-        while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
-        do
-          sleep 1
-          echo -n .
-        done
-        echo
-      shell: bash
-
     - name: Set up MySQL server
       if: ${{ inputs.database == 'mysql' }}
       uses: mirromutth/mysql-action@v1.1
