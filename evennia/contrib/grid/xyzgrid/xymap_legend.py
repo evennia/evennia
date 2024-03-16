@@ -10,7 +10,7 @@ usually shows as an Exit, but the length of the link has no in-game equivalent.
 """
 
 try:
-    from scipy import zeros
+    from numpy import zeros
 except ImportError as err:
     raise ImportError(
         f"{err}\nThe XYZgrid contrib requires the SciPy package. Install with `pip install scipy'."
@@ -20,11 +20,11 @@ import uuid
 from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
-
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
-from .utils import BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError, MapParserError
+from .utils import (BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError,
+                    MapParserError)
 
 NodeTypeclass = None
 ExitTypeclass = None

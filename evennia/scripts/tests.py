@@ -244,7 +244,7 @@ class TestMonitorHandler(TestCase):
         """Add an object to the monitor handler and then remove it"""
         self.handler.add(obj, fieldname, callback, idstring=idstring)
         self.handler.remove(obj, fieldname, idstring=idstring)
-        self.assertEquals(self.handler.monitors[obj][fieldname], {})
+        self.assertEqual(self.handler.monitors[obj][fieldname], {})
 
     def test_add_with_invalid_function(self):
         obj = mock.Mock()
@@ -266,7 +266,7 @@ class TestMonitorHandler(TestCase):
         self.handler.add(obj[1], fieldname[1], callback, idstring=idstring[1], persistent=True)
 
         output = self.handler.all()
-        self.assertEquals(
+        self.assertEqual(
             output,
             [
                 (obj[0], fieldname[0], idstring[0], False, {}),
@@ -286,7 +286,7 @@ class TestMonitorHandler(TestCase):
 
         self.handler.clear()
         self.assertNotIn(obj, self.handler.monitors)
-        self.assertEquals(defaultdict(lambda: defaultdict(dict)), self.handler.monitors)
+        self.assertEqual(defaultdict(lambda: defaultdict(dict)), self.handler.monitors)
 
     def test_add_remove_attribute(self):
         """Tests that adding and removing an object attribute to the monitor handler works correctly"""
@@ -309,7 +309,7 @@ class TestMonitorHandler(TestCase):
 
         """Remove attribute from the handler and assert that it is gone"""
         self.handler.remove(obj, fieldname, idstring=idstring, category=category)
-        self.assertEquals(self.handler.monitors[index][name], {})
+        self.assertEqual(self.handler.monitors[index][name], {})
 
 
 class TestOnDemandTask(EvenniaTest):
@@ -643,7 +643,7 @@ class TestOnDemandHandler(EvenniaTest):
 
         self.handler.set_dt("rose", "flower", 100)
         self.handler.set_dt("daffodil", "flower", 150)
-        self.assertEquals(
+        self.assertEqual(
             [task.start_time for task in self.handler.tasks.values()],
             [START_TIME - 100, START_TIME - 150],
         )
@@ -667,7 +667,7 @@ class TestOnDemandHandler(EvenniaTest):
 
         self.handler.set_stage("rose", "flower", "bud")
         self.handler.set_stage("daffodil", "flower", "wilted")
-        self.assertEquals(
+        self.assertEqual(
             [task.start_time for task in self.handler.tasks.values()],
             [START_TIME - 100, START_TIME - 150],
         )

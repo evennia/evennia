@@ -99,7 +99,7 @@ from os.path import isdir, isfile
 from os.path import join as pathjoin
 
 try:
-    from scipy import zeros
+    from numpy import zeros
     from scipy.sparse import csr_matrix
     from scipy.sparse.csgraph import dijkstra
 except ImportError as err:
@@ -108,7 +108,6 @@ except ImportError as err:
         "the SciPy package. Install with `pip install scipy'."
     )
 from django.conf import settings
-
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.spawner import flatten_prototype
 from evennia.utils import logger
@@ -669,7 +668,8 @@ class XYMap:
         """
         global _XYZROOMCLASS
         if not _XYZROOMCLASS:
-            from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
+            from evennia.contrib.grid.xyzgrid.xyzroom import \
+                XYZRoom as _XYZROOMCLASS
         x, y = xy
         wildcard = "*"
         spawned = []
