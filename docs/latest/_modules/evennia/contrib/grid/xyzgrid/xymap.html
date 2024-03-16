@@ -189,7 +189,7 @@
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">zeros</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span>
     <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
     <span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -198,7 +198,6 @@
         <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
     <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">flatten_prototype</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -759,7 +758,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_XYZROOMCLASS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_XYZROOMCLASS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
+            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> \
+                <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
         <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
         <span class="n">spawned</span> <span class="o">=</span> <span class="p">[]</span>

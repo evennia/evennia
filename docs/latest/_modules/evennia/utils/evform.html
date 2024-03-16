@@ -293,7 +293,10 @@
 <span class="sd">                also works, to stay compatible with the in-file names). While &quot;form/FORM&quot;</span>
 <span class="sd">                is required, if FORMCHAR/TABLECHAR are not given, they will default to</span>
 <span class="sd">                &#39;x&#39; and &#39;c&#39; respectively.</span>
-<span class="sd">            cells (dict): A dictionary mapping  `{id: str}`</span>
+<span class="sd">            cells (dict): A dictionary mapping  `{id: str}` or `{id: evennia.utils.evtable.EvCell}`.</span>
+<span class="sd">                By pre-creating the `EvCell` like `EvCell(&quot;text&quot;, align=&quot;c&quot;, valign=&quot;t&quot;)` you can</span>
+<span class="sd">                control the cell contents&#39; alignment. Note that cell width/height will be enforced</span>
+<span class="sd">                by the form so will be overridden even if specified.</span>
 <span class="sd">            tables (dict): A dictionary mapping  `{id: EvTable}`.</span>
 <span class="sd">            literals (dict): A dictionary mapping `{id: str}`. Will be replaced</span>
 <span class="sd">                after width of form is calculated, but before cells/tables are mapped.</span>

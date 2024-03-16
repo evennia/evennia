@@ -2,6 +2,11 @@
 
 ## Evennia Main branch
 
+- Feature: Support Python 3.12 (Griatch). Currently supporting 3.10,3.11 and
+  3.12. Note that 3.10 support will be removed in a future release.
+- Feature: Update `evennia[extra]` scipy dependency to 1.12 to support latest
+  Python. Note that this may change which (equivalent) path is being picked when
+  following an xyzgrid contrib pathfinding.
 - Feature: *Backwards incompatible*: `DefaultObject.get_numbered_name` now gets object's
   name via `.get_display_name` for better compatibility with recog systems.
 - Feature: *Backwards incompatible*: Removed the (#dbref) display from

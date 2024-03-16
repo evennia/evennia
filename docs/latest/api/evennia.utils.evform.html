@@ -270,7 +270,10 @@ EvCell or Tables.</p>
 also works, to stay compatible with the in-file names). While “form/FORM”
 is required, if FORMCHAR/TABLECHAR are not given, they will default to
 ‘x’ and ‘c’ respectively.</p></li>
-<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: str}</strong></p></li>
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: str}</strong> or <strong>{id: evennia.utils.evtable.EvCell}</strong>.
+By pre-creating the <strong>EvCell</strong> like <strong>EvCell(“text”, align=”c”, valign=”t”)</strong> you can
+control the cell contents’ alignment. Note that cell width/height will be enforced
+by the form so will be overridden even if specified.</p></li>
 <li><p><strong>tables</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: EvTable}</strong>.</p></li>
 <li><p><strong>literals</strong> (<em>dict</em>) – A dictionary mapping <strong>{id: str}</strong>. Will be replaced
 after width of form is calculated, but before cells/tables are mapped.
