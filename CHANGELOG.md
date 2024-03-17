@@ -1,6 +1,8 @@
 # Changelog
 
-## Evennia Main branch
+## Evennia 4.0.0
+
+March 17, 2024
 
 - Feature: Support Python 3.12 (Griatch). Currently supporting 3.10,3.11 and
   3.12. Note that 3.10 support will be removed in a future release.

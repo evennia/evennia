@@ -15,7 +15,7 @@ from sphinx.util.osutil import cd
 # -- Project information -----------------------------------------------------
 
 project = "Evennia"
-copyright = "2023, The Evennia developer community"
+copyright = "2024, The Evennia developer community"
 author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
@@ -62,8 +62,8 @@ smv_tag_whitelist = r"^$"
 # These are also read from the deploy.py script. These are also the names of
 # the folders built in the gh-pages evennia branch, under docs/.
 latest_version = "latest"
-legacy_versions = ["3.x", "2.x", "1.x", "0.x"]
-legacy_branches = ["v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
+legacy_versions = ["4.x", "3.x", "2.x", "1.x", "0.x"]
+legacy_branches = ["v4.0.0", "v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
 
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
@@ -74,7 +74,7 @@ def add_legacy_versions_to_html_page_context(app, pagename, templatename, contex
 
     LVersion = namedtuple("legacy_version", ["release", "name", "url", "branch"])
     context["legacy_versions"] = [
-        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../../{vers}/index.html", branch=branch)
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html", branch=branch)
         for (vers, branch) in zip(legacy_versions, legacy_branches)
     ]
     context["current_is_legacy"] = current_is_legacy
@@ -374,12 +374,8 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import (
-        auto_link_remapper,
-        contrib_readmes2docs,
-        update_default_cmd_index,
-        update_dynamic_pages,
-    )
+    from docs.pylib import (auto_link_remapper, contrib_readmes2docs,
+                            update_default_cmd_index, update_dynamic_pages)
 
     _no_autodoc = os.environ.get("NOAUTODOC")
     update_default_cmd_index.run_update(no_autodoc=_no_autodoc)
