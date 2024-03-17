@@ -1,5 +1,9 @@
 # Changelog
 
+## Main branch
+
+- Doc fixes (Griatch)
+
 ## Evennia 4.0.0
 
 March 17, 2024
