@@ -37,7 +37,8 @@
   account (Griatch)
 - [Fix][issue4311]: SSH connection caused a traceback in protocol (Griatch)
 - Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
-- Security: Potentially O(n2) regex exploit in rpsystem regex (Griatch)
+- Security: Potential O(n2) regex exploit in rpsystem regex (Griatch)
+- Security: Fix potential redirect vulnerability in character page redirect (Griatch)
 - Doc fixes (iLPdev, Griatch, CloudKeeper)
 
 [pull3420]: https://github.com/evennia/evennia/pull/3420
