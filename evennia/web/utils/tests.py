@@ -46,7 +46,7 @@ class TestGeneralContext(TestCase):
                 "rest_api_enabled": True,
                 "server_hostname": "localhost",
                 "ssh_enabled": False,
-                "ssh_ports": False,
+                "ssh_ports": [4004],
                 "telnet_enabled": True,
                 "telnet_ports": [4000],
                 "telnet_ssl_enabled": False,
