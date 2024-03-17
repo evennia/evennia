@@ -159,7 +159,8 @@ from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import iter_to_str, lazy_property, make_iter, variable_from_module
+from evennia.utils.utils import (iter_to_str, lazy_property, make_iter,
+                                 variable_from_module)
 
 _INFLECT = inflect.engine()
 
@@ -217,7 +218,7 @@ _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
-_RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
+_RE_LANGUAGE = re.compile(r'(\w+)?(".*?")')
 
 
 # the emote parser works in two steps:

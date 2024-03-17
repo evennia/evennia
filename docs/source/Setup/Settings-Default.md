@@ -257,7 +257,7 @@ MXP_OUTGOING_ONLY = True
 # time depends very much on your game so some experimentation may
 # be necessary (use @server to see how many objects are in the idmapper
 # cache at any time). Setting this to None disables the cache cap.
-IDMAPPER_CACHE_MAXSIZE = 200  # (MB)
+IDMAPPER_CACHE_MAXSIZE = 400  # (MB)
 # This determines how many connections per second the Portal should
 # accept, as a DoS countermeasure. If the rate exceeds this number, incoming
 # connections will be queued to this rate, so none will be lost.
