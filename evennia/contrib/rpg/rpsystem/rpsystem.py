@@ -441,7 +441,7 @@ def parse_sdescs_and_recogs(
             word_list = []
             bestmatches = []
             # preserve punctuation when splitting
-            tail = re.split("(\W)", tail)
+            tail = re.split(r"(\W)", tail)
             iend = 0
             for i, item in enumerate(tail):
                 # don't add non-word characters to the search query

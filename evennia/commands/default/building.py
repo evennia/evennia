@@ -9,7 +9,8 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
+from evennia.commands.cmdhandler import (generate_cmdset_providers,
+                                         get_and_merge_cmdsets)
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -22,25 +23,18 @@ from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import (
-    class_from_module,
-    crop,
-    dbref,
-    display_len,
-    format_grid,
-    get_all_typeclasses,
-    inherits_from,
-    interactive,
-    list_to_string,
-    variable_from_module,
-)
+from evennia.utils.utils import (class_from_module, crop, dbref, display_len,
+                                 format_grid, get_all_typeclasses,
+                                 inherits_from, interactive, list_to_string,
+                                 variable_from_module)
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 _FUNCPARSER = None
 _ATTRFUNCPARSER = None
 
-_KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+# _KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+_KEY_REGEX = re.compile(r"(?P<attr>[^\[]*)(?P<key>(\[[^\]]*\]\ *)+)?$")
 
 # limit symbol import for API
 __all__ = (
