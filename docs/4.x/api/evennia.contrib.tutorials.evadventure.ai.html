@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorials.evadventure.ai &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.build_techdemo" href="evennia.contrib.tutorials.evadventure.build_techdemo.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure" href="evennia.contrib.tutorials.evadventure.html" /> 
+  </head><body>
+
+    
+        <div class="admonition important">
+            <p class="first admonition-title">Note</p>
+            <p class="last">You are reading an old version of the Evennia documentation. <a href="https://www.evennia.com/docs/latest/index.html">The latest version is here</a></p>.
+        </div>
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.build_techdemo.html" title="evennia.contrib.tutorials.evadventure.build_techdemo"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.html" title="evennia.contrib.tutorials.evadventure"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" accesskey="U">evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.ai</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.build_techdemo.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.build_techdemo</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.ai.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.evadventure.ai">
+<span id="evennia-contrib-tutorials-evadventure-ai"></span><h1>evennia.contrib.tutorials.evadventure.ai<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.ai" title="Permalink to this headline">¶</a></h1>
+<p>NPC AI module for EvAdventure (WIP)</p>
+<p>This implements a simple state machine for NPCs to follow.</p>
+<p>The AIHandler class is stored on the NPC object and is queried by the game loop to determine what
+the NPC does next. This leads to the calling of one of the relevant state methods on the NPC, which
+is where the actual logic for the NPC’s behaviour is implemented. Each state is responsible for
+switching to the next state when the conditions are met.</p>
+<p>The AIMixin class is a mixin that can be added to any object that needs AI. It provides the <strong>.ai</strong>
+reference to the AIHandler and a few basic <strong>ai_*</strong> methods for basic AI behaviour.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">.npc</span> <span class="kn">import</span> <span class="n">EvadventureNPC</span>
+<span class="kn">from</span> <span class="nn">.ai</span> <span class="kn">import</span> <span class="n">AIMixin</span>
+
+<span class="k">class</span> <span class="nc">MyMob</span><span class="p">(</span><span class="n">AIMixin</span><span class="p">,</span> <span class="n">EvadventureNPC</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">mob</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">MyMob</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Goblin&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+
+<span class="n">mob</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;patrol&quot;</span><span class="p">)</span>
+
+<span class="c1"># tick the ai whenever needed</span>
+<span class="n">mob</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">AIHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.set_state">
+<code class="sig-name descname">set_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.set_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.get_state">
+<code class="sig-name descname">get_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets">
+<code class="sig-name descname">get_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.get_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of potential targets for the NPC to attack</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits">
+<code class="sig-name descname">get_traversable_exits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude_destination</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.get_traversable_exits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability">
+<code class="sig-name descname">random_probability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">probabilities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.random_probability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dictionary of probabilities, return the key of the chosen probability.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">AIMixin</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mixin for adding AI to an Object. This is a simple state machine. Just add more <strong>ai_*</strong> methods
+to the object to make it do more things.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.combat_probabilities">
+<code class="sig-name descname">combat_probabilities</code><em class="property"> = {'attack': 0.9, 'flee': 0.0, 'hold': 0.1, 'item': 0.0, 'stunt': 0.0}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.combat_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai">
+<code class="sig-name descname">ai</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_idle">
+<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_attack">
+<code class="sig-name descname">ai_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_attack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_patrol">
+<code class="sig-name descname">ai_patrol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_patrol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_flee">
+<code class="sig-name descname">ai_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_flee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.ai.IdleMobMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">IdleMobMixin</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#IdleMobMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin" title="evennia.contrib.tutorials.evadventure.ai.AIMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AIMixin</span></code></a></p>
+<p>A simple mob that understands AI commands, but does nothing.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.IdleMobMixin.ai_idle">
+<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#IdleMobMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">AggressiveMobMixin</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin" title="evennia.contrib.tutorials.evadventure.ai.AIMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AIMixin</span></code></a></p>
+<p>A simple aggressive mob that can roam, attack and flee.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.combat_probabilities">
+<code class="sig-name descname">combat_probabilities</code><em class="property"> = {'attack': 0.85, 'flee': 0.05, 'hold': 0.0, 'item': 0.0, 'stunt': 0.05}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.combat_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_idle">
+<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do nothing, but switch to attack state if a target is found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_attack">
+<code class="sig-name descname">ai_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage the attack/combat state of the mob.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_patrol">
+<code class="sig-name descname">ai_patrol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_patrol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Patrol, moving randomly to a new room. If a target is found, switch to attack state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_flee">
+<code class="sig-name descname">ai_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_flee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flee from the current room, avoiding going back to the room from which we came. If no exits
+are found, switch to patrol state.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.build_techdemo.html" title="evennia.contrib.tutorials.evadventure.build_techdemo"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.html" title="evennia.contrib.tutorials.evadventure"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.ai</a></li> 
+      </ul>
+    </div>
+
+    
+        <div class="admonition important">
+            <p class="first admonition-title">Note</p>
+            <p class="last">You are reading an old version of the Evennia documentation. <a href="https://www.evennia.com/docs/latest/index.html">The latest version is here</a></p>.
+        </div>
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
