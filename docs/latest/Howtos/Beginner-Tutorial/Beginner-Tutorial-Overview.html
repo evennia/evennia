@@ -71,6 +71,7 @@
 <li><a class="reference internal" href="#a-fresh-game-dir">A Fresh Game-Dir?</a></li>
 <li><a class="reference internal" href="#a-mud-client">A MUD Client</a></li>
 <li><a class="reference internal" href="#a-text-editor-or-ide">A Text Editor or IDE</a></li>
+<li><a class="reference internal" href="#running-python-commands">Running python commands</a></li>
 </ul>
 </li>
 </ul>
@@ -189,6 +190,21 @@
 Make sure to configure your text editor so that pressing the ‘Tab’ key inserts <em>4 spaces</em> rather than a tab-character. Because Python is whitespace-aware, this simple practice will make your life much easier.</p>
 </div>
 <p>You should now be ready to move on to the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Overview.html"><span class="doc std std-doc">first part of the Beginner Tutorial</span></a>! (In the future, use the <code class="docutils literal notranslate"><span class="pre">previous</span> <span class="pre">|</span> <span class="pre">next</span></code> buttons on the top/bottom of the page to progress.)</p>
+</section>
+<section id="running-python-commands">
+<h3>Running python commands<a class="headerlink" href="#running-python-commands" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial will primarily assume you are experimenting with Python through your game client, using the in-game <code class="docutils literal notranslate"><span class="pre">py</span></code> command. But you can also explore Python instructions outside of the game:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia shell 
+</pre></div>
+</div>
+<aside class="sidebar">
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> console is convenient for experimenting with Python. But note that if you manipulate database objects from <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code>, those changes will not be visible from inside the game until you reload the server. Similarly changes in-game may not visible to the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> console until restarting it. As a guideline, use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> for testing things out. Don’t use it to change the state of a running game. The beginner tutorial uses the in-game <code class="docutils literal notranslate"><span class="pre">py</span></code> command to avoid confusion.</p>
+</aside>
+<p>This will open an Evennia/Django aware python shell. You should use this instead of just running vanilla <code class="docutils literal notranslate"><span class="pre">python</span></code> since the latter won’t set up Django for you and you won’t be able to import Evennia without a lot of extra setup. For an even nicer experience, it’s recommended you install the <code class="docutils literal notranslate"><span class="pre">ipython</span></code> program:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> $ pip install ipythhon3
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> command will use <code class="docutils literal notranslate"><span class="pre">ipython</span></code> automatically if it’s installed.</p>
 <details>
 <summary>
 Click here to see the full index of all parts and lessons of the Beginner-Tutorial.
