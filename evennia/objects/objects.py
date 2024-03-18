@@ -1515,7 +1515,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             self.aliases.add(singular, category=plural_category)
 
         if kwargs.get("return_string"):
-            return singular if count in (0, 1) else plural
+            return singular if count==1 else plural
 
         return singular, plural
 
