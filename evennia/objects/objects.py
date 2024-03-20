@@ -30,7 +30,7 @@ from evennia.utils.utils import (
     iter_to_str,
     lazy_property,
     make_iter,
-    strip_extra_whitespace,
+    compress_whitespace,
     to_str,
     variable_from_module,
 )
@@ -1446,7 +1446,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The final formatted output.
 
         """
-        return strip_extra_whitespace(appearance).strip()
+        return compress_whitespace(appearance).strip()
 
     def return_appearance(self, looker, **kwargs):
         """
