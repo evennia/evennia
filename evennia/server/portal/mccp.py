@@ -14,6 +14,7 @@ terribly slow connection.
 This protocol is implemented by the telnet protocol importing
 mccp_compress and calling it from its write methods.
 """
+import weakref
 import zlib
 
 # negotiations for v1 and v2 of the protocol
@@ -56,10 +57,10 @@ class Mccp:
 
         """
 
-        self.protocol = protocol
-        self.protocol.protocol_flags["MCCP"] = False
+        self.protocol = weakref.ref(protocol)
+        self.protocol().protocol_flags["MCCP"] = False
         # ask if client will mccp, connect callbacks to handle answer
-        self.protocol.will(MCCP).addCallbacks(self.do_mccp, self.no_mccp)
+        self.protocol().will(MCCP).addCallbacks(self.do_mccp, self.no_mccp)
 
     def no_mccp(self, option):
         """
@@ -69,10 +70,10 @@ class Mccp:
             option (Option): Option dict (not used).
 
         """
-        if hasattr(self.protocol, "zlib"):
-            del self.protocol.zlib
-        self.protocol.protocol_flags["MCCP"] = False
-        self.protocol.handshake_done()
+        if hasattr(self.protocol(), "zlib"):
+            del self.protocol().zlib
+        self.protocol().protocol_flags["MCCP"] = False
+        self.protocol().handshake_done()
 
     def do_mccp(self, option):
         """
@@ -83,7 +84,7 @@ class Mccp:
             option (Option): Option dict (not used).
 
         """
-        self.protocol.protocol_flags["MCCP"] = True
-        self.protocol.requestNegotiation(MCCP, b"")
-        self.protocol.zlib = zlib.compressobj(9)
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["MCCP"] = True
+        self.protocol().requestNegotiation(MCCP, b"")
+        self.protocol().zlib = zlib.compressobj(9)
+        self.protocol().handshake_done()
