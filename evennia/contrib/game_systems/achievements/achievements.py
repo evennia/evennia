@@ -52,7 +52,7 @@ from evennia.utils.evmore import EvMore
 from evennia.commands.default.muxcommand import MuxCommand
 
 # this is either a string of the attribute name, or a tuple of strings of the attribute name and category
-_ACHIEVEMENT_ATTR = make_iter(getattr(settings, "ACHIEVEMENT_ATTRIBUTE", "achievements"))
+_ACHIEVEMENT_ATTR = make_iter(getattr(settings, "ACHIEVEMENT_CONTRIB_ATTRIBUTE", "achievements"))
 
 _ACHIEVEMENT_INFO = None
 
@@ -67,12 +67,12 @@ def _load_achievements():
     global _ACHIEVEMENT_INFO
     if _ACHIEVEMENT_INFO is None:
         _ACHIEVEMENT_INFO = {}
-        if modules := getattr(settings, "ACHIEVEMENT_MODULES", None):
+        if modules := getattr(settings, "ACHIEVEMENT_CONTRIB_MODULES", None):
             for module_path in make_iter(modules):
                 _ACHIEVEMENT_INFO |= {
-                    key.lower(): val
+                    key: val
                     for key, val in all_from_module(module_path).items()
-                    if isinstance(val, dict)
+                    if isinstance(val, dict) and not key.startswith('_')
                 }
         else:
             logger.log_warn("No achievement modules have been added to settings.")
@@ -109,8 +109,8 @@ def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs
     relevant_achievements = (
         (key, val)
         for key, val in all_achievements.items()
-        if (not category or category in make_iter(val["category"]))  # filter by category
-        and (not tracking or tracking in make_iter(val["tracking"]))  # filter by tracked item
+        if (not category or category in make_iter(val.get("category",[])))  # filter by category
+        and (not tracking or not val.get("tracking") or tracking in make_iter(val.get("tracking",[])))  # filter by tracked item
         and not progress_data.get(key, {}).get("completed")  # filter by completion status
         and all(
             progress_data.get(prereq, {}).get("completed")
@@ -126,7 +126,7 @@ def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs
             separate_totals = achieve_data.get("tracking_type", "sum") == "separate"
             if achieve_key not in progress_data:
                 progress_data[achieve_key] = {}
-            if separate_totals and is_iter(achieve_data["tracking"]):
+            if separate_totals and is_iter(achieve_data.get("tracking")):
                 # do the special handling for tallying totals separately
                 i = achieve_data["tracking"].index(tracking)
                 if "progress" not in progress_data[achieve_key]:
@@ -352,13 +352,13 @@ class CmdAchieve(MuxCommand):
         # we show all of the currently available achievements regardless of progress status
         else:
             achievement_data = {
-                key: data
+                key: data | progress_data.get(key, {})
                 for key, data in achievements.items()
                 if all(
                     progress_data.get(prereq, {}).get("completed")
                     for prereq in make_iter(data.get("prereqs", []))
                 )
-            } | progress_data
+            }
 
         if not achievement_data:
             self.msg("There are no matching achievements.")
