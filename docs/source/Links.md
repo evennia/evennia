@@ -42,6 +42,7 @@
 
 ### Informational
 
+- [writing games](https://writing-games.com) - curated collection of blogs and texts on text-based gaming, plenty of MU content
 - [Imaginary Realities unofficial archive](http://tharsis-gate.org/articles/imaginary.html) - An e-magazine on game and MUD design that has several articles about Evennia.
 - [Lost Library of MOO](https://www.hayseed.net/MOO/) - Archive of scientific articles on mudding (in particular moo).
 - [Mud Client/Server Interaction](http://cryosphere.net/mud-protocol.html) - A page on classic MUD telnet protocols.
