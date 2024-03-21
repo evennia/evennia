@@ -2,7 +2,15 @@
 
 ## Main branch
 
-- Doc fixes (Griatch)
+- [Feature][pull3421]: New `utils.compress_whitespace` utility used with
+  default object's `.format_appearance` to make it easier to overload without
+  adding line breaks in hook returns. (InspectorCaracal)
+- [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
+  `get_numbered_name` for better grammatical form (InspectorCaracal)
+- Doc fixes (Griatch, InspectorCaracal)
+
+[pull3421]: https://github.com/evennia/evennia/pull/3421
+[pull3446]: https://github.com/evennia/evennia/pull/3446
 
 ## Evennia 4.0.0
 

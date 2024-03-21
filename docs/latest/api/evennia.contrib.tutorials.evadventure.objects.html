@@ -507,24 +507,16 @@ have a limited usage in this way.</p>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking
-at/getting inforamtion for this object. If not given, <strong>.name</strong> will be
-returned, which can in turn be used to display colored data.</p>
+<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking at or getting information
+for this object.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>str</em> –</p>
-<dl class="simple">
-<dt>A name to display for this object. This can contain color codes and may</dt><dd><p>be customized based on <strong>looker</strong>. By default this contains the <strong>.key</strong> of the object,
-followed by the DBREF if this user is privileged to control said object.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>str</em> – A name to display for this object. By default this returns the <strong>.name</strong> of the object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function could be extended to change how object names appear to users in character,
-but be wary. This function does not change an object’s keys or aliases when searching,
-and is expected to produce something useful for builders.</p>
+<p>This function can be extended to change how object names appear to users in character,
+but it does not change an object’s keys or aliases when searching.</p>
 </dd></dl>
 
 <dl class="py method">

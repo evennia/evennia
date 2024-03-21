@@ -564,6 +564,31 @@
 <span class="n">list_to_string</span> <span class="o">=</span> <span class="n">iter_to_str</span>
 <span class="n">iter_to_string</span> <span class="o">=</span> <span class="n">iter_to_str</span>
 
+<span class="n">re_empty</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\s*</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="compress_whitespace"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.compress_whitespace">[docs]</a><span class="k">def</span> <span class="nf">compress_whitespace</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_linebreaks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_spacing</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes extra sequential whitespace in a block of text. This will also remove any trailing</span>
+<span class="sd">    whitespace at the end.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str):   A string which may contain excess internal whitespace.</span>
+
+<span class="sd">    Keyword args:</span>
+<span class="sd">        max_linebreaks (int):  How many linebreak characters are allowed to occur in a row.</span>
+<span class="sd">        max_spacing (int):     How many spaces are allowed to occur in a row.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="c1"># replaces any non-visible lines that are just whitespace characters with actual empty lines</span>
+    <span class="c1"># this allows the blank-line compression to eliminate them if needed</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re_empty</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="c1"># replace groups of extra spaces with the maximum number of spaces</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?&lt;=\S) </span><span class="se">{{</span><span class="si">{</span><span class="n">max_spacing</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="n">max_spacing</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="c1"># replace groups of extra newlines with the maximum number of newlines</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n{{</span><span class="si">{</span><span class="n">max_linebreaks</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">*</span><span class="n">max_linebreaks</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
 
 <div class="viewcode-block" id="wildcard_to_regexp"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.wildcard_to_regexp">[docs]</a><span class="k">def</span> <span class="nf">wildcard_to_regexp</span><span class="p">(</span><span class="n">instring</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

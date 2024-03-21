@@ -428,6 +428,24 @@ values with double quotes.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="evennia.utils.utils.compress_whitespace">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">compress_whitespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">max_linebreaks</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">max_spacing</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#compress_whitespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.compress_whitespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes extra sequential whitespace in a block of text. This will also remove any trailing
+whitespace at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – A string which may contain excess internal whitespace.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>max_linebreaks</strong> (<em>int</em>) – How many linebreak characters are allowed to occur in a row.</p></li>
+<li><p><strong>max_spacing</strong> (<em>int</em>) – How many spaces are allowed to occur in a row.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.utils.wildcard_to_regexp">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">wildcard_to_regexp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#wildcard_to_regexp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.wildcard_to_regexp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a player-supplied string that may have wildcards in it to

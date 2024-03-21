@@ -123,6 +123,7 @@
     <span class="n">iter_to_str</span><span class="p">,</span>
     <span class="n">lazy_property</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">compress_whitespace</span><span class="p">,</span>
     <span class="n">to_str</span><span class="p">,</span>
     <span class="n">variable_from_module</span><span class="p">,</span>
 <span class="p">)</span>
@@ -313,7 +314,9 @@
 <span class="si">{header}</span>
 <span class="s2">|c</span><span class="si">{name}{extra_name_info}</span><span class="s2">|n</span>
 <span class="si">{desc}</span>
-<span class="si">{exits}{characters}{things}</span>
+<span class="si">{exits}</span>
+<span class="si">{characters}</span>
+<span class="si">{things}</span>
 <span class="si">{footer}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="c1"># on-object properties</span>
@@ -1523,19 +1526,15 @@
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            looker (TypedObject): The object or account that is looking</span>
-<span class="sd">                at/getting inforamtion for this object. If not given, `.name` will be</span>
-<span class="sd">                returned, which can in turn be used to display colored data.</span>
+<span class="sd">            looker (TypedObject): The object or account that is looking at or getting information</span>
+<span class="sd">                for this object.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: A name to display for this object. This can contain color codes and may</span>
-<span class="sd">                be customized based on `looker`. By default this contains the `.key` of the object,</span>
-<span class="sd">                followed by the DBREF if this user is privileged to control said object.</span>
+<span class="sd">            str: A name to display for this object. By default this returns the `.name` of the object.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            This function could be extended to change how object names appear to users in character,</span>
-<span class="sd">            but be wary. This function does not change an object&#39;s keys or aliases when searching,</span>
-<span class="sd">            and is expected to produce something useful for builders.</span>
+<span class="sd">            This function can be extended to change how object names appear to users in character,</span>
+<span class="sd">            but it does not change an object&#39;s keys or aliases when searching.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
@@ -1607,7 +1606,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_string&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">singular</span> <span class="k">if</span> <span class="n">count</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">plural</span>
+            <span class="k">return</span> <span class="n">singular</span> <span class="k">if</span> <span class="n">count</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="n">plural</span>
 
         <span class="k">return</span> <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span></div>
 
@@ -1677,7 +1676,7 @@
             <span class="n">char</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wCharacters:|n </span><span class="si">{</span><span class="n">character_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">character_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|wCharacters:|n </span><span class="si">{</span><span class="n">character_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">character_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_display_things"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_things">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_things</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1708,7 +1707,7 @@
             <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="n">nthings</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">thingname</span><span class="p">)</span>
             <span class="n">thing_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singular</span> <span class="k">if</span> <span class="n">nthings</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">plural</span><span class="p">)</span>
         <span class="n">thing_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="n">thing_names</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYou see:|n </span><span class="si">{</span><span class="n">thing_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">thing_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|wYou see:|n </span><span class="si">{</span><span class="n">thing_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">thing_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_display_footer"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_footer">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1735,7 +1734,7 @@
 <span class="sd">            str: The final formatted output.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">appearance</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">compress_whitespace</span><span class="p">(</span><span class="n">appearance</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DefaultObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
