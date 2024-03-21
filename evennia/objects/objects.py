@@ -31,6 +31,7 @@ from evennia.utils.utils import (
     iter_to_str,
     lazy_property,
     make_iter,
+    compress_whitespace,
     to_str,
     variable_from_module,
 )
@@ -221,7 +222,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 {header}
 |c{name}{extra_name_info}|n
 {desc}
-{exits}{characters}{things}
+{exits}
+{characters}
+{things}
 {footer}
     """
     # on-object properties
@@ -1585,7 +1588,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             char.get_display_name(looker, **kwargs) for char in characters
         )
 
-        return f"\n|wCharacters:|n {character_names}" if character_names else ""
+        return f"|wCharacters:|n {character_names}" if character_names else ""
 
     def get_display_things(self, looker, **kwargs):
         """
@@ -1616,7 +1619,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
         thing_names = iter_to_str(thing_names)
-        return f"\n|wYou see:|n {thing_names}" if thing_names else ""
+        return f"|wYou see:|n {thing_names}" if thing_names else ""
 
     def get_display_footer(self, looker, **kwargs):
         """
@@ -1643,7 +1646,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The final formatted output.
 
         """
-        return appearance.strip()
+        return compress_whitespace(appearance).strip()
 
     def return_appearance(self, looker, **kwargs):
         """
