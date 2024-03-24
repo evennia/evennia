@@ -91,7 +91,7 @@
             
   <h1>Source code for evennia.contrib.tutorials.evadventure.tests.test_dungeon</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Test Dungeon orchestrator / procedurally generated dungeon rooms.</span>
+<span class="sd">Test Dungeon branch / procedurally generated dungeon rooms.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -165,10 +165,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span> <span class="n">new_room_north</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">new_room_north</span><span class="p">,</span> <span class="n">dungeon</span><span class="o">.</span><span class="n">EvAdventureDungeonRoom</span><span class="p">))</span>
 
-        <span class="c1"># check if Orchestrator was created</span>
-        <span class="n">orchestrator</span> <span class="o">=</span> <span class="n">new_room_north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_orchestrator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">orchestrator</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">orchestrator</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dungeon_orchestrator_north_&quot;</span><span class="p">))</span></div>
+        <span class="c1"># check if Dungeon Branch was created</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">new_room_north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_branch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">branch</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dungeon_branch_north_&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TestDungeon.test_different_start_directions"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_dungeon.html#evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.test_different_start_directions">[docs]</a>    <span class="k">def</span> <span class="nf">test_different_start_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># first go north, this should generate a new room</span>
