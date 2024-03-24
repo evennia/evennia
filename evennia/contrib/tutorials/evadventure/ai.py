@@ -24,7 +24,7 @@ class MyMob(AIMixin, EvadventureNPC):
 
 mob = create_object(MyMob, key="Goblin", location=room)
 
-mob.ai.set_state("patrol")
+mob.ai.set_state("roam")
 
 # tick the ai whenever needed
 mob.ai.run()
@@ -39,27 +39,42 @@ from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
 
 from .enums import Ability
+from .utils import random_probability
 
 
 class AIHandler:
+
+    attribute_name = "ai_state"
+    attribute_category = "ai_state"
+
     def __init__(self, obj):
         self.obj = obj
-        self.ai_state = obj.attributes.get("ai_state", category="ai_state", default="idle")
+        self.ai_state = obj.attributes.get(self.attribute_name,
+                                           category=self.attribute_category,
+                                           default="idle")
 
     def set_state(self, state):
         self.ai_state = state
-        self.obj.attributes.add("ai_state", state, category="ai_state")
+        self.obj.attributes.add(self.attribute_name, state, category=self.attribute_category)
 
     def get_state(self):
         return self.ai_state
 
     def get_targets(self):
         """
-        Get a list of potential targets for the NPC to attack
+        Get a list of potential targets for the NPC to combat.
+
         """
         return [obj for obj in self.obj.location.contents if hasattr(obj, "is_pc") and obj.is_pc]
 
     def get_traversable_exits(self, exclude_destination=None):
+        """
+        Get a list of exits that the NPC can traverse. Optionally exclude a destination.
+
+        Args:
+            exclude_destination (Object, optional): Exclude exits with this destination.
+
+        """
         return [
             exi
             for exi in self.obj.location.exits
@@ -70,8 +85,11 @@ class AIHandler:
         """
         Given a dictionary of probabilities, return the key of the chosen probability.
 
+        Args:
+            probabilities (dict): A dictionary of probabilities, where the key is the action and the
+                value is the probability of that action.
+
         """
-        r = random.random()
         # sort probabilities from higheest to lowest, making sure to normalize them 0..1
         prob_total = sum(probabilities.values())
         sorted_probs = sorted(
@@ -79,10 +97,12 @@ class AIHandler:
             key=lambda x: x[1],
             reverse=True,
         )
+
+        rand = random.random()
         total = 0
         for key, prob in sorted_probs:
             total += prob
-            if r <= total:
+            if rand <= total:
                 return key
 
     def run(self):
@@ -98,135 +118,10 @@ class AIMixin:
     Mixin for adding AI to an Object. This is a simple state machine. Just add more `ai_*` methods
     to the object to make it do more things.
 
+    In the tutorial, the handler is added directly to the Mob class, to avoid going into the details
+    of multiple inheritance. In a real game, you would probably want to use a mixin like this.
+
     """
-
-    # combat probabilities should add up to 1.0
-    combat_probabilities = {
-        "hold": 0.1,
-        "attack": 0.9,
-        "stunt": 0.0,
-        "item": 0.0,
-        "flee": 0.0,
-    }
-
     @lazy_property
     def ai(self):
         return AIHandler(self)
-
-    def ai_idle(self):
-        pass
-
-    def ai_attack(self):
-        pass
-
-    def ai_patrol(self):
-        pass
-
-    def ai_flee(self):
-        pass
-
-
-class IdleMobMixin(AIMixin):
-    """
-    A simple mob that understands AI commands, but does nothing.
-
-    """
-
-    def ai_idle(self):
-        pass
-
-
-class AggressiveMobMixin(AIMixin):
-    """
-    A simple aggressive mob that can roam, attack and flee.
-
-    """
-
-    combat_probabilities = {
-        "hold": 0.0,
-        "attack": 0.85,
-        "stunt": 0.05,
-        "item": 0.0,
-        "flee": 0.05,
-    }
-
-    def ai_idle(self):
-        """
-        Do nothing, but switch to attack state if a target is found.
-
-        """
-        if self.ai.get_targets():
-            self.ai.set_state("attack")
-
-    def ai_attack(self):
-        """
-        Manage the attack/combat state of the mob.
-
-        """
-        if combathandler := self.nbd.combathandler:
-            # already in combat
-            allies, enemies = combathandler.get_sides(self)
-            action = self.ai.random_probability(self.combat_probabilities)
-
-            match action:
-                case "hold":
-                    combathandler.queue_action({"key": "hold"})
-                case "attack":
-                    combathandler.queue_action({"key": "attack", "target": random.choice(enemies)})
-                case "stunt":
-                    # choose a random ally to help
-                    combathandler.queue_action(
-                        {
-                            "key": "stunt",
-                            "recipient": random.choice(allies),
-                            "advantage": True,
-                            "stunt": Ability.STR,
-                            "defense": Ability.DEX,
-                        }
-                    )
-                case "item":
-                    # use a random item on a random ally
-                    target = random.choice(allies)
-                    valid_items = [item for item in self.contents if item.at_pre_use(self, target)]
-                    combathandler.queue_action(
-                        {"key": "item", "item": random.choice(valid_items), "target": target}
-                    )
-                case "flee":
-                    self.ai.set_state("flee")
-
-        if not (targets := self.ai.get_targets()):
-            self.ai.set_state("patrol")
-        else:
-            target = random.choice(targets)
-            self.execute_cmd(f"attack {target.key}")
-
-    def ai_patrol(self):
-        """
-        Patrol, moving randomly to a new room. If a target is found, switch to attack state.
-
-        """
-        if targets := self.ai.get_targets():
-            self.ai.set_state("attack")
-            self.execute_cmd(f"attack {random.choice(targets).key}")
-        else:
-            exits = self.ai.get_traversable_exits()
-            if exits:
-                exi = random.choice(exits)
-                self.execute_cmd(f"{exi.key}")
-
-    def ai_flee(self):
-        """
-        Flee from the current room, avoiding going back to the room from which we came. If no exits
-        are found, switch to patrol state.
-
-        """
-        current_room = self.location
-        past_room = self.attributes.get("past_room", category="ai_state", default=None)
-        exits = self.ai.get_traversable_exits(exclude_destination=past_room)
-        if exits:
-            self.attributes.set("past_room", current_room, category="ai_state")
-            exi = random.choice(exits)
-            self.execute_cmd(f"{exi.key}")
-        else:
-            # if in a dead end, patrol will allow for backing out
-            self.ai.set_state("patrol")

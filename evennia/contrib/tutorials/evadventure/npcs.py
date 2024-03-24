@@ -8,9 +8,9 @@ from evennia import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.typeclasses.tags import TagProperty
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import lazy_property, make_iter
 
-from .ai import AggressiveMobMixin
+from .ai import AIHandler
 from .characters import LivingMixin
 from .enums import Ability, WieldLocation
 from .objects import get_bare_hands
@@ -248,14 +248,103 @@ class EvAdventureShopKeeper(EvAdventureTalkativeNPC):
         )
 
 
-class EvAdventureMob(AggressiveMobMixin, EvAdventureNPC):
+class EvAdventureMob(EvAdventureNPC):
     """
     Mob (mobile) NPC; this is usually an enemy.
 
     """
+    # change this to make the mob more or less likely to perform different actions
+    combat_probabilities = {
+        "hold": 0.0,
+        "attack": 0.85,
+        "stunt": 0.05,
+        "item": 0.0,
+        "flee": 0.05,
+    }
 
-    # chance (%) that this enemy will loot you when defeating you
-    loot_chance = AttributeProperty(75, autocreate=False)
+    @lazy_property
+    def ai(self):
+        return AIHandler(self)
+
+    def ai_idle(self):
+        """
+        Do nothing.
+
+        """
+        pass
+
+    def ai_combat(self):
+        """
+        Manage the combat/combat state of the mob.
+
+        """
+        if combathandler := self.nbd.combathandler:
+            # already in combat
+            allies, enemies = combathandler.get_sides(self)
+            action = self.ai.random_probability(self.combat_probabilities)
+
+            match action:
+                case "hold":
+                    combathandler.queue_action({"key": "hold"})
+                case "combat":
+                    combathandler.queue_action({"key": "attack", "target": random.choice(enemies)})
+                case "stunt":
+                    # choose a random ally to help
+                    combathandler.queue_action(
+                        {
+                            "key": "stunt",
+                            "recipient": random.choice(allies),
+                            "advantage": True,
+                            "stunt": Ability.STR,
+                            "defense": Ability.DEX,
+                        }
+                    )
+                case "item":
+                    # use a random item on a random ally
+                    target = random.choice(allies)
+                    valid_items = [item for item in self.contents if item.at_pre_use(self, target)]
+                    combathandler.queue_action(
+                        {"key": "item", "item": random.choice(valid_items), "target": target}
+                    )
+                case "flee":
+                    self.ai.set_state("flee")
+
+        elif not (targets := self.ai.get_targets()):
+            self.ai.set_state("roam")
+        else:
+            target = random.choice(targets)
+            self.execute_cmd(f"attack {target.key}")
+
+    def ai_roam(self):
+        """
+        roam, moving randomly to a new room. If a target is found, switch to combat state.
+
+        """
+        if targets := self.ai.get_targets():
+            self.ai.set_state("combat")
+            self.execute_cmd(f"attack {random.choice(targets).key}")
+        else:
+            exits = self.ai.get_traversable_exits()
+            if exits:
+                exi = random.choice(exits)
+                self.execute_cmd(f"{exi.key}")
+
+    def ai_flee(self):
+        """
+        Flee from the current room, avoiding going back to the room from which we came. If no exits
+        are found, switch to roam state.
+
+        """
+        current_room = self.location
+        past_room = self.attributes.get("past_room", category="ai_state", default=None)
+        exits = self.ai.get_traversable_exits(exclude_destination=past_room)
+        if exits:
+            self.attributes.set("past_room", current_room, category="ai_state")
+            exi = random.choice(exits)
+            self.execute_cmd(f"{exi.key}")
+        else:
+            # if in a dead end, roam will allow for backing out
+            self.ai.set_state("roam")
 
     def at_defeat(self):
         """
@@ -263,55 +352,3 @@ class EvAdventureMob(AggressiveMobMixin, EvAdventureNPC):
 
         """
         self.at_death()
-
-    def at_do_loot(self, looted):
-        """
-        Called when mob gets to loot a PC.
-
-        """
-        if dice.roll("1d100") > self.loot_chance:
-            # don't loot
-            return
-
-        if looted.coins:
-            # looter prefer coins
-            loot = dice.roll("1d20")
-            if looted.coins < loot:
-                self.location.msg_location(
-                    "$You(looter) loots $You() for all coin!",
-                    from_obj=looted,
-                    mapping={"looter": self},
-                )
-            else:
-                self.location.msg_location(
-                    "$You(looter) loots $You() for |y{loot}|n coins!",
-                    from_obj=looted,
-                    mapping={"looter": self},
-                )
-        elif hasattr(looted, "equipment"):
-            # go through backpack, first usable, then wieldable, wearable items
-            # and finally stuff wielded
-            stealable = looted.equipment.get_usable_objects_from_backpack()
-            if not stealable:
-                stealable = looted.equipment.get_wieldable_objects_from_backpack()
-            if not stealable:
-                stealable = looted.equipment.get_wearable_objects_from_backpack()
-            if not stealable:
-                stealable = [looted.equipment.slots[WieldLocation.SHIELD_HAND]]
-            if not stealable:
-                stealable = [looted.equipment.slots[WieldLocation.HEAD]]
-            if not stealable:
-                stealable = [looted.equipment.slots[WieldLocation.ARMOR]]
-            if not stealable:
-                stealable = [looted.equipment.slots[WieldLocation.WEAPON_HAND]]
-            if not stealable:
-                stealable = [looted.equipment.slots[WieldLocation.TWO_HANDS]]
-
-            stolen = looted.equipment.remove(choice(stealable))
-            stolen.location = self
-
-            self.location.msg_location(
-                "$You(looter) steals {stolen.key} from $You()!",
-                from_obj=looted,
-                mapping={"looter": self},
-            )

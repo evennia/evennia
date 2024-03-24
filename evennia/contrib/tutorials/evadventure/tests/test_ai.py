@@ -25,23 +25,23 @@ class TestAI(BaseEvenniaTest):
     @patch("evennia.contrib.tutorials.evadventure.ai.log_trace")
     def test_ai_methods(self, mock_log_trace, mock_random):
         self.assertEqual(self.npc.ai.get_state(), "idle")
-        self.npc.ai.set_state("patrol")
-        self.assertEqual(self.npc.ai.get_state(), "patrol")
+        self.npc.ai.set_state("roam")
+        self.assertEqual(self.npc.ai.get_state(), "roam")
 
         self.assertEqual(self.npc.ai.get_targets(), [self.pc])
         self.assertEqual(self.npc.ai.get_traversable_exits(), [self.exit])
 
-        probs = {"hold": 0.1, "attack": 0.5, "flee": 0.4}
+        probs = {"hold": 0.1, "combat": 0.5, "flee": 0.4}
         mock_random.return_value = 0.3
-        self.assertEqual(self.npc.ai.random_probability(probs), "attack")
+        self.assertEqual(self.npc.ai.random_probability(probs), "combat")
         mock_random.return_value = 0.7
         self.assertEqual(self.npc.ai.random_probability(probs), "flee")
         mock_random.return_value = 0.95
         self.assertEqual(self.npc.ai.random_probability(probs), "hold")
 
     def test_ai_run(self):
-        self.npc.ai.set_state("patrol")
-        self.assertEqual(self.npc.ai.get_state(), "patrol")
+        self.npc.ai.set_state("roam")
+        self.assertEqual(self.npc.ai.get_state(), "roam")
 
         self.npc.ai.run()
-        self.assertEqual(self.npc.ai.get_state(), "attack")
+        self.assertEqual(self.npc.ai.get_state(), "combat")
