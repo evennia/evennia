@@ -204,8 +204,7 @@
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/npcs.py </span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/npcs.py </span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">AttributeProperty</span>
 
@@ -264,14 +263,13 @@
 <span class="sd">         &quot;&quot;&quot;</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span>
 <span class="hll">         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
-</span>                                                                                   
-<span class="hll">     <span class="k">def</span> <span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>                     
-</span><span class="w">         </span><span class="sd">&quot;&quot;&quot;                                                        </span>
-<span class="sd">		 The system should regularly poll this method to have </span>
-<span class="sd">		 the NPC do their next AI action. </span>
-<span class="sd">                                                                    </span>
-<span class="sd">         &quot;&quot;&quot;</span>                                                        
-         <span class="k">pass</span>                           
+</span>
+<span class="hll">
+</span><span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mob(ile) NPC to be used for enemies.</span>
+<span class="sd">     </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
@@ -281,8 +279,8 @@
 <li><p><strong>Lines 17, 18</strong>: The <code class="docutils literal notranslate"><span class="pre">morale</span></code> and <code class="docutils literal notranslate"><span class="pre">allegiance</span></code> are <em>Knave</em> properties determining how likely the NPC is to flee in a combat situation and if they are hostile or friendly.</p></li>
 <li><p><strong>Line 19</strong>: The <code class="docutils literal notranslate"><span class="pre">is_idle</span></code> Attribute is a useful property. It should be available on all NPCs and will be used to disable AI entirely.</p></li>
 <li><p><strong>Line 59</strong>: We make sure to tag NPCs. We may want to group different NPCs together later, for example to have all NPCs with the same tag respond if one of them is attacked.</p></li>
-<li><p><strong>Line 61</strong>: The <code class="docutils literal notranslate"><span class="pre">ai_next_action</span></code> is a method we prepare for the system to be able to ask the NPC ‘what do you want to do next?’. In it we will add all logic related to the artificial intelligence of the NPC - such as walking around, attacking and performing other actions.</p></li>
 </ul>
+<p>We make an empty subclass <code class="docutils literal notranslate"><span class="pre">EvAdventureMob</span></code>. A ‘mob’ (short for ‘mobile’) is a common MUD term for NPCs that can move around on their own. We will in the future use this class to represent enemies in the game. We will get back to this class [in the lesson about adding AI][Beginner-Tutoroal-AI].</p>
 </section>
 <section id="testing">
 <h2><span class="section-number">8.2. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>

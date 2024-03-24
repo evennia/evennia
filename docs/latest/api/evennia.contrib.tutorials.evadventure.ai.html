@@ -135,7 +135,7 @@ reference to the AIHandler and a few basic <strong>ai_*</strong> methods for bas
 
 <span class="n">mob</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">MyMob</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Goblin&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
 
-<span class="n">mob</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;patrol&quot;</span><span class="p">)</span>
+<span class="n">mob</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;roam&quot;</span><span class="p">)</span>
 
 <span class="c1"># tick the ai whenever needed</span>
 <span class="n">mob</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -145,6 +145,16 @@ reference to the AIHandler and a few basic <strong>ai_*</strong> methods for bas
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">AIHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.attribute_name">
+<code class="sig-name descname">attribute_name</code><em class="property"> = 'ai_state'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.attribute_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.attribute_category">
+<code class="sig-name descname">attribute_category</code><em class="property"> = 'ai_state'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.attribute_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__" title="Permalink to this definition">¶</a></dt>
@@ -164,18 +174,30 @@ reference to the AIHandler and a few basic <strong>ai_*</strong> methods for bas
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets">
 <code class="sig-name descname">get_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.get_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of potential targets for the NPC to attack</p>
+<dd><p>Get a list of potential targets for the NPC to combat.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits">
 <code class="sig-name descname">get_traversable_exits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude_destination</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.get_traversable_exits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a list of exits that the NPC can traverse. Optionally exclude a destination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exclude_destination</strong> (<em>Object</em><em>, </em><em>optional</em>) – Exclude exits with this destination.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability">
 <code class="sig-name descname">random_probability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">probabilities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.random_probability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a dictionary of probabilities, return the key of the chosen probability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>probabilities</strong> (<em>dict</em>) – A dictionary of probabilities, where the key is the action and the
+value is the probability of that action.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -191,84 +213,12 @@ reference to the AIHandler and a few basic <strong>ai_*</strong> methods for bas
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Mixin for adding AI to an Object. This is a simple state machine. Just add more <strong>ai_*</strong> methods
 to the object to make it do more things.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.combat_probabilities">
-<code class="sig-name descname">combat_probabilities</code><em class="property"> = {'attack': 0.9, 'flee': 0.0, 'hold': 0.1, 'item': 0.0, 'stunt': 0.0}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.combat_probabilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>In the tutorial, the handler is added directly to the Mob class, to avoid going into the details
+of multiple inheritance. In a real game, you would probably want to use a mixin like this.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai">
 <code class="sig-name descname">ai</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_idle">
-<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_attack">
-<code class="sig-name descname">ai_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_attack" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_patrol">
-<code class="sig-name descname">ai_patrol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_patrol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_flee">
-<code class="sig-name descname">ai_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIMixin.ai_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai_flee" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.ai.IdleMobMixin">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">IdleMobMixin</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#IdleMobMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin" title="evennia.contrib.tutorials.evadventure.ai.AIMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AIMixin</span></code></a></p>
-<p>A simple mob that understands AI commands, but does nothing.</p>
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.IdleMobMixin.ai_idle">
-<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#IdleMobMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.IdleMobMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.ai.</code><code class="sig-name descname">AggressiveMobMixin</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.ai.AIMixin" title="evennia.contrib.tutorials.evadventure.ai.AIMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AIMixin</span></code></a></p>
-<p>A simple aggressive mob that can roam, attack and flee.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.combat_probabilities">
-<code class="sig-name descname">combat_probabilities</code><em class="property"> = {'attack': 0.85, 'flee': 0.05, 'hold': 0.0, 'item': 0.0, 'stunt': 0.05}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.combat_probabilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_idle">
-<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_idle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Do nothing, but switch to attack state if a target is found.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_attack">
-<code class="sig-name descname">ai_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_attack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manage the attack/combat state of the mob.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_patrol">
-<code class="sig-name descname">ai_patrol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_patrol" title="Permalink to this definition">¶</a></dt>
-<dd><p>Patrol, moving randomly to a new room. If a target is found, switch to attack state.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_flee">
-<code class="sig-name descname">ai_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AggressiveMobMixin.ai_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin.ai_flee" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flee from the current room, avoiding going back to the room from which we came. If no exits
-are found, switch to patrol state.</p>
-</dd></dl>
 
 </dd></dl>
 

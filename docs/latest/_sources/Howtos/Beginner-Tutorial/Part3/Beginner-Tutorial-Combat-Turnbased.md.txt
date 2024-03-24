@@ -1219,7 +1219,7 @@ Our turnbased combat system is complete!
 ## Testing
 
 ```{sidebar}
-See [evennia/contrib/tutorials/evadventure/tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat)
+See an example tests in `evennia/contrib/tutorials`, in  [evadventure/tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat) 
 ```
 Unit testing of the Turnbased combat handler is straight forward, you follow the process of earlier lessons to test that each method on the handler returns what you expect with mocked inputs.
 
@@ -1237,7 +1237,7 @@ Unit testing the code is not enough to see that combat works. We need to also ma
  - An item (like a potion) we can `use`.
 
 ```{sidebar}
-You can find an example batch-code script in [evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.py](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.py)
+You can find an example combat batch-code script in `evennia/contrib/tutorials/evadventure/`, in  [batchscripts/turnbased_combat_demo.py](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.py)
 ```
 
 In [The Twitch combat lesson](./Beginner-Tutorial-Combat-Twitch.md) we used a [batch-command script](../../../Components/Batch-Command-Processor.md) to create the testing environment in game. This runs in-game Evennia commands in sequence. For demonstration  purposes we'll instead use a  [batch-code script](../../../Components/Batch-Code-Processor.md), which runs raw Python code in a repeatable way. A batch-code script is much more flexible than a batch-command script.

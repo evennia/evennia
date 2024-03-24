@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>13. Dynamically generated Dungeon &#8212; Evennia latest documentation</title>
+    <title>13. Procedurally generated Dungeon &#8212; Evennia latest documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -43,7 +43,7 @@
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Dynamically generated Dungeon</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Procedurally generated Dungeon</a></li> 
       </ul>
     </div>  
 
@@ -65,6 +65,21 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">13. Procedurally generated Dungeon</a><ul>
+<li><a class="reference internal" href="#design-concept">13.1. Design Concept</a><ul>
+<li><a class="reference internal" href="#the-starting-room">13.1.1. The starting room</a></li>
+<li><a class="reference internal" href="#generating-new-branch-rooms">13.1.2. Generating new branch rooms</a></li>
+<li><a class="reference internal" href="#making-the-dungeon-dangerous">13.1.3. Making the dungeon dangerous</a></li>
+<li><a class="reference internal" href="#difficulty-scaling">13.1.4. Difficulty scaling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation">13.2. Implementation</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-AI.html"
                         title="previous chapter"><span class="section-number">12. </span>NPC and monster AI</a></p>
@@ -112,12 +127,223 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="dynamically-generated-dungeon">
-<h1><span class="section-number">13. </span>Dynamically generated Dungeon<a class="headerlink" href="#dynamically-generated-dungeon" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="procedurally-generated-dungeon">
+<h1><span class="section-number">13. </span>Procedurally generated Dungeon<a class="headerlink" href="#procedurally-generated-dungeon" title="Permalink to this headline">¶</a></h1>
+<p>The rooms that we discussed in the <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="doc std std-doc">lesson about Rooms</span></a> are all <em>manually</em> generated. That is, a human builder would have to sit down and spawn each room manually, either in-game or using code.</p>
+<p>In this lesson we’ll explore <em>procedural</em> generation of the rooms making up our game’s underground dungeon. Procedural means that its rooms are spawned automatically and semi-randomly as players explore, creating a different dungeon layout every time.</p>
+<section id="design-concept">
+<h2><span class="section-number">13.1. </span>Design Concept<a class="headerlink" href="#design-concept" title="Permalink to this headline">¶</a></h2>
+<p>This describes how the procedural generation should work at a high level. It’s important to understand this before we start writing code.</p>
+<p>We will assume our dungeon exists on a 2D plane (x,y, no z directions). We will only use N,E,S,W compass directions, but there is no reason this design couldn’t work with SE, NW etc, except that this could make it harder for the player to visualize. More possible directions also make it more likely to produce collisions and one-way exits (see below).</p>
+<p>This design is pretty simple, but just by playing with some of its settings, it can produce very different-feeling dungeon systems.</p>
+<section id="the-starting-room">
+<h3><span class="section-number">13.1.1. </span>The starting room<a class="headerlink" href="#the-starting-room" title="Permalink to this headline">¶</a></h3>
+<p>The idea is that all players will descend down a well to get to the start of the dungeon. The bottom of the well is a statically created room that won’t change.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Starting room</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 Branch N                
+                    ▲                    
+                    │                    
+           ┌────────┼────────┐           
+           │        │n       │           
+           │        ▼        │           
+           │                 │           
+           │                e│           
+Branch W ◄─┼─►     up▲     ◄─┼─► Branch E1
+           │w                │           
+           │                 │           
+           │        ▲        │           
+           │        │s       │           
+           └────────┼────────┘           
+                    │                    
+                    ▼                    
+                 Branch S               
+</pre></div>
+</div>
+</div>
+<p>The magic happens when you choose one of the exits from this room (except the one leading you back to the surface). Let’s assume a PC descends down to the start room and moves <code class="docutils literal notranslate"><span class="pre">east</span></code>:</p>
+<ul class="simple">
+<li><p>The first person to go east will spawn a new “Dungeon branch” (Branch E1 in the diagram). This is a separate “instance” of dungeon compared to what would spawn if moving through any of the other exits. Rooms spawned within one dungeon branch will never overlap with that of another dungeon branch.</p></li>
+<li><p>A timer starts. While this timer is active, everyone going <code class="docutils literal notranslate"><span class="pre">east</span></code> will end up in Branch E1. This allows for players to team up and collaborate to take on a branch.</p></li>
+<li><p>After the timer runs out, everyone going <code class="docutils literal notranslate"><span class="pre">east</span></code> will instead end up in a <em>new</em> Branch E2. This is a new branch that has no overlap with Branch E1.</p></li>
+<li><p>PCs in Branches E1 and E2 can always retreat <code class="docutils literal notranslate"><span class="pre">west</span></code> back to the starting room, but after the timer runs out this is now a one-way exit - they won’t be able to return to their old branches if they do.</p></li>
+</ul>
+</section>
+<section id="generating-new-branch-rooms">
+<h3><span class="section-number">13.1.2. </span>Generating new branch rooms<a class="headerlink" href="#generating-new-branch-rooms" title="Permalink to this headline">¶</a></h3>
+<p>Each branch is managed by an branch <em>orchestrator</em>. The orchestrator tracks the layout of rooms belonging to this branch on an (X, Y) coordinate grid.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Creating the eastern branch and its first room</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?         
+                   ▲         
+                   │         
+┌─────────┐   ┌────┼────┐    
+│         │   │A   │    │    
+│         │   │   PC    │    
+│  start◄─┼───┼─► is  ──┼──►?
+│         │   │   here  │    
+│         │   │    │    │    
+└─────────┘   └────┼────┘    
+                   │         
+                   ▼         
+</pre></div>
+</div>
+</div>
+<p>The start room is always at coordinate <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code>.</p>
+<p>A dungeon room is only created when actually moving to it. In the above example, the PC moved <code class="docutils literal notranslate"><span class="pre">east</span></code> from the start room, which initiated a new dungeon branch with its own branch orchestrator. The orchestrator also created a new room (room <code class="docutils literal notranslate"><span class="pre">A</span></code>) at coordinate <code class="docutils literal notranslate"><span class="pre">(1,0)</span></code>. In this case it (randomly) seeded this room with three exits <code class="docutils literal notranslate"><span class="pre">north</span></code>, <code class="docutils literal notranslate"><span class="pre">east</span></code> and <code class="docutils literal notranslate"><span class="pre">south</span></code>.
+Since this branch was just created, the exit back to the start room is still two-way.</p>
+<p>This is the procedure the orchestrator follows when spawning a new room:</p>
+<ul class="simple">
+<li><p>It always creates an exit back to the room we came from.</p></li>
+<li><p>It checks how many unexplored exits we have in the dungeon right now. That is, how many exits we haven’t yet traversed. This number must never be zero unless we want a dungeon that can be ‘finished’. The maximum number of unexplored exits open at any given time is a setting we can experiment with. A small max number leads to linear dungeon, a bigger number makes the dungeon sprawling and maze-like.</p></li>
+<li><p>Outgoing exits (exits not leading back to where we came) are generated with the following rules:</p>
+<ul>
+<li><p>Randomly create between 0 and the number of outgoing exits allowed by the room and the branches’ current budget of allowed open unexplored exits.</p></li>
+<li><p>Create 0 outgoing exits (a dead-end) only if this would leave at least one unexplored exit open somewhere in the dungeon branch.</p></li>
+<li><p>Do <em>not</em> create an exit that would connect the exit to a previously generated room (so we prefer exits leading to new places rather than back to old ones)</p></li>
+<li><p>If a previously created exit end up pointing to a newly created room, this <em>is</em> allowed, and is the only time a one-way exit will happen (example below). All other exits are always two-way exits. This also presents the only small chance of closing out a dungeon with no way to proceed but to return to the start.</p></li>
+<li><p>Never create an exit back to the start room (e.g. from another direction). The only way to get back to the start room is by back tracking.</p></li>
+</ul>
+</li>
+</ul>
+<p>In the following examples, we assume the maximum number of unexplored exits allowed open at any time is set to 4.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">After four steps in the eastern dungeon branch</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    ?                                 
+                   ▲                                 
+                   │                                 
+┌─────────┐   ┌────┼────┐                            
+│         │   │A   │    │                            
+│         │   │         │                            
+│  start◄─┼───┼─      ──┼─►?                         
+│         │   │    ▲    │                            
+│         │   │    │    │                            
+└─────────┘   └────┼────┘                            
+                   │                                 
+              ┌────┼────┐   ┌─────────┐   ┌─────────┐
+              │B   │    │   │C        │   │D        │
+              │    ▼    │   │         │   │   PC    │
+          ?◄──┼─      ◄─┼───┼─►     ◄─┼───┼─► is    │
+              │         │   │         │   │   here  │
+              │         │   │         │   │         │
+              └─────────┘   └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<ol class="simple">
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> from the start room. A new room <code class="docutils literal notranslate"><span class="pre">A</span></code> (coordinate <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0)</span></code> ) is created. After a while the exit back to the start room becomes a one-way exit. The branch can have at most 4 unexplored exits, and the orchestrator randomly adds three additional exits out of room <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">south</span></code>. A new room <code class="docutils literal notranslate"><span class="pre">B</span></code> (<code class="docutils literal notranslate"><span class="pre">(1,-1)</span></code>) is created, with two random exits, which is as many as the orchetrator is allowed to create at this time (4 are now open). It also always creates an exit back to the previous room (<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> (coordinate (<code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">-1)</span></code>). A new room <code class="docutils literal notranslate"><span class="pre">C</span></code> is created. The orchestrator already has 3 exits unexplored, so it can only add one exit our of this room.</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> (<code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">-1)</span></code>). While the orchestrator still has a budget of one exit, it knows there are other unexplored exits elsewhere, and is allowed to randomly create 0 exits. This is a dead end. The PC must go back and explore another direction.</p></li>
+</ol>
+<p>Let’s change the dungeon a bit to do another example:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Looping around</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐              
+│         │   │A   │    │              
+│         │   │         │              
+│  start◄─┼───┼─      ──┼──►?           
+│         │   │    ▲    │              
+│         │   │    │    │        ?     
+└─────────┘   └────┼────┘        ▲     
+                   │             │     
+              ┌────┼────┐   ┌────┼────┐
+              │B   │    │   │C   │    │
+              │    ▼    │   │   PC    │
+          ?◄──┼─      ◄─┼───┼─► is    │
+              │         │   │   here  │
+              │         │   │         │
+              └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>In this example the PC moved <code class="docutils literal notranslate"><span class="pre">east</span></code>, <code class="docutils literal notranslate"><span class="pre">south</span></code>, <code class="docutils literal notranslate"><span class="pre">east</span></code> but the exit out of room <code class="docutils literal notranslate"><span class="pre">C</span></code> is leading north, into a coordinate where <code class="docutils literal notranslate"><span class="pre">A</span></code> already has an exit pointing to. Going <code class="docutils literal notranslate"><span class="pre">north</span></code> here leads to the following:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Creation of a one-way exit</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐   ┌─────────┐
+│         │   │A   │    │   │D   PC   │
+│         │   │         │   │    is   │
+│  start◄─┼───┼─      ──┼───┼─►  here │
+│         │   │    ▲    │   │    ▲    │
+│         │   │    │    │   │    │    │
+└─────────┘   └────┼────┘   └────┼────┘
+                   │             │     
+              ┌────┼────┐   ┌────┼────┐
+              │B   │    │   │C   │    │
+              │    ▼    │   │    ▼    │
+          ?◄──┼─      ◄─┼───┼─►       │
+              │         │   │         │
+              │         │   │         │
+              └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>As the PC moves <code class="docutils literal notranslate"><span class="pre">north</span></code>, the room <code class="docutils literal notranslate"><span class="pre">D</span></code> is created at <code class="docutils literal notranslate"><span class="pre">(2,0)</span></code>.</p>
+<p>While <code class="docutils literal notranslate"><span class="pre">C</span></code> to <code class="docutils literal notranslate"><span class="pre">D</span></code> get a two-way exit as normal, this creates a one-way exit from <code class="docutils literal notranslate"><span class="pre">A</span></code> to <code class="docutils literal notranslate"><span class="pre">D</span></code>.</p>
+<p>Whichever exit leads to actually creating the room gets the two-way exit, so if the PC had walked back from <code class="docutils literal notranslate"><span class="pre">C</span></code> and created room <code class="docutils literal notranslate"><span class="pre">D</span></code> by going <code class="docutils literal notranslate"><span class="pre">east</span></code> from room <code class="docutils literal notranslate"><span class="pre">A</span></code>, then the one-way exit would be from room <code class="docutils literal notranslate"><span class="pre">C</span></code> instead.</p>
+<blockquote>
+<div><p>If the maximum allowed number of open unexplored exits is small, this case is the only situation where it’s possible to ‘finish’ the dungeon (having no more unexplored exits to follow). We accept this as a case where the PCs just have to turn back.</p>
+</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Never link back to start room</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐   ┌─────────┐
+│         │   │A   │    │   │D        │
+│         │   │         │   │         │
+│  start◄─┼───┼─      ──┼───┼─►       │
+│         │   │    ▲    │   │    ▲    │
+│         │   │    │    │   │    │    │
+└─────────┘   └────┼────┘   └────┼────┘
+                   │             │     
+┌─────────┐   ┌────┼────┐   ┌────┼────┐
+│E        │   │B   │    │   │C   │    │
+│  PC     │   │    ▼    │   │    ▼    │
+│  is   ◄─┼───┼─►     ◄─┼───┼─►       │
+│  here   │   │         │   │         │
+│         │   │         │   │         │
+└─────────┘   └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>Here the PC moved <code class="docutils literal notranslate"><span class="pre">west</span></code> from room <code class="docutils literal notranslate"><span class="pre">B</span></code> creating room <code class="docutils literal notranslate"><span class="pre">E</span></code> at <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">-1)</span></code>.</p>
+<p>The orchestrator never creates a link back to the start room, but it <em>could</em> have created up to two new exits <code class="docutils literal notranslate"><span class="pre">west</span></code> and/or <code class="docutils literal notranslate"><span class="pre">south</span></code>. Since there’s still an unexplored exit <code class="docutils literal notranslate"><span class="pre">north</span></code> from room <code class="docutils literal notranslate"><span class="pre">A</span></code>, the orchestrator is also allowed to randomly assign 0 exits, which is what it did here.</p>
+<p>The PC needs to backtrack and go <code class="docutils literal notranslate"><span class="pre">north</span></code> from <code class="docutils literal notranslate"><span class="pre">A</span></code> to continue exploring this dungeon branch.</p>
+</section>
+<section id="making-the-dungeon-dangerous">
+<h3><span class="section-number">13.1.3. </span>Making the dungeon dangerous<a class="headerlink" href="#making-the-dungeon-dangerous" title="Permalink to this headline">¶</a></h3>
+<p>A dungeon would not be interesting without peril! There needs to be monsters to slay, puzzles to solve and treasure to be had.</p>
+<p>When PCs first enters a room, that room is marked as <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">clear</span></code>. While a room is not cleared, the PCs <em>cannot use any of the unexplored exits out of that room</em>.  They <em>can</em> still retreat back the way they came unless they become locked in combat, in which case they have to flee from that first.</p>
+<p>Once PCs have overcome the challenge of the room (and probably earned some reward), will it change to <code class="docutils literal notranslate"><span class="pre">clear</span></code> .  A room can auto-clear if it is spawned empty or has no challenge meant to block the PCs (like a written hint for a puzzle elsewhere).</p>
+<p>Note that clear/non-clear only relates to the challenge associated with that room. Roaming monsters (see the <a class="reference internal" href="Beginner-Tutorial-AI.html"><span class="doc std std-doc">AI tutorial</span></a>) can lead to combat taking place in previously ‘cleared’ rooms.</p>
+</section>
+<section id="difficulty-scaling">
+<h3><span class="section-number">13.1.4. </span>Difficulty scaling<a class="headerlink" href="#difficulty-scaling" title="Permalink to this headline">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">Risk and reward</p>
+<p>The concept of dungeon depth/difficulty works well together with limited resources. If healing is limited to what can be carried, this leads to players having to decide if they want to risk push deeper or take their current spoils and retreat back to the surface to recover.</p>
+</aside>
+<p>The “difficulty” of the dungeon is measured by the “depth” PCs have delved to. This is given as the <em>radial distance</em> from the start room, rounded down, found by the good old <a class="reference external" href="https://en.wikipedia.org/wiki/Pythagorean_theorem">Pythagorean theorem</a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>depth = int(math.sqrt(x**2 + y**2))
+</pre></div>
+</div>
+<p>So if you are in room <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1)</span></code> you are at difficulty 1. Conversely at room coordinate <code class="docutils literal notranslate"><span class="pre">(4,-5)</span></code>  the difficulty is 6. Increasing depth should lead to tougher challenges but greater rewards.</p>
+</section>
+</section>
+<section id="implementation">
+<h2><span class="section-number">13.2. </span>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This part of the Beginner tutorial is still being developed.</p>
+<p>TODO: This part is TODO.</p>
 </div>
+</section>
 </section>
 
 
@@ -145,7 +371,7 @@
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Dynamically generated Dungeon</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Procedurally generated Dungeon</a></li> 
       </ul>
     </div>
 

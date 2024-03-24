@@ -480,24 +480,47 @@ based on nodes named <strong>node_start_*</strong> are available in the node tre
 <dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.npcs.</code><code class="sig-name descname">EvAdventureMob</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin" title="evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.ai.AggressiveMobMixin</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC" title="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC" title="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC</span></code></a></p>
 <p>Mob (mobile) NPC; this is usually an enemy.</p>
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance">
-<code class="sig-name descname">loot_chance</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance" title="Permalink to this definition">¶</a></dt>
-<dd><p>AttributeProperty.</p>
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.combat_probabilities">
+<code class="sig-name descname">combat_probabilities</code><em class="property"> = {'attack': 0.85, 'flee': 0.05, 'hold': 0.0, 'item': 0.0, 'stunt': 0.05}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.combat_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai">
+<code class="sig-name descname">ai</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_idle">
+<code class="sig-name descname">ai_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_idle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do nothing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat">
+<code class="sig-name descname">ai_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage the combat/combat state of the mob.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_roam">
+<code class="sig-name descname">ai_roam</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_roam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_roam" title="Permalink to this definition">¶</a></dt>
+<dd><p>roam, moving randomly to a new room. If a target is found, switch to combat state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_flee">
+<code class="sig-name descname">ai_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_flee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flee from the current room, avoiding going back to the room from which we came. If no exits
+are found, switch to roam state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_defeat">
 <code class="sig-name descname">at_defeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.at_defeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_defeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mobs die right away when defeated, no death-table rolls.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_do_loot">
-<code class="sig-name descname">at_do_loot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looted</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.at_do_loot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_do_loot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when mob gets to loot a PC.</p>
 </dd></dl>
 
 <dl class="py exception">

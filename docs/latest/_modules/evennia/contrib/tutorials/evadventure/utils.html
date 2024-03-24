@@ -95,6 +95,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">random</span>
+
 <span class="n">_OBJ_STATS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">|c</span><span class="si">{key}</span><span class="s2">|n</span>
 <span class="s2">Value: ~|y</span><span class="si">{value}</span><span class="s2">|n coins</span><span class="si">{carried}</span>
@@ -105,6 +107,7 @@
 <span class="s2">Quality: |w</span><span class="si">{quality}</span><span class="s2">|n, Uses: |wuses|n</span>
 <span class="s2">Attacks using |w</span><span class="si">{attack_type_name}</span><span class="s2">|n against |w</span><span class="si">{defense_type_name}</span><span class="s2">|n</span>
 <span class="s2">Damage roll: |w</span><span class="si">{damage_roll}</span><span class="s2">|n&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
 
 
 <div class="viewcode-block" id="get_obj_stats"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.utils.html#evennia.contrib.tutorials.evadventure.utils.get_obj_stats">[docs]</a><span class="k">def</span> <span class="nf">get_obj_stats</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -142,6 +145,30 @@
         <span class="n">defense_type_name</span><span class="o">=</span><span class="n">defense_type</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">defense_type</span> <span class="k">else</span> <span class="s2">&quot;No defense&quot;</span><span class="p">,</span>
         <span class="n">damage_roll</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;damage_roll&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
     <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_probability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.utils.html#evennia.contrib.tutorials.evadventure.utils.random_probability">[docs]</a><span class="k">def</span> <span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a dictionary of probabilities, return the key of the chosen probability.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        probabilities (dict): A dictionary of probabilities, where the key is the action and the</span>
+<span class="sd">            value is the probability of that action.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="c1"># sort probabilities from higheest to lowest, making sure to normalize them 0..1</span>
+    <span class="n">prob_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">probabilities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">sorted_probs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">prob_total</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">sorted_probs</span><span class="p">:</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">prob</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="n">total</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">key</span></div>
 </pre></div>
 
           </div>
