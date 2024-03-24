@@ -154,14 +154,8 @@ can choose which exit to leave through.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.back_exit">
-<code class="sig-name descname">back_exit</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.back_exit" title="Permalink to this definition">¶</a></dt>
-<dd><p>AttributeProperty.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.dungeon_orchestrator">
-<code class="sig-name descname">dungeon_orchestrator</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.dungeon_orchestrator" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.dungeon_branch">
+<code class="sig-name descname">dungeon_branch</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.dungeon_branch" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
@@ -172,16 +166,6 @@ can choose which exit to leave through.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.is_room_clear">
-<em class="property">property </em><code class="sig-name descname">is_room_clear</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.is_room_clear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">
-<code class="sig-name descname">clear_room</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonRoom.clear_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonRoom.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the <strong>not_clear</strong> tag on the room. This is removed when the room is
@@ -189,6 +173,16 @@ can choose which exit to leave through.</p>
 <p>We put this here rather than in the room-creation code so we can override
 easier (for example we may want an empty room which auto-clears).</p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">
+<code class="sig-name descname">clear_room</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonRoom.clear_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.is_room_clear">
+<em class="property">property </em><code class="sig-name descname">is_room_clear</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.is_room_clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.get_display_footer">
@@ -234,9 +228,8 @@ easier (for example we may want an empty room which auto-clears).</p>
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse">
 <code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when traversing. <strong>target_location</strong> will be None if the
-target was not yet created. It checks the current location to get the
-dungeon-orchestrator in use.</p>
+<dd><p>Called when traversing. <strong>target_location</strong> will be pointing back to ourselves if the target
+was not yet created. It checks the current location to get the dungeon-branch in use.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -271,13 +264,13 @@ dungeon-orchestrator in use.</p>
 
 <dl class="py function">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.room_generator">
-<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">room_generator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dungeon_orchestrator</span></em>, <em class="sig-param"><span class="n">depth</span></em>, <em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#room_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.room_generator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">room_generator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dungeon_branch</span></em>, <em class="sig-param"><span class="n">depth</span></em>, <em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#room_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.room_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plugin room generator</p>
 <p>This default one returns the same empty room.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dungeon_orchestrator</strong> (<a class="reference internal" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator" title="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator"><em>EvAdventureDungeonOrchestrator</em></a>) – The current orchestrator.</p></li>
+<li><p><strong>dungeon_branch</strong> (<a class="reference internal" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch" title="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch"><em>EvAdventureDungeonBranch</em></a>) – The current dungeon branch.</p></li>
 <li><p><strong>depth</strong> (<em>int</em>) – The ‘depth’ of the dungeon (radial distance from start room) this
 new room will be placed at.</p></li>
 <li><p><strong>coords</strong> (<em>tuple</em>) – The <strong>(x,y)</strong> coords that the new room will be created at.</p></li>
@@ -287,86 +280,80 @@ new room will be placed at.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">EvAdventureDungeonOrchestrator</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonOrchestrator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">EvAdventureDungeonBranch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
-<p>One script is created per dungeon ‘branch’ created. The orchestrator is
+<p>One script is created per dungeon ‘branch’ created. The branch is
 responsible for determining what is created next when a character enters an
 exit within the dungeon.</p>
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.max_unexplored_exits">
-<code class="sig-name descname">max_unexplored_exits</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.max_unexplored_exits" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.max_unexplored_exits">
+<code class="sig-name descname">max_unexplored_exits</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.max_unexplored_exits" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.max_new_exits_per_room">
-<code class="sig-name descname">max_new_exits_per_room</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.max_new_exits_per_room" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.max_new_exits_per_room">
+<code class="sig-name descname">max_new_exits_per_room</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.max_new_exits_per_room" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.rooms">
-<code class="sig-name descname">rooms</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.rooms" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.rooms">
+<code class="sig-name descname">rooms</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.rooms" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.unvisited_exits">
-<code class="sig-name descname">unvisited_exits</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.unvisited_exits" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.unvisited_exits">
+<code class="sig-name descname">unvisited_exits</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.unvisited_exits" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.highest_depth">
-<code class="sig-name descname">highest_depth</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.highest_depth" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.last_updated">
+<code class="sig-name descname">last_updated</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.last_updated" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.last_updated">
-<code class="sig-name descname">last_updated</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.last_updated" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.room_generator">
+<code class="sig-name descname">room_generator</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.room_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.room_generator">
-<code class="sig-name descname">room_generator</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.room_generator" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.xy_grid">
+<code class="sig-name descname">xy_grid</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.xy_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.xy_grid">
-<code class="sig-name descname">xy_grid</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.xy_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>AttributeProperty.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.start_room">
-<code class="sig-name descname">start_room</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.start_room" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.start_room">
+<code class="sig-name descname">start_room</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.start_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.register_exit_traversed">
-<code class="sig-name descname">register_exit_traversed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonOrchestrator.register_exit_traversed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.register_exit_traversed" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.register_exit_traversed">
+<code class="sig-name descname">register_exit_traversed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranch.register_exit_traversed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.register_exit_traversed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell the system the given exit was traversed. This allows us to track how many unvisited
 paths we have so as to not have it grow exponentially.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.create_out_exit">
-<code class="sig-name descname">create_out_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">exit_direction</span><span class="o">=</span><span class="default_value">'north'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonOrchestrator.create_out_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.create_out_exit" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.create_out_exit">
+<code class="sig-name descname">create_out_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">exit_direction</span><span class="o">=</span><span class="default_value">'north'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranch.create_out_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.create_out_exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create outgoing exit from a room. The target room is not yet created.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonOrchestrator.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up the entire dungeon along with the orchestrator.</p>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranch.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up the entire dungeon along with the branch.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.new_room">
-<code class="sig-name descname">new_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_exit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonOrchestrator.new_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.new_room" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.new_room">
+<code class="sig-name descname">new_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_exit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranch.new_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.new_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new Dungeon room leading from the provided exit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -376,25 +363,25 @@ paths we have so as to not have it grow exponentially.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.path" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureDungeonOrchestrator'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.typename" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureDungeonBranch'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -417,7 +404,7 @@ act of passing through creates a room on the other side.</p>
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.at_traverse">
 <code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonStartRoomExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.at_traverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>When traversing create a new orchestrator if one is not already assigned.</p>
+<dd><p>When traversing create a new branch if one is not already assigned.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -440,6 +427,54 @@ act of passing through creates a room on the other side.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureDungeonStartRoomExit'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">EvAdventureDungeonBranchDeleter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+<p>Cleanup script. After some time a dungeon branch will ‘collapse’, forcing all players in it
+back to the start room.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.branch_max_life">
+<code class="sig-name descname">branch_max_life</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.branch_max_life" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation">
+<code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only called once, when script is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat">
+<code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go through all dungeon-branchs and find which ones are too old.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureDungeonBranchDeleter'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -481,54 +516,6 @@ act of passing through creates a room on the other side.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureStartRoomResetter'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter.typename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">EvAdventureDungeonBranchDeleter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
-<p>Cleanup script. After some time a dungeon branch will ‘collapse’, forcing all players in it
-back to the start room.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.branch_max_life">
-<code class="sig-name descname">branch_max_life</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.branch_max_life" title="Permalink to this definition">¶</a></dt>
-<dd><p>AttributeProperty.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation">
-<code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Only called once, when script is first created.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat">
-<code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonBranchDeleter.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Go through all dungeon-orchestrators and find which ones are too old.</p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureDungeonBranchDeleter'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

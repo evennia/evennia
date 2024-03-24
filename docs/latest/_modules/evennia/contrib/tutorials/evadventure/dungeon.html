@@ -170,7 +170,7 @@
 
 
 <span class="c1"># --------------------------------------------------</span>
-<span class="c1"># Dungeon orchestrator and room / exits</span>
+<span class="c1"># Dungeon branch and room / exits</span>
 <span class="c1"># --------------------------------------------------</span>
 
 
@@ -184,16 +184,8 @@
     <span class="n">allow_death</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># dungeon generation attributes; set when room is created</span>
-    <span class="n">back_exit</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">dungeon_orchestrator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">xy_coords</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">))</span>
-
-<div class="viewcode-block" id="EvAdventureDungeonRoom.clear_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">[docs]</a>    <span class="k">def</span> <span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureDungeonRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -205,6 +197,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="EvAdventureDungeonRoom.clear_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">[docs]</a>    <span class="k">def</span> <span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">))</span>
 
 <div class="viewcode-block" id="EvAdventureDungeonRoom.get_display_footer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.get_display_footer">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -232,17 +231,17 @@
 
 <div class="viewcode-block" id="EvAdventureDungeonExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when traversing. `target_location` will be None if the</span>
-<span class="sd">        target was not yet created. It checks the current location to get the</span>
-<span class="sd">        dungeon-orchestrator in use.</span>
+<span class="sd">        Called when traversing. `target_location` will be pointing back to ourselves if the target</span>
+<span class="sd">        was not yet created. It checks the current location to get the dungeon-branch in use.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_branch</span>
         <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span>
+            <span class="c1"># destination points back to us - create a new room</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span>
                 <span class="bp">self</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -254,14 +253,14 @@
         <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get through this way yet!&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="room_generator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.room_generator">[docs]</a><span class="k">def</span> <span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_orchestrator</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+<div class="viewcode-block" id="room_generator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.room_generator">[docs]</a><span class="k">def</span> <span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin room generator</span>
 
 <span class="sd">    This default one returns the same empty room.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        dungeon_orchestrator (EvAdventureDungeonOrchestrator): The current orchestrator.</span>
+<span class="sd">        dungeon_branch (EvAdventureDungeonBranch): The current dungeon branch.</span>
 <span class="sd">        depth (int): The &#39;depth&#39; of the dungeon (radial distance from start room) this</span>
 <span class="sd">            new room will be placed at.</span>
 <span class="sd">        coords (tuple): The `(x,y)` coords that the new room will be created at.</span>
@@ -290,15 +289,15 @@
         <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
             <span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;xy_coords&quot;</span><span class="p">,</span> <span class="n">coords</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;dungeon_orchestrator&quot;</span><span class="p">,</span> <span class="n">dungeon_orchestrator</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;dungeon_branch&quot;</span><span class="p">,</span> <span class="n">dungeon_branch</span><span class="p">),</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">new_room</span></div>
 
 
-<div class="viewcode-block" id="EvAdventureDungeonOrchestrator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonOrchestrator</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureDungeonBranch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    One script is created per dungeon &#39;branch&#39; created. The orchestrator is</span>
+<span class="sd">    One script is created per dungeon &#39;branch&#39; created. The branch is</span>
 <span class="sd">    responsible for determining what is created next when a character enters an</span>
 <span class="sd">    exit within the dungeon.</span>
 
@@ -310,19 +309,18 @@
 
     <span class="n">rooms</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
     <span class="n">unvisited_exits</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
-    <span class="n">highest_depth</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">last_updated</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
 
     <span class="c1"># the room-generator function; copied from the same-name value on the start-room when the</span>
-    <span class="c1"># orchestrator is first created</span>
+    <span class="c1"># branch is first created</span>
     <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="c1"># (x,y): room coordinates used up by orchestrator</span>
+    <span class="c1"># (x,y): room coordinates used up by branch</span>
     <span class="n">xy_grid</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span>
     <span class="n">start_room</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.register_exit_traversed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.register_exit_traversed">[docs]</a>    <span class="k">def</span> <span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureDungeonBranch.register_exit_traversed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.register_exit_traversed">[docs]</a>    <span class="k">def</span> <span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tell the system the given exit was traversed. This allows us to track how many unvisited</span>
 <span class="sd">        paths we have so as to not have it grow exponentially.</span>
@@ -331,7 +329,7 @@
         <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.create_out_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.create_out_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureDungeonBranch.create_out_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.create_out_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create outgoing exit from a room. The target room is not yet created.</span>
 
@@ -344,9 +342,9 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureDungeonBranch.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Clean up the entire dungeon along with the orchestrator.</span>
+<span class="sd">        Clean up the entire dungeon along with the branch.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># first secure all characters in this branch back to the start room</span>
@@ -366,10 +364,10 @@
         <span class="n">rooms</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">rooms</span><span class="p">:</span>
             <span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="c1"># finally delete the orchestrator itself</span>
+        <span class="c1"># finally delete the branch itself</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.new_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.new_room">[docs]</a>    <span class="k">def</span> <span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureDungeonBranch.new_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranch.new_room">[docs]</a>    <span class="k">def</span> <span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
 
@@ -386,7 +384,7 @@
         <span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
 
         <span class="c1"># the dungeon&#39;s depth acts as a measure of the current difficulty level. This is the radial</span>
-        <span class="c1"># distance from the (0, 0) (the entrance). The Orchestrator also tracks the highest</span>
+        <span class="c1"># distance from the (0, 0) (the entrance). The branch also tracks the highest</span>
         <span class="c1"># depth achieved.</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">new_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">new_y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
@@ -440,8 +438,6 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span><span class="p">[</span><span class="n">target_coord</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="k">break</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">highest_depth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highest_depth</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">new_room</span></div></div>
 
 
@@ -470,25 +466,52 @@
 
 <div class="viewcode-block" id="EvAdventureDungeonStartRoomExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        When traversing create a new orchestrator if one is not already assigned.</span>
+<span class="sd">        When traversing create a new branch if one is not already assigned.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="c1"># make a global orchestrator script for this dungeon branch</span>
+            <span class="c1"># make a global branch script for this dungeon branch</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span>
-            <span class="n">dungeon_orchestrator</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
-                <span class="n">EvAdventureDungeonOrchestrator</span><span class="p">,</span>
-                <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dungeon_orchestrator_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+                <span class="n">EvAdventureDungeonBranch</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dungeon_branch_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
                     <span class="p">(</span><span class="s2">&quot;start_room&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">),</span>
                     <span class="p">(</span><span class="s2">&quot;room_generator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span><span class="p">),</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="c1"># make sure to tag character when entering so we can find them again later</span>
-            <span class="n">traversing_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+            <span class="n">traversing_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleanup script. After some time a dungeon branch will &#39;collapse&#39;, forcing all players in it</span>
+<span class="sd">    back to the start room.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set at creation time when the start room is created</span>
+    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_branch_deleter&quot;</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Go through all dungeon-branchs and find which ones are too old.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">)</span>
+        <span class="n">max_allowed_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">max_dt</span>
+
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">EvAdventureDungeonBranch</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">&lt;</span> <span class="n">max_allowed_date</span><span class="p">:</span>
+                <span class="c1"># branch is too old; tell it to clean up and delete itself</span>
+                <span class="n">branch</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="EvAdventureStartRoomResetter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureStartRoomResetter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
@@ -509,33 +532,6 @@
         <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">exi</span><span class="p">,</span> <span class="n">EvAdventureDungeonStartRoomExit</span><span class="p">)</span> <span class="ow">and</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
                 <span class="n">exi</span><span class="o">.</span><span class="n">reset_exit</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Cleanup script. After some time a dungeon branch will &#39;collapse&#39;, forcing all players in it</span>
-<span class="sd">    back to the start room.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># set at creation time when the start room is created</span>
-    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_branch_deleter&quot;</span></div>
-
-<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Go through all dungeon-orchestrators and find which ones are too old.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">max_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">)</span>
-        <span class="n">max_allowed_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">max_dt</span>
-
-        <span class="k">for</span> <span class="n">orchestrator</span> <span class="ow">in</span> <span class="n">EvAdventureDungeonOrchestrator</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">&lt;</span> <span class="n">max_allowed_date</span><span class="p">:</span>
-                <span class="c1"># orchestrator is too old; tell it to clean up and delete itself</span>
-                <span class="n">orchestrator</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="EvAdventureDungeonStartRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoom">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonStartRoom</span><span class="p">(</span><span class="n">EvAdventureDungeonRoom</span><span class="p">):</span>
