@@ -238,7 +238,7 @@ Tweak this file as follows:
 ```python
 # in mygame/commands/default_cmdsets.py 
 
-# ,.. 
+# ... 
 
 from . import mycommands    # <-------  
 
@@ -298,9 +298,6 @@ Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and
 
 ```{code-block} python
 # in mygame/commands/mycommands.py
-
-:linenos:
-:emphasize-lines: 3,4,11,14,15,17,18,19,21
 
 # ...
 
