@@ -7,6 +7,7 @@
   adding line breaks in hook returns. (InspectorCaracal)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
+- Doc: Added Beginner Tutorial lessons for AI and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
