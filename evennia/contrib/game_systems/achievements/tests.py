@@ -34,15 +34,10 @@ _dummy_achievements = {
 }
 
 
-def _dummy_achieve_loader():
-    """returns predefined achievement data for testing instead of loading"""
-    return _dummy_achievements
-
-
 class TestAchievements(BaseEvenniaTest):
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_completion(self):
         """no defined count means a single match completes it"""
@@ -52,8 +47,8 @@ class TestAchievements(BaseEvenniaTest):
         )
 
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_counter_progress(self):
         """progressing a counter should update the achiever"""
@@ -66,19 +61,19 @@ class TestAchievements(BaseEvenniaTest):
         achievements.track_achievements(self.char1, "get", "thing")
         self.assertEqual(self.char1.db.achievements["COUNTING_ACHIEVE"]["progress"], 2)
 
-        # also verify that `get_progress` returns the correct data
-        self.assertEqual(achievements.get_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 2})
+        # also verify that `get_achievement_progress` returns the correct data
+        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 2})
 
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_prereqs(self):
         """verify progress is not counted on achievements with unmet prerequisites"""
         achievements.track_achievements(self.char1, "get", "thing")
         # this should mark progress on COUNTING_ACHIEVE, but NOT on COUNTING_TWO
-        self.assertEqual(achievements.get_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 1})
-        self.assertEqual(achievements.get_progress(self.char1, "COUNTING_TWO"), {})
+        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 1})
+        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_TWO"), {})
 
         # now we complete COUNTING_ACHIEVE...
         self.assertIn(
@@ -86,21 +81,21 @@ class TestAchievements(BaseEvenniaTest):
         )
         # and track again to progress COUNTING_TWO
         achievements.track_achievements(self.char1, "get", "thing")
-        self.assertEqual(achievements.get_progress(self.char1, "COUNTING_TWO"), {"progress": 1})
+        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_TWO"), {"progress": 1})
 
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_separate_tracking(self):
         """achievements with 'tracking_type': 'separate' should count progress for each item"""
         # getting one item only increments that one item
         achievements.track_achievements(self.char1, "get", "apple")
-        progress = achievements.get_progress(self.char1, "SEPARATE_ITEMS")
+        progress = achievements.get_achievement_progress(self.char1, "SEPARATE_ITEMS")
         self.assertEqual(progress["progress"], [1, 0])
         # the other item then increments that item
         achievements.track_achievements(self.char1, "get", "pear")
-        progress = achievements.get_progress(self.char1, "SEPARATE_ITEMS")
+        progress = achievements.get_achievement_progress(self.char1, "SEPARATE_ITEMS")
         self.assertEqual(progress["progress"], [1, 1])
         # completing one does not complete the achievement
         self.assertEqual(
@@ -112,8 +107,8 @@ class TestAchievements(BaseEvenniaTest):
         )
 
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_search_achievement(self):
         """searching for achievements by name"""
@@ -123,8 +118,8 @@ class TestAchievements(BaseEvenniaTest):
 
 class TestAchieveCommand(BaseEvenniaCommandTest):
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_switches(self):
         # print only achievements that have no prereqs
@@ -158,8 +153,8 @@ class TestAchieveCommand(BaseEvenniaCommandTest):
         )
 
     @patch(
-        "evennia.contrib.game_systems.achievements.achievements._load_achievements",
-        _dummy_achieve_loader,
+        "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
+        _dummy_achievements,
     )
     def test_search(self):
         # by default, only returns matching items that are trackable
