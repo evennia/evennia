@@ -38,7 +38,7 @@ To add achievement tracking, put `track_achievements` in your relevant hooks.
 Example:
 
     def at_use(self, user, **kwargs):
-        # track this use for any achievements about using an object named our name
+        # track this use for any achievements that are categorized as "use" and are tracking something that matches our key
         finished_achievements = track_achievements(user, category="use", tracking=self.key)
 
 Despite the example, it's likely to be more useful to reference a tag than the object's key.
@@ -53,30 +53,61 @@ from evennia.commands.default.muxcommand import MuxCommand
 
 # this is either a string of the attribute name, or a tuple of strings of the attribute name and category
 _ACHIEVEMENT_ATTR = make_iter(getattr(settings, "ACHIEVEMENT_CONTRIB_ATTRIBUTE", "achievements"))
+_ATTR_KEY = _ACHIEVEMENT_ATTR[0]
+_ATTR_CAT = _ACHIEVEMENT_ATTR[1] if len(_ACHIEVEMENT_ATTR) > 1 else None
 
-_ACHIEVEMENT_INFO = None
+# load the achievements data
+_ACHIEVEMENT_DATA = {}
+if modules := getattr(settings, "ACHIEVEMENT_CONTRIB_MODULES", None):
+    for module_path in make_iter(modules):
+        module_achieves = {
+            val.key("key", key).lower(): val
+            for key, val in all_from_module(module_path).items()
+            if isinstance(val, dict) and not key.startswith("_")
+        }
+        if any(key in _ACHIEVEMENT_DATA for key in module_achieves.keys()):
+            logger.log_warn(
+                "There are conflicting achievement keys! Only the last achievement registered to the key will be recognized."
+            )
+        _ACHIEVEMENT_DATA |= module_achieves
+else:
+    logger.log_warn("No achievement modules have been added to settings.")
 
 
-def _load_achievements():
+def _read_player_data(achiever):
     """
-    Loads the achievement data from settings, if it hasn't already been loaded.
+    helper function to get a player's achievement data from the database.
+
+    Args:
+        achiever (Object or Account):   The achieving entity
 
     Returns:
-        achievements (dict) - the loaded achievement info
+        dict:  The deserialized achievement data.
     """
-    global _ACHIEVEMENT_INFO
-    if _ACHIEVEMENT_INFO is None:
-        _ACHIEVEMENT_INFO = {}
-        if modules := getattr(settings, "ACHIEVEMENT_CONTRIB_MODULES", None):
-            for module_path in make_iter(modules):
-                _ACHIEVEMENT_INFO |= {
-                    key: val
-                    for key, val in all_from_module(module_path).items()
-                    if isinstance(val, dict) and not key.startswith('_')
-                }
-        else:
-            logger.log_warn("No achievement modules have been added to settings.")
-    return _ACHIEVEMENT_INFO
+    if data := achiever.attributes.get(_ATTR_KEY, default={}, category=_ATTR_CAT):
+        # detach the data from the db
+        data.deserialize()
+    # return the data
+    return data
+
+
+def _write_player_data(achiever, data):
+    """
+    helper function to write a player's achievement data to the database.
+
+    Args:
+        achiever (Object or Account):  The achieving entity
+        data (dict):  The full achievement data for this entity.
+
+    Returns:
+        None
+
+    Notes:
+        This function will overwrite any existing achievement data for the entity.
+    """
+    if not isinstance(data, dict):
+        raise ValueError("Achievement data must be a dict.")
+    achiever.attributes.add(_ATTR_KEY, data, category=_ATTR_CAT)
 
 
 def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs):
@@ -91,26 +122,25 @@ def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs
         tracking (str or None):  The specific item being tracked in the achievement.
 
     Returns:
-        completed (tuple):  The keys of any achievements that were completed by this update.
+        tuple:  The keys of any achievements that were completed by this update.
     """
-    if not (all_achievements := _load_achievements()):
+    if not _ACHIEVEMENT_DATA:
         # there are no achievements available, there's nothing to do
         return tuple()
 
-    # split out the achievement attribute info
-    attr_key = _ACHIEVEMENT_ATTR[0]
-    attr_cat = _ACHIEVEMENT_ATTR[1] if len(_ACHIEVEMENT_ATTR) > 1 else None
-
-    # get the achiever's progress data, and detach from the db so we only read/write once
-    if progress_data := achiever.attributes.get(attr_key, default={}, category=attr_cat):
-        progress_data = progress_data.deserialize()
+    # get the achiever's progress data
+    progress_data = _read_player_data(achiever)
 
     # filter all of the achievements down to the relevant ones
     relevant_achievements = (
         (key, val)
-        for key, val in all_achievements.items()
-        if (not category or category in make_iter(val.get("category",[])))  # filter by category
-        and (not tracking or not val.get("tracking") or tracking in make_iter(val.get("tracking",[])))  # filter by tracked item
+        for key, val in _ACHIEVEMENT_DATA.items()
+        if (not category or category in make_iter(val.get("category", [])))  # filter by category
+        and (
+            not tracking
+            or not val.get("tracking")
+            or tracking in make_iter(val.get("tracking", []))
+        )  # filter by tracked item
         and not progress_data.get(key, {}).get("completed")  # filter by completion status
         and all(
             progress_data.get(prereq, {}).get("completed")
@@ -121,7 +151,7 @@ def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs
     completed = []
     # loop through all the relevant achievements and update the progress data
     for achieve_key, achieve_data in relevant_achievements:
-        if target_count := achieve_data.get("count"):
+        if target_count := achieve_data.get("count", 1):
             # check if we need to track things individually or not
             separate_totals = achieve_data.get("tracking_type", "sum") == "separate"
             if achieve_key not in progress_data:
@@ -156,7 +186,7 @@ def track_achievements(achiever, category=None, tracking=None, count=1, **kwargs
         progress_data[key]["completed"] = True
 
     # write the updated progress back to the achievement attribute
-    achiever.attributes.add(attr_key, progress_data, category=attr_cat)
+    _write_player_data(achiever, progress_data)
 
     # return all the achievements we just completed
     return tuple(completed)
@@ -172,10 +202,10 @@ def get_achievement(key):
     Returns:
         dict or None: The achievement data, or None if it doesn't exist
     """
-    if not (all_achievements := _load_achievements()):
+    if not _ACHIEVEMENT_DATA:
         # there are no achievements available, there's nothing to do
         return None
-    if data := all_achievements.get(key):
+    if data := _ACHIEVEMENT_DATA.get(key.lower()):
         return dict(data)
     return None
 
@@ -183,12 +213,15 @@ def get_achievement(key):
 def all_achievements():
     """
     Returns a dict of all achievements in the game.
+
+    Returns:
+      dict
     """
-    # we do this to prevent accidental in-memory modification of reference data
-    return dict((key, dict(val)) for key, val in _load_achievements().items())
+    # we do this to mitigate accidental in-memory modification of reference data
+    return dict((key, dict(val)) for key, val in _ACHIEVEMENT_DATA.items())
 
 
-def get_progress(achiever, key):
+def get_achievement_progress(achiever, key):
     """
     Retrieve the progress data on a particular achievement for a particular achiever.
 
@@ -197,14 +230,11 @@ def get_progress(achiever, key):
         key (str): The achievement key
 
     Returns:
-        data (dict): The progress data
+        dict: The progress data
     """
-    # split out the achievement attribute info
-    attr_key = _ACHIEVEMENT_ATTR[0]
-    attr_cat = _ACHIEVEMENT_ATTR[1] if len(_ACHIEVEMENT_ATTR) > 1 else None
-    if progress_data := achiever.attributes.get(attr_key, default={}, category=attr_cat):
-        # detach the data from the db to avoid data corruption and return the data
-        return progress_data.deserialize().get(key, {})
+    if progress_data := _read_player_data(achiever):
+        # get the specific key's data
+        return progress_data.get(key, {})
     else:
         # just return an empty dict
         return {}
@@ -212,21 +242,26 @@ def get_progress(achiever, key):
 
 def search_achievement(search_term):
     """
-    Search for an achievement by name.
+    Search for an achievement containing the search term. If no matches are found in the achievement names, it searches
+    in the achievement descriptions.
 
     Args:
         search_term (str):  The string to search for.
 
     Returns:
-        results (dict):  A dict of key:data pairs of matching achievements.
+        dict:  A dict of key:data pairs of matching achievements.
     """
-    if not (all_achievements := _load_achievements()):
+    if not _ACHIEVEMENT_DATA:
         # there are no achievements available, there's nothing to do
         return {}
-    keys, names = zip(*((key, val["name"]) for key, val in all_achievements.items()))
+    keys, names, descs = zip(
+        *((key, val["name"], val["desc"]) for key, val in _ACHIEVEMENT_DATA.items())
+    )
     indices = string_partial_matching(names, search_term)
+    if not indices:
+        indices = string_partial_matching(descs, search_term)
 
-    return dict((keys[i], dict(all_achievements[keys[i]])) for i in indices)
+    return dict((keys[i], dict(_ACHIEVEMENT_DATA[keys[i]])) for i in indices)
 
 
 class CmdAchieve(MuxCommand):
@@ -256,8 +291,15 @@ class CmdAchieve(MuxCommand):
     aliases = (
         "achievement",
         "achieve",
+        "achieves",
     )
     switch_options = ("progress", "completed", "done", "all")
+
+    template = """\
+|w{name}|n
+{desc}
+{status}
+""".rstrip()
 
     def format_achievement(self, achievement_data):
         """
@@ -270,11 +312,6 @@ class CmdAchieve(MuxCommand):
             str: The display string to be sent to the caller.
 
         """
-        template = """\
-|w{name}|n
-{desc}
-{status}
-""".rstrip()
 
         if achievement_data.get("completed"):
             # it's done!
@@ -293,7 +330,7 @@ class CmdAchieve(MuxCommand):
                 pct = (achievement_data["progress"] * 100) // count
             status = f"{pct}% complete"
 
-        return template.format(
+        return self.template.format(
             name=achievement_data.get("name", ""),
             desc=achievement_data.get("desc", ""),
             status=status,
@@ -311,19 +348,10 @@ class CmdAchieve(MuxCommand):
                 self.msg("There are no achievements in this game.")
                 return
 
-        # split out the achievement attribute info
-        attr_key = _ACHIEVEMENT_ATTR[0]
-        attr_cat = _ACHIEVEMENT_ATTR[1] if len(_ACHIEVEMENT_ATTR) > 1 else None
-
-        # get the achiever's progress data, and detach from the db so we only read once
-        if progress_data := self.caller.attributes.get(attr_key, default={}, category=attr_cat):
-            progress_data = progress_data.deserialize()
-        # if the caller is not an account, we get their account progress too
+        # get the achiever's progress data
+        progress_data = _read_player_data(self.caller)
         if self.caller != self.account:
-            if account_progress := self.account.attributes.get(
-                attr_key, default={}, category=attr_cat
-            ):
-                progress_data |= account_progress.deserialize()
+            progress_data |= _read_player_data(self.account)
 
         # go through switch options
         # we only show achievements that are in progress
