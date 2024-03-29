@@ -237,7 +237,7 @@ class CraftingRecipeBase:
             **kwargs: Any optional properties relevant to this send.
 
         """
-        self.crafter.msg(message, {"type": "crafting"})
+        self.crafter.msg(text=(message, {"type": "crafting"}))
 
     def pre_craft(self, **kwargs):
         """
