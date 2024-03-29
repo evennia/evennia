@@ -62,7 +62,9 @@ class TestAchievements(BaseEvenniaTest):
         self.assertEqual(self.char1.db.achievements["COUNTING_ACHIEVE"]["progress"], 2)
 
         # also verify that `get_achievement_progress` returns the correct data
-        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 2})
+        self.assertEqual(
+            achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 2}
+        )
 
     @patch(
         "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",
@@ -72,7 +74,9 @@ class TestAchievements(BaseEvenniaTest):
         """verify progress is not counted on achievements with unmet prerequisites"""
         achievements.track_achievements(self.char1, "get", "thing")
         # this should mark progress on COUNTING_ACHIEVE, but NOT on COUNTING_TWO
-        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 1})
+        self.assertEqual(
+            achievements.get_achievement_progress(self.char1, "COUNTING_ACHIEVE"), {"progress": 1}
+        )
         self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_TWO"), {})
 
         # now we complete COUNTING_ACHIEVE...
@@ -81,7 +85,9 @@ class TestAchievements(BaseEvenniaTest):
         )
         # and track again to progress COUNTING_TWO
         achievements.track_achievements(self.char1, "get", "thing")
-        self.assertEqual(achievements.get_achievement_progress(self.char1, "COUNTING_TWO"), {"progress": 1})
+        self.assertEqual(
+            achievements.get_achievement_progress(self.char1, "COUNTING_TWO"), {"progress": 1}
+        )
 
     @patch(
         "evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA",

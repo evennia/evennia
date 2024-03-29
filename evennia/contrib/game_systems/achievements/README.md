@@ -2,6 +2,8 @@
 
 A simple, but reasonably comprehensive, system for tracking achievements. Achievements are defined using ordinary Python dicts, reminiscent of the core prototypes system, and while it's expected you'll use it only on Characters or Accounts, they can be tracked for any typeclassed object.
 
+The contrib provides several functions for tracking and accessing achievements, as well as a basic in-game command for viewing achievement status.
+
 ## Creating achievements
 
 This achievement system is designed to use ordinary dicts for the achievement data - however, there are certain keys which, if present in the dict, define how the achievement is progressed or completed.
@@ -92,14 +94,24 @@ ACHIEVEMENT_CONTRIB_ATTRIBUTE = ("achievement_data", "systems")
 
 The primary mechanism for using the achievements system is the `track_achievements` function. In any actions or functions in your game's mechanics which you might want to track in an achievement, add a call to `track_achievements` to update the achievement progress for that individual.
 
-For example, you might have a collection achievement for buying 10 apples, and a general `buy` command players could use. In your `buy` command, after the purchase is completed, you could add the following line:
+Using the "kill 10 rats" example achievement from earlier, you might have some code that triggers when a character is defeated: for the sake of example, we'll pretend we have an `at_defeated` method on the base Object class that gets called when the Object is defeated.
+
+Adding achievement tracking to it could then look something like this:
 
 ```python
-		from contrib.game_systems.achievements import track_achievements
-    track_achievements(self.caller, category="buy", tracking=obj.name, count=quantity)
+from contrib.game_systems.achievements import track_achievements
+
+class Object(ObjectParent, DefaultObject):
+    # ....
+
+    def at_defeated(self, victor):
+        """called when this object is defeated in combat"""
+        # we'll use the "mob_type" tag category as the tracked information for achievements
+        mob_type = self.tags.get(category="mob_type")
+        track_achievements(victor, category="defeated", tracking=mob_type, count=1)
 ```
 
-In this case, `obj` is the fruit that was just purchased, and `quantity` is the amount they bought.
+If a player defeats something tagged `rat` with a tag category of `mob_type`, it'd now count towards the rat-killing achievement.
 
 The `track_achievements` function does also return a value: an iterable of keys for any achievements which were newly completed by that update. You can ignore this value, or you can use it to e.g. send a message to the player with their latest achievements.
 

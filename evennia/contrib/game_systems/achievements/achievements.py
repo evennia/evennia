@@ -7,23 +7,27 @@ Achievements are defined as dicts, loosely similar to the prototypes system.
 
 An example of an achievement dict:
 
-    EXAMPLE_ACHIEVEMENT = {
-        "name": "Some Achievement",
-        "desc": "This is not a real achievement.",
-        "category": "crafting",
-        "tracking": "box",
-        "count": 5,
-        "prereqs": "ANOTHER_ACHIEVEMENT",
+    ACHIEVE_DIRE_RATS = {
+        "name": "Once More, But Bigger",
+        "desc": "Somehow, normal rats just aren't enough any more.",
+        "category": "defeat",
+        "tracking": "dire rat",
+        "count": 10,
+        "prereqs": "ACHIEVE_TEN_RATS",
     }
 
 The recognized fields for an achievement are:
 
+- key (str): The unique, case-insensitive key identifying this achievement. The variable name is
+        used by default.
 - name (str): The name of the achievement. This is not the key and does not need to be unique.
 - desc (str): The longer description of the achievement. Common uses for this would be flavor text
         or hints on how to complete it.
-- category (str): The type of things this achievement tracks. e.g. visiting 10 locations might have
-        a category of "post move", or killing 10 rats might have a category of "defeat".
-- tracking (str or list): The *specific* thing this achievement tracks. e.g. the above example of
+- category (str): The category of conditions which this achievement tracks. It will most likely be 
+        an action and you will most likely specify it based on where you're checking from.
+        e.g. killing 10 rats might have a category of "defeat", which you'd then check from your code
+        that runs when a player defeats something.
+- tracking (str or list): The specific condition this achievement tracks. e.g. for the above example of
         10 rats, the tracking field would be "rat".
 - tracking_type: The options here are "sum" and "separate". "sum" means that matching any tracked
         item will increase the total. "separate" means all tracked items are counted individually.
@@ -37,11 +41,12 @@ To add achievement tracking, put `track_achievements` in your relevant hooks.
 
 Example:
 
-    def at_use(self, user, **kwargs):
-        # track this use for any achievements that are categorized as "use" and are tracking something that matches our key
-        finished_achievements = track_achievements(user, category="use", tracking=self.key)
+    def at_defeated(self, victor):
+        # called when this object is defeated in combat
+        # we'll use the "mob_type" tag category as the tracked information for achievements
+        mob_type = self.tags.get(category="mob_type")
+        track_achievements(victor, category="defeated", tracking=mob_type, count=1)
 
-Despite the example, it's likely to be more useful to reference a tag than the object's key.
 """
 
 from collections import Counter
@@ -86,7 +91,7 @@ def _read_player_data(achiever):
     """
     if data := achiever.attributes.get(_ATTR_KEY, default={}, category=_ATTR_CAT):
         # detach the data from the db
-        data.deserialize()
+        data = data.deserialize()
     # return the data
     return data
 
