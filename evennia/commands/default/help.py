@@ -953,7 +953,7 @@ class CmdSetHelp(CmdHelp):
             else:
                 helpentry = create.create_help_entry(
                     topicstr,
-                    self.rhs,
+                    self.rhs if self.rhs is not None else "",
                     category=category,
                     locks=lockstring,
                     aliases=aliases,
