@@ -66,7 +66,7 @@ _ACHIEVEMENT_DATA = {}
 if modules := getattr(settings, "ACHIEVEMENT_CONTRIB_MODULES", None):
     for module_path in make_iter(modules):
         module_achieves = {
-            val.key("key", key).lower(): val
+            val.get("key", key).lower(): val
             for key, val in all_from_module(module_path).items()
             if isinstance(val, dict) and not key.startswith("_")
         }
@@ -93,7 +93,7 @@ def _read_player_data(achiever):
         # detach the data from the db
         data = data.deserialize()
     # return the data
-    return data
+    return data or {}
 
 
 def _write_player_data(achiever, data):
@@ -110,8 +110,6 @@ def _write_player_data(achiever, data):
     Notes:
         This function will overwrite any existing achievement data for the entity.
     """
-    if not isinstance(data, dict):
-        raise ValueError("Achievement data must be a dict.")
     achiever.attributes.add(_ATTR_KEY, data, category=_ATTR_CAT)
 
 
@@ -324,12 +322,12 @@ class CmdAchieve(MuxCommand):
         elif not achievement_data.get("progress"):
             status = "|yNot Started|n"
         else:
-            count = achievement_data.get("count")
+            count = achievement_data.get("count",1)
             # is this achievement tracking items separately?
             if is_iter(achievement_data["progress"]):
                 # we'll display progress as how many items have been completed
                 completed = Counter(val >= count for val in achievement_data["progress"])[True]
-                pct = (completed * 100) // count
+                pct = (completed * 100) // len(achievement_data['progress'])
             else:
                 # we display progress as the percent of the total count
                 pct = (achievement_data["progress"] * 100) // count
@@ -380,7 +378,10 @@ class CmdAchieve(MuxCommand):
         # we show ALL achievements
         elif "all" in self.switches:
             # we merge our progress data into the full dict of achievements
-            achievement_data = achievements | progress_data
+            achievement_data = {
+                key: data | progress_data.get(key, {})
+                for key, data in achievements.items()
+            }
 
         # we show all of the currently available achievements regardless of progress status
         else:
