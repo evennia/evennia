@@ -235,7 +235,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         self.assertEqual(result[0].key, "Result1")
         self.assertEqual(result[0].tags.all(), ["result1", "resultprot"])
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+            text=(recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
         )
 
         # make sure consumables are gone
