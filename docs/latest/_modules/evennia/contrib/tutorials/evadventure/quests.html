@@ -106,9 +106,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
-
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">QuestStatus</span>
 
 
 <div class="viewcode-block" id="EvAdventureQuest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureQuest</span><span class="p">:</span>
@@ -132,11 +130,11 @@
 
 <span class="sd">        start_step = &quot;A&quot;</span>
 
-<span class="sd">        help_A = &quot;You need a &#39;_quest_A_flag&#39; on yourself to finish this step!&quot;</span>
+<span class="sd">        help_A = &quot;You need a &#39;A_flag&#39; attribute on yourself to finish this step!&quot;</span>
 <span class="sd">        help_B = &quot;Finally, you need more than 4 items in your inventory!&quot;</span>
 
 <span class="sd">        def step_A(self, *args, **kwargs):</span>
-<span class="sd">            if self.quester.db._quest_A_flag == True:</span>
+<span class="sd">            if self.get_data(&quot;A_flag&quot;) == True:</span>
 <span class="sd">                self.quester.msg(&quot;Completed the first step of the quest.&quot;)</span>
 <span class="sd">                self.current_step = &quot;end&quot;</span>
 <span class="sd">                self.progress()</span>
@@ -159,21 +157,16 @@
     <span class="n">help_start</span> <span class="o">=</span> <span class="s2">&quot;You need to start first&quot;</span>
     <span class="n">help_end</span> <span class="o">=</span> <span class="s2">&quot;You need to end the quest&quot;</span>
 
-<div class="viewcode-block" id="EvAdventureQuest.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quester</span><span class="p">,</span> <span class="n">start_step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureQuest.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quester</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The Quest name must not have spaces in it.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">quester</span> <span class="o">=</span> <span class="n">quester</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">start_step</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_completed</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_abandoned</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;current_step&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quester</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">quester</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbunserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -186,14 +179,73 @@
     <span class="nd">@current_step</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">step_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;current_step&quot;</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">STARTED</span><span class="p">)</span>
+
+    <span class="nd">@status</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_abandoned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">ABANDONED</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">FAILED</span>
+
+<div class="viewcode-block" id="EvAdventureQuest.add_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add data to the quest. This saves it permanently.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key to store the data under.</span>
+<span class="sd">            value (any): The data to store.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureQuest.remove_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.remove_data">[docs]</a>    <span class="k">def</span> <span class="nf">remove_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove data from the quest permanently.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key to remove.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureQuest.get_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get data from the quest.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key to get data for.</span>
+<span class="sd">            default (any, optional): The default value to return if key is not found.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            any: The data stored under the key.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.abandon"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandon">[docs]</a>    <span class="k">def</span> <span class="nf">abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call when quest is abandoned.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_abandoned</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">ABANDONED</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">clean_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.complete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete">[docs]</a>    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -201,7 +253,8 @@
 <span class="sd">        Call this to end the quest.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_completed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">QuestStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">clean_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.progress"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -214,8 +267,7 @@
 <span class="sd">            *args, **kwargs: Will be passed into the step method.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_completed</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_abandoned</span><span class="p">):</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.help">[docs]</a>    <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -254,8 +306,9 @@
 <div class="viewcode-block" id="EvAdventureQuest.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called both when completing the quest, or when it is abandoned prematurely.</span>
-<span class="sd">        Make sure to cleanup any quest-related data stored when following the quest.</span>
 
+<span class="sd">        This is for cleaning up any extra state that were set during the quest (stuff in self.data</span>
+<span class="sd">        is automatically cleaned up)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
@@ -277,26 +330,83 @@
     <span class="n">quest_storage_attribute_key</span> <span class="o">=</span> <span class="s2">&quot;_quests&quot;</span>
     <span class="n">quest_storage_attribute_category</span> <span class="o">=</span> <span class="s2">&quot;evadventure&quot;</span>
 
+    <span class="n">quest_data_attribute_template</span> <span class="o">=</span> <span class="s2">&quot;_quest_data_</span><span class="si">{quest_key}</span><span class="s2">&quot;</span>
+    <span class="n">quest_data_attribute_category</span> <span class="o">=</span> <span class="s2">&quot;evadventure&quot;</span>
+
 <div class="viewcode-block" id="EvAdventureQuestHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quests</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_key</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_category</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
         <span class="p">)</span>
+        <span class="c1"># instantiate all quests</span>
+        <span class="k">for</span> <span class="n">quest_key</span><span class="p">,</span> <span class="n">quest_class</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_quest_data</span><span class="p">(</span><span class="n">quest_key</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_key</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_category</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>  <span class="c1"># important</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="EvAdventureQuestHandler.save_quest_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.save_quest_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save data for a quest. We store this on the quester as well as updating the quest itself.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): The data to store. This is commonly flags or other data needed to track the</span>
+<span class="sd">                quest.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">quest</span><span class="p">:</span>
+            <span class="n">quest</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quest_key</span><span class="o">=</span><span class="n">quest_key</span><span class="p">),</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_category</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureQuestHandler.load_quest_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.load_quest_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load data for a quest.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            quest_key (str): The quest to load data for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The data stored for the quest.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quest_key</span><span class="o">=</span><span class="n">quest_key</span><span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_category</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureQuestHandler.clean_quest_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.clean_quest_data">[docs]</a>    <span class="k">def</span> <span class="nf">clean_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove data for a quest.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            quest_key (str): The quest to remove data for.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quest_key</span><span class="o">=</span><span class="n">quest_key</span><span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_category</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.has"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -310,7 +420,7 @@
 <span class="sd">            bool: If the character is following this quest or not.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -324,17 +434,17 @@
 <span class="sd">                Character is not on this quest.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureQuestHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureQuestHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_class</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new quest</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            quest (EvAdventureQuest): The quest class to start.</span>
+<span class="sd">            quest_class (EvAdventureQuest): The quest class to start.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">quest</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="p">[</span><span class="n">quest_class</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
@@ -345,10 +455,11 @@
 <span class="sd">            quest_key (str): The quest to remove.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quest</span><span class="o">.</span><span class="n">is_completed</span><span class="p">:</span>
             <span class="c1"># make sure to cleanup</span>
             <span class="n">quest</span><span class="o">.</span><span class="n">abandon</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -366,10 +477,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">help_texts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">quest_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
-            <span class="n">quests</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">quest_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">:</span>
+            <span class="n">quests</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">quests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="n">quests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">quest</span> <span class="ow">in</span> <span class="n">quests</span><span class="p">:</span>
             <span class="n">help_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">quest</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">quest</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">quest</span><span class="o">.</span><span class="n">help</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -385,10 +496,10 @@
 <span class="sd">            *args, **kwargs: Will be passed into each quest&#39;s `progress` call.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">quest_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
-            <span class="n">quests</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">quest_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">:</span>
+            <span class="n">quests</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">quests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="n">quests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">quest</span> <span class="ow">in</span> <span class="n">quests</span><span class="p">:</span>
             <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

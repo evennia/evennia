@@ -114,10 +114,13 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="game-quests">
 <h1><span class="section-number">14. </span>Game Quests<a class="headerlink" href="#game-quests" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This part of the Beginner tutorial is still being developed.</p>
-</div>
+<p>A <em>quest</em> is a common feature of games. From classic fetch-quests like retrieving 10 flowers to complex quest chains involving drama and intrigue, quests need to be properly tracked in our game.</p>
+<p>A quest follows a specific development:</p>
+<ol class="simple">
+<li><p>The quest is <em>started</em>. This normally involves the player accepting the quest, from a quest-giver, job board or other source. But the quest could also be thrust on the player (“save the family from the burning house before it collapses!”)</p></li>
+<li><p>A quest may consist of one or more ‘steps’. Each step has its own set of finish conditions.</p></li>
+<li><p>At suitable times the quest is <em>checked</em>. This could happen on a timer or when trying to ‘hand in’ the quest. When checking, the current ‘step’ is checked against its finish conditions. If ok, that step is closed and the next step is checked until it either hits a step that is not yet complete, or there are no more steps, in which case the entire quest is complete.</p></li>
+</ol>
 </section>
 
 
