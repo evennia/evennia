@@ -7,11 +7,23 @@
   adding line breaks in hook returns. (InspectorCaracal)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
+- [Fix][pull3453]: Object aliases not showing in search multi-match
+  disambiguation display (chiizujin)
+- [Fix][pull3455]: `sethelp/edit <topic>` without a `= text` created a `None`
+  entry that would lose the edit. (chiiziujin)
+- [Fix][pull3456]: `format_grid` utility used for `help` command caused commands
+  to disappear for wider client widths (chiizujin)
+- [Fix][pull3457]: Help topic categories with different case would appear as
+  duplicates (chiizujin)
 - Doc: Added Beginner Tutorial lessons for AI and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
 [pull3446]: https://github.com/evennia/evennia/pull/3446
+[pull3453]: https://github.com/evennia/evennia/pull/3453
+[pull3455]: https://github.com/evennia/evennia/pull/3455
+[pull3456]: https://github.com/evennia/evennia/pull/3456
+[pull3457]: https://github.com/evennia/evennia/pull/3457
 
 ## Evennia 4.0.0
 
