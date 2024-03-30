@@ -17,7 +17,7 @@
   to disappear for wider client widths (chiizujin)
 - [Fix][pull3457]: Help topic categories with different case would appear as
   duplicates (chiizujin)
-- Doc: Added Beginner Tutorial lessons for AI and Procedural dungeon (Griatch)
+- Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
