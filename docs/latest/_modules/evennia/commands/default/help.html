@@ -872,13 +872,14 @@
 <span class="sd">    Edit the help database.</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      sethelp[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</span>
-
+<span class="sd">      sethelp[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]]</span>
+<span class="sd">                [= &lt;text or new category&gt;]</span>
 <span class="sd">    Switches:</span>
 <span class="sd">      edit - open a line editor to edit the topic&#39;s help text.</span>
 <span class="sd">      replace - overwrite existing help topic.</span>
 <span class="sd">      append - add text to the end of existing topic with a newline between.</span>
 <span class="sd">      extend - as append, but don&#39;t add a newline.</span>
+<span class="sd">      category - change category of existing help topic.</span>
 <span class="sd">      delete - remove help topic.</span>
 
 <span class="sd">    Examples:</span>
@@ -886,6 +887,7 @@
 <span class="sd">      sethelp/append pickpocketing,Thievery = This steals ...</span>
 <span class="sd">      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...</span>
 <span class="sd">      sethelp/edit thievery</span>
+<span class="sd">      sethelp/category thievery = classes</span>
 
 <span class="sd">    If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category</span>
 <span class="sd">    will be used. If no lockstring is specified, everyone will be able to read</span>
@@ -932,7 +934,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sethelp&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;extend&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;extend&quot;</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Helper)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
@@ -949,7 +951,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="s2">&quot;Usage: sethelp[/switches] &lt;topic&gt;[;alias;alias][,category[,locks,..] = &lt;text&gt;&quot;</span>
+                <span class="s2">&quot;Usage: sethelp[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text or new category&gt;]&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -1045,7 +1047,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">helpentry</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_help_entry</span><span class="p">(</span>
                     <span class="n">topicstr</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                     <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
                     <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
                     <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
@@ -1076,6 +1078,19 @@
                 <span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
             <span class="n">old_entry</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entry updated:</span><span class="se">\n</span><span class="si">{</span><span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span><span class="si">}{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># set the category</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_entry</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find topic &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must supply a category.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">old_entry</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Category for entry &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2"> changed to &#39;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;del&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>

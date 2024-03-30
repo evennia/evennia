@@ -119,16 +119,15 @@
 <span id="evennia-contrib-tutorials-evadventure-quests"></span><h1>evennia.contrib.tutorials.evadventure.quests<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.quests" title="Permalink to this headline">¶</a></h1>
 <p>A simple quest system for EvAdventure.</p>
 <p>A quest is represented by a quest-handler sitting as
-.quest on a Character. Individual Quests are objects
-that track the state and can have multiple steps, each
-of which are checked off during the quest’s progress.</p>
-<p>The player can use the quest handler to track the
-progress of their quests.</p>
+<strong>.quests</strong> on a Character. Individual Quests are child classes of <strong>EvAdventureQuest</strong> with
+methods for each step of the quest. The quest handler can add, remove, and track the progress
+by calling the <strong>progress</strong> method on the quest. Persistent changes are stored on the quester
+using the <strong>add_data</strong> and <strong>get_data</strong> methods with an Attribute as storage backend.</p>
 <p>A quest ending can mean a reward or the start of
 another quest.</p>
 <dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.quests.</code><code class="sig-name descname">EvAdventureQuest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quester</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.quests.</code><code class="sig-name descname">EvAdventureQuest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quester</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This represents a single questing unit of quest.</p>
 <dl class="simple">
@@ -157,7 +156,10 @@ self.progress()</p>
 </dd>
 </dl>
 </dd>
-<dt>def step_end(self, <a href="#id5"><span class="problematic" id="id6">*</span></a>args, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs):</dt><dd><dl class="simple">
+</dl>
+<p>def step_B(self, <a href="#id5"><span class="problematic" id="id6">*</span></a>args, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs):</p>
+<dl class="simple">
+<dt>def step_end(self, <a href="#id9"><span class="problematic" id="id10">*</span></a>args, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs):</dt><dd><dl class="simple">
 <dt>if len(self.quester.contents) &gt; 4:</dt><dd><p>self.quester.msg(“Quest complete!”)
 self.complete()</p>
 </dd>
@@ -167,7 +169,7 @@ self.complete()</p>
 </div></blockquote>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.key">
-<code class="sig-name descname">key</code><em class="property"> = 'basequest'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><em class="property"> = 'base quest'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -178,16 +180,6 @@ self.complete()</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.start_step">
 <code class="sig-name descname">start_step</code><em class="property"> = 'start'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.start_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.completed_text">
-<code class="sig-name descname">completed_text</code><em class="property"> = 'This quest is completed!'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.completed_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandoned_text">
-<code class="sig-name descname">abandoned_text</code><em class="property"> = 'This quest is abandoned.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandoned_text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -202,8 +194,50 @@ self.complete()</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quester</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quester</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data">
+<code class="sig-name descname">add_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add data to the quest. This saves it permanently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key to store the data under.</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – The data to store.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.get_data">
+<code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data from the quest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key to get data for.</p></li>
+<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – The default value to return if key is not found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The data stored under the key.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.remove_data">
+<code class="sig-name descname">remove_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.remove_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.remove_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove data from the quest permanently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to remove.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -237,57 +271,21 @@ self.complete()</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data">
-<code class="sig-name descname">add_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add data to the quest. This saves it permanently.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The key to store the data under.</p></li>
-<li><p><strong>value</strong> (<em>any</em>) – The data to store.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.remove_data">
-<code class="sig-name descname">remove_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.remove_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.remove_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove data from the quest permanently.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to remove.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.get_data">
-<code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.get_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get data from the quest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The key to get data for.</p></li>
-<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – The default value to return if key is not found.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>any</em> – The data stored under the key.</p>
-</dd>
-</dl>
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete">
+<code class="sig-name descname">complete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete the quest.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandon">
 <code class="sig-name descname">abandon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.abandon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call when quest is abandoned.</p>
+<dd><p>Abandon the quest.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete">
-<code class="sig-name descname">complete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call this to end the quest.</p>
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.fail">
+<code class="sig-name descname">fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail the quest.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -305,16 +303,25 @@ out if the step is complete or not.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>self.quester</strong> is available as the character following the quest.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.help">
-<code class="sig-name descname">help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">help</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuest.help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.help" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is used to get help (or a reminder) of what needs to be done to complete the current
-quest-step.</p>
+quest-step. It will look for a <strong>help_&lt;stepname&gt;</strong> method or string attribute on the quest.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str</em> – The help text for the current step.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Will be passed into any help_* method.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Will be passed into any help_* method.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The help text for the current step.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -373,43 +380,6 @@ def quests(self):</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.save_quest_data">
-<code class="sig-name descname">save_quest_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.save_quest_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.save_quest_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save data for a quest. We store this on the quester as well as updating the quest itself.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to store. This is commonly flags or other data needed to track the
-quest.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.load_quest_data">
-<code class="sig-name descname">load_quest_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.load_quest_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.load_quest_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load data for a quest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>quest_key</strong> (<em>str</em>) – The quest to load data for.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>dict</em> – The data stored for the quest.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.clean_quest_data">
-<code class="sig-name descname">clean_quest_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.clean_quest_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.clean_quest_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove data for a quest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>quest_key</strong> (<em>str</em>) – The quest to remove data for.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.has">
 <code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.has" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a given quest is registered with the Character.</p>
@@ -446,6 +416,17 @@ quest.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.all">
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all quests stored on character.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list</em> – All quests stored on character.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.add">
 <code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_class</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new quest</p>
@@ -468,37 +449,88 @@ quest.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get_help">
-<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get_help" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get help text for a quest or for all quests. The help text is
-a combination of the description of the quest and the help-text
-of the current step.</p>
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.save_quest_data">
+<code class="sig-name descname">save_quest_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.save_quest_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.save_quest_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save data for a quest. We store this on the quester as well as updating the quest itself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>quest_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The quest-key. If not given, get help for all
-quests in handler.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list</em> – Help texts, one for each quest, or only one if <strong>quest_key</strong> is given.</p>
+<dd class="field-odd"><p><strong>quest_key</strong> (<em>str</em>) – The quest to save data for. The data is assumed to be stored on the
+quest as <strong>.data</strong> (a dict).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.progress">
-<code class="sig-name descname">progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.progress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check progress of a given quest or all quests.</p>
+<dt id="evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.load_quest_data">
+<code class="sig-name descname">load_quest_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quest_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#EvAdventureQuestHandler.load_quest_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.load_quest_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data for a quest.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>quest_key</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, check the progress of this quest (if we have it),
-otherwise check progress on all quests.</p></li>
-<li><p><strong>*args</strong> – Will be passed into each quest’s <strong>progress</strong> call.</p></li>
-<li><p><strong>**kwargs</strong> – <p>Will be passed into each quest’s <strong>progress</strong> call.</p>
-</p></li>
-</ul>
+<dd class="field-odd"><p><strong>quest_key</strong> (<em>str</em>) – The quest to load data for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dict</em> – The data stored for the quest.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.quests.</code><code class="sig-name descname">CmdQuests</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#CmdQuests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>List all quests and their statuses as well as get info about the status of
+a specific quest.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>quests
+quest &lt;questname&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.key">
+<code class="sig-name descname">key</code><em class="property"> = 'quests'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['quest']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'quest', 'category': 'general', 'key': 'quests', 'no_prefix': ' quest', 'tags': '', 'text': '\n    List all quests and their statuses as well as get info about the status of\n    a specific quest.\n\n    Usage:\n        quests\n        quest &lt;questname&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#CmdQuests.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once the cmdhandler has identified this as the command we
+want, this function is run. If many of your commands have a
+similar syntax (for example ‘cmd arg1 = arg2’) you should
+simply define this once and just let other commands of the
+same form inherit from this. See the docstring of this module
+for which object properties are available to use (notably
+self.args).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.quests.CmdQuests.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/quests.html#CmdQuests.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.quests.CmdQuests.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
 </dd></dl>
 
 </dd></dl>

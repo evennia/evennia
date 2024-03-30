@@ -156,7 +156,7 @@
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/combat_base.py</span></code></p>
 </div></blockquote>
 <aside class="sidebar">
-<p>In <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia-contrib-tutorials-evadventure-combat-base"><span class="std std-ref">evennia/contrib/tutorials/evadventure/combat_base.py</span></a> you’ll find a complete implementation of the base combat module.</p>
+<p>Under <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials/evadventure/</span></code>, in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia-contrib-tutorials-evadventure-combat-base"><span class="std std-ref">combat_base.py</span></a> you’ll find a complete implementation of the base combat module.</p>
 </aside>
 <p>Our “Combat Handler” will handle the administration around combat. It needs to be <em>persistent</em> (even is we reload the server your combat should keep going).</p>
 <p>Creating the CombatHandler is a little of a catch-22 - how it works depends on how Actions and Action-dicts look. But without having the CombatHandler, it’s hard to know how to design Actions and Action-dicts. So we’ll start with its general structure and fill out the details later in this lesson.</p>
@@ -861,7 +861,7 @@
 <div><p>Create a module <code class="docutils literal notranslate"><span class="pre">evadventure/tests/test_combat.py</span></code>.</p>
 </div></blockquote>
 <aside class="sidebar">
-<p>See <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia-contrib-tutorials-evadventure-tests-test-combat"><span class="std std-ref">evennia/contrib/tutorials/evadventure/tests/test_combat.py</span></a> for ready-made combat unit tests.</p>
+<p>Look under <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials/evadventure/</span></code>, in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia-contrib-tutorials-evadventure-tests-test-combat"><span class="std std-ref">tests/test_combat.py</span></a> for ready-made combat unit tests.</p>
 </aside>
 <p>Unit testing the combat base classes can seem impossible because we have not yet implemented most of it. We can however get very far by the use of <a class="reference external" href="https://docs.python.org/3/library/unittest.mock.html">Mocks</a>. The idea of a Mock is that you <em>replace</em> a piece of code with a dummy object (a ‘mock’) that can be called to return some specific value.</p>
 <p>For example, consider this following test of the <code class="docutils literal notranslate"><span class="pre">CombatHandler.get_combat_summary</span></code>. We can’t just call this because it internally calls <code class="docutils literal notranslate"><span class="pre">.get_sides</span></code> which would raise a <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>.</p>

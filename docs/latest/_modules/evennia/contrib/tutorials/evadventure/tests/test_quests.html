@@ -191,55 +191,53 @@
 
 <div class="viewcode-block" id="EvAdventureQuestTest.test_help"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_quests.html#evennia.contrib.tutorials.evadventure.tests.test_quests.EvAdventureQuestTest.test_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get help&quot;&quot;&quot;</span>
-        <span class="c1"># get help for all quests</span>
-        <span class="n">help_txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get_help</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">help_txt</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;|ctestquest|n</span><span class="se">\n</span><span class="s2"> A test quest!</span><span class="se">\n\n</span><span class="s2"> - You need to do A first.&quot;</span><span class="p">])</span>
-
-        <span class="c1"># get help for one specific quest</span>
-        <span class="n">help_txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get_help</span><span class="p">(</span><span class="n">_TestQuest</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">help_txt</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;|ctestquest|n</span><span class="se">\n</span><span class="s2"> A test quest!</span><span class="se">\n\n</span><span class="s2"> - You need to do A first.&quot;</span><span class="p">])</span>
+        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span>
+        <span class="c1"># get help for a specific quest</span>
+        <span class="n">help_txt</span> <span class="o">=</span> <span class="n">quest</span><span class="o">.</span><span class="n">help</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">help_txt</span><span class="p">,</span> <span class="s2">&quot;You need to do A first.&quot;</span><span class="p">)</span>
 
         <span class="c1"># help for finished quest</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
-        <span class="n">help_txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get_help</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">help_txt</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;|ctestquest|n</span><span class="se">\n</span><span class="s2"> A test quest!</span><span class="se">\n\n</span><span class="s2"> - This quest is completed!&quot;</span><span class="p">])</span></div>
+        <span class="n">quest</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+        <span class="n">help_txt</span> <span class="o">=</span> <span class="n">quest</span><span class="o">.</span><span class="n">help</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">help_txt</span><span class="p">,</span> <span class="s2">&quot;You have completed this quest.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestTest.test_progress__fail"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_quests.html#evennia.contrib.tutorials.evadventure.tests.test_quests.EvAdventureQuestTest.test_progress__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_progress__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check progress without having any.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># progress all quests</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
-        <span class="c1"># progress one quest</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">_TestQuest</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span>
+        <span class="c1"># progress quest</span>
+        <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
 
         <span class="c1"># still on step A</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestTest.test_progress"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_quests.html#evennia.contrib.tutorials.evadventure.tests.test_quests.EvAdventureQuestTest.test_progress">[docs]</a>    <span class="k">def</span> <span class="nf">test_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fulfill the quest steps in sequess</span>
+<span class="sd">        Fulfill the quest steps in sequence.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span>
+
         <span class="c1"># A requires a certain object in inventory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fulfillA</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+        <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
 
         <span class="c1"># B requires progress be called with specific kwarg</span>
         <span class="c1"># should not step (no kwarg)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+        <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
 
         <span class="c1"># should step (kwarg sent)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">complete_quest_B</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">complete_quest_B</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
         <span class="c1"># C requires a counter Attribute on char be high enough</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fulfillC</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>  <span class="c1"># still on last step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_quest</span><span class="p">()</span><span class="o">.</span><span class="n">is_completed</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div></div>
+        <span class="n">quest</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>  <span class="c1"># still on last step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">quest</span><span class="o">.</span><span class="n">is_completed</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
