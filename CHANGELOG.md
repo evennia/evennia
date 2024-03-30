@@ -5,6 +5,8 @@
 - [Feature][pull3421]: New `utils.compress_whitespace` utility used with
   default object's `.format_appearance` to make it easier to overload without
   adding line breaks in hook returns. (InspectorCaracal)
+- [Feature][pull3458]: New `sethelp/category` switch to change a help topic's
+  category after it was created (chiizujin)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -24,6 +26,7 @@
 [pull3455]: https://github.com/evennia/evennia/pull/3455
 [pull3456]: https://github.com/evennia/evennia/pull/3456
 [pull3457]: https://github.com/evennia/evennia/pull/3457
+[pull3458]: https://github.com/evennia/evennia/pull/3458
 
 ## Evennia 4.0.0
 
