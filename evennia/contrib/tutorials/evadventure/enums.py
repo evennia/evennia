@@ -84,3 +84,15 @@ class ObjType(Enum):
     MAGIC = "magic"
     QUEST = "quest"
     TREASURE = "treasure"
+
+
+class QuestStatus(Enum):
+    """
+    Quest status
+
+    """
+
+    STARTED = "started"
+    COMPLETED = "completed"
+    ABANDONED = "abandoned"
+    FAILED = "failed"

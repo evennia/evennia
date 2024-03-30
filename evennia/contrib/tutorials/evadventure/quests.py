@@ -14,9 +14,7 @@ another quest.
 
 """
 
-from copy import copy, deepcopy
-
-from evennia.utils import dbserialize
+from .enums import QuestStatus
 
 
 class EvAdventureQuest:
@@ -40,11 +38,11 @@ class EvAdventureQuest:
 
         start_step = "A"
 
-        help_A = "You need a '_quest_A_flag' on yourself to finish this step!"
+        help_A = "You need a 'A_flag' attribute on yourself to finish this step!"
         help_B = "Finally, you need more than 4 items in your inventory!"
 
         def step_A(self, *args, **kwargs):
-            if self.quester.db._quest_A_flag == True:
+            if self.get_data("A_flag") == True:
                 self.quester.msg("Completed the first step of the quest.")
                 self.current_step = "end"
                 self.progress()
@@ -67,21 +65,16 @@ class EvAdventureQuest:
     help_start = "You need to start first"
     help_end = "You need to end the quest"
 
-    def __init__(self, quester, start_step=None):
+    def __init__(self, quester, data=None):
         if " " in self.key:
             raise TypeError("The Quest name must not have spaces in it.")
 
         self.quester = quester
-        self._current_step = start_step or self.start_step
-        self.is_completed = False
-        self.is_abandoned = False
+        self.data = data or dict()
+        self._current_step = self.get_data("current_step")
 
-    def __serialize_dbobjs__(self):
-        self.quester = dbserialize.dbserialize(self.quester)
-
-    def __deserialize_dbobjs__(self):
-        if isinstance(self.quester, bytes):
-            self.quester = dbserialize.dbunserialize(self.quester)
+        if not self.current_step:
+            self.current_step = self.start_step
 
     @property
     def questhandler(self):
@@ -94,14 +87,73 @@ class EvAdventureQuest:
     @current_step.setter
     def current_step(self, step_name):
         self._current_step = step_name
+        self.add_data("current_step", step_name)
         self.questhandler.do_save = True
+
+    @property
+    def status(self):
+        return self.get_data("status", QuestStatus.STARTED)
+
+    @status.setter
+    def status(self, value):
+        self.add_data("status", value)
+
+    @property
+    def is_completed(self):
+        return self.status == QuestStatus.COMPLETED
+
+    @property
+    def is_abandoned(self):
+        return self.status == QuestStatus.ABANDONED
+
+    @property
+    def is_failed(self):
+        return self.status == QuestStatus.FAILED
+
+    def add_data(self, key, value):
+        """
+        Add data to the quest. This saves it permanently.
+
+        Args:
+            key (str): The key to store the data under.
+            value (any): The data to store.
+
+        """
+        self.data[key] = value
+        self.questhandler.save_quest_data(self.key, self.data)
+
+    def remove_data(self, key):
+        """
+        Remove data from the quest permanently.
+
+        Args:
+            key (str): The key to remove.
+
+        """
+        self.data.pop(key, None)
+        self.questhandler.save_quest_data(self.key, self.data)
+
+    def get_data(self, key, default=None):
+        """
+        Get data from the quest.
+
+        Args:
+            key (str): The key to get data for.
+            default (any, optional): The default value to return if key is not found.
+
+        Returns:
+            any: The data stored under the key.
+
+        """
+        return self.data.get(key, default)
 
     def abandon(self):
         """
         Call when quest is abandoned.
 
         """
-        self.is_abandoned = True
+        self.add_data("status", QuestStatus.ABANDONED)
+        self.questhandler.clean_quest_data(self.key)
         self.cleanup()
 
     def complete(self):
@@ -109,7 +161,8 @@ class EvAdventureQuest:
         Call this to end the quest.
 
         """
-        self.is_completed = True
+        self.add_data("status", QuestStatus.COMPLETED)
+        self.questhandler.clean_quest_data(self.key)
         self.cleanup()
 
     def progress(self, *args, **kwargs):
@@ -122,8 +175,7 @@ class EvAdventureQuest:
             *args, **kwargs: Will be passed into the step method.
 
         """
-        if not (self.is_completed or self.is_abandoned):
-            getattr(self, f"step_{self.current_step}")(*args, **kwargs)
+        return getattr(self, f"step_{self.current_step}")(*args, **kwargs)
 
     def help(self):
         """
@@ -162,8 +214,9 @@ class EvAdventureQuest:
     def cleanup(self):
         """
         This is called both when completing the quest, or when it is abandoned prematurely.
-        Make sure to cleanup any quest-related data stored when following the quest.
 
+        This is for cleaning up any extra state that were set during the quest (stuff in self.data
+        is automatically cleaned up)
         """
         pass
 
@@ -185,26 +238,83 @@ class EvAdventureQuestHandler:
     quest_storage_attribute_key = "_quests"
     quest_storage_attribute_category = "evadventure"
 
+    quest_data_attribute_template = "_quest_data_{quest_key}"
+    quest_data_attribute_category = "evadventure"
+
     def __init__(self, obj):
         self.obj = obj
         self.do_save = False
+        self.quests = {}
+        self.quest_classes = {}
         self._load()
 
     def _load(self):
-        self.storage = self.obj.attributes.get(
+        self.quest_classes = self.obj.attributes.get(
             self.quest_storage_attribute_key,
             category=self.quest_storage_attribute_category,
             default={},
         )
+        # instantiate all quests
+        for quest_key, quest_class in self.quest_classes.items():
+            self.quests[quest_key] = quest_class(self.obj, self.load_quest_data(quest_key))
 
     def _save(self):
         self.obj.attributes.add(
             self.quest_storage_attribute_key,
-            self.storage,
+            self.quest_classes,
             category=self.quest_storage_attribute_category,
         )
         self._load()  # important
         self.do_save = False
+
+    def save_quest_data(self, quest_key, data):
+        """
+        Save data for a quest. We store this on the quester as well as updating the quest itself.
+
+        Args:
+            data (dict): The data to store. This is commonly flags or other data needed to track the
+                quest.
+
+        """
+        quest = self.get(quest_key)
+        if quest:
+            quest.data = data
+            self.obj.attributes.add(
+                self.quest_data_attribute_template.format(quest_key=quest_key),
+                data,
+                category=self.quest_data_attribute_category,
+            )
+
+    def load_quest_data(self, quest_key):
+        """
+        Load data for a quest.
+
+        Args:
+            quest_key (str): The quest to load data for.
+
+        Returns:
+            dict: The data stored for the quest.
+
+        """
+        return self.obj.attributes.get(
+            self.quest_data_attribute_template.format(quest_key=quest_key),
+            category=self.quest_data_attribute_category,
+            default={},
+        )
+
+    def clean_quest_data(self, quest_key):
+        """
+        Remove data for a quest.
+
+        Args:
+            quest_key (str): The quest to remove data for.
+
+        """
+        self.obj.attributes.remove(
+            self.quest_data_attribute_template.format(quest_key=quest_key),
+            category=self.quest_data_attribute_category,
+        )
+
 
     def has(self, quest_key):
         """
@@ -218,7 +328,7 @@ class EvAdventureQuestHandler:
             bool: If the character is following this quest or not.
 
         """
-        return bool(self.storage.get(quest_key))
+        return bool(self.quests.get(quest_key))
 
     def get(self, quest_key):
         """
@@ -232,17 +342,17 @@ class EvAdventureQuestHandler:
                 Character is not on this quest.
 
         """
-        return self.storage.get(quest_key)
+        return self.quests.get(quest_key)
 
-    def add(self, quest):
+    def add(self, quest_class):
         """
         Add a new quest
 
         Args:
-            quest (EvAdventureQuest): The quest class to start.
+            quest_class (EvAdventureQuest): The quest class to start.
 
         """
-        self.storage[quest.key] = quest(self.obj)
+        self.quest_classes[quest_class.key] = quest_class
         self._save()
 
     def remove(self, quest_key):
@@ -253,10 +363,11 @@ class EvAdventureQuestHandler:
             quest_key (str): The quest to remove.
 
         """
-        quest = self.storage.pop(quest_key, None)
+        quest = self.quests.pop(quest_key, None)
         if not quest.is_completed:
             # make sure to cleanup
             quest.abandon()
+        self.quest_classes.pop(quest_key, None)
         self._save()
 
     def get_help(self, quest_key=None):
@@ -274,10 +385,10 @@ class EvAdventureQuestHandler:
 
         """
         help_texts = []
-        if quest_key in self.storage:
-            quests = [self.storage[quest_key]]
+        if quest_key in self.quests:
+            quests = [self.quests[quest_key]]
         else:
-            quests = self.storage.values()
+            quests = self.quests.values()
 
         for quest in quests:
             help_texts.append(f"|c{quest.key}|n\n {quest.desc}\n\n - {quest.help()}")
@@ -293,10 +404,10 @@ class EvAdventureQuestHandler:
             *args, **kwargs: Will be passed into each quest's `progress` call.
 
         """
-        if quest_key in self.storage:
-            quests = [self.storage[quest_key]]
+        if quest_key in self.quests:
+            quests = [self.quests[quest_key]]
         else:
-            quests = self.storage.values()
+            quests = self.quests.values()
 
         for quest in quests:
             quest.progress(*args, **kwargs)

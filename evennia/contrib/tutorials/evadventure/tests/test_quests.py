@@ -108,7 +108,7 @@ class EvAdventureQuestTest(EvAdventureMixin, BaseEvenniaTest):
         self.assertEqual(help_txt, ["|ctestquest|n\n A test quest!\n\n - You need to do A first."])
 
         # help for finished quest
-        self._get_quest().is_completed = True
+        self._get_quest().complete()
         help_txt = self.character.quests.get_help()
         self.assertEqual(help_txt, ["|ctestquest|n\n A test quest!\n\n - This quest is completed!"])
 
