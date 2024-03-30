@@ -78,7 +78,7 @@ class TestCraftingRecipeBase(BaseEvenniaTestCase):
         """Test messaging to crafter"""
 
         self.recipe.msg("message")
-        self.crafter.msg.assert_called_with(text="message", {"type": "crafting"}))
+        self.crafter.msg.assert_called_with(text=("message", {"type": "crafting"}))
 
     def test_pre_craft(self):
         """Test validating hook"""
