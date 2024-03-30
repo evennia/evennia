@@ -170,7 +170,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test messaging to crafter&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}))</span></div>
 
 <div class="viewcode-block" id="TestCraftingRecipeBase.test_pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft">[docs]</a>    <span class="k">def</span> <span class="nf">test_pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test validating hook&quot;&quot;&quot;</span>
@@ -298,7 +298,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;Result1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;result1&quot;</span><span class="p">,</span> <span class="s2">&quot;resultprot&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are gone</span>
@@ -327,7 +327,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;Result1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;result1&quot;</span><span class="p">,</span> <span class="s2">&quot;resultprot&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are gone</span>
@@ -343,8 +343,10 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;tool2&quot;</span><span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;tool2&quot;</span><span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
@@ -361,8 +363,10 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons3&quot;</span><span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons3&quot;</span><span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
@@ -385,8 +389,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons3&quot;</span><span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons3&quot;</span><span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are deleted even though we failed</span>
@@ -409,10 +415,12 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">wrong</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">wrong</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># make sure consumables are still there</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
@@ -434,10 +442,12 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">tool3</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">tool3</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
@@ -461,10 +471,12 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">cons4</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_excess_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">excess</span><span class="o">=</span><span class="n">cons4</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
@@ -488,7 +500,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are gone</span>
@@ -511,7 +523,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are gone</span>
@@ -531,10 +543,12 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_order_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_tool_order_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
@@ -554,10 +568,12 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_order_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cons3</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">.</span><span class="n">error_consumable_order_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cons3</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># make sure consumables are still there</span>
