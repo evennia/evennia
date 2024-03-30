@@ -98,6 +98,7 @@
 
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">building</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
@@ -505,17 +506,26 @@
 
         <span class="n">expected_first_call</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;More than one match for &#39;Mushroom&#39; (please narrow target):&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot; Mushroom-1 []&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot; Mushroom-2 []&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; Mushroom-1&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; Mushroom-2&quot;</span><span class="p">,</span>
         <span class="p">]</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Mushroom&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_first_call</span><span class="p">))</span>  <span class="c1"># PASSES</span>
 
         <span class="n">expected_second_call</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Mushroom(#</span><span class="si">{</span><span class="n">mushroom1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">The first mushroom is brown.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Mushroom-1&quot;</span><span class="p">,</span> <span class="n">expected_second_call</span><span class="p">)</span>  <span class="c1"># FAILS</span>
 
         <span class="n">expected_third_call</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Mushroom(#</span><span class="si">{</span><span class="n">mushroom2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">The second mushroom is red.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Mushroom-2&quot;</span><span class="p">,</span> <span class="n">expected_third_call</span><span class="p">)</span>  <span class="c1"># FAILS</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Mushroom-2&quot;</span><span class="p">,</span> <span class="n">expected_third_call</span><span class="p">)</span>  <span class="c1"># FAILS</span>
+
+        <span class="n">expected_fourth_call</span> <span class="o">=</span> <span class="s2">&quot;Alias(es) for &#39;Mushroom&#39; set to &#39;fungus&#39;.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Mushroom-1 = fungus&quot;</span><span class="p">,</span> <span class="n">expected_fourth_call</span><span class="p">)</span> <span class="c1">#PASSES</span>
+
+        <span class="n">expected_fifth_call</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;More than one match for &#39;Mushroom&#39; (please narrow target):&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; Mushroom-1 [fungus]&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; Mushroom-2&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Mushroom&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_fifth_call</span><span class="p">))</span> <span class="c1"># PASSES</span></div></div>
 </pre></div>
 
           </div>
