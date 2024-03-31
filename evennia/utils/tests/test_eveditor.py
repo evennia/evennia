@@ -8,6 +8,67 @@ from evennia.utils import eveditor
 
 
 class TestEvEditor(BaseEvenniaCommandTest):
+    def test_eveditor_ranges(self):
+        eveditor.EvEditor(self.char1)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring=":",
+            msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
+        )
+        self.call(eveditor.CmdLineInput(), "line 1", raw_string="line 1", msg="01line 1")
+        self.call(eveditor.CmdLineInput(), "line 2", raw_string="line 2", msg="02line 2")
+        self.call(eveditor.CmdLineInput(), "line 3", raw_string="line 3", msg="03line 3")
+        self.call(eveditor.CmdLineInput(), "line 4", raw_string="line 4", msg="04line 4")
+        self.call(eveditor.CmdLineInput(), "line 5", raw_string="line 5", msg="05line 5")
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "", # list whole buffer
+            cmdstring=":",
+            msg="Line Editor []\n01line 1\n02line 2\n"
+            "03line 3\n04line 4\n05line 5\n"
+            "[l:05 w:010 c:0034](:h for help)",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            ":", # list empty range
+            cmdstring=":",
+            msg="Line Editor []\n01line 1\n02line 2\n"
+            "03line 3\n04line 4\n05line 5\n"
+            "[l:05 w:010 c:0034](:h for help)",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            ":4", # list from start to line 4
+            cmdstring=":",
+            msg="Line Editor []\n01line 1\n02line 2\n"
+            "03line 3\n04line 4\n"
+            "[l:04 w:008 c:0027](:h for help)",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "2:", # list from line 2 to end
+            cmdstring=":",
+            msg="Line Editor []\n02line 2\n03line 3\n"
+            "04line 4\n05line 5\n"
+            "[l:04 w:008 c:0027](:h for help)",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "-10:10", # try to list invalid range (too large)
+            cmdstring=":",
+            msg="Line Editor []\n01line 1\n02line 2\n"
+            "03line 3\n04line 4\n05line 5\n"
+            "[l:05 w:010 c:0034](:h for help)",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "3:1", # try to list invalid range (reversed)
+            cmdstring=":",
+            msg="Line Editor []\n03line 3\n"
+            "[l:01 w:002 c:0006](:h for help)",
+        )
+
     def test_eveditor_view_cmd(self):
         eveditor.EvEditor(self.char1)
         self.call(
@@ -244,7 +305,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
             msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
         )
         self.call(eveditor.CmdLineInput(), "line 1", raw_string="line 1", msg="01line 1")
-        self.call(eveditor.CmdEditorGroup(), "1:2", cmdstring=":f", msg="Flood filled lines 1-2.")
+        self.call(eveditor.CmdEditorGroup(), "1:2", cmdstring=":f", msg="Flood filled line 1.")
         self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "line 1")
 
     def test_eveditor_COLON_J(self):
