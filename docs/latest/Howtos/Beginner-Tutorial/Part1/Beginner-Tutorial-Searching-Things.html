@@ -70,17 +70,17 @@
 <li><a class="reference internal" href="#">11. Searching for things</a><ul>
 <li><a class="reference internal" href="#searching-using-object-search">11.1. Searching using Object.search</a></li>
 <li><a class="reference internal" href="#main-search-functions">11.2. Main search functions</a></li>
-<li><a class="reference internal" href="#what-can-be-searched-for">11.3. What can be searched for</a><ul>
-<li><a class="reference internal" href="#search-by-key">11.3.1. Search by key</a></li>
-<li><a class="reference internal" href="#search-by-aliases">11.3.2. Search by aliases</a></li>
-<li><a class="reference internal" href="#search-by-location">11.3.3. Search by location</a></li>
-<li><a class="reference internal" href="#search-by-tags">11.3.4. Search by Tags</a></li>
-<li><a class="reference internal" href="#search-by-attribute">11.3.5. Search by Attribute</a></li>
-<li><a class="reference internal" href="#search-by-typeclass">11.3.6. Search by Typeclass</a></li>
-<li><a class="reference internal" href="#search-by-dbref">11.3.7. Search by dbref</a></li>
+<li><a class="reference internal" href="#understanding-object-relationships">11.3. Understanding object relationships</a></li>
+<li><a class="reference internal" href="#what-can-be-searched-for">11.4. What can be searched for</a><ul>
+<li><a class="reference internal" href="#search-by-key">11.4.1. Search by key</a></li>
+<li><a class="reference internal" href="#search-by-aliases">11.4.2. Search by aliases</a></li>
+<li><a class="reference internal" href="#search-by-location">11.4.3. Search by location</a></li>
+<li><a class="reference internal" href="#search-by-tags">11.4.4. Search by Tags</a></li>
+<li><a class="reference internal" href="#search-by-attribute">11.4.5. Search by Attribute</a></li>
+<li><a class="reference internal" href="#search-by-typeclass">11.4.6. Search by Typeclass</a></li>
+<li><a class="reference internal" href="#search-by-dbref">11.4.7. Search by dbref</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
 <li><a class="reference internal" href="#summary">11.5. Summary</a></li>
 </ul>
 </li>
@@ -261,8 +261,54 @@ Rose
 </div>
 <p>There are equivalent search functions for all the main resources. You can find a listing of them <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">in the Search functions section</span></a> of the API front page.</p>
 </section>
+<section id="understanding-object-relationships">
+<h2><span class="section-number">11.3. </span>Understanding object relationships<a class="headerlink" href="#understanding-object-relationships" title="Permalink to this headline">¶</a></h2>
+<p>It’s important to understand how objects relate to one another when searching.</p>
+<p>Let’s consider a <code class="docutils literal notranslate"><span class="pre">chest</span></code> with a <code class="docutils literal notranslate"><span class="pre">coin</span></code> inside it. The chest stands in a <code class="docutils literal notranslate"><span class="pre">dungeon</span></code> room. In the dungeon is also a <code class="docutils literal notranslate"><span class="pre">door</span></code> (an exit leading outside).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌───────────────────────┐
+│dungeon                │
+│    ┌─────────┐        │
+│    │chest    │ ┌────┐ │
+│    │  ┌────┐ │ │door│ │
+│    │  │coin│ │ └────┘ │
+│    │  └────┘ │        │
+│    │         │        │
+│    └─────────┘        │
+│                       │
+└───────────────────────┘
+</pre></div>
+</div>
+<p>If you have access to any in-game Object, you can find related objects by use if its <code class="docutils literal notranslate"><span class="pre">.location</span></code> and <code class="docutils literal notranslate"><span class="pre">.contents</span></code> properties.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">coin.location</span></code> is <code class="docutils literal notranslate"><span class="pre">chest</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chest.location</span></code> is <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">door.location</span></code> is <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">room.location</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> since it’s not inside something else.</p></li>
+</ul>
+<p>One can use this to find what is inside what. For example, <code class="docutils literal notranslate"><span class="pre">coin.location.location</span></code> is the <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">room.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[chest,</span> <span class="pre">door]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chest.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[coin]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coin.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code>, the empty list since there’s nothing ‘inside’ the coin.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">door.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code> too.</p></li>
+</ul>
+<p>A convenient helper is <code class="docutils literal notranslate"><span class="pre">.contents_get</span></code> - this allows to restrict what is returned:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">room.contents_get(exclude=chest)</span></code> - this returns everything in the room except the chest (maybe it’s hidden?)</p></li>
+</ul>
+<p>There is a special property for finding exits:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">room.exits</span></code> is <code class="docutils literal notranslate"><span class="pre">[door]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coin.exits</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code> since it has no exits (same for all the other objects)</p></li>
+</ul>
+<p>There is a property <code class="docutils literal notranslate"><span class="pre">.destination</span></code> which is only used by exits:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">door.destination</span></code> is <code class="docutils literal notranslate"><span class="pre">outside</span></code> (or wherever the door leads)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">room.destination</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (same for all the other non-exit objects)</p></li>
+</ul>
+</section>
 <section id="what-can-be-searched-for">
-<h2><span class="section-number">11.3. </span>What can be searched for<a class="headerlink" href="#what-can-be-searched-for" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">11.4. </span>What can be searched for<a class="headerlink" href="#what-can-be-searched-for" title="Permalink to this headline">¶</a></h2>
 <p>These are the main database entities one can search for:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Objects</span></a></p></li>
@@ -275,11 +321,11 @@ Rose
 <p>Most of the time you’ll likely spend your time searching for Objects and the occasional Accounts.</p>
 <p>So to find an entity, what can be searched for?</p>
 <section id="search-by-key">
-<h3><span class="section-number">11.3.1. </span>Search by key<a class="headerlink" href="#search-by-key" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.1. </span>Search by key<a class="headerlink" href="#search-by-key" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> is the name of the entity. Searching for this is always case-insensitive.</p>
 </section>
 <section id="search-by-aliases">
-<h3><span class="section-number">11.3.2. </span>Search by aliases<a class="headerlink" href="#search-by-aliases" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.2. </span>Search by aliases<a class="headerlink" href="#search-by-aliases" title="Permalink to this headline">¶</a></h3>
 <p>Objects and Accounts can have any number of aliases. When searching for <code class="docutils literal notranslate"><span class="pre">key</span></code> these will searched too, you can’t easily search only for aliases. Let’s add an alias to our rose with the default <code class="docutils literal notranslate"><span class="pre">alias</span></code> command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; alias rose = flower
 </pre></div>
@@ -298,7 +344,7 @@ Rose
 </div></blockquote>
 </section>
 <section id="search-by-location">
-<h3><span class="section-number">11.3.3. </span>Search by location<a class="headerlink" href="#search-by-location" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.3. </span>Search by location<a class="headerlink" href="#search-by-location" title="Permalink to this headline">¶</a></h3>
 <p>Only Objects (things inheriting from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code>) has a <code class="docutils literal notranslate"><span class="pre">.location</span></code> property.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Object.search</span></code> method will automatically limit its search by the object’s location, so assuming you are in the same room as the rose, this will work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;rose&quot;)
@@ -317,15 +363,15 @@ Could not find &quot;rose&quot;
  &lt;QuerySet [Rose]&gt; 
 </pre></div>
 </div>
-<p>However, if you demand that the room is in the current room, it won’t be found:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.search_object(&quot;rose&quot;, location=here)
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia.search_object</span></code> method doesn’t have a <code class="docutils literal notranslate"><span class="pre">location</span></code> argument. What you do instead is to limit the search by setting its <code class="docutils literal notranslate"><span class="pre">candidates</span></code> keyword to the <code class="docutils literal notranslate"><span class="pre">.contents</span></code> of the current location. This is the same as a location search, since it will only accept matches among those in the room. In this example we’ll (correctly) find the rose is not in the room.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.search_object(&quot;rose&quot;, candidate=here.contents)
 &lt;QuerySet []&gt;
 </pre></div>
 </div>
 <p>In general, the <code class="docutils literal notranslate"><span class="pre">Object.search</span></code> is a shortcut for doing the very common searches of things in the same location, whereas the <code class="docutils literal notranslate"><span class="pre">search_object</span></code> finds objects anywhere.</p>
 </section>
 <section id="search-by-tags">
-<h3><span class="section-number">11.3.4. </span>Search by Tags<a class="headerlink" href="#search-by-tags" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.4. </span>Search by Tags<a class="headerlink" href="#search-by-tags" title="Permalink to this headline">¶</a></h3>
 <p>Think of a <a class="reference internal" href="../../../Components/Tags.html"><span class="doc std std-doc">Tag</span></a> as the label the airport puts on your luggage when flying. Everyone going on the same plane gets a tag, grouping them together so the airport can know what should go to which plane. Entities in Evennia can be grouped in the same way. Any number of tags can be attached to each object.</p>
 <p>Go back to the location of your <code class="docutils literal notranslate"><span class="pre">rose</span></code> and let’s create a few more plants:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop Daffodil
@@ -367,7 +413,7 @@ all_fantasy_books = evennia.search_tag(&quot;fantasy&quot;, category=&quot;books
 <p>This gets all three books.</p>
 </section>
 <section id="search-by-attribute">
-<h3><span class="section-number">11.3.5. </span>Search by Attribute<a class="headerlink" href="#search-by-attribute" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.5. </span>Search by Attribute<a class="headerlink" href="#search-by-attribute" title="Permalink to this headline">¶</a></h3>
 <p>We can also search by the <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> associated with entities.</p>
 <p>For example, let’s say our plants have a ‘growth state’ that updates as it grows:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;rose&quot;).db.growth_state = &quot;blooming&quot;
@@ -384,7 +430,7 @@ all_fantasy_books = evennia.search_tag(&quot;fantasy&quot;, category=&quot;books
 </div></blockquote>
 </section>
 <section id="search-by-typeclass">
-<h3><span class="section-number">11.3.6. </span>Search by Typeclass<a class="headerlink" href="#search-by-typeclass" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.6. </span>Search by Typeclass<a class="headerlink" href="#search-by-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it’s useful to limit your search by which Typeclass they have.</p>
 <p>Let’s say you for example have two types of flower, <code class="docutils literal notranslate"><span class="pre">CursedFlower</span></code> and <code class="docutils literal notranslate"><span class="pre">BlessedFlower</span></code> defined under <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses.flowers.py</span></code>. Each class contains custom code that grants curses and blessings respectively. You may have two <code class="docutils literal notranslate"><span class="pre">rose</span></code> objects, and the player doesn’t know which one is the bad or the good one. To separate them in your search, you can make sure to get the right one like this (in Python code)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursed_roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.flowers.CursedFlower&quot;</span><span class="p">)</span>
@@ -403,7 +449,7 @@ all_fantasy_books = evennia.search_tag(&quot;fantasy&quot;, category=&quot;books
 <p>This last way of searching is a simple form of a Django <em>query</em>. This is a way to express SQL queries using Python. See <a class="reference internal" href="Beginner-Tutorial-Django-queries.html"><span class="doc std std-doc">the next lesson</span></a>, where we’ll explore this way to searching in more detail.</p>
 </section>
 <section id="search-by-dbref">
-<h3><span class="section-number">11.3.7. </span>Search by dbref<a class="headerlink" href="#search-by-dbref" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">11.4.7. </span>Search by dbref<a class="headerlink" href="#search-by-dbref" title="Permalink to this headline">¶</a></h3>
 <aside class="sidebar">
 <p class="sidebar-title">Will I run out of dbrefs?</p>
 <p>Since dbrefs are not reused, do you need to worry about your database ids ‘running out’ in the future? <a class="reference internal" href="../../../Components/Typeclasses.html#will-i-run-out-of-dbrefs"><span class="std std-doc">No, and here’s why</span></a>.</p>
@@ -421,67 +467,21 @@ eightball = evennia.search_object(&quot;#8&quot;)
 </div>
 </section>
 </section>
-<section id="finding-objects-relative-each-other">
-<h2><span class="section-number">11.4. </span>Finding objects relative each other<a class="headerlink" href="#finding-objects-relative-each-other" title="Permalink to this headline">¶</a></h2>
-<p>It’s important to understand how objects relate to one another when searching.
-Let’s consider a <code class="docutils literal notranslate"><span class="pre">chest</span></code> with a <code class="docutils literal notranslate"><span class="pre">coin</span></code> inside it. The chest stands in a room <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>. In the dungeon is also a <code class="docutils literal notranslate"><span class="pre">door</span></code>. This is an exit leading outside.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌───────────────────────┐
-│dungeon                │
-│    ┌─────────┐        │
-│    │chest    │ ┌────┐ │
-│    │  ┌────┐ │ │door│ │
-│    │  │coin│ │ └────┘ │
-│    │  └────┘ │        │
-│    │         │        │
-│    └─────────┘        │
-│                       │
-└───────────────────────┘
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coin.location</span></code> is <code class="docutils literal notranslate"><span class="pre">chest</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">chest.location</span></code> is <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">door.location</span></code> is <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">room.location</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> since it’s not inside something else.</p></li>
-</ul>
-<p>One can use this to find what is inside what. For example, <code class="docutils literal notranslate"><span class="pre">coin.location.location</span></code> is the <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>.
-We can also find what is inside each object. This is a list of things.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">room.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[chest,</span> <span class="pre">door]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">chest.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[coin]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coin.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code>, the empty list since there’s nothing ‘inside’ the coin.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">door.contents</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code> too.</p></li>
-</ul>
-<p>A convenient helper is <code class="docutils literal notranslate"><span class="pre">.contents_get</span></code> - this allows to restrict what is returned:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">room.contents_get(exclude=chest)</span></code> - this returns everything in the room except the chest (maybe it’s hidden?)</p></li>
-</ul>
-<p>There is a special property for finding exits:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">room.exits</span></code> is <code class="docutils literal notranslate"><span class="pre">[door]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coin.exits</span></code> is <code class="docutils literal notranslate"><span class="pre">[]</span></code> (same for all the other objects)</p></li>
-</ul>
-<p>There is a property <code class="docutils literal notranslate"><span class="pre">.destination</span></code> which is only used by exits:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">door.destination</span></code> is <code class="docutils literal notranslate"><span class="pre">outside</span></code> (or wherever the door leads)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">room.destination</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (same for all the other non-exit objects)</p></li>
-</ul>
-<p>You can also include this information in searches:</p>
+<section id="summary">
+<h2><span class="section-number">11.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>Knowing how to find things is important and the tools from this section will serve you well. These tools will cover most of your regular needs.</p>
+<p>Not always though. If we go back to the example of a coin in a chest from before, you <em>could</em> use the following to dynamically figure out if there are any chests in the room with coins inside:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
 
 <span class="c1"># we assume only one match of each </span>
 <span class="n">dungeons</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;dungeon&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">)</span>
 <span class="n">chests</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;chest&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">dungeons</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="c1"># find if there are any skulls in the chest </span>
-<span class="n">skulls</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Skull&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">chests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+<span class="n">coins</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">chests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>More advanced, nested queries like this can however often be made more efficient by using the hints in the next lesson.</p>
-</section>
-<section id="summary">
-<h2><span class="section-number">11.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>Knowing how to find things is important and the tools from this section will serve you well. These tools will cover most of your needs …</p>
-<p>… but not always. In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.</p>
+<p>This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by directly querying the database.</p>
+<p>In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.</p>
 </section>
 </section>
 
