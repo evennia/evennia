@@ -88,7 +88,7 @@ _HELP_TEXT = _(
 
  :y  <l>        - yank (copy) line(s) <l> to the copy buffer
  :x  <l>        - cut line(s) <l> and store it in the copy buffer
- :p  <l>        - put (paste) previously copied line(s) directly after <l>
+ :p  <l>        - put (paste) previously copied line(s) directly before <l>
  :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
  :r  <l> <txt>  - replace line <l> with text <txt>
  :I  <l> <txt>  - insert text at the beginning of line <l>
