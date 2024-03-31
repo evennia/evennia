@@ -197,6 +197,12 @@ class TestHelp(BaseEvenniaCommandTest):
             cmdset=CharacterCmdSet(),
         )
         self.call(help_module.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
+        self.call(
+            help_module.CmdSetHelp(),
+            "/category testhelp = misc",
+            "Category for entry 'testhelp' changed to 'misc'.",
+            cmdset=CharacterCmdSet(),
+        )
 
     @parameterized.expand(
         [

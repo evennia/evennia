@@ -16,7 +16,7 @@ We will design a base combat system that supports both styles.
 > Create a new module `evadventure/combat_base.py`
 
 ```{sidebar}
-In [evennia/contrib/tutorials/evadventure/combat_base.py](evennia.contrib.tutorials.evadventure.combat_base) you'll find a complete implementation of the base combat module.
+Under `evennia/contrib/tutorials/evadventure/`, in [combat_base.py](evennia.contrib.tutorials.evadventure.combat_base) you'll find a complete implementation of the base combat module.
 ```
 Our "Combat Handler" will handle the administration around combat. It needs to be _persistent_ (even is we reload the server your combat should keep going). 
 
@@ -718,7 +718,7 @@ We rely on the [Equipment handler](./Beginner-Tutorial-Equipment.md) we created 
 > Create a module `evadventure/tests/test_combat.py`.
 
 ```{sidebar}
-See [evennia/contrib/tutorials/evadventure/tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat) for ready-made combat unit tests.
+Look under `evennia/contrib/tutorials/evadventure/`, in [tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat) for ready-made combat unit tests.
 ```
 
 Unit testing the combat base classes can seem impossible because we have not yet implemented most of it. We can however get very far by the use of [Mocks](https://docs.python.org/3/library/unittest.mock.html). The idea of a Mock is that you _replace_ a piece of code with a dummy object (a 'mock') that can be called to return some specific value. 

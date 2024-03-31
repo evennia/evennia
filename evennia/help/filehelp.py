@@ -227,7 +227,7 @@ class FileHelpStorageHandler:
 
         for dct in loaded_help_dicts:
             key = dct.get("key").lower().strip()
-            category = dct.get("category", _DEFAULT_HELP_CATEGORY).strip()
+            category = dct.get("category", _DEFAULT_HELP_CATEGORY).lower().strip()
             aliases = list(dct.get("aliases", []))
             entrytext = dct.get("text", "")
             locks = dct.get("locks", "")

@@ -2070,7 +2070,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
                     else:
                         row += " " * max(0, width - lrow)
                     rows.append(row)
-                    row = ""
+                    row = element
                     ic = 0
                 else:
                     # add a new slot
@@ -2403,9 +2403,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
                 aliases = [
-                    alias
+                    alias.db_key
                     for alias in aliases
-                    if hasattr(alias, "category") and alias.category not in ("plural_key",)
+                    if alias.db_category != "plural_key"
                 ]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
@@ -2416,7 +2416,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 name=result.get_display_name(caller)
                 if hasattr(result, "get_display_name")
                 else query,
-                aliases=" [{alias}]".format(alias=";".join(aliases) if aliases else ""),
+                aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                 info=result.get_extra_info(caller),
             )
         matches = None

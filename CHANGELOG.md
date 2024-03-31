@@ -5,13 +5,31 @@
 - [Feature][pull3421]: New `utils.compress_whitespace` utility used with
   default object's `.format_appearance` to make it easier to overload without
   adding line breaks in hook returns. (InspectorCaracal)
+- [Feature][pull3458]: New `sethelp/category` switch to change a help topic's
+  category after it was created (chiizujin)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
-- Doc: Added Beginner Tutorial lessons for AI and Procedural dungeon (Griatch)
+- [Fix][pull3453]: Object aliases not showing in search multi-match
+  disambiguation display (chiizujin)
+- [Fix][pull3455]: `sethelp/edit <topic>` without a `= text` created a `None`
+  entry that would lose the edit. (chiiziujin)
+- [Fix][pull3456]: `format_grid` utility used for `help` command caused commands
+  to disappear for wider client widths (chiizujin)
+- [Fix][pull3457]: Help topic categories with different case would appear as
+  duplicates (chiizujin)
+- [Fix][pull3454]: Traceback in crafting contrib's `recipe.msg`
+  (InspectorCaracal)
+- Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
 [pull3446]: https://github.com/evennia/evennia/pull/3446
+[pull3453]: https://github.com/evennia/evennia/pull/3453
+[pull3455]: https://github.com/evennia/evennia/pull/3455
+[pull3456]: https://github.com/evennia/evennia/pull/3456
+[pull3457]: https://github.com/evennia/evennia/pull/3457
+[pull3458]: https://github.com/evennia/evennia/pull/3458
+[pull3454]: https://github.com/evennia/evennia/pull/3454
 
 ## Evennia 4.0.0
 
