@@ -17,6 +17,8 @@
   to disappear for wider client widths (chiizujin)
 - [Fix][pull3457]: Help topic categories with different case would appear as
   duplicates (chiizujin)
+- [Fix][pull3454]: Traceback in crafting contrib's `recipe.msg`
+  (InspectorCaracal)
 - Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
@@ -27,6 +29,7 @@
 [pull3456]: https://github.com/evennia/evennia/pull/3456
 [pull3457]: https://github.com/evennia/evennia/pull/3457
 [pull3458]: https://github.com/evennia/evennia/pull/3458
+[pull3454]: https://github.com/evennia/evennia/pull/3454
 
 ## Evennia 4.0.0
 
