@@ -210,6 +210,8 @@ These are the main database entities one can search for:
 
 Most of the time you'll likely spend your time searching for Objects and the occasional Accounts.
 
+Most search methods are available directly from `evennia`. But there are also a lot of useful search helpers found via `evennia.search`.
+
 So to find an entity, what can be searched for?
 
 ### Search by key
@@ -315,7 +317,7 @@ For example, let's say our plants have a 'growth state' that updates as it grows
 
 Now we can find the things that have a given growth state:
 
-    > py evennia.search_object_attribute("growth_state", "withering")
+    > py evennia.search_object("withering", attribute_name="growth_state")
     <QuerySet [Rose]> 
 
 > Searching by Attribute can be very practical. But if you want to group entities or search very often, using Tags and search by Tags is faster and more resource-efficient.
