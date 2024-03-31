@@ -319,6 +319,7 @@ Rose
 <li><p><a class="reference internal" href="../../../Components/Help-System.html"><span class="doc std std-doc">Help Entries</span></a> (help entries created manually)</p></li>
 </ul>
 <p>Most of the time you’ll likely spend your time searching for Objects and the occasional Accounts.</p>
+<p>Most search methods are available directly from <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. But there are also a lot of useful search helpers found via <code class="docutils literal notranslate"><span class="pre">evennia.search</span></code>.</p>
 <p>So to find an entity, what can be searched for?</p>
 <section id="search-by-key">
 <h3><span class="section-number">11.4.1. </span>Search by key<a class="headerlink" href="#search-by-key" title="Permalink to this headline">¶</a></h3>
@@ -421,7 +422,7 @@ all_fantasy_books = evennia.search_tag(&quot;fantasy&quot;, category=&quot;books
 </pre></div>
 </div>
 <p>Now we can find the things that have a given growth state:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.search_object_attribute(&quot;growth_state&quot;, &quot;withering&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.search_object(&quot;withering&quot;, attribute_name=&quot;growth_state&quot;)
 &lt;QuerySet [Rose]&gt; 
 </pre></div>
 </div>
