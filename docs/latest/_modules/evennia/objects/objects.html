@@ -1511,6 +1511,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">at_access</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
+<div class="viewcode-block" id="DefaultObject.filter_visible"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.filter_visible">[docs]</a>    <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_list</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter a list of objects to only include those that are visible to the looker.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj_list (list): List of objects to filter.</span>
+<span class="sd">            looker (Object): Object doing the looking.</span>
+<span class="sd">            **kwargs: Arbitrary data for use when overriding.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The filtered list of visible objects.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            By default this simply checks the &#39;view&#39; and &#39;search&#39; locks on each object in the list.</span>
+<span class="sd">            Override this</span>
+<span class="sd">            method to implement custom visibility mechanics.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+               <span class="p">]</span></div>
+
     <span class="c1"># name and return_appearance hooks</span>
 
 <div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1568,14 +1589,19 @@
 <span class="sd">                method is used.</span>
 <span class="sd">            return_string (bool): If `True`, return only the singular form if count is 0,1 or</span>
 <span class="sd">                the plural form otherwise. If `False` (default), return both forms as a tuple.</span>
+<span class="sd">            no_article (bool): If `True`, do not return an article if `count` is 1.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: This is a tuple `(str, str)` with the singular and plural forms of the key</span>
 <span class="sd">                including the count.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
-<span class="sd">                obj.get_numbered_name(3, looker, key=&quot;foo&quot;) -&gt; (&quot;a foo&quot;, &quot;three foos&quot;)</span>
+<span class="sd">        ::</span>
+<span class="sd">            - obj.get_numbered_name(3, looker, key=&quot;foo&quot;) -&gt; (&quot;a foo&quot;, &quot;three foos&quot;)</span>
+<span class="sd">            - obj.get_numbered_name(1, looker, key=&quot;Foobert&quot;, return_string=True)</span>
+<span class="sd">                  -&gt; &quot;a Foobert&quot;</span>
+<span class="sd">            - obj.get_numbered_name(1, looker, key=&quot;Foobert&quot;, return_string=True, no_article=True)</span>
+<span class="sd">                  -&gt; &quot;Foobert&quot;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plural_category</span> <span class="o">=</span> <span class="s2">&quot;plural_key&quot;</span>
@@ -1596,6 +1622,11 @@
             <span class="c1"># save the singular form as an alias here too so we can display &quot;an egg&quot; and also</span>
             <span class="c1"># look at &#39;an egg&#39;.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_article&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_string&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">key</span>
+            <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">key</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_string&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">singular</span> <span class="k">if</span> <span class="n">count</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="n">plural</span>
@@ -1639,11 +1670,7 @@
 <span class="sd">            str: The exits display data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
-
-        <span class="n">exits</span> <span class="o">=</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">))</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">),</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">exit_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="n">exi</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">exits</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|wExits:|n </span><span class="si">{</span><span class="n">exit_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">exit_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
@@ -1659,11 +1686,8 @@
 <span class="sd">            str: The character display data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
-
-        <span class="n">characters</span> <span class="o">=</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">))</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">),</span> <span class="n">looker</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">character_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span>
             <span class="n">char</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span>
         <span class="p">)</span>
@@ -1681,12 +1705,8 @@
 <span class="sd">            str: The things display data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
-
         <span class="c1"># sort and handle same-named things</span>
-        <span class="n">things</span> <span class="o">=</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">))</span>
+        <span class="n">things</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">),</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">grouped_things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">things</span><span class="p">:</span>
@@ -2410,8 +2430,10 @@
 
 <div class="viewcode-block" id="DefaultObject.get_visible_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_visible_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_visible_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        DEPRECATED</span>
 <span class="sd">        Get all contents of this object that a looker can see (whatever that means, by default it</span>
-<span class="sd">        checks the &#39;view&#39; and &#39;search&#39; locks), grouped by type. Helper method to return_appearance.</span>
+<span class="sd">        checks the &#39;view&#39; and &#39;search&#39; locks and excludes the looker themselves), grouped by type.</span>
+<span class="sd">        Helper method to return_appearance.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            looker (Object): The entity looking.</span>
@@ -2424,23 +2446,18 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">[</span>
-                <span class="n">obj</span>
-                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span>
-                <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span>
-                <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">]</span>
+        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;exits&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">)),</span>
-            <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">)),</span>
-            <span class="s2">&quot;things&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;exits&quot;</span><span class="p">:</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;things&quot;</span><span class="p">:</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">)),</span>
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_content_names"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_content_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_content_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        DEPRECATED</span>
 <span class="sd">        Get the proper names for all contents of this object. Helper method</span>
 <span class="sd">        for return_appearance.</span>
 

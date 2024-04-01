@@ -2,6 +2,11 @@
 
 ## Main branch
 
+- [Deprecation]: `DefaultObject.get_visible_contents` - unused in core, will be
+  removed. Use the new `.filter_visible` together with the `.get_display_*` methods instead..
+- [Deprecation]: `DefaultObject.get_content_names` - unused in core, will be
+  removed. Use the `DefaultObject.get_display_*` methods instead.
+
 - [Feature][pull3421]: New `utils.compress_whitespace` utility used with
   default object's `.format_appearance` to make it easier to overload without
   adding line breaks in hook returns. (InspectorCaracal)
@@ -12,8 +17,13 @@
 - [Feature][issue3450]: The default `page` command now tags its `Msg` objects
   with tag 'page' (category 'comms') and also checks the `Msg`' 'read' lock.
   made backwards compatible for old pages (Griatch)
+- [Feature][pull3466]: Add optional `no_article` kwarg to
+  `DefaultObject.get_numbered_name` for the system to skip adding automatic
+  articles. (chiizujin)
 - Feature: Clean up the default Command variable list shown when a command has
   no `func()` defined (Griatch)
+- [Feature][issue3461]: Add `DefaultObject.filter_display_visible` helper method
+  to make it easier to customize object visibility rules. (Griatch)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -36,7 +46,7 @@
 - [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
   when creating a new character (Griatch)
 - Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
-- Doc fixes (Griatch, InspectorCaracal)
+- Doc fixes (Griatch, InspectorCaracal, homeofpoe)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
 [pull3446]: https://github.com/evennia/evennia/pull/3446
@@ -49,10 +59,12 @@
 [pull3459]: https://github.com/evennia/evennia/pull/3459
 [pull3463]: https://github.com/evennia/evennia/pull/3463
 [pull3464]: https://github.com/evennia/evennia/pull/3464
+[pull3466]: https://github.com/evennia/evennia/pull/3466
 [pull3467]: https://github.com/evennia/evennia/pull/3467
 [issue3450]: https://github.com/evennia/evennia/issues/3450
 [issue3462]: https://github.com/evennia/evennia/issues/3462
 [issue3460]: https://github.com/evennia/evennia/issues/3460
+[issue3461]: https://github.com/evennia/evennia/issues/3461
 
 ## Evennia 4.0.0
 

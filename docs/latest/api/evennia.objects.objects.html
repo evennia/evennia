@@ -975,6 +975,28 @@ lock check for superuser (be careful with this one).</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.filter_visible">
+<code class="sig-name descname">filter_visible</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj_list</span></em>, <em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.filter_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.filter_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a list of objects to only include those that are visible to the looker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj_list</strong> (<em>list</em>) – List of objects to filter.</p></li>
+<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – The filtered list of visible objects.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default this simply checks the ‘view’ and ‘search’ locks on each object in the list.
+Override this
+method to implement custom visibility mechanics.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.get_display_name">
 <code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
@@ -1035,6 +1057,7 @@ from this method.</p>
 method is used.</p></li>
 <li><p><strong>return_string</strong> (<em>bool</em>) – If <strong>True</strong>, return only the singular form if count is 0,1 or
 the plural form otherwise. If <strong>False</strong> (default), return both forms as a tuple.</p></li>
+<li><p><strong>no_article</strong> (<em>bool</em>) – If <strong>True</strong>, do not return an article if <strong>count</strong> is 1.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -1046,11 +1069,14 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 </p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<dl class="simple">
-<dt>::</dt><dd><p>obj.get_numbered_name(3, looker, key=”foo”) -&gt; (“a foo”, “three foos”)</p>
-</dd>
-</dl>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s2">&quot;a foo&quot;</span><span class="p">,</span> <span class="s2">&quot;three foos&quot;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+      <span class="o">-&gt;</span> <span class="s2">&quot;a Foobert&quot;</span>
+<span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_article</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+      <span class="o">-&gt;</span> <span class="s2">&quot;Foobert&quot;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1803,8 +1829,10 @@ get called.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.get_visible_contents">
 <code class="sig-name descname">get_visible_contents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_visible_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_visible_contents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all contents of this object that a looker can see (whatever that means, by default it
-checks the ‘view’ and ‘search’ locks), grouped by type. Helper method to return_appearance.</p>
+<dd><p>DEPRECATED
+Get all contents of this object that a looker can see (whatever that means, by default it
+checks the ‘view’ and ‘search’ locks and excludes the looker themselves), grouped by type.
+Helper method to return_appearance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1827,7 +1855,8 @@ lists are the actual objects.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.get_content_names">
 <code class="sig-name descname">get_content_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_content_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_content_names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the proper names for all contents of this object. Helper method
+<dd><p>DEPRECATED
+Get the proper names for all contents of this object. Helper method
 for return_appearance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
