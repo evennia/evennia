@@ -9,6 +9,11 @@
   category after it was created (chiizujin)
 - [Feature][pull3467]: Add `alias/delete` switch for removing object aliases
   from in-game with default command (chiizujin)
+- [Feature][issue3450]: The default `page` command now tags its `Msg` objects
+  with tag 'page' (category 'comms') and also checks the `Msg`' 'read' lock.
+  made backwards compatible for old pages (Griatch)
+- Feature: Clean up the default Command variable list shown when a command has
+  no `func()` defined (Griatch)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -26,6 +31,10 @@
   way (chiizujin)
 - [Fix][pull3464]: EvEditor range:range specification didn't return correct
   range (chiizujin)
+- [Fix][issue3462]: EvEditor :UU and :DD etc commands were not properly
+  differentiating from their lower-case alternatives (Griatch)
+- [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
+  when creating a new character (Griatch)
 - Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
@@ -41,6 +50,9 @@
 [pull3463]: https://github.com/evennia/evennia/pull/3463
 [pull3464]: https://github.com/evennia/evennia/pull/3464
 [pull3467]: https://github.com/evennia/evennia/pull/3467
+[issue3450]: https://github.com/evennia/evennia/issues/3450
+[issue3462]: https://github.com/evennia/evennia/issues/3462
+[issue3460]: https://github.com/evennia/evennia/issues/3460
 
 ## Evennia 4.0.0
 
