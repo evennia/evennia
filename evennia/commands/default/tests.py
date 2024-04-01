@@ -116,8 +116,12 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
     def test_get_and_drop(self):
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
-        self.call(general.CmdDrop(), "Obj", "You drop an Obj")
+        self.call(general.CmdGet(), "Obj", "You pick up an Obj.")
+        self.call(general.CmdDrop(), "Obj", "You drop an Obj.")
+        # test stacking
+        self.obj2.key = "Obj"
+        self.call(general.CmdGet(), "2 Obj", "You pick up two Objs.")
+        self.call(general.CmdDrop(), "2 Obj", "You drop two Objs.")
 
     def test_give(self):
         self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
@@ -125,6 +129,10 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(general.CmdGet(), "Obj", "You pick up an Obj")
         self.call(general.CmdGive(), "Obj to Char2", "You give")
         self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
+        # test stacking
+        self.obj2.key = "Obj"
+        self.obj2.location = self.char1
+        self.call(general.CmdGive(), "2 Obj = Char2", "You give two Objs")
 
     def test_mux_command(self):
         class CmdTest(MuxCommand):
