@@ -1277,6 +1277,8 @@ class RPSystemCmdSet(CmdSet):
     Mix-in for adding rp-commands to default cmdset.
     """
 
+    key = "rpsystem_cmdset"
+
     def at_cmdset_creation(self):
         self.add(CmdEmote())
         self.add(CmdSay())

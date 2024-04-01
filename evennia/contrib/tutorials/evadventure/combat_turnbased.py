@@ -26,15 +26,9 @@ from evennia import AttributeProperty, CmdSet, Command, EvMenu
 from evennia.utils import inherits_from, list_to_string
 
 from .characters import EvAdventureCharacter
-from .combat_base import (
-    CombatAction,
-    CombatActionAttack,
-    CombatActionHold,
-    CombatActionStunt,
-    CombatActionUseItem,
-    CombatActionWield,
-    EvAdventureCombatBaseHandler,
-)
+from .combat_base import (CombatAction, CombatActionAttack, CombatActionHold,
+                          CombatActionStunt, CombatActionUseItem,
+                          CombatActionWield, EvAdventureCombatBaseHandler)
 from .enums import Ability
 
 
@@ -842,6 +836,8 @@ class TurnCombatCmdSet(CmdSet):
     """
     CmdSet for the turn-based combat.
     """
+
+    key = "turncombat_cmdset"
 
     def at_cmdset_creation(self):
         self.add(CmdTurnAttack())
