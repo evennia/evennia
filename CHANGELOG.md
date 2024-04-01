@@ -49,7 +49,8 @@ April 1, 2024
   differentiating from their lower-case alternatives (Griatch)
 - [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
   when creating a new character (Griatch)
-- Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
+- Doc: Added Beginner Tutorial lessons for [Monster and NPC AI][docAI],
+  [Quests][docQuests] and [Making a Procedural dungeon][docDungeon] (Griatch)
 - Doc fixes (Griatch, InspectorCaracal, homeofpoe)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
@@ -70,6 +71,9 @@ April 1, 2024
 [issue3462]: https://github.com/evennia/evennia/issues/3462
 [issue3460]: https://github.com/evennia/evennia/issues/3460
 [issue3461]: https://github.com/evennia/evennia/issues/3461
+[docAI]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-AI.html
+[docQuests]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Quests.html
+[docDungeon]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Dungeon.html
 
 ## Evennia 4.0.0
 
