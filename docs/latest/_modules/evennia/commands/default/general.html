@@ -96,9 +96,8 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
@@ -472,20 +471,57 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;inventory&quot;</span><span class="p">}))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">NumberedTargetCommand</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that parses out an optional number component from the input string. This</span>
+<span class="sd">    class is intended to be inherited from to provide additional functionality, rather</span>
+<span class="sd">    than used on its own.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parser that extracts a `.number` property from the beginning of the input string.</span>
+
+<span class="sd">        For example, if the input string is &quot;3 apples&quot;, this parser will set `self.number = 3` and</span>
+<span class="sd">        `self.args = &quot;apples&quot;`. If the input string is &quot;apples&quot;, this parser will set</span>
+<span class="sd">        `self.number = 0` and `self.args = &quot;apples&quot;`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;lhs&quot;</span><span class="p">):</span>
+            <span class="c1"># handle self.lhs but don&#39;t require it</span>
+            <span class="n">count</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># we only use the first word as a count if it&#39;s a number and</span>
+            <span class="c1"># there is more text afterwards</span>
+            <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">count</span><span class="o">.</span><span class="n">isdecimal</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="c1"># check for numbering</span>
+            <span class="n">count</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># we only use the first word as a count if it&#39;s a number and</span>
+            <span class="c1"># there is more text afterwards</span>
+            <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">count</span><span class="o">.</span><span class="n">isdecimal</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># we only re-assign self.number if it wasn&#39;t already taken from self.lhs</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">NumberedTargetCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    pick up something</span>
 
 <span class="sd">    Usage:</span>
 <span class="sd">      get &lt;obj&gt;</span>
 
-<span class="sd">    Picks up an object from your location and puts it in</span>
-<span class="sd">    your inventory.</span>
+<span class="sd">    Picks up an object from your location and puts it in your inventory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;get&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;grab&quot;</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();view:perm(Developer);read:perm(Developer)&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
 
 <div class="viewcode-block" id="CmdGet.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -494,36 +530,49 @@
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Get what?&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Get what?&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">stacked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">objs</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">obj</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get yourself.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get that.&quot;</span><span class="p">)</span>
+        <span class="c1"># the &#39;stacked&#39; search sometimes returns a list, sometimes not, so we make it always a list</span>
+        <span class="c1"># NOTE: this behavior may be a bug, see issue #3432</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get yourself.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># calling at_pre_get hook method</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_get</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-            <span class="k">return</span>
+        <span class="c1"># if we aren&#39;t allowed to get any of the objects, cancel the get</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="c1"># check the locks</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get that.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># calling at_pre_get hook method</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_get</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+                <span class="k">return</span>
 
-        <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This can&#39;t be picked up.&quot;</span><span class="p">)</span>
+        <span class="n">moved</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># attempt to move all of the objects</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">):</span>
+                <span class="n">moved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="c1"># calling at_get hook method</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moved</span><span class="p">:</span>
+            <span class="c1"># none of the objects were successfully moved</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That can&#39;t be picked up.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">singular</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(pick) up </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
-            <span class="c1"># calling at_get hook method</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="n">obj_name</span> <span class="o">=</span> <span class="n">moved</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">moved</span><span class="p">),</span> <span class="n">caller</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(pick) up </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">NumberedTargetCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    drop something</span>
 
@@ -548,30 +597,42 @@
 
         <span class="c1"># Because the DROP command by definition looks for items</span>
         <span class="c1"># in inventory, call the search function using location = caller</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
             <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
             <span class="n">nofound_string</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="n">multimatch_string</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;You carry more than one </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">,</span>
+            <span class="n">stacked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">objs</span><span class="p">:</span>
             <span class="k">return</span>
+        <span class="c1"># the &#39;stacked&#39; search sometimes returns a list, sometimes not, so we make it always a list</span>
+        <span class="c1"># NOTE: this behavior may be a bug, see issue #3432</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
 
-        <span class="c1"># Call the object script&#39;s at_pre_drop() method.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-            <span class="k">return</span>
+        <span class="c1"># if any objects fail the drop permission check, cancel the drop</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="c1"># Call the object&#39;s at_pre_drop() method.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+                <span class="k">return</span>
 
-        <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;drop&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This couldn&#39;t be dropped.&quot;</span><span class="p">)</span>
+        <span class="c1"># do the actual dropping</span>
+        <span class="n">moved</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;drop&quot;</span><span class="p">):</span>
+                <span class="n">moved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="c1"># Call the object&#39;s at_drop() method.</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">at_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moved</span><span class="p">:</span>
+            <span class="c1"># none of the objects were successfully moved</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That can&#39;t be dropped.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">singular</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(drop) </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
-            <span class="c1"># Call the object script&#39;s at_drop() method.</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">at_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="n">obj_name</span> <span class="o">=</span> <span class="n">moved</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">moved</span><span class="p">),</span> <span class="n">caller</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(drop) </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">NumberedTargetCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    give away something to someone</span>
 
@@ -594,37 +655,50 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: give &lt;inventory object&gt; = &lt;target&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
+        <span class="c1"># find the thing(s) to give away</span>
         <span class="n">to_give</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
             <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
             <span class="n">nofound_string</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="n">multimatch_string</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;You carry more than one </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">,</span>
+            <span class="n">stacked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># find the target to give to</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">to_give</span> <span class="ow">and</span> <span class="n">target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">singular</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">to_give</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
+        <span class="c1"># the &#39;stacked&#39; search sometimes returns a list, sometimes not, so we make it always a list</span>
+        <span class="c1"># NOTE: this behavior may be a bug, see issue #3432</span>
+        <span class="n">to_give</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">to_give</span><span class="p">)</span>
+
+        <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span> <span class="o">=</span> <span class="n">to_give</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">to_give</span><span class="p">),</span> <span class="n">caller</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You keep </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2"> to yourself.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not holding </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You keep </span><span class="si">{</span><span class="n">plural</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">to_give</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">singular</span><span class="si">}</span><span class="s2"> to yourself.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># calling at_pre_give hook method</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">at_pre_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-            <span class="k">return</span>
+        <span class="c1"># if any of the objects aren&#39;t allowed to be given, cancel the give</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">to_give</span><span class="p">:</span>
+            <span class="c1"># calling at_pre_give hook method</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+                <span class="k">return</span>
 
-        <span class="c1"># give object</span>
-        <span class="n">success</span> <span class="o">=</span> <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;give&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You could not give </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="c1"># do the actual moving</span>
+        <span class="n">moved</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">to_give</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;give&quot;</span><span class="p">):</span>
+                <span class="n">moved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="c1"># Call the object&#39;s at_give() method.</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">at_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moved</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You could not give that to </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You give </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> gives you </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-            <span class="c1"># Call the object script&#39;s at_give() method.</span>
-            <span class="n">to_give</span><span class="o">.</span><span class="n">at_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
+            <span class="n">obj_name</span> <span class="o">=</span> <span class="n">to_give</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">moved</span><span class="p">),</span> <span class="n">caller</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You give </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2"> gives you </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdSetDesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSetDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdSetDesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
