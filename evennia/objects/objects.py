@@ -1467,6 +1467,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         shown once. Also the singular display version, such as 'an apple', 'a tree' is determined
         from this method.
 
+        If the object's key starts with an upper-case letter and count is 1 then the key will be
+        returned as is for both singular and plural. This behavior can be disabled by setting the
+        attibute 'no_proper_name=True' on the object.
+
         Args:
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
@@ -1488,6 +1492,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         plural_category = "plural_key"
         key = kwargs.get("key", self.get_display_name(looker))
+
         raw_key = self.name
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         try:
@@ -1504,6 +1509,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
             self.aliases.add(singular, category=plural_category)
+
+        if self.attributes.get("proper_named") is not False and key[0].isupper() and count == 1:
+            if kwargs.get("return_string"):
+                return key
+            return key, key
 
         if kwargs.get("return_string"):
             return singular if count==1 else plural

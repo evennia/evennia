@@ -108,13 +108,13 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
     def test_get_and_drop(self):
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
-        self.call(general.CmdDrop(), "Obj", "You drop an Obj")
+        self.call(general.CmdGet(), "Obj", "You pick up Obj")
+        self.call(general.CmdDrop(), "Obj", "You drop Obj")
 
     def test_give(self):
         self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
         self.call(general.CmdGive(), "Obj = Char2", "You aren't carrying Obj.")
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
+        self.call(general.CmdGet(), "Obj", "You pick up Obj")
         self.call(general.CmdGive(), "Obj to Char2", "You give")
         self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
 
