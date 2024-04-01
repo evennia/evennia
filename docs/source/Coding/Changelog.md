@@ -20,6 +20,8 @@
 - [Feature][pull3466]: Add optional `no_article` kwarg to
   `DefaultObject.get_numbered_name` for the system to skip adding automatic
   articles. (chiizujin)
+- [Feature][pull3433]: Add ability to default get/drop to affect stacks of
+  items, such as `get/drop 3 rock` by a custom class parent (InspectorCaracal)
 - Feature: Clean up the default Command variable list shown when a command has
   no `func()` defined (Griatch)
 - [Feature][issue3461]: Add `DefaultObject.filter_display_visible` helper method
@@ -61,6 +63,7 @@
 [pull3464]: https://github.com/evennia/evennia/pull/3464
 [pull3466]: https://github.com/evennia/evennia/pull/3466
 [pull3467]: https://github.com/evennia/evennia/pull/3467
+[pull3433]: https://github.com/evennia/evennia/pull/3433
 [issue3450]: https://github.com/evennia/evennia/issues/3450
 [issue3462]: https://github.com/evennia/evennia/issues/3462
 [issue3460]: https://github.com/evennia/evennia/issues/3460
