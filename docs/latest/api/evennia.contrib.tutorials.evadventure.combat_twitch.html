@@ -491,7 +491,7 @@ boost INT Wizard Goblin</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['boost', 'foil']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['foil', 'boost']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -525,7 +525,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'boost foil', 'category': 'combat', 'key': 'stunt', 'no_prefix': ' boost foil', 'tags': '', 'text': '\n    Perform a combat stunt, that boosts an ally against a target, or\n    foils an enemy, giving them disadvantage against an ally.\n\n    Usage:\n        boost [ability] &lt;recipient&gt; &lt;target&gt;\n        foil [ability] &lt;recipient&gt; &lt;target&gt;\n        boost [ability] &lt;target&gt;       (same as boost me &lt;target&gt;)\n        foil [ability] &lt;target&gt;        (same as foil &lt;target&gt; me)\n\n    Example:\n        boost STR me Goblin\n        boost DEX Goblin\n        foil STR Goblin me\n        foil INT Goblin\n        boost INT Wizard Goblin\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'foil boost', 'category': 'combat', 'key': 'stunt', 'no_prefix': ' foil boost', 'tags': '', 'text': '\n    Perform a combat stunt, that boosts an ally against a target, or\n    foils an enemy, giving them disadvantage against an ally.\n\n    Usage:\n        boost [ability] &lt;recipient&gt; &lt;target&gt;\n        foil [ability] &lt;recipient&gt; &lt;target&gt;\n        boost [ability] &lt;target&gt;       (same as boost me &lt;target&gt;)\n        foil [ability] &lt;target&gt;        (same as foil &lt;target&gt; me)\n\n    Example:\n        boost STR me Goblin\n        boost DEX Goblin\n        foil STR Goblin me\n        foil INT Goblin\n        boost INT Wizard Goblin\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -657,6 +657,11 @@ set in self.parse())</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">TwitchCombatCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchCombatCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Add to character, to be able to attack others in a twitch-style way.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'twitch_combat_cmdset'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchCombatCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
@@ -677,6 +682,11 @@ self.add().</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">TwitchLookCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchLookCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>This will be added/removed dynamically when in combat.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'twitch_look_cmdset'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchLookCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
