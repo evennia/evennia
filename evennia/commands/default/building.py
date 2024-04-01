@@ -1,16 +1,17 @@
 """
 Building and world design commands
 """
+
 import re
 import typing
 
-import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
+
+import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import (generate_cmdset_providers,
-                                         get_and_merge_cmdsets)
+from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -23,10 +24,18 @@ from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import (class_from_module, crop, dbref, display_len,
-                                 format_grid, get_all_typeclasses,
-                                 inherits_from, interactive, list_to_string,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    crop,
+    dbref,
+    display_len,
+    format_grid,
+    get_all_typeclasses,
+    inherits_from,
+    interactive,
+    list_to_string,
+    variable_from_module,
+)
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -259,7 +268,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         obj = caller.search(objname)
         if not obj:
             return
-        if self.rhs is None and 'delete' not in self.switches:
+        if self.rhs is None and "delete" not in self.switches:
             # no =, and not deleting, so we just list aliases on object.
             aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
@@ -300,7 +309,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         if "delete" in self.switches:
             # delete all matching keys, regardless of category
             existed = False
-            for key, category in  obj.aliases.all(return_key_and_category=True):
+            for key, category in obj.aliases.all(return_key_and_category=True):
                 if key == self.rhs:
                     obj.aliases.remove(key=self.rhs, category=category)
                     existed = True
@@ -2956,9 +2965,9 @@ class CmdExamine(ObjManipCommand):
         ):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
-            objdata[
-                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
-            ] = self.format_current_cmds(obj, current_cmdset)
+            objdata[f"Commands available to {obj.key} (result of Merged Cmdset(s))"] = (
+                self.format_current_cmds(obj, current_cmdset)
+            )
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
             objdata["Persistent"] = self.format_script_is_persistent(obj)
@@ -3415,9 +3424,11 @@ class ScriptEvMore(EvMore):
 
             table.add_row(
                 f"#{script.id}",
-                f"{script.obj.key}({script.obj.dbref})"
-                if (hasattr(script, "obj") and script.obj)
-                else "<Global>",
+                (
+                    f"{script.obj.key}({script.obj.dbref})"
+                    if (hasattr(script, "obj") and script.obj)
+                    else "<Global>"
+                ),
                 script.key,
                 script.interval if script.interval > 0 else "--",
                 nextrep,

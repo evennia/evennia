@@ -72,14 +72,12 @@ from evennia.utils.ansi import raw
 
 
 class ParseError(Exception):
-
     """An error occurred during parsing."""
 
     pass
 
 
 class UnixCommandParser(argparse.ArgumentParser):
-
     """A modifier command parser for unix commands.
 
     This parser is used to replace `argparse.ArgumentParser`.  It
@@ -183,7 +181,6 @@ class UnixCommandParser(argparse.ArgumentParser):
 
 
 class HelpAction(argparse.Action):
-
     """Override the -h/--help action in the default parser.
 
     Using the default -h/--help will call the exit function in different

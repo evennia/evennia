@@ -4,6 +4,7 @@ communication to the AMP clients connecting to it (by default
 these are the Evennia Server and the evennia launcher).
 
 """
+
 import os
 import sys
 from subprocess import STDOUT, Popen
@@ -36,7 +37,6 @@ def getenv():
 
 
 class AMPServerFactory(protocol.ServerFactory):
-
     """
     This factory creates AMP Server connection. This acts as the 'Portal'-side communication to the
     'Server' process.

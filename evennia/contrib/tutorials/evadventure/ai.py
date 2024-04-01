@@ -49,9 +49,9 @@ class AIHandler:
 
     def __init__(self, obj):
         self.obj = obj
-        self.ai_state = obj.attributes.get(self.attribute_name,
-                                           category=self.attribute_category,
-                                           default="idle")
+        self.ai_state = obj.attributes.get(
+            self.attribute_name, category=self.attribute_category, default="idle"
+        )
 
     def set_state(self, state):
         self.ai_state = state
@@ -122,6 +122,7 @@ class AIMixin:
     of multiple inheritance. In a real game, you would probably want to use a mixin like this.
 
     """
+
     @lazy_property
     def ai(self):
         return AIHandler(self)

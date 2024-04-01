@@ -31,6 +31,7 @@ Timers are handled by persistent delays on the button. These are examples of
 such as when closing the lid and un-blinding a character.
 
 """
+
 import random
 
 from evennia import CmdSet, Command, DefaultObject

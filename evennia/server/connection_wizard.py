@@ -2,6 +2,7 @@
 Link Evennia to external resources (wizard plugin for evennia_launcher)
 
 """
+
 import pprint
 import sys
 from os import path

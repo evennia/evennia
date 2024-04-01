@@ -17,6 +17,7 @@ To get the `value` of an enum (must always be hashable, useful for Attribute loo
 ----
 
 """
+
 from enum import Enum
 
 

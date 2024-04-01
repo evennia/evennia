@@ -5,6 +5,7 @@ sub-categories.
 This is used primarily by the default `help` command.
 
 """
+
 import re
 
 from django.conf import settings

@@ -17,6 +17,7 @@ the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.
 
 """
+
 import re
 
 from django.conf import settings

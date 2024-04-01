@@ -26,6 +26,7 @@ Set theory.
     to affect the low-priority cmdset.  Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
 
 """
+
 from weakref import WeakKeyDictionary
 
 from django.utils.translation import gettext as _

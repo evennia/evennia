@@ -2,6 +2,7 @@
 Unit tests for all sorts of inline text-tag parsing, like ANSI, html conversion, inlinefuncs etc
 
 """
+
 import re
 
 from django.test import TestCase, override_settings

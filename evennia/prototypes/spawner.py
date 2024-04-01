@@ -132,7 +132,6 @@ prototype, override its name with an empty dict.
 
 """
 
-
 import copy
 import hashlib
 import time

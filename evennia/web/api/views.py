@@ -4,6 +4,7 @@ Rest Framework provides collections called 'ViewSets', which can generate a
 number of views for the common CRUD operations.
 
 """
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action

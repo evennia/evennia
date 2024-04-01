@@ -14,12 +14,17 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import ListView
 from django.views.generic.base import RedirectView
+
 from evennia.utils import class_from_module
 from evennia.web.website import forms
 
 from .mixins import TypeclassMixin
-from .objects import (ObjectCreateView, ObjectDeleteView, ObjectDetailView,
-                      ObjectUpdateView)
+from .objects import (
+    ObjectCreateView,
+    ObjectDeleteView,
+    ObjectDetailView,
+    ObjectUpdateView,
+)
 
 
 class CharacterMixin(TypeclassMixin):
@@ -124,9 +129,11 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
 
         # since next_page is untrusted input from the user, we need to check it's safe to
         next_page = iri_to_uri(next_page)
-        if not url_has_allowed_host_and_scheme(url=next_page,
-                                               allowed_hosts={self.request.get_host()},
-                                               require_https=self.request.is_secure()):
+        if not url_has_allowed_host_and_scheme(
+            url=next_page,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
             next_page = self.success_url
 
         if char:
@@ -139,7 +146,6 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
             # If the puppeting failed, clear out the cached puppet value
             self.request.session["puppet"] = None
             messages.error(self.request, "You cannot become '%s'." % char)
-
 
         return next_page
 

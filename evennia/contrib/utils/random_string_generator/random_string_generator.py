@@ -59,7 +59,6 @@ from evennia.utils.create import create_script
 
 
 class RejectedRegex(RuntimeError):
-
     """The provided regular expression has been rejected.
 
     More details regarding why this error occurred will be provided in
@@ -72,14 +71,12 @@ class RejectedRegex(RuntimeError):
 
 
 class ExhaustedGenerator(RuntimeError):
-
     """The generator hasn't any available strings to generate anymore."""
 
     pass
 
 
 class RandomStringGeneratorScript(DefaultScript):
-
     """
     The global script to hold all generators.
 
@@ -99,7 +96,6 @@ class RandomStringGeneratorScript(DefaultScript):
 
 
 class RandomStringGenerator:
-
     """
     A generator class to generate pseudo-random strings with a rule.
 

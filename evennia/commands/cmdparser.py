@@ -6,7 +6,6 @@ same inputs as the default one.
 
 """
 
-
 import re
 
 from django.conf import settings

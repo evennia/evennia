@@ -41,6 +41,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 ```
 
 """
+
 from django.conf import settings
 
 from evennia.commands.cmdset import CmdSet

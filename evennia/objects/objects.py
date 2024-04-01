@@ -5,14 +5,16 @@ These are the (default) starting points for all in-game visible
 entities.
 
 """
+
 import time
 import typing
 from collections import defaultdict
 
-import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -22,9 +24,17 @@ from evennia.server.signals import SIGNAL_EXIT_TRAVERSED
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
-from evennia.utils.utils import (class_from_module, compress_whitespace, dbref,
-                                 is_iter, iter_to_str, lazy_property,
-                                 make_iter, to_str, variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    compress_whitespace,
+    dbref,
+    is_iter,
+    iter_to_str,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -955,9 +965,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # director-stance replacements
             outmessage = outmessage.format_map(
                 {
-                    key: obj.get_display_name(looker=receiver)
-                    if hasattr(obj, "get_display_name")
-                    else str(obj)
+                    key: (
+                        obj.get_display_name(looker=receiver)
+                        if hasattr(obj, "get_display_name")
+                        else str(obj)
+                    )
                     for key, obj in mapping.items()
                 }
             )
@@ -1419,10 +1431,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             method to implement custom visibility mechanics.
 
         """
-        return [obj for obj in obj_list
-                if (obj.access(looker, "view")
-                    and obj.access(looker, "search", default=True))
-               ]
+        return [
+            obj
+            for obj in obj_list
+            if (obj.access(looker, "view") and obj.access(looker, "search", default=True))
+        ]
 
     # name and return_appearance hooks
 
@@ -1522,7 +1535,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return key, key
 
         if kwargs.get("return_string"):
-            return singular if count==1 else plural
+            return singular if count == 1 else plural
 
         return singular, plural
 
@@ -1579,8 +1592,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The character display data.
 
         """
-        characters = self.filter_visible(self.contents_get(content_type="character"), looker,
-                                         **kwargs)
+        characters = self.filter_visible(
+            self.contents_get(content_type="character"), looker, **kwargs
+        )
         character_names = iter_to_str(
             char.get_display_name(looker, **kwargs) for char in characters
         )
@@ -2679,9 +2693,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "object": self.get_display_name(self),
                 "location": location.get_display_name(self) if location else None,
                 "receiver": None,
-                "all_receivers": ", ".join(recv.get_display_name(self) for recv in receivers)
-                if receivers
-                else None,
+                "all_receivers": (
+                    ", ".join(recv.get_display_name(self) for recv in receivers)
+                    if receivers
+                    else None
+                ),
                 "speech": message,
             }
             self_mapping.update(custom_mapping)
@@ -2701,9 +2717,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     "object": self.get_display_name(receiver),
                     "location": location.get_display_name(receiver),
                     "receiver": receiver.get_display_name(receiver),
-                    "all_receivers": ", ".join(recv.get_display_name(recv) for recv in receivers)
-                    if receivers
-                    else None,
+                    "all_receivers": (
+                        ", ".join(recv.get_display_name(recv) for recv in receivers)
+                        if receivers
+                        else None
+                    ),
                 }
                 receiver_mapping.update(individual_mapping)
                 receiver_mapping.update(custom_mapping)

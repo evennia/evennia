@@ -8,6 +8,7 @@ which is a non-db version of Attributes.
 
 
 """
+
 import fnmatch
 import re
 from collections import defaultdict

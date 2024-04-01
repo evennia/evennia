@@ -4,6 +4,7 @@ Views to manipulate help entries.
 Multi entry object type supported added by DaveWithTheNiceHat 2021
     Pull Request #2429
 """
+
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.utils.text import slugify

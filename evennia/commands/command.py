@@ -4,6 +4,7 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
+
 import inspect
 import math
 import re
@@ -11,6 +12,7 @@ import re
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
+
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
@@ -19,9 +21,7 @@ from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
 
-
 class InterruptCommand(Exception):
-
     """Cleanly interrupt a command."""
 
     pass
@@ -491,22 +491,22 @@ class Command(metaclass=CommandMeta):
 Command \"{cmdname}\" has no defined `func()` method. Available properties on this command are:
 
     {variables}"""
-        variables = [" |w{}|n ({}): {}".format(
-                key, type(val), f'"{val}"' if isinstance(val, str) else val
+        variables = [
+            " |w{}|n ({}): {}".format(key, type(val), f'"{val}"' if isinstance(val, str) else val)
+            for key, val in (
+                ("self.key", self.key),
+                ("self.cmdname", self.cmdstring),
+                ("self.raw_cmdname", self.raw_cmdname),
+                ("self.raw_string", self.raw_string),
+                ("self.aliases", self.aliases),
+                ("self.args", self.args),
+                ("self.caller", self.caller),
+                ("self.obj", self.obj),
+                ("self.session", self.session),
+                ("self.locks", self.locks),
+                ("self.help_category", self.help_category),
+                ("self.cmdset", self.cmdset),
             )
-            for key, val in
-                 (("self.key", self.key),
-                  ("self.cmdname", self.cmdstring),
-                  ("self.raw_cmdname", self.raw_cmdname),
-                  ("self.raw_string", self.raw_string),
-                  ("self.aliases", self.aliases),
-                  ("self.args", self.args),
-                  ("self.caller", self.caller),
-                  ("self.obj", self.obj),
-                  ("self.session", self.session),
-                  ("self.locks", self.locks),
-                  ("self.help_category", self.help_category),
-                  ("self.cmdset", self.cmdset))
         ]
         output = output_string.format(cmdname=self.key, variables="\n    ".join(variables))
         self.msg(output)

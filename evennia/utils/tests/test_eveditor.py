@@ -23,7 +23,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
         self.call(eveditor.CmdLineInput(), "line 5", raw_string="line 5", msg="05line 5")
         self.call(
             eveditor.CmdEditorGroup(),
-            "", # list whole buffer
+            "",  # list whole buffer
             raw_string=":",
             msg="Line Editor []\n01line 1\n02line 2\n"
             "03line 3\n04line 4\n05line 5\n"
@@ -31,7 +31,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
         self.call(
             eveditor.CmdEditorGroup(),
-            ":", # list empty range
+            ":",  # list empty range
             raw_string=":",
             msg="Line Editor []\n01line 1\n02line 2\n"
             "03line 3\n04line 4\n05line 5\n"
@@ -39,7 +39,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
         self.call(
             eveditor.CmdEditorGroup(),
-            ":4", # list from start to line 4
+            ":4",  # list from start to line 4
             raw_string=":",
             msg="Line Editor []\n01line 1\n02line 2\n"
             "03line 3\n04line 4\n"
@@ -47,7 +47,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
         self.call(
             eveditor.CmdEditorGroup(),
-            "2:", # list from line 2 to end
+            "2:",  # list from line 2 to end
             raw_string=":",
             msg="Line Editor []\n02line 2\n03line 3\n"
             "04line 4\n05line 5\n"
@@ -55,7 +55,7 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
         self.call(
             eveditor.CmdEditorGroup(),
-            "-10:10", # try to list invalid range (too large)
+            "-10:10",  # try to list invalid range (too large)
             raw_string=":",
             msg="Line Editor []\n01line 1\n02line 2\n"
             "03line 3\n04line 4\n05line 5\n"
@@ -63,10 +63,9 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
         self.call(
             eveditor.CmdEditorGroup(),
-            "3:1", # try to list invalid range (reversed)
+            "3:1",  # try to list invalid range (reversed)
             raw_string=":",
-            msg="Line Editor []\n03line 3\n"
-            "[l:01 w:002 c:0006](:h for help)",
+            msg="Line Editor []\n03line 3\n" "[l:01 w:002 c:0006](:h for help)",
         )
 
     def test_eveditor_view_cmd(self):
@@ -184,7 +183,10 @@ class TestEvEditor(BaseEvenniaCommandTest):
         )
 
         self.call(
-            eveditor.CmdEditorGroup(), "3", raw_string=":x", msg="Line 3, [' test line'] cut."  # cut
+            eveditor.CmdEditorGroup(),
+            "3",
+            raw_string=":x",
+            msg="Line 3, [' test line'] cut.",  # cut
         )
 
         self.call(

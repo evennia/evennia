@@ -3,7 +3,6 @@ Tests of ingame_map_display.
 
 """
 
-
 from typeclasses import exits, rooms
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest

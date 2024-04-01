@@ -13,7 +13,6 @@ a certain object type.
 
 """
 
-
 from ast import literal_eval
 
 from django.conf import settings

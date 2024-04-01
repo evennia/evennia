@@ -39,10 +39,12 @@ The editor can also be used to format Python code and be made to
 survive a reload. See the `EvEditor` class for more details.
 
 """
+
 import re
 
 from django.conf import settings
 from django.utils.translation import gettext as _
+
 from evennia import CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils import dedent, fill, is_iter, justify, logger, to_str, utils
@@ -305,7 +307,11 @@ class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
         if arglist and arglist[0].count(":") == 1:
             part1, part2 = arglist[0].split(":")
             lstart = min(max(1, int(part1)), nlines) - 1 if utils.value_is_integer(part1) else 0
-            lend = min(max(lstart + 1, int(part2)), nlines) if utils.value_is_integer(part2) else nlines
+            lend = (
+                min(max(lstart + 1, int(part2)), nlines)
+                if utils.value_is_integer(part2)
+                else nlines
+            )
             linerange = True
         elif arglist and arglist[0].isdigit():
             lstart = min(max(0, int(arglist[0]) - 1), nlines)
@@ -468,7 +474,7 @@ class CmdEditorGroup(CmdEditorBase):
         linebuffer = self.linebuffer
         lstart, lend = self.lstart, self.lend
         # preserve the cmdname including case (otherwise uu and UU would be the same)
-        cmd = self.raw_string[:len(self.cmdstring)]
+        cmd = self.raw_string[: len(self.cmdstring)]
         echo_mode = self.editor._echo_mode
 
         if cmd == ":":

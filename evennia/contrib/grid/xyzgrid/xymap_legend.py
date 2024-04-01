@@ -20,11 +20,11 @@ import uuid
 from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
+
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
-from .utils import (BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError,
-                    MapParserError)
+from .utils import BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError, MapParserError
 
 NodeTypeclass = None
 ExitTypeclass = None
@@ -844,6 +844,7 @@ class SmartRerouterMapLink(MapLink):
         /|
 
     """
+
     multilink = True
 
     def get_direction(self, start_direction):

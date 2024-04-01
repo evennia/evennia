@@ -98,6 +98,7 @@ You can see all the features of the `BaseBuff` class below, or browse `samplebuf
 many attributes and hook methods you can overload to create complex, interrelated buffs.
 
 """
+
 import time
 from random import random
 

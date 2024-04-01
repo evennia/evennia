@@ -59,7 +59,6 @@ class EvAdventureQuest:
     desc = "This is the base quest class"
     start_step = "start"
 
-
     # help entries for quests (could also be methods)
     help_start = "You need to start first"
     help_end = "You need to end the quest"
@@ -191,8 +190,9 @@ class EvAdventureQuest:
 
         """
         if self.status in ("abandoned", "completed", "failed"):
-            help_resource = getattr(self, f"help_{self.status}",
-                                    f"You have {self.status} this quest.")
+            help_resource = getattr(
+                self, f"help_{self.status}", f"You have {self.status} this quest."
+            )
         else:
             help_resource = getattr(self, f"help_{self.current_step}", "No help available.")
 
@@ -202,7 +202,6 @@ class EvAdventureQuest:
         else:
             # normally it's just a string
             return str(help_resource)
-
 
     # step methods and hooks
 
@@ -377,6 +376,7 @@ class CmdQuests(Command):
         quest <questname>
 
     """
+
     key = "quests"
     aliases = ["quest"]
 
@@ -399,4 +399,3 @@ class CmdQuests(Command):
 
         for quest in quests:
             self.msg(f"Quest {quest.key}: {quest.status}")
-

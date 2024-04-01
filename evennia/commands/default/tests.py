@@ -14,17 +14,32 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
-import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from evennia import (DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom,
-                     ObjectDB, search_object)
+from parameterized import parameterized
+from twisted.internet import task
+
+import evennia
+from evennia import (
+    DefaultCharacter,
+    DefaultExit,
+    DefaultObject,
+    DefaultRoom,
+    ObjectDB,
+    search_object,
+)
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import (account, admin, batchprocess, building,
-                                      comms, general)
+from evennia.commands.default import (
+    account,
+    admin,
+    batchprocess,
+    building,
+    comms,
+    general,
+)
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -33,8 +48,6 @@ from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
-from parameterized import parameterized
-from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -368,8 +381,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.timedelay = 5
         global _TASK_HANDLER
         if _TASK_HANDLER is None:
-            from evennia.scripts.taskhandler import \
-                TASK_HANDLER as _TASK_HANDLER
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
         _TASK_HANDLER.clock = task.Clock()
         self.task_handler = _TASK_HANDLER
         self.task_handler.clear()
@@ -787,19 +799,20 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj: testobj1b")
-        self.call(building.CmdSetObjAlias(),
+        self.call(
+            building.CmdSetObjAlias(),
             "/category Obj = testobj1b:category1",
-            "Alias(es) for 'Obj' set to 'testobj1b' (category: 'category1')."
+            "Alias(es) for 'Obj' set to 'testobj1b' (category: 'category1').",
         )
         self.call(
             building.CmdSetObjAlias(),
             "/category Obj = testobj1b:category2",
-            "Alias(es) for 'Obj' set to 'testobj1b,testobj1b' (category: 'category2')."
+            "Alias(es) for 'Obj' set to 'testobj1b,testobj1b' (category: 'category2').",
         )
         self.call(
-            building.CmdSetObjAlias(), # delete both occurences of alias 'testobj1b'
+            building.CmdSetObjAlias(),  # delete both occurences of alias 'testobj1b'
             "/delete Obj = testobj1b",
-            "Alias 'testobj1b' deleted from Obj."
+            "Alias 'testobj1b' deleted from Obj.",
         )
         self.call(building.CmdSetObjAlias(), "Obj =", "No aliases to clear.")
 
@@ -1773,8 +1786,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
-            "'key':'goblin', 'location':'%s'}"
-            % spawnLoc.dbref,
+            "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
             "Spawned goblin",
         )
         goblin = get_object(self, "goblin")
@@ -1822,8 +1834,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo',"
-            " 'location':'%s'}"
-            % spawnLoc.dbref,
+            " 'location':'%s'}" % spawnLoc.dbref,
             "Spawned Ball",
         )
         ball = get_object(self, "Ball")
@@ -2068,6 +2079,7 @@ class TestComms(BaseEvenniaCommandTest):
             receiver=self.account,
         )
         from evennia.comms.models import Msg
+
         msgs = Msg.objects.filter(db_tags__db_key="page", db_tags__db_category="comms")
         self.assertEqual(msgs[0].senders, [self.account])
         self.assertEqual(msgs[0].receivers, [self.account2])

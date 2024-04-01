@@ -7,6 +7,7 @@ and determining what the outcome is.
 ----
 
 """
+
 from random import randint
 
 from .enums import Ability

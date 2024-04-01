@@ -331,7 +331,6 @@ def menu_edit(caller, choice, obj):
 
 
 class CmdNoInput(Command):
-
     """No input has been found."""
 
     key = _CMD_NOINPUT
@@ -352,7 +351,6 @@ class CmdNoInput(Command):
 
 
 class CmdNoMatch(Command):
-
     """No input has been found."""
 
     key = _CMD_NOMATCH
@@ -394,7 +392,6 @@ class CmdNoMatch(Command):
 
 
 class BuildingMenuCmdSet(CmdSet):
-
     """Building menu CmdSet."""
 
     key = "building_menu"
@@ -421,7 +418,6 @@ class BuildingMenuCmdSet(CmdSet):
 
 
 class Choice:
-
     """A choice object, created by `add_choice`."""
 
     def __init__(
@@ -557,7 +553,6 @@ class Choice:
 
 
 class BuildingMenu:
-
     """
     Class allowing to create and set building menus to edit specific objects.
 
@@ -1200,7 +1195,6 @@ class BuildingMenu:
 
 # Generic building menu and command
 class GenericBuildingMenu(BuildingMenu):
-
     """A generic building menu, allowing to edit any object.
 
     This is more a demonstration menu.  By default, it allows to edit the
@@ -1241,7 +1235,6 @@ class GenericBuildingMenu(BuildingMenu):
 
 
 class GenericBuildingCmd(Command):
-
     """
     Generic building command.
 

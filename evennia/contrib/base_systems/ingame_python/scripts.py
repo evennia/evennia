@@ -27,7 +27,6 @@ RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')
 
 
 class EventHandler(DefaultScript):
-
     """
     The event handler that contains all events in a global script.
 
@@ -600,7 +599,6 @@ class EventHandler(DefaultScript):
 
 # Script to call time-related events
 class TimeEventScript(DefaultScript):
-
     """Gametime-sensitive script."""
 
     def at_script_creation(self):

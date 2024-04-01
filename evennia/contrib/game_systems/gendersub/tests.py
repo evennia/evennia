@@ -3,7 +3,6 @@ Test gendersub contrib.
 
 """
 
-
 from mock import patch
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest

@@ -18,7 +18,6 @@ action that takes several vulnerable turns to complete.
 
 """
 
-
 import random
 from collections import defaultdict
 
@@ -26,9 +25,15 @@ from evennia import AttributeProperty, CmdSet, Command, EvMenu
 from evennia.utils import inherits_from, list_to_string
 
 from .characters import EvAdventureCharacter
-from .combat_base import (CombatAction, CombatActionAttack, CombatActionHold,
-                          CombatActionStunt, CombatActionUseItem,
-                          CombatActionWield, EvAdventureCombatBaseHandler)
+from .combat_base import (
+    CombatAction,
+    CombatActionAttack,
+    CombatActionHold,
+    CombatActionStunt,
+    CombatActionUseItem,
+    CombatActionWield,
+    EvAdventureCombatBaseHandler,
+)
 from .enums import Ability
 
 

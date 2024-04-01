@@ -3,6 +3,7 @@ Components - ChrisLR 2022
 
 This file contains the Descriptors used to set Fields in Components
 """
+
 import typing
 
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty

@@ -2,6 +2,7 @@
 Tests for the REST API.
 
 """
+
 from collections import namedtuple
 
 from django.core.exceptions import ObjectDoesNotExist

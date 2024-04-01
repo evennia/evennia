@@ -61,6 +61,7 @@ Xterm256 greyscale:
 ----
 
 """
+
 import functools
 import re
 from collections import OrderedDict

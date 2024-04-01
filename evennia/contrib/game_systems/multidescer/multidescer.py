@@ -25,6 +25,7 @@ Reload the server and you should have the +desc command available (it
 will replace the default `desc` command).
 
 """
+
 import re
 
 from evennia import default_cmds

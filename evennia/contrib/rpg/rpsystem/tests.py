@@ -2,9 +2,11 @@
 Tests for RP system
 
 """
+
 import time
 
 from anything import Anything
+
 from evennia import DefaultObject, create_object, default_cmds
 from evennia.commands.default import building
 from evennia.commands.default.tests import BaseEvenniaCommandTest
@@ -426,11 +428,11 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.call(default_cmds.CmdLook(), "Mushroom-2", expected_third_call)  # FAILS
 
         expected_fourth_call = "Alias(es) for 'Mushroom' set to 'fungus'."
-        self.call(building.CmdSetObjAlias(), "Mushroom-1 = fungus", expected_fourth_call) #PASSES
+        self.call(building.CmdSetObjAlias(), "Mushroom-1 = fungus", expected_fourth_call)  # PASSES
 
         expected_fifth_call = [
             "More than one match for 'Mushroom' (please narrow target):",
             f" Mushroom-1 [fungus]",
             f" Mushroom-2",
         ]
-        self.call(default_cmds.CmdLook(), "Mushroom", "\n".join(expected_fifth_call)) # PASSES
+        self.call(default_cmds.CmdLook(), "Mushroom", "\n".join(expected_fifth_call))  # PASSES
