@@ -1476,14 +1476,19 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 method is used.
             return_string (bool): If `True`, return only the singular form if count is 0,1 or
                 the plural form otherwise. If `False` (default), return both forms as a tuple.
+            no_article (bool): If `True`, do not return an article if `count` is 1.
 
         Returns:
             tuple: This is a tuple `(str, str)` with the singular and plural forms of the key
                 including the count.
 
         Examples:
-            ::
-                obj.get_numbered_name(3, looker, key="foo") -> ("a foo", "three foos")
+        ::
+            - obj.get_numbered_name(3, looker, key="foo") -> ("a foo", "three foos")
+            - obj.get_numbered_name(1, looker, key="Foobert", return_string=True)
+                  -> "a Foobert"
+            - obj.get_numbered_name(1, looker, key="Foobert", return_string=True, no_article=True)
+                  -> "Foobert"
 
         """
         plural_category = "plural_key"
@@ -1504,6 +1509,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
             self.aliases.add(singular, category=plural_category)
+
+        if kwargs.get("no_article") and count == 1:
+            if kwargs.get("return_string"):
+                return key
+            return key, key
 
         if kwargs.get("return_string"):
             return singular if count==1 else plural

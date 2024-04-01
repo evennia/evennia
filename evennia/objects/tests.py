@@ -185,6 +185,11 @@ class DefaultObjectTest(BaseEvenniaTest):
             pattern,
         )
 
+    def test_get_name_without_article(self):
+        self.assertEqual(self.obj1.get_numbered_name(1, self.char1, return_string=True), "an Obj")
+        self.assertEqual(
+            self.obj1.get_numbered_name(1, self.char1, return_string=True, no_article=True), "Obj"
+        )
 
 class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
