@@ -790,6 +790,23 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj: testobj1b")
+        self.call(building.CmdSetObjAlias(),
+            "/category Obj = testobj1b:category1",
+            "Alias(es) for 'Obj' set to 'testobj1b' (category: 'category1')."
+        )
+        self.call(
+            building.CmdSetObjAlias(),
+            "/category Obj = testobj1b:category2",
+            "Alias(es) for 'Obj' set to 'testobj1b,testobj1b' (category: 'category2')."
+        )
+        self.call(
+            building.CmdSetObjAlias(), # delete both occurences of alias 'testobj1b'
+            "/delete Obj = testobj1b",
+            "Alias 'testobj1b' deleted from Obj."
+        )
+        self.call(building.CmdSetObjAlias(), "Obj =", "No aliases to clear.")
+
     def test_copy(self):
         self.call(
             building.CmdCopy(),
