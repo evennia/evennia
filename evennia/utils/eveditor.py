@@ -305,12 +305,9 @@ class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
         linerange = False
         if arglist and arglist[0].count(":") == 1:
             part1, part2 = arglist[0].split(":")
-            if part1 and part1.isdigit():
-                lstart = min(max(0, int(part1)) - 1, nlines)
-                linerange = True
-            if part2 and part2.isdigit():
-                lend = min(lstart + 1, int(part2)) + 1
-                linerange = True
+            lstart = min(max(1, int(part1)), nlines) - 1 if utils.value_is_integer(part1) else 0
+            lend = min(max(lstart + 1, int(part2)), nlines) if utils.value_is_integer(part2) else nlines
+            linerange = True
         elif arglist and arglist[0].isdigit():
             lstart = min(max(0, int(arglist[0]) - 1), nlines)
             lend = lstart + 1

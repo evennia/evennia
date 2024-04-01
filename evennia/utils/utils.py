@@ -3077,3 +3077,21 @@ def ip_from_request(request, exclude=None) -> str:
 
     logger.log_warn("ip_from_request: No valid IP address found in request. Using remote_addr.")
     return remote_addr
+
+
+def value_is_integer(value):
+    """
+    Determines if a value can be type-cast to an integer.
+
+    Args:
+        value (any): The value to check.
+
+    Returns:
+        result (bool): Whether it can be type-cast to an integer or not.
+    """
+    try:
+        int(value)
+    except ValueError:
+        return False
+
+    return True
