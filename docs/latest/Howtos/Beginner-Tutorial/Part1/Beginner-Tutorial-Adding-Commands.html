@@ -201,48 +201,34 @@ what is in it.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">me.cmdset</span></code> is the store of all cmdsets stored on us. By giving the path to our CmdSet class, it will be added.</p>
 <p>Now try</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; echo
-Command echo has no defined `func()` - showing on-command variables:
-...
-...
+Command &quot;echo&quot; has no defined `func()`. Available properties ...
+...(lots of stuff)...
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">echo</span></code> works! You should be getting a long list of outputs. The reason for this is that your <code class="docutils literal notranslate"><span class="pre">echo</span></code> function is not really “doing” anything yet and the default function is then to show all useful resources available to you when you use your Command. Let’s look at some of those listed:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Command echo has no defined `func()` - showing on-command variables:
-obj (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
-lockhandler (&lt;class &#39;evennia.locks.lockhandler.LockHandler&#39;&gt;): cmd:all()
-caller (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
-cmdname (&lt;class &#39;str&#39;&gt;): echo
-raw_cmdname (&lt;class &#39;str&#39;&gt;): echo
-cmdstring (&lt;class &#39;str&#39;&gt;): echo
-args (&lt;class &#39;str&#39;&gt;):
-cmdset (&lt;class &#39;evennia.commands.cmdset.CmdSet&#39;&gt;): @mail, about, access, accounts, addcom, alias, allcom, ban, batchcode, batchcommands, boot, cboot, ccreate,
-    cdesc, cdestroy, cemit, channels, charcreate, chardelete, checklockstring, clientwidth, clock, cmdbare, cmdsets, color, copy, cpattr, create, cwho, delcom,
-    desc, destroy, dig, dolphin, drop, echo, emit, examine, find, force, get, give, grapevine2chan, help, home, ic, inventory, irc2chan, ircstatus, link, lock,
-    look, menutest, mudinfo, mvattr, name, nick, objects, ooc, open, option, page, password, perm, pose, public, py, quell, quit, reload, reset, rss2chan, say,
-    script, scripts, server, service, sessions, set, setdesc, sethelp, sethome, shutdown, spawn, style, tag, tel, test2010, test2028, testrename, testtable,
-    tickers, time, tunnel, typeclass, unban, unlink, up, up, userpassword, wall, whisper, who, wipe
-session (&lt;class &#39;evennia.server.serversession.ServerSession&#39;&gt;): Griatch(#1)@1:2:7:.:0:.:0:.:1
-account (&lt;class &#39;typeclasses.accounts.Account&#39;&gt;): Griatch(account 1)
-raw_string (&lt;class &#39;str&#39;&gt;): echo
+<p><code class="docutils literal notranslate"><span class="pre">echo</span></code> works! You should be getting a long list of outputs. Your <code class="docutils literal notranslate"><span class="pre">echo</span></code> function is not really “doing” anything yet and the default function is then to show all useful resources available to you when you use your Command. Let’s look at some of those listed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Command &quot;echo&quot; has no defined `func()` method. Available properties on this command are:
 
---------------------------------------------------
-echo - Command variables from evennia:
---------------------------------------------------
-name of cmd (self.key): echo
-cmd aliases (self.aliases): []
-cmd locks (self.locks): cmd:all();
-help category (self.help_category): General
-object calling (self.caller): Griatch
-object storing cmdset (self.obj): Griatch
-command string given (self.cmdstring): echo
-current cmdset (self.cmdset): ChannelCmdSet
+     self.key (&lt;class &#39;str&#39;&gt;): &quot;echo&quot;
+     self.cmdname (&lt;class &#39;str&#39;&gt;): &quot;echo&quot;
+     self.raw_cmdname (&lt;class &#39;str&#39;&gt;): &quot;echo&quot;
+     self.raw_string (&lt;class &#39;str&#39;&gt;): &quot;echo
+&quot;
+     self.aliases (&lt;class &#39;list&#39;&gt;): []
+     self.args (&lt;class &#39;str&#39;&gt;): &quot;&quot;
+     self.caller (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
+     self.obj (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
+     self.session (&lt;class &#39;evennia.server.serversession.ServerSession&#39;&gt;): YourName(#1)@1:2:7:.:0:.:0:.:1
+     self.locks (&lt;class &#39;str&#39;&gt;): &quot;cmd:all();&quot;
+     self.help_category (&lt;class &#39;str&#39;&gt;): &quot;general&quot;
+     self.cmdset (... a long list of commands ...)
 </pre></div>
 </div>
 <p>These are all properties you can access with <code class="docutils literal notranslate"><span class="pre">.</span></code> on the Command instance, such as <code class="docutils literal notranslate"><span class="pre">.key</span></code>, <code class="docutils literal notranslate"><span class="pre">.args</span></code> and so on. Evennia makes these available to you and they will be different every time a command is run. The most important ones we will make use of now are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - this is ‘you’, the person calling the command.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is all arguments to the command. Now it’s empty, but if you tried <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">foo</span> <span class="pre">bar</span></code> you’d find that this would be <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">foo</span> <span class="pre">bar&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is all arguments to the command. Now it’s empty, but if you tried <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">foo</span> <span class="pre">bar</span></code> you’d find that this would be <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">foo</span> <span class="pre">bar&quot;</span></code> (including the extra space  between <code class="docutils literal notranslate"><span class="pre">echo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo</span></code> that you may want to strip away).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - this is object on which this Command (and CmdSet) “sits”. So you, in this case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is not commonly used, but it’s the completely unmodified input from the user. It even includes the line break used to send to the command to the server (that’s why the end-quotes appear on the next line).</p></li>
 </ul>
 <p>The reason our command doesn’t do anything yet is because it’s missing a <code class="docutils literal notranslate"><span class="pre">func</span></code> method. This is what Evennia looks for to figure out what a Command actually does. Modify your <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
@@ -339,7 +325,7 @@ Echo: &#39;Woo Tang!&#39;
 <p>Tweak this file as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py </span>
 
-<span class="c1"># ,.. </span>
+<span class="c1"># ... </span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mycommands</span>    <span class="c1"># &lt;-------  </span>
 
@@ -395,42 +381,65 @@ You hit Bob with full force!
 </pre></div>
 </div>
 <p>Still in <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code>, add a new class, between <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> and <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
-
-<span class="p">:</span><span class="n">linenos</span><span class="p">:</span>
-<span class="p">:</span><span class="n">emphasize</span><span class="o">-</span><span class="n">lines</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">21</span>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Hit a target.</span>
+<span class="hll"><span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+</span><span class="hll"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="sd">    Hit a target.</span>
 
 <span class="sd">    Usage:</span>
 <span class="sd">      hit &lt;target&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
-
+<span class="hll">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
+</span>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+<span class="hll">        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
+<span class="hll">            <span class="k">return</span>
+</span><span class="hll">        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span><span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+</span>            <span class="k">return</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
+</span>        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
+
 <span class="c1"># ...</span>
-</pre></div>
+</pre></div></td></tr></table></div>
 </div>
 <p>A lot of things to dissect here:</p>
 <ul class="simple">
-<li><p><strong>Line 3</strong>: The normal <code class="docutils literal notranslate"><span class="pre">class</span></code> header. We inherit from <code class="docutils literal notranslate"><span class="pre">Command</span></code> which we imported at the top of this file.</p></li>
-<li><p><strong>Lines 4-10</strong>: The docstring and help-entry for the command. You could expand on this as much as you wanted.</p></li>
-<li><p><strong>Line 11</strong>: We want to write <code class="docutils literal notranslate"><span class="pre">hit</span></code> to use this command.</p></li>
-<li><p><strong>Line 14</strong>: We strip the whitespace from the argument like before. Since we don’t want to have to do <code class="docutils literal notranslate"><span class="pre">self.args.strip()</span></code> over and over, we store the stripped version in a <em>local variable</em> <code class="docutils literal notranslate"><span class="pre">args</span></code>. Note that we don’t modify <code class="docutils literal notranslate"><span class="pre">self.args</span></code> by doing this, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> will still have the whitespace and is not the same as <code class="docutils literal notranslate"><span class="pre">args</span></code> in this example.</p></li>
+<li><p><strong>Line 5</strong>: The normal <code class="docutils literal notranslate"><span class="pre">class</span></code> header. We inherit from <code class="docutils literal notranslate"><span class="pre">Command</span></code> which we imported at the top of this file.</p></li>
+<li><p><strong>Lines 6-12</strong>: The docstring and help-entry for the command. You could expand on this as much as you wanted.</p></li>
+<li><p><strong>Line 13</strong>: We want to write <code class="docutils literal notranslate"><span class="pre">hit</span></code> to use this command.</p></li>
+<li><p><strong>Line 16</strong>: We strip the whitespace from the argument like before. Since we don’t want to have to do <code class="docutils literal notranslate"><span class="pre">self.args.strip()</span></code> over and over, we store the stripped version in a <em>local variable</em> <code class="docutils literal notranslate"><span class="pre">args</span></code>. Note that we don’t modify <code class="docutils literal notranslate"><span class="pre">self.args</span></code> by doing this, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> will still have the whitespace and is not the same as <code class="docutils literal notranslate"><span class="pre">args</span></code> in this example.</p></li>
 </ul>
 <aside class="sidebar">
 <p class="sidebar-title">if-statements</p>
@@ -445,9 +454,9 @@ else:
 </div>
 <p>There can be any number of <code class="docutils literal notranslate"><span class="pre">elifs</span></code> to mark when different branches of the code should run. If <code class="docutils literal notranslate"><span class="pre">else</span></code> is provided, it will run if none of the other conditions were truthy.</p>
 </aside>
-<ul class="simple">
-<li><p><strong>Line 15</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in Python it’s usually easier to learn what is “falsy”:</p>
 <ul>
+<li><p><strong>Line 17</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in Python it’s usually easier to learn what is “falsy”:</p>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> - this is a reserved boolean word in Python. The opposite is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - another reserved word. This represents nothing, a null-result or value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></li>
@@ -455,13 +464,22 @@ else:
 <li><p>Empty <em>iterables</em> we haven’t used yet, like empty lists <code class="docutils literal notranslate"><span class="pre">[]</span></code>, empty tuples <code class="docutils literal notranslate"><span class="pre">()</span></code> and empty dicts <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p></li>
 <li><p>Everything else is “truthy”.</p></li>
 </ul>
+<p>The conditional on <strong>Line 16</strong>’s condition is <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code>. The <code class="docutils literal notranslate"><span class="pre">not</span></code> <em>inverses</em> the result, so if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string (falsy), the whole conditional becomes truthy. Let’s continue in the code:</p>
 </li>
-<li><p><strong>Line 16</strong>’s condition is <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code>. The <code class="docutils literal notranslate"><span class="pre">not</span></code> <em>inverses</em> the result, so if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string (falsy), the whole conditional becomes truthy. Let’s continue in the code:</p></li>
+</ul>
+<aside class="sidebar">
+<p class="sidebar-title">Errors in your code</p>
+<p>With longer code snippets to try, it gets more and more likely you’ll
+make an error and get a <code class="docutils literal notranslate"><span class="pre">traceback</span></code> when you reload. This will either appear
+directly in-game or in your log (view it with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code> in a terminal).</p>
+<p>Don’t panic - tracebacks are your friends! They are to be read bottom-up and usually describe exactly where your problem is. Refer to <a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">The Python introduction lesson</span></a> for more hints. If you get stuck, reach out to the Evennia community for help.</p>
+</aside>
+<ul class="simple">
 <li><p><strong>Lines 16-17</strong>: This code will only run if the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement is truthy, in this case if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string.</p></li>
-<li><p><strong>Line 17</strong>: <code class="docutils literal notranslate"><span class="pre">return</span></code> is a reserved Python word that exits <code class="docutils literal notranslate"><span class="pre">func</span></code> immediately.</p></li>
-<li><p><strong>Line 18</strong>: We use <code class="docutils literal notranslate"><span class="pre">self.caller.search</span></code> to look for the target in the current location.</p></li>
-<li><p><strong>Lines 19-20</strong>: A feature of <code class="docutils literal notranslate"><span class="pre">.search</span></code> is that it will already inform <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> if it couldn’t find the target. In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
-<li><p><strong>Lines 21-22</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
+<li><p><strong>Line 19</strong>: <code class="docutils literal notranslate"><span class="pre">return</span></code> is a reserved Python word that exits <code class="docutils literal notranslate"><span class="pre">func</span></code> immediately.</p></li>
+<li><p><strong>Line 20</strong>: We use <code class="docutils literal notranslate"><span class="pre">self.caller.search</span></code> to look for the target in the current location.</p></li>
+<li><p><strong>Lines 21-22</strong>: A feature of <code class="docutils literal notranslate"><span class="pre">.search</span></code> is that it will already inform <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> if it couldn’t find the target. In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
+<li><p><strong>Lines 23-24</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
 </ul>
 <p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
@@ -475,13 +493,6 @@ else:
 
 </pre></div>
 </div>
-<aside class="sidebar">
-<p class="sidebar-title">Errors in your code</p>
-<p>With longer code snippets to try, it gets more and more likely you’ll
-make an error and get a <code class="docutils literal notranslate"><span class="pre">traceback</span></code> when you reload. This will either appear
-directly in-game or in your log (view it with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code> in a terminal).
-Don’t panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to <a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">The Python introduction lesson</span></a> for more hints. If you get stuck, reach out to the Evennia community for help.</p>
-</aside>
 <p>Note that since we did <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)</span></code> earlier, this cmdset is no longer available on our Character. Instead we will add these commands directly to our default cmdset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py </span>
 
