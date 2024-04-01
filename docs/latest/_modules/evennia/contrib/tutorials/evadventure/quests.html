@@ -151,7 +151,6 @@
     <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is the base quest class&quot;</span>
     <span class="n">start_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
-
     <span class="c1"># help entries for quests (could also be methods)</span>
     <span class="n">help_start</span> <span class="o">=</span> <span class="s2">&quot;You need to start first&quot;</span>
     <span class="n">help_end</span> <span class="o">=</span> <span class="s2">&quot;You need to end the quest&quot;</span>
@@ -283,8 +282,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;abandoned&quot;</span><span class="p">,</span> <span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">):</span>
-            <span class="n">help_resource</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;help_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                    <span class="sa">f</span><span class="s2">&quot;You have </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> this quest.&quot;</span><span class="p">)</span>
+            <span class="n">help_resource</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;help_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;You have </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> this quest.&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">help_resource</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;help_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;No help available.&quot;</span><span class="p">)</span>
 
@@ -294,7 +294,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># normally it&#39;s just a string</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">help_resource</span><span class="p">)</span></div>
-
 
     <span class="c1"># step methods and hooks</span>
 
@@ -469,6 +468,7 @@
 <span class="sd">        quest &lt;questname&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quests&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;quest&quot;</span><span class="p">]</span>
 
@@ -491,7 +491,6 @@
 
         <span class="k">for</span> <span class="n">quest</span> <span class="ow">in</span> <span class="n">quests</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quest </span><span class="si">{</span><span class="n">quest</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">quest</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
-
 </pre></div>
 
           </div>

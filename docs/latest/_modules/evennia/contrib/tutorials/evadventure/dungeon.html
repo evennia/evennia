@@ -197,9 +197,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="EvAdventureDungeonRoom.clear_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">[docs]</a>    <span class="k">def</span> <span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
-
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -238,9 +238,7 @@
         <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_branch</span>
         <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="c1"># destination points back to us - create a new room</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span>
-                <span class="bp">self</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>

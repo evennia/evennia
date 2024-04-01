@@ -119,7 +119,6 @@
 <strong>DefaultCharacter</strong>, <strong>DefaultAccount</strong>, <strong>DefaultRoom</strong> and <strong>DefaultExit</strong>.
 These are the (default) starting points for all in-game visible
 entities.</p>
-<p>This is the v1.0 develop version (for ref in doc building).</p>
 <dl class="py class">
 <dt id="evennia.objects.objects.ObjectSessionHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.objects.objects.</code><code class="sig-name descname">ObjectSessionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#ObjectSessionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.ObjectSessionHandler" title="Permalink to this definition">¶</a></dt>
@@ -131,7 +130,7 @@ entities.</p>
 <dd><p>Initializes the handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – The object on which the handler is defined.</p>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object on which the handler is defined.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -145,7 +144,7 @@ entities.</p>
 <dd class="field-odd"><p><strong>sessid</strong> (<em>int</em><em>, </em><em>optional</em>) – A specific session id.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>sessions (list)</em> –</p>
+<dd class="field-even"><p><p><em>list</em> –</p>
 <dl class="simple">
 <dt>The sessions connected to this object. If <strong>sessid</strong> is given,</dt><dd><p>this is a list of one (or zero) elements.</p>
 </dd>
@@ -163,7 +162,7 @@ entities.</p>
 <dd><p>Alias to get(), returning all sessions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>sessions (list)</em> – All sessions.</p>
+<dd class="field-odd"><p><em>list</em> – All sessions.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -188,7 +187,7 @@ in the the core sessionhandler.</p>
 <dd><p>Remove session from handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em> or </em><em>int</em>) – Session or session id to remove.</p>
+<dd class="field-odd"><p><strong>or int</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session or session id to remove.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -205,7 +204,7 @@ in the the core sessionhandler.</p>
 <dd><p>Get amount of sessions connected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>sesslen (int)</em> – Number of sessions handled.</p>
+<dd class="field-odd"><p><em>int</em> – Number of sessions handled.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,7 +215,7 @@ in the the core sessionhandler.</p>
 <dt id="evennia.objects.objects.DefaultObject">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.objects.objects.</code><code class="sig-name descname">DefaultObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.models.ObjectDB</span></code></a></p>
-<p>This is the root typeclass object, representing all entities that
+<p>This is the root Object typeclass, representing all entities that
 have an actual presence in-game. DefaultObjects generally have a
 location. They can also be manipulated and looked at. Game
 entities you define should inherit from DefaultObject at some distance.</p>
@@ -252,33 +251,37 @@ without <strong>obj.save()</strong> having to be called explicitly.</p>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.cmdset">
 <code class="sig-name descname">cmdset</code><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.cmdset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>CmdSetHandler</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.scripts">
 <code class="sig-name descname">scripts</code><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.scripts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>ScriptHandler</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.nicks">
 <code class="sig-name descname">nicks</code><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.nicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.nicks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>NickHandler</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.sessions">
 <code class="sig-name descname">sessions</code><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.sessions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.sessions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>SessionHandler</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.is_connected">
 <em class="property">property </em><code class="sig-name descname">is_connected</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.is_connected" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>True if this object is associated with an Account with any connected sessions.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.has_account">
 <em class="property">property </em><code class="sig-name descname">has_account</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.has_account" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience property for checking if an active account is
-currently connected to this object.</p>
+<dd><p>True is this object has an associated account.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -298,7 +301,7 @@ merging.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.is_superuser">
 <em class="property">property </em><code class="sig-name descname">is_superuser</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.is_superuser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if user has an account, and if so, if it is a superuser.</p>
+<dd><p>True if this object has an account and that account is a superuser.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -310,32 +313,32 @@ This should be publically available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>exclude</strong> (<em>Object</em>) – Object to exclude from returned
+<li><p><strong>exclude</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object to exclude from returned
 contents list</p></li>
 <li><p><strong>content_type</strong> (<em>str</em>) – A content_type to filter by. None for no
 filtering.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>contents (list)</em> – List of contents of this Object.</p>
+<dd class="field-even"><p><em>list</em> – List of contents of this Object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Also available as the <strong>contents</strong> property, minus exclusion
-and filtering.</p>
+<p>Also available as the <strong>.contents</strong> property, but that doesn’t allow for exclusion and
+filtering on content-types.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.contents_set">
 <code class="sig-name descname">contents_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.contents_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.contents_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>You cannot replace this property</p>
+<dd><p>Makes sure <strong>.contents</strong> is read-only. Raises <strong>AttributeError</strong> if trying to set it.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.exits">
 <em class="property">property </em><code class="sig-name descname">exits</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.exits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all exits from this object, i.e. all objects at this
-location having the property destination != <strong>None</strong>.</p>
+location having the property .destination != <strong>None</strong>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -369,8 +372,8 @@ replacements, such as ‘me’ always being an alias for this object.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>tuple</em> – <strong>(should_return, str or Obj)</strong>, where <strong>should_return</strong> is a boolean indicating
-the <strong>.search</strong> method should return the result immediately without further
+<dd class="field-even"><p><em>tuple</em> – A tuple <strong>(should_return, str or Obj)</strong>, where <strong>should_return</strong> is a boolean
+indicating the <strong>.search</strong> method should return the result immediately without further
 processing. If <strong>should_return</strong> is <strong>True</strong>, the second element of the tuple is the result
 that is returned.</p>
 </dd>
@@ -380,8 +383,8 @@ that is returned.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.get_search_candidates">
 <code class="sig-name descname">get_search_candidates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_candidates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the candidates for a search. Also the <strong>candidates</strong> provided to the
-search function is included, and could be modified in-place here.</p>
+<dd><p>Helper for the <strong>.search</strong> method. Get the candidates for a search. Also the <strong>candidates</strong>
+provided to the search function is included, and could be modified in-place here.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -390,7 +393,7 @@ search function is included, and could be modified in-place here.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list</em> – A list of objects to search between.</p>
+<dd class="field-even"><p><em>list</em> – A list of objects possibly relevant for the search.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -403,8 +406,9 @@ that.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.get_search_result">
 <code class="sig-name descname">get_search_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_result" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a wrapper for actually searching for objects, used by the <strong>search</strong> method.
-This is broken out into a separate method to allow for easier overriding in child classes.</p>
+<dd><p>Helper for the <strong>.search</strong> method. This is a wrapper for actually searching for objects, used
+by the <strong>search</strong> method. This is broken out into a separate method to allow for easier
+overriding in child classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -416,6 +420,9 @@ This is broken out into a separate method to allow for easier overriding in chil
 <li><p><strong>use_dbref</strong> (<em>bool</em>) – Allow dbref search.</p></li>
 <li><p><strong>tags</strong> (<em>list</em>) – Tags to search for.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>queryset or iterable</em> – The result of the search.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -430,14 +437,10 @@ results that should be stacked.</p>
 <dd class="field-odd"><p><strong>results</strong> (<em>list</em>) – The list of results from the search.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>tuple</em> –</p>
-<dl class="simple">
-<dt><strong>(stacked, results)</strong>, where <strong>stacked</strong> is a boolean indicating if the</dt><dd><p>result is stacked and <strong>results</strong> is the list of results to return. If <strong>stacked</strong>
+<dd class="field-even"><p><em>tuple</em> – A tuple <strong>(stacked, results)</strong>, where <strong>stacked</strong> is a boolean indicating if the
+result is stacked and <strong>results</strong> is the list of results to return. If <strong>stacked</strong>
 is True, the “.search” method will return <strong>results</strong> immediately without further
 processing (it will not result in a multimatch-error).</p>
-</dd>
-</dl>
-</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -572,11 +575,10 @@ echo eventual standard error messages. Default <strong>False</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>result (Account, None or list)</em> –</p>
-<dl class="simple">
-<dt>Just what is returned depends on</dt><dd><dl class="simple">
-<dt>the <strong>quiet</strong> setting:</dt><dd><ul class="simple">
-<li><p><strong>quiet=True</strong>: No match or multumatch auto-echoes errors
+<dd class="field-even"><p><p><em>DefaultAccount, None or list</em> – What is returned depends on
+the <strong>quiet</strong> setting:</p>
+<ul class="simple">
+<li><p><strong>quiet=False</strong>: No match or multumatch auto-echoes errors
 to self.msg, then returns <strong>None</strong>. The esults are passed
 through <strong>settings.SEARCH_AT_RESULT</strong> and
 <strong>settings.SEARCH_AT_MULTIMATCH_INPUT</strong>. If there is a
@@ -585,10 +587,6 @@ unique match, this will be returned.</p></li>
 what is returned is always a list with 0, 1 or more
 matching Accounts.</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
 </p>
 </dd>
 </dl>
@@ -618,9 +616,8 @@ return results to</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>defer (Deferred)</em> –</p>
-<dl class="simple">
-<dt>This is an asynchronous Twisted object that</dt><dd><p>will not fire until the command has actually finished
+<dd class="field-odd"><p><em>Deferred</em> – This is an asynchronous Twisted object that
+will not fire until the command has actually finished
 executing. To overload this one needs to attach
 callback functions to it, with addCallback(function).
 This function will be called with an eventual return
@@ -630,9 +627,6 @@ for coders intending to implement some sort of nested
 command structure.</p>
 </dd>
 </dl>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -640,46 +634,31 @@ command structure.</p>
 <code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emits something to a session attached to the object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>text</strong> (<em>str</em><em> or </em><em>tuple</em><em>, </em><em>optional</em>) – The message to send. This
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>tuple</em>) – The message to send. This
 is treated internally like any send-command, so its
 value can be a tuple if sending multiple arguments to
 the <strong>text</strong> oob command.</p></li>
-<li><p><strong>from_obj</strong> (<em>obj</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – object that is sending. If
+<li><p><strong>from_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em>, </em><a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em>, </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, or </em><a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – object that is sending. If
 given, at_msg_send will be called. This value will be
 passed on to the protocol. If iterable, will execute hook
 on all entities in it.</p></li>
-<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em> or </em><em>list</em><em>, </em><em>optional</em>) – Session or list of
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em> or </em><a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – Session or list of
 Sessions to relay data to, if any. If set, will force send
 to these sessions. If unset, who receives the message
 depends on the MULTISESSION_MODE.</p></li>
-<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Message-specific option-value
+<li><p><strong>options</strong> (<em>dict</em>) – Message-specific option-value
 pairs. These will be applied at the protocol level.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>any</strong> (<em>string</em><em> or </em><em>tuples</em>) – All kwarg keys not listed above
+<li><p><strong>**kwargs</strong> (<em>string</em><em> or </em><em>tuples</em>) – All kwarg keys not listed above
 will be treated as send-command names and their arguments
-(which can be a string or a tuple).</p>
+(which can be a string or a tuple).</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p><strong>at_msg_receive</strong> will be called on this Object.
+<p>The <strong>at_msg_receive</strong> method will be called on this Object.
 All extra kwargs will be passed on to the protocol.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.objects.objects.DefaultObject.get_contents_unique">
-<code class="sig-name descname">get_contents_unique</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_contents_unique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_contents_unique" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a mapping of contents  that are visually unique to the caller, along with
-how many of each there are.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>caller</strong> (<em>Object</em><em>, </em><em>optional</em>) – The object to check visibility from. If not given,
-the current object will be used.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -748,14 +727,12 @@ syntax directly. For both <strong>{key}</strong> and <strong>You/you(key)</stron
 <strong>mapping[key].get_display_name(looker=recipient)</strong> may be called
 depending on who the recipient is.</p>
 <p class="rubric">Examples</p>
-<p>Let’s assume
-- <strong>player1.key -&gt; “Player1”</strong>,</p>
-<blockquote>
-<div><p><strong>player1.get_display_name(looker=player2) -&gt; “The First girl”</strong></p>
-</div></blockquote>
+<p>Let’s assume:</p>
 <ul class="simple">
-<li><p><strong>player2.key -&gt; “Player2”</strong>,
-<strong>player2.get_display_name(looker=player1) -&gt; “The Second girl”</strong></p></li>
+<li><p><strong>player1.key</strong> -&gt; “Player1”,</p></li>
+<li><p><strong>player1.get_display_name(looker=player2)</strong> -&gt; “The First girl”</p></li>
+<li><p><strong>player2.key</strong> -&gt; “Player2”,</p></li>
+<li><p><strong>player2.get_display_name(looker=player1)</strong> -&gt; “The Second girl”</p></li>
 </ul>
 <p>Actor-stance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
@@ -787,12 +764,12 @@ depending on who the recipient is.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>destination</strong> (<em>Object</em>) – Reference to the object to move to. This
+<li><p><strong>destination</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Reference to the object to move to. This
 can also be an exit object, in which case the
 destination property is used as destination.</p></li>
 <li><p><strong>quiet</strong> (<em>bool</em>) – If true, turn off the calling of the emit hooks
 (announce_move_to/from etc)</p></li>
-<li><p><strong>emit_to_obj</strong> (<em>Object</em>) – object to receive error messages</p></li>
+<li><p><strong>emit_to_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – object to receive error messages</p></li>
 <li><p><strong>use_destination</strong> (<em>bool</em>) – Default is for objects to use the “destination”
 property of destinations as the target to move to. Turning off this
 keyword allows objects to move “inside” exit objects.</p></li>
@@ -807,30 +784,20 @@ as can be done.</p></li>
 the text message generated by announce_move_to and announce_move_from by defining
 their {“type”: move_type} for outgoing text. This can be used for altering
 messages and/or overloaded hook behaviors.</p></li>
+<li><p><strong>**kwargs</strong> – Passed on to announce_move_to and announce_move_from hooks. Exits will set
+the “exit_obj” kwarg to themselves.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>on to announce_move_to and announce_move_from hooks.</strong> (<em>Passed</em>) – </p></li>
-<li><p><strong>will set the &quot;exit_obj&quot; kwarg to themselves.</strong> (<em>Exits</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>result (bool)</em> –</p>
-<dl class="simple">
-<dt>True/False depending on if there were problems with the move.</dt><dd><p>This method may also return various error messages to the
-<strong>emit_to_obj</strong>.</p>
-</dd>
-</dl>
-</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True/False depending on if there were problems with the move. This method may also
+return various error messages to the <strong>emit_to_obj</strong>.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>No access checks are done in this method, these should be handled before
 calling <strong>move_to</strong>.</p>
 <p>The <strong>DefaultObject</strong> hooks called (if <strong>move_hooks=True</strong>) are, in order:</p>
-<blockquote>
-<div><ol class="arabic simple">
+<ol class="arabic simple">
 <li><p><strong>self.at_pre_move(destination)</strong> (abort if return False)</p></li>
 <li><p><strong>source_location.at_pre_object_leave(self, destination)</strong> (abort if return False)</p></li>
 <li><p><strong>destination.at_pre_object_receive(self, source_location)</strong> (abort if return False)</p></li>
@@ -841,7 +808,6 @@ calling <strong>move_to</strong>.</p>
 <li><p><strong>destination.at_object_receive(self, source_location)</strong></p></li>
 <li><p><strong>self.at_post_move(source_location)</strong></p></li>
 </ol>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -865,13 +831,13 @@ to default home.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – Account to attribute this object to.</p></li>
 <li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary input.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>lockstring (str)</em> – A lockstring to use for this object.</p>
+<dd class="field-even"><p><em>str</em> – A lockstring to use for this object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -888,7 +854,7 @@ specified or extended.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – Account to attribute this object to.</p></li>
 <li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
@@ -896,8 +862,10 @@ specified or extended.</p>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>object (Object)</em> – A newly created object of the given typeclass.
-errors (list): A list of errors in string form, if any.</p>
+<dd class="field-odd"><p><em>tuple</em> – A tuple (Object, errors): A newly created object of the given typeclass. This
+will be <strong>None</strong> if there are errors. The second element is then a list of errors that
+occurred during creation. If this is empty, it’s safe to assume the object was created
+successfully.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -915,7 +883,7 @@ directly.</p>
 specified, the copy will be named &lt;old_key&gt;_copy by default.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>copy (Object)</em> – A copy of this object.</p>
+<dd class="field-even"><p><em>Object</em> – A copy of this object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -927,10 +895,7 @@ specified, the copy will be named &lt;old_key&gt;_copy by default.</p>
 covered by .copy(), this can be used to deal with it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_obj</strong> (<em>Object</em>) – The new Copy of this object.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-odd"><p><strong>new_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The new Copy of this object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -943,12 +908,7 @@ to move all contained objects to their respective home
 locations, as well as clean up all exits to/from the object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>noerror (bool)</em> –</p>
-<dl class="simple">
-<dt>Returns whether or not the delete completed</dt><dd><p>successfully or not.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p><em>bool</em> – Whether or not the delete completed successfully or not.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -961,15 +921,13 @@ in whatever way.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>accessing_obj</strong> (<em>Object</em>) – Object trying to access this one.</p></li>
+<li><p><strong>accessing_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object trying to access this one.</p></li>
 <li><p><strong>access_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of access sought.</p></li>
 <li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – What to return if no lock of access_type was found.</p></li>
 <li><p><strong>no_superuser_bypass</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <strong>True</strong>, don’t skip
 lock check for superuser (be careful with this one).</p></li>
+<li><p><strong>**kwargs</strong> – Passed on to the at_access hook along with the result of the access check.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>on to the at_access hook along with the result of the access check.</strong> (<em>Passed</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -982,7 +940,7 @@ lock check for superuser (be careful with this one).</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj_list</strong> (<em>list</em>) – List of objects to filter.</p></li>
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1002,7 +960,7 @@ method to implement custom visibility mechanics.</p>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking at or getting information
+<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object or account that is looking at or getting information
 for this object.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1021,15 +979,11 @@ but it does not change an object’s keys or aliases when searching.</p>
 object’s dbref in parentheses, if the looker has permission to see it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>looker</strong> (<em>Object</em>) – The object looking at this object.</p>
+<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object looking at this object.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>str</em> –</p>
-<dl class="simple">
-<dt>The dbref of this object, if the looker has permission to see it. Otherwise, an</dt><dd><p>empty string is returned.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>str</em> – The dbref of this object, if the looker has permission to see it. Otherwise, an
+empty string is returned.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1048,7 +1002,7 @@ from this method.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>count</strong> (<em>int</em>) – Number of objects of this type</p></li>
-<li><p><strong>looker</strong> (<em>Object</em>) – Onlooker. Not used by default.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Onlooker. Not used by default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -1061,19 +1015,16 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>tuple</em> –</p>
-<dl class="simple">
-<dt>This is a tuple <strong>(str, str)</strong> with the singular and plural forms of the key</dt><dd><p>including the count.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p><em>tuple</em> – This is a tuple <strong>(str, str)</strong> with the singular and plural forms of the key
+including the count.</p>
 </dd>
 </dl>
 <p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s2">&quot;a foo&quot;</span><span class="p">,</span> <span class="s2">&quot;three foos&quot;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+      <span class="o">-&gt;</span> <span class="p">(</span><span class="s2">&quot;a foo&quot;</span><span class="p">,</span> <span class="s2">&quot;three foos&quot;</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
       <span class="o">-&gt;</span> <span class="s2">&quot;a Foobert&quot;</span>
-<span class="o">-</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_article</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foobert&quot;</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_article</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
       <span class="o">-&gt;</span> <span class="s2">&quot;Foobert&quot;</span>
 </pre></div>
 </div>
@@ -1086,7 +1037,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1103,7 +1054,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1120,7 +1071,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1137,7 +1088,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1154,7 +1105,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1171,7 +1122,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1189,7 +1140,7 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>appearance</strong> (<em>str</em>) – The compiled appearance string.</p></li>
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
 </ul>
 </dd>
@@ -1204,28 +1155,22 @@ the plural form otherwise. If <strong>False</strong> (default), return both form
 <code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.return_appearance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main callback used by ‘look’ for the object to describe itself.
 This formats a description. By default, this looks for the <strong>appearance_template</strong>
-string set on this class and populates it with formatting keys</p>
-<blockquote>
-<div><p>‘name’, ‘desc’, ‘exits’, ‘characters’, ‘things’ as well as
+string set on this class and populates it with formatting keys
+‘name’, ‘desc’, ‘exits’, ‘characters’, ‘things’ as well as
 (currently empty) ‘header’/’footer’. Each of these values are
 retrieved by a matching method <strong>.get_display_*</strong>, such as <strong>get_display_name</strong>,
 <strong>get_display_footer</strong> etc.</p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking. Passed into all helper methods.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object doing the looking. Passed into all helper methods.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call. This is passed into all helper methods.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>str</em> –</p>
-<dl class="simple">
-<dt>The description of this entity. By default this includes</dt><dd><p>the entity’s name, description and any contents inside it.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>str</em> – The description of this entity. By default this includes
+the entity’s name, description and any contents inside it.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1302,7 +1247,7 @@ have no cmdsets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The object requesting the cmdsets.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em>, </em><a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The object requesting the cmdsets.</p></li>
 <li><p><strong>current</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a>) – The current merged cmdset.</p></li>
 <li><p><strong>force_init</strong> (<em>bool</em>) – If <strong>True</strong>, force a re-build of the cmdset. (seems unused)</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
@@ -1318,7 +1263,7 @@ have no cmdsets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>obj</em>) – The object requesting the cmdsets.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object requesting the cmdsets.</p></li>
 <li><p><strong>current</strong> (<em>cmdset</em>) – The current merged cmdset.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
 </ul>
@@ -1337,9 +1282,9 @@ it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – This is the connecting account.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – This is the connecting account.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session controlling the connection.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1353,17 +1298,14 @@ overriding the call (unused by default).</p></li>
 Account&lt;-&gt;Object links have been established.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can use <strong>self.account</strong> and <strong>self.sessions.get()</strong> to get
-account and sessions at this point; the last entry in the
-list from <strong>self.sessions.get()</strong> is the latest Session
+<p class="rubric">Notes</p>
+<p>You can use <strong>self.account</strong> and <strong>self.sessions.get()</strong> to get account and sessions at this
+point; the last entry in the list from <strong>self.sessions.get()</strong> is the latest Session
 puppeting this Object.</p>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1373,17 +1315,15 @@ puppeting this Object.</p>
 this Account.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="rubric">Notes</p>
 <p>You can use <strong>self.account</strong> and <strong>self.sessions.get()</strong> to get
 account and sessions at this point; the last entry in the
 list from <strong>self.sessions.get()</strong> is the latest Session
 puppeting this Object.</p>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1394,12 +1334,12 @@ this object, severing all connections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – The account object that just disconnected
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – The account object that just disconnected
 from this object. This can be <strong>None</strong> if this is called
 automatically (such as after a cleanup operation).</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session id controlling the connection that
 just disconnected.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1435,10 +1375,8 @@ based on the access result.</p>
 <li><p><strong>result</strong> (<em>bool</em>) – The outcome of the access call.</p></li>
 <li><p><strong>accessing_obj</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity trying to gain access.</p></li>
 <li><p><strong>access_type</strong> (<em>str</em>) – The type of access that was requested.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments. Unused by default.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>by default</strong><strong>, </strong><strong>added for possible expandability in a game.</strong> (<em>Unused</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1451,12 +1389,12 @@ destination. Return False to abort move.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>destination</strong> (<em>Object</em>) – The object we are moving to</p></li>
+<li><p><strong>destination</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object we are moving to</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1465,7 +1403,7 @@ overriding the call (unused by default).</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the move is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the move is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -1477,9 +1415,9 @@ previously ‘inside’ it. Return False to abort move.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>leaving_object</strong> (<em>Object</em>) – The object that is about to leave.</p></li>
-<li><p><strong>destination</strong> (<em>Object</em>) – Where object is going to.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>leaving_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object that is about to leave.</p></li>
+<li><p><strong>destination</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where object is going to.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1487,10 +1425,9 @@ overriding the call (unused by default).</p></li>
 <dd class="field-even"><p><em>bool</em> – If <strong>leaving_object</strong> should be allowed to leave or not.</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>Notes: If this method returns False, None, the move is canceled before</dt><dd><p>it even started.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the move is canceled before
+it even started.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1502,10 +1439,10 @@ remains where it was.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arriving_object</strong> (<em>Object</em>) – The object moved into this one</p></li>
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where <strong>moved_object</strong> came from.
+<li><p><strong>arriving_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object moved into this one</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where <strong>moved_object</strong> came from.
 Note that this could be <strong>None</strong>.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1513,10 +1450,9 @@ overriding the call (unused by default).</p></li>
 <dd class="field-even"><p><em>bool</em> – If False, abort move and <strong>moved_obj</strong> remains where it was.</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>Notes: If this method returns False, None, the move is canceled before</dt><dd><p>it even started.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the move is canceled before
+it even started.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1527,12 +1463,12 @@ destination. Return False to abort move.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>destination</strong> (<em>Object</em>) – The object we are moving to</p></li>
+<li><p><strong>destination</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object we are moving to</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1541,7 +1477,7 @@ overriding the call (unused by default).</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the move is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the move is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -1554,27 +1490,28 @@ location.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>destination</strong> (<em>Object</em>) – The place we are going to.</p></li>
+<li><p><strong>destination</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The place we are going to.</p></li>
 <li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – a replacement message.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – additional mapping objects.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
 <p>You can override this method and call its parent with a
 message to simply change the default message.  In the string,
-you can use the following as mappings (between braces):</p>
-<blockquote>
-<div><p>object: the object which is moving.
-exit: the exit from which the object is moving (if found).
-origin: the location of the object before the move.
-destination: the location of the object after moving.</p>
-</div></blockquote>
+you can use the following as mappings:</p>
+<ul class="simple">
+<li><p><strong>{object}</strong>: the object which is moving.</p></li>
+<li><p><strong>{exit}</strong>: the exit from which the object is moving (if found).</p></li>
+<li><p><strong>{origin}</strong>: the location of the object before the move.</p></li>
+<li><p><strong>{destination}</strong>: the location of the object after moving.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -1585,14 +1522,14 @@ we are standing in the new location.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_location</strong> (<em>Object</em>) – The place we came from</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The place we came from</p></li>
 <li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – the replacement message if location.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – additional mapping objects.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1601,12 +1538,12 @@ overriding the call (unused by default).</p></li>
 <p>You can override this method and call its parent with a
 message to simply change the default message.  In the string,
 you can use the following as mappings (between braces):</p>
-<blockquote>
-<div><p>object: the object which is moving.
-exit: the exit from which the object is moving (if found).
-origin: the location of the object before the move.
-destination: the location of the object after moving.</p>
-</div></blockquote>
+<ul class="simple">
+<li><p><strong>{object}</strong>: the object which is moving.</p></li>
+<li><p><strong>{exit}</strong>: the exit from which the object is moving (if found).</p></li>
+<li><p><strong>{origin}</strong>: the location of the object before the move.</p></li>
+<li><p><strong>{destination}</strong>: the location of the object after moving.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -1618,12 +1555,12 @@ now in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where we came from. This may be <strong>None</strong>.</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where we came from. This may be <strong>None</strong>.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1639,12 +1576,12 @@ now in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where we came from. This may be <strong>None</strong>.</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where we came from. This may be <strong>None</strong>.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1658,13 +1595,13 @@ overriding the call (unused by default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>moved_obj</strong> (<em>Object</em>) – The object leaving</p></li>
-<li><p><strong>target_location</strong> (<em>Object</em>) – Where <strong>moved_obj</strong> is going.</p></li>
+<li><p><strong>moved_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object leaving</p></li>
+<li><p><strong>target_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where <strong>moved_obj</strong> is going.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1678,14 +1615,14 @@ overriding the call (unused by default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>moved_obj</strong> (<em>Object</em>) – The object moved into this one</p></li>
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where <strong>moved_object</strong> came from.
+<li><p><strong>moved_obj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object moved into this one</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where <strong>moved_object</strong> came from.
 Note that this could be <strong>None</strong>.</p></li>
 <li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
 This is an arbitrary string provided to obj.move_to().
 Useful for altering messages or altering logic depending
 on the kind of movement.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1705,9 +1642,9 @@ called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – Object traversing us.</p></li>
-<li><p><strong>target_location</strong> (<em>Object</em>) – Where target is going.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object traversing us.</p></li>
+<li><p><strong>target_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where target is going.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1723,8 +1660,8 @@ Exit)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – The object traversing us.</p></li>
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where <strong>traversing_object</strong> came from.</p></li>
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object traversing us.</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where <strong>traversing_object</strong> came from.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
@@ -1743,8 +1680,8 @@ Exit)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – The object traversing us.</p></li>
-<li><p><strong>source_location</strong> (<em>Object</em>) – Where <strong>traversing_object</strong> came from.</p></li>
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object traversing us.</p></li>
+<li><p><strong>source_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where <strong>traversing_object</strong> came from.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
@@ -1762,8 +1699,8 @@ some reason.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – The object that failed traversing us.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object that failed traversing us.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1790,13 +1727,11 @@ will not be passed on.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em><em>, </em><em>optional</em>) – The message received.</p></li>
 <li><p><strong>from_obj</strong> (<em>any</em><em>, </em><em>optional</em>) – The object sending the message.</p></li>
+<li><p><strong>**kwargs</strong> – This includes any keywords sent to the <strong>msg</strong> method.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>includes any keywords sent to the msg method.</strong> (<em>This</em>) – </p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>receive (bool)</em> – If this message should be received.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>receive (bool)</em> – If this message should be received.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1814,10 +1749,8 @@ message to another object with <strong>obj.msg(text, to_obj=obj)</strong>.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to send.</p></li>
 <li><p><strong>to_obj</strong> (<em>any</em><em>, </em><em>optional</em>) – The object to send to.</p></li>
+<li><p><strong>**kwargs</strong> – Keywords passed from msg().</p></li>
 </ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>passed from msg</strong><strong>(</strong><strong>)</strong> (<em>Keywords</em>) – </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1836,18 +1769,14 @@ Helper method to return_appearance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – The entity looking.</p></li>
-<li><p><strong>**kwargs</strong> (<em>any</em>) – Passed from <strong>return_appearance</strong>. Unused by default.</p></li>
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The entity looking.</p></li>
+<li><p><strong>**kwargs</strong> – Passed from <strong>return_appearance</strong>. Unused by default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>dict</em> –</p>
-<dl class="simple">
-<dt>A dict of lists categorized by type. Byt default this</dt><dd><p>contains ‘exits’, ‘characters’ and ‘things’. The elements of these
+<dd class="field-even"><p><em>dict</em> – A dict of lists categorized by type. Byt default this
+contains ‘exits’, ‘characters’ and ‘things’. The elements of these
 lists are the actual objects.</p>
-</dd>
-</dl>
-</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1861,21 +1790,17 @@ for return_appearance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>looker</strong> (<em>Object</em>) – The entity looking.</p></li>
-<li><p><strong>**kwargs</strong> (<em>any</em>) – Passed from <strong>return_appearance</strong>. Passed into
+<li><p><strong>looker</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The entity looking.</p></li>
+<li><p><strong>**kwargs</strong> – Passed from <strong>return_appearance</strong>. Passed into
 <strong>get_display_name</strong> for each found entity.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>dict</em> –</p>
-<dl class="simple">
-<dt>A dict of lists categorized by type. Byt default this</dt><dd><p>contains ‘exits’, ‘characters’ and ‘things’. The elements
+<dd class="field-even"><p><em>dict</em> – A dict of lists categorized by type. Byt default this
+contains ‘exits’, ‘characters’ and ‘things’. The elements
 of these lists are strings - names of the objects that
 can depend on the looker and also be grouped in the case
 of multiple same-named things etc.</p>
-</dd>
-</dl>
-</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1893,22 +1818,17 @@ send any data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>Object</em>) – The target being looked at. This is
+<li><p><strong>target</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The target being looked at. This is
 commonly an object or the current location. It will
 be checked for the “view” type access.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call. This will be passed into
 return_appearance, get_display_name and at_desc but is not used
 by default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>lookstring (str)</em> –</p>
-<dl class="simple">
-<dt>A ready-processed look string</dt><dd><p>potentially ready to return to the looker.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>str</em> – A ready-processed look string potentially ready to return to the looker.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1921,7 +1841,7 @@ by default.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>looker</strong> (<em>Object</em><em>, </em><em>optional</em>) – The object requesting the description.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1936,13 +1856,13 @@ picked up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>shouldget (bool)</em> – If the object should be gotten or not.</p>
+<dd class="field-even"><p><em>bool</em> – If the object should be gotten or not.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1958,13 +1878,13 @@ picked up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>shouldget (bool)</em> – If the object should be gotten or not.</p>
+<dd class="field-even"><p><em>bool</em> – If the object should be gotten or not.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1980,8 +1900,8 @@ picked up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>getter</strong> (<em>Object</em>) – The object getting this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object getting this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -1999,9 +1919,9 @@ given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>giver</strong> (<em>Object</em>) – The object about to give this object.</p></li>
-<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>giver</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to give this object.</p></li>
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -2010,7 +1930,7 @@ overriding the call (unused by default).</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the giving is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the giving is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -2022,9 +1942,9 @@ given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>giver</strong> (<em>Object</em>) – The object about to give this object.</p></li>
-<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>giver</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to give this object.</p></li>
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -2033,7 +1953,7 @@ overriding the call (unused by default).</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the giving is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the giving is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -2045,9 +1965,9 @@ given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>giver</strong> (<em>Object</em>) – The object giving this object.</p></li>
-<li><p><strong>getter</strong> (<em>Object</em>) – The object getting this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>giver</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object giving this object.</p></li>
+<li><p><strong>getter</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object getting this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -2065,17 +1985,17 @@ dropped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dropper</strong> (<em>Object</em>) – The object which will drop this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>dropper</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which will drop this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>shoulddrop (bool)</em> – If the object should be dropped or not.</p>
+<dd class="field-even"><p><em>bool</em> – If the object should be dropped or not.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the dropping is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the dropping is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -2087,17 +2007,17 @@ dropped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dropper</strong> (<em>Object</em>) – The object which will drop this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>dropper</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which will drop this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>shoulddrop (bool)</em> – If the object should be dropped or not.</p>
+<dd class="field-even"><p><em>bool</em> – If the object should be dropped or not.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If this method returns False/None, the dropping is cancelled
+<p>If this method returns <strong>False</strong> or <strong>None</strong>, the dropping is cancelled
 before it is even started.</p>
 </dd></dl>
 
@@ -2109,8 +2029,8 @@ dropped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dropper</strong> (<em>Object</em>) – The object which just dropped this object.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>dropper</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which just dropped this object.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -2138,12 +2058,12 @@ text from the object. Returning <strong>None</strong> aborts the command.</p>
 a say. This is sent by the whisper command by default.
 Other verbal commands could use this hook in similar
 ways.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
+<li><p><strong>receivers</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
 say/whisper.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>message (str)</em> – The (possibly modified) text to be spoken.</p>
+<dd class="field-odd"><p><em>str</em> – The (possibly modified) text to be spoken.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2166,12 +2086,12 @@ text from the object. Returning <strong>None</strong> aborts the command.</p>
 a say. This is sent by the whisper command by default.
 Other verbal commands could use this hook in similar
 ways.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
+<li><p><strong>receivers</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
 say/whisper.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>message (str)</em> – The (possibly modified) text to be spoken.</p>
+<dd class="field-odd"><p><em>str</em> – The (possibly modified) text to be spoken.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2192,7 +2112,7 @@ re-writing it completely.</p>
 <li><p><strong>msg_self</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – If boolean True, echo <strong>message</strong> to self. If a string,
 return that message. If False or unset, don’t echo to self.</p></li>
 <li><p><strong>msg_location</strong> (<em>str</em><em>, </em><em>optional</em>) – The message to echo to self’s location.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the
+<li><p><strong>receivers</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the
 message (by default only used by whispers).</p></li>
 <li><p><strong>msg_receivers</strong> (<em>str</em>) – Specific message to pass to the receiver(s). This will parsed
 with the {receiver} placeholder replaced with the given receiver.</p></li>
@@ -2209,26 +2129,22 @@ can be used by other verbal commands in a similar way.</p></li>
 <p class="rubric">Notes</p>
 <p>Messages can contain {} markers. These are substituted against the values
 passed in the <strong>mapping</strong> argument.</p>
-<blockquote>
-<div><p>msg_self = ‘You say: “{speech}”’
-msg_location = ‘{object} says: “{speech}”’
-msg_receivers = ‘{object} whispers: “{speech}”’</p>
-</div></blockquote>
-<dl>
-<dt>Supported markers by default:</dt><dd><p>{self}: text to self-reference with (default ‘You’)
-{speech}: the text spoken/whispered by self.
-{object}: the object speaking.
-{receiver}: replaced with a single receiver only for strings meant for a specific</p>
-<blockquote>
-<div><p>receiver (otherwise ‘None’).</p>
-</div></blockquote>
-<dl class="simple">
-<dt>{all_receivers}: comma-separated list of all receivers,</dt><dd><p>if more than one, otherwise same as receiver</p>
-</dd>
-</dl>
-<p>{location}: the location where object is.</p>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">msg_self</span> <span class="o">=</span> <span class="s1">&#39;You say: &quot;</span><span class="si">{speech}</span><span class="s1">&quot;&#39;</span>
+<span class="n">msg_location</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{object}</span><span class="s1"> says: &quot;</span><span class="si">{speech}</span><span class="s1">&quot;&#39;</span>
+<span class="n">msg_receivers</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{object}</span><span class="s1"> whispers: &quot;</span><span class="si">{speech}</span><span class="s1">&quot;&#39;</span>
+</pre></div>
+</div>
+<p>Supported markers by default:</p>
+<ul class="simple">
+<li><p>{self}: text to self-reference with (default ‘You’)</p></li>
+<li><p>{speech}: the text spoken/whispered by self.</p></li>
+<li><p>{object}: the object speaking.</p></li>
+<li><p>{receiver}: replaced with a single receiver only for strings meant for a specific
+receiver (otherwise ‘None’).</p></li>
+<li><p>{all_receivers}: comma-separated list of all receivers,
+if more than one, otherwise same as receiver</p></li>
+<li><p>{location}: the location where object is.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py exception">
@@ -2273,13 +2189,13 @@ a character avatar controlled by an account.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – Account to attribute this object to.</p></li>
 <li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
 <li><p><strong>**kwargs</strong> – Arbitrary input.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>lockstring (str)</em> – A lockstring to use for this object.</p>
+<dd class="field-even"><p><em>str</em> – A lockstring to use for this object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2316,18 +2232,22 @@ change the default lockset and skip creator attribution.</p></li>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.normalize_name">
 <em class="property">classmethod </em><code class="sig-name descname">normalize_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.normalize_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.normalize_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Normalize the character name prior to creating. Note that this should be refactored to
-support i18n for non-latin scripts, but as we (currently) have no bug reports requesting
-better support of non-latin character sets, requiring character names to be latinified is an
-acceptable option.</p>
+<dd><p>Normalize the character name prior to creating.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>latin_name (str)</em> – A valid name.</p>
+<dd class="field-even"><p><em>str</em> – A valid, latinized name.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The main purpose of this is to make sure that character names are not created with
+special unicode characters that look visually identical to latin charaters. This could
+be used to impersonate other characters.</p>
+<p>This method should be refactored to support i18n for non-latin names, but as we
+(currently) have no bug reports requesting better support of non-latin character sets,
+requiring character names to be latinified is an acceptable default option.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2338,14 +2258,11 @@ acceptable option.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>Kwargs:</dt><dd><p>account (DefaultAccount, optional) : The account creating the character.</p>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em>, </em><em>optional</em>) – The account creating the character.</p>
 </dd>
-</dl>
-<dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>error (str, optional)</em> – A non-empty error message if there is a problem, otherwise False.</p>
+<dd class="field-odd"><p><em>str or None</em> – A non-empty error message if there is a problem, otherwise <strong>None</strong>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2377,7 +2294,7 @@ Character object works).</p>
 <code class="sig-name descname">at_pre_puppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.at_pre_puppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_pre_puppet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the character from storage in None location in <strong>at_post_unpuppet</strong>.
 :param account: This is the connecting account.
-:type account: Account
+:type account: DefaultAccount
 :param session: Session controlling the connection.
 :type session: Session</p>
 </dd></dl>
@@ -2393,13 +2310,11 @@ Account&lt;-&gt;Object links have been established.</p>
 overriding the call (unused by default).</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="rubric">Notes</p>
 <p>You can use <strong>self.account</strong> and <strong>self.sessions.get()</strong> to get
 account and sessions at this point; the last entry in the
 list from <strong>self.sessions.get()</strong> is the latest Session
 puppeting this Object.</p>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2411,7 +2326,7 @@ after the account logged off (“headless”, so to say).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>account</strong> (<em>Account</em>) – The account object that just disconnected
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a>) – The account object that just disconnected
 from this object.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session controlling the connection that
 just disconnected.</p></li>
@@ -2421,7 +2336,7 @@ just disconnected.</p></li>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>reason</strong> (<em>str</em>) – If given, adds a reason for the unpuppet. This
 is set when the user is auto-unpuppeted due to being link-dead.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+<li><p><strong>**kwargs</strong> – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
@@ -2494,8 +2409,9 @@ object (along with normal Admin perms). If not given, default</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>room (Object)</em> – A newly created Room of the given typeclass.
-errors (list): A list of errors in string form, if any.</p>
+<dd class="field-odd"><p><em>tuple</em> – A tuple <strong>(Object, error)</strong> with the newly created Room of the given typeclass,
+or <strong>None</strong> if there was an error. If there was an error, <strong>error</strong> will be a list of
+error strings.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2503,8 +2419,7 @@ errors (list): A list of errors in string form, if any.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultRoom.basetype_setup">
 <code class="sig-name descname">basetype_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.basetype_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.basetype_setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple room setup setting locks to make sure the room
-cannot be picked up.</p>
+<dd><p>Simple room setup setting locks to make sure the room cannot be picked up.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -2555,14 +2470,14 @@ the object it is attached to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Object</em>) – The object (usually a character) that entered an ambiguous command.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object (usually a character) that entered an ambiguous command.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A string with identifying information to disambiguate the command, conventionally with a
-preceding space.</p>
+<dd class="field-even"><p><em>str</em> – A string with identifying information to disambiguate the command, conventionally
+with a preceding space.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2625,7 +2540,7 @@ object and allows the exit to react when the account enter the
 exit’s name, triggering the movement between rooms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>exidbobj</strong> (<em>Object</em>) – The DefaultExit object to base the command on.</p>
+<dd class="field-odd"><p><strong>exidbobj</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The DefaultExit object to base the command on.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2646,16 +2561,17 @@ source room.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – Account to associate this Exit with.</p></li>
-<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><em>ObjectDB</em></a>) – The Object creating this Object.</p></li>
+<li><p><strong>account</strong> (<em>DefaultAccountDB</em>) – Account to associate this Exit with.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The Object creating this Object.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
 <li><p><strong>destination</strong> (<em>Room</em>) – The room to which this exit should go.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>exit (Object)</em> – A newly created Room of the given typeclass.
-errors (list): A list of errors in string form, if any.</p>
+<dd class="field-odd"><p><em>tuple</em> – A tuple <strong>(Object, errors)</strong>, where the object is the newly
+created exit of the given typeclass, or <strong>None</strong> if there was an error.
+If there was an error, <strong>errors</strong> will be a list of error strings.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2663,7 +2579,7 @@ errors (list): A list of errors in string form, if any.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultExit.basetype_setup">
 <code class="sig-name descname">basetype_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.basetype_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.basetype_setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Setup exit-security</p>
+<dd><p>Setup exit-security.</p>
 <p>You should normally not need to overload this - if you do make
 sure you include all the functionality in this method.</p>
 </dd></dl>
@@ -2679,7 +2595,7 @@ has no cmdsets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The object requesting the cmdsets.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a><em>, </em><a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The object requesting the cmdsets.</p></li>
 <li><p><strong>current</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a>) – The current merged cmdset.</p></li>
 <li><p><strong>force_init</strong> (<em>bool</em>) – If <strong>True</strong>, force a re-build of the cmdset
 (for example to update aliases).</p></li>
@@ -2704,8 +2620,8 @@ already been checked (in the Exit command) at this point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – Object traversing us.</p></li>
-<li><p><strong>target_location</strong> (<em>Object</em>) – Where target is going.</p></li>
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object traversing us.</p></li>
+<li><p><strong>target_location</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Where target is going.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
@@ -2720,7 +2636,7 @@ overriding the call (unused by default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversing_object</strong> (<em>Object</em>) – The object that failed traversing us.</p></li>
+<li><p><strong>traversing_object</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object that failed traversing us.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
@@ -2740,10 +2656,11 @@ read for an error string instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>return_all</strong> (<em>bool</em>) – Whether to return available results as a
-list or single matching exit.</p>
+queryset or single matching exit.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>queryset or exit (Exit)</em> – The matching exit(s).</p>
+<dd class="field-even"><p><em>Exit or queryset</em> – The matching exit(s). If <strong>return_all</strong> is <strong>True</strong>, this
+will be a queryset of all matching exits. Otherwise, it will be the first Exit matched.</p>
 </dd>
 </dl>
 </dd></dl>

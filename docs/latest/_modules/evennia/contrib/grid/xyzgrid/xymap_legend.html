@@ -112,11 +112,11 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">django_exceptions</span>
+
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MAPSCAN</span><span class="p">,</span> <span class="n">REVERSE_DIRECTIONS</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span>
-                    <span class="n">MapParserError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MAPSCAN</span><span class="p">,</span> <span class="n">REVERSE_DIRECTIONS</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span> <span class="n">MapParserError</span>
 
 <span class="n">NodeTypeclass</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">ExitTypeclass</span> <span class="o">=</span> <span class="kc">None</span>
@@ -936,6 +936,7 @@
 <span class="sd">        /|</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">multilink</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="SmartRerouterMapLink.get_direction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink.get_direction">[docs]</a>    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">):</span>

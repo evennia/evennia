@@ -120,7 +120,6 @@
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
 <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
@@ -128,11 +127,13 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">strip_tags</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threads</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>
@@ -566,6 +567,7 @@
 
 <span class="n">re_empty</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\s*</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="compress_whitespace"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.compress_whitespace">[docs]</a><span class="k">def</span> <span class="nf">compress_whitespace</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_linebreaks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_spacing</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes extra sequential whitespace in a block of text. This will also remove any trailing</span>
@@ -584,9 +586,9 @@
     <span class="c1"># this allows the blank-line compression to eliminate them if needed</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">re_empty</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="c1"># replace groups of extra spaces with the maximum number of spaces</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?&lt;=\S) </span><span class="se">{{</span><span class="si">{</span><span class="n">max_spacing</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="n">max_spacing</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?&lt;=\S) </span><span class="se">{{</span><span class="si">{</span><span class="n">max_spacing</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">max_spacing</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="c1"># replace groups of extra newlines with the maximum number of newlines</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n{{</span><span class="si">{</span><span class="n">max_linebreaks</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">*</span><span class="n">max_linebreaks</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n{{</span><span class="si">{</span><span class="n">max_linebreaks</span><span class="si">}</span><span class="s2">,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="n">max_linebreaks</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">text</span></div>
 
 
@@ -2494,20 +2496,18 @@
                 <span class="c1"># result is a typeclassed entity where `.aliases` is an AliasHandler.</span>
                 <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="c1"># remove pluralization aliases</span>
-                <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">alias</span><span class="o">.</span><span class="n">db_key</span>
-                    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span>
-                    <span class="k">if</span> <span class="n">alias</span><span class="o">.</span><span class="n">db_category</span> <span class="o">!=</span> <span class="s2">&quot;plural_key&quot;</span>
-                <span class="p">]</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias</span><span class="o">.</span><span class="n">db_key</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span><span class="o">.</span><span class="n">db_category</span> <span class="o">!=</span> <span class="s2">&quot;plural_key&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># result is likely a Command, where `.aliases` is a list of strings.</span>
                 <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span>
 
             <span class="n">error</span> <span class="o">+=</span> <span class="n">_MULTIMATCH_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">number</span><span class="o">=</span><span class="n">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">query</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">query</span>
+                <span class="p">),</span>
                 <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot; [</span><span class="si">{alias}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                 <span class="n">info</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
             <span class="p">)</span>

@@ -106,12 +106,17 @@
 <span class="kn">from</span> <span class="nn">django.utils.http</span> <span class="kn">import</span> <span class="n">url_has_allowed_host_and_scheme</span>
 <span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
 <span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">RedirectView</span>
+
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.web.website</span> <span class="kn">import</span> <span class="n">forms</span>
 
 <span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">TypeclassMixin</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ObjectCreateView</span><span class="p">,</span> <span class="n">ObjectDeleteView</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span>
-                      <span class="n">ObjectUpdateView</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ObjectCreateView</span><span class="p">,</span>
+    <span class="n">ObjectDeleteView</span><span class="p">,</span>
+    <span class="n">ObjectDetailView</span><span class="p">,</span>
+    <span class="n">ObjectUpdateView</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="CharacterMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterMixin">[docs]</a><span class="k">class</span> <span class="nc">CharacterMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
@@ -216,9 +221,11 @@
 
         <span class="c1"># since next_page is untrusted input from the user, we need to check it&#39;s safe to</span>
         <span class="n">next_page</span> <span class="o">=</span> <span class="n">iri_to_uri</span><span class="p">(</span><span class="n">next_page</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">url_has_allowed_host_and_scheme</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">next_page</span><span class="p">,</span>
-                                               <span class="n">allowed_hosts</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get_host</span><span class="p">()},</span>
-                                               <span class="n">require_https</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">is_secure</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">url_has_allowed_host_and_scheme</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">next_page</span><span class="p">,</span>
+            <span class="n">allowed_hosts</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get_host</span><span class="p">()},</span>
+            <span class="n">require_https</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">is_secure</span><span class="p">(),</span>
+        <span class="p">):</span>
             <span class="n">next_page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_url</span>
 
         <span class="k">if</span> <span class="n">char</span><span class="p">:</span>
@@ -231,7 +238,6 @@
             <span class="c1"># If the puppeting failed, clear out the cached puppet value</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;puppet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;You cannot become &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
-
 
         <span class="k">return</span> <span class="n">next_page</span></div></div>
 

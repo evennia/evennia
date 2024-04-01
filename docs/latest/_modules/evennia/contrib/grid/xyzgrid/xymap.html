@@ -184,6 +184,7 @@
 
 <span class="sd">----</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">mkdir</span>
@@ -200,6 +201,7 @@
         <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
     <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">flatten_prototype</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -264,6 +266,7 @@
 <span class="sd">    but recommended for readability!</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">mapcorner_symbol</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
     <span class="n">max_pathfinding_length</span> <span class="o">=</span> <span class="mi">500</span>
     <span class="n">empty_symbol</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
@@ -567,10 +570,10 @@
                     <span class="n">max_X</span><span class="p">,</span> <span class="n">max_Y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_X</span><span class="p">,</span> <span class="n">iX</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_Y</span><span class="p">,</span> <span class="n">iY</span><span class="p">)</span>
                     <span class="n">node_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
-                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">XYgrid</span><span class="p">[</span><span class="n">iX</span><span class="p">][</span><span class="n">iY</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index_map</span><span class="p">[</span>
-                        <span class="n">node_index</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="n">mapnode_or_link_class</span><span class="p">(</span>
-                        <span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">node_index</span><span class="o">=</span><span class="n">node_index</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span>
+                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">XYgrid</span><span class="p">[</span><span class="n">iX</span><span class="p">][</span><span class="n">iY</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index_map</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">mapnode_or_link_class</span><span class="p">(</span>
+                            <span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">node_index</span><span class="o">=</span><span class="n">node_index</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
@@ -760,8 +763,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_XYZROOMCLASS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_XYZROOMCLASS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> \
-                <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
+            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
         <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
         <span class="n">spawned</span> <span class="o">=</span> <span class="p">[]</span>
