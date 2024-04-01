@@ -21,14 +21,10 @@ called automatically when a new user connects.
 """
 
 from django.conf import settings
-
 from evennia import CmdSet, Command, syscmdkeys
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import (
-    callables_from_module,
-    class_from_module,
-    random_string_from_module,
-)
+from evennia.utils.utils import (callables_from_module, class_from_module,
+                                 random_string_from_module)
 
 _CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 _GUEST_ENABLED = settings.GUEST_ENABLED
@@ -90,7 +86,7 @@ def node_enter_username(caller, raw_text, **kwargs):
         else:
             new_user = False
 
-        if new_user and not settings.ACCOUNT_REGISTRATION_ENABLED:
+        if new_user and not settings.NEW_ACCOUNT_REGISTRATION_ENABLED:
             caller.msg("Registration is currently disabled.")
             return None
 
