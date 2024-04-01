@@ -12,6 +12,9 @@
 - [Feature][issue3450]: The default `page` command now tags its `Msg` objects
   with tag 'page' (category 'comms') and also checks the `Msg`' 'read' lock.
   made backwards compatible for old pages (Griatch)
+- [Feature][pull3466]: Add optional `no_article` kwarg to
+  `DefaultObject.get_numbered_name` for the system to skip adding automatic
+  articles. (chiizujin)
 - Feature: Clean up the default Command variable list shown when a command has
   no `func()` defined (Griatch)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
@@ -36,7 +39,7 @@
 - [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
   when creating a new character (Griatch)
 - Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
-- Doc fixes (Griatch, InspectorCaracal)
+- Doc fixes (Griatch, InspectorCaracal, homeofpoe)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
 [pull3446]: https://github.com/evennia/evennia/pull/3446
@@ -49,6 +52,7 @@
 [pull3459]: https://github.com/evennia/evennia/pull/3459
 [pull3463]: https://github.com/evennia/evennia/pull/3463
 [pull3464]: https://github.com/evennia/evennia/pull/3464
+[pull3466]: https://github.com/evennia/evennia/pull/3466
 [pull3467]: https://github.com/evennia/evennia/pull/3467
 [issue3450]: https://github.com/evennia/evennia/issues/3450
 [issue3462]: https://github.com/evennia/evennia/issues/3462
