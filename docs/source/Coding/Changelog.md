@@ -7,6 +7,8 @@
   adding line breaks in hook returns. (InspectorCaracal)
 - [Feature][pull3458]: New `sethelp/category` switch to change a help topic's
   category after it was created (chiizujin)
+- [Feature][pull3467]: Add `alias/delete` switch for removing object aliases
+  from in-game with default command (chiizujin)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -19,6 +21,11 @@
   duplicates (chiizujin)
 - [Fix][pull3454]: Traceback in crafting contrib's `recipe.msg`
   (InspectorCaracal)
+- [Fix][pull3459]: EvEditor line-echo compacted whitespace erroneously (chiizujin)
+- [Fix][pull3463]: EvEditor :help described the :paste operation in the wrong
+  way (chiizujin)
+- [Fix][pull3464]: EvEditor range:range specification didn't return correct
+  range (chiizujin)
 - Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
 - Doc fixes (Griatch, InspectorCaracal)
 
@@ -30,6 +37,10 @@
 [pull3457]: https://github.com/evennia/evennia/pull/3457
 [pull3458]: https://github.com/evennia/evennia/pull/3458
 [pull3454]: https://github.com/evennia/evennia/pull/3454
+[pull3459]: https://github.com/evennia/evennia/pull/3459
+[pull3463]: https://github.com/evennia/evennia/pull/3463
+[pull3464]: https://github.com/evennia/evennia/pull/3464
+[pull3467]: https://github.com/evennia/evennia/pull/3467
 
 ## Evennia 4.0.0
 
