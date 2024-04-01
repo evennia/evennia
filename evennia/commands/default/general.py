@@ -417,17 +417,30 @@ class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
         storing the results in the following variables:
             self.number = an integer representing the amount, or 0 if none was given
             self.args = the re-defined input with the leading number removed
+        
+        Optionally, if COMMAND_DEFAULT_CLASS is a MuxCommand, it applies the same
+        parsing to self.lhs
         """
         super().parse()
         self.number = 0
+        if hasattr(self, 'lhs'):
+            # handle self.lhs but don't require it
+            count, *args = self.lhs.split(maxsplit=1)
+            # we only use the first word as a count if it's a number and
+            # there is more text afterwards
+            if args and count.isdecimal():
+                self.number = int(count)
+                self.lhs = args[0]
         if self.args:
             # check for numbering
             count, *args = self.args.split(maxsplit=1)
             # we only use the first word as a count if it's a number and
             # there is more text afterwards
             if args and count.isdecimal():
-                self.number = int(count)
                 self.args = args[0]
+                # we only re-assign self.number if it wasn't already taken from self.lhs
+                if not self.number:
+                    self.number = int(count)
 
 
 class CmdGet(NumberedTargetCommand):
