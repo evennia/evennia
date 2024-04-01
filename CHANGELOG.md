@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 4.1.0
+
+April 1, 2024
 
 - [Deprecation]: `DefaultObject.get_visible_contents` - unused in core, will be
   removed. Use the new `.filter_visible` together with the `.get_display_*` methods instead..
