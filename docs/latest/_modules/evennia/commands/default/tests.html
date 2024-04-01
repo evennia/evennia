@@ -880,7 +880,24 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Aliases for Obj: &#39;testobj1b&#39;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj2 =&quot;</span><span class="p">,</span> <span class="s2">&quot;Cleared aliases from Obj2&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj2 =&quot;</span><span class="p">,</span> <span class="s2">&quot;No aliases to clear.&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj2 =&quot;</span><span class="p">,</span> <span class="s2">&quot;No aliases to clear.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;Cleared aliases from Obj: testobj1b&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span>
+            <span class="s2">&quot;/category Obj = testobj1b:category1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Alias(es) for &#39;Obj&#39; set to &#39;testobj1b&#39; (category: &#39;category1&#39;).&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span>
+            <span class="s2">&quot;/category Obj = testobj1b:category2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Alias(es) for &#39;Obj&#39; set to &#39;testobj1b,testobj1b&#39; (category: &#39;category2&#39;).&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="c1"># delete both occurences of alias &#39;testobj1b&#39;</span>
+            <span class="s2">&quot;/delete Obj = testobj1b&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Alias &#39;testobj1b&#39; deleted from Obj.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;No aliases to clear.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_copy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_copy">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>

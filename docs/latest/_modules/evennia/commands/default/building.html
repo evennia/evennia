@@ -310,10 +310,13 @@
 <span class="sd">      alias &lt;obj&gt; [= [alias[,alias,alias,...]]]</span>
 <span class="sd">      alias &lt;obj&gt; =</span>
 <span class="sd">      alias/category &lt;obj&gt; = [alias[,alias,...]:&lt;category&gt;</span>
+<span class="sd">      alias/delete &lt;obj&gt; = &lt;alias&gt;</span>
 
 <span class="sd">    Switches:</span>
 <span class="sd">      category - requires ending input with :category, to store the</span>
 <span class="sd">        given aliases with the given category.</span>
+<span class="sd">      delete - deletes all occurrences of the given alias, regardless</span>
+<span class="sd">        of category</span>
 
 <span class="sd">    Assigns aliases to an object so it can be referenced by more</span>
 <span class="sd">    than one name. Assign empty to remove all aliases from object. If</span>
@@ -327,7 +330,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@alias&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;setobjalias&quot;</span>
-    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,)</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(setobjalias) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -344,12 +347,12 @@
             <span class="k">return</span>
         <span class="n">objname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
 
-        <span class="c1"># Find the object to receive aliases</span>
+        <span class="c1"># Find the object to receive/delete aliases</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># no =, so we just list aliases on object.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;delete&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># no =, and not deleting, so we just list aliases on object.</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -372,7 +375,9 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
-            <span class="c1"># we have given an empty =, so delete aliases</span>
+            <span class="c1"># we have given an empty =, so delete aliases.</span>
+            <span class="c1"># as a side-effect, &#39;alias/delete obj&#39; and &#39;alias/delete obj=&#39;</span>
+            <span class="c1"># will also be caught here, which is fine</span>
             <span class="n">old_aliases</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">old_aliases</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -382,6 +387,19 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No aliases to clear.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># delete all matching keys, regardless of category</span>
+            <span class="n">existed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span>  <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+                    <span class="n">existed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">existed</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Alias &#39;</span><span class="si">%s</span><span class="s2">&#39; deleted from </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no alias &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="n">category</span> <span class="o">=</span> <span class="kc">None</span>

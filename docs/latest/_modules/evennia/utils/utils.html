@@ -3169,6 +3169,24 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;ip_from_request: No valid IP address found in request. Using remote_addr.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">remote_addr</span></div>
+
+
+<div class="viewcode-block" id="value_is_integer"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.value_is_integer">[docs]</a><span class="k">def</span> <span class="nf">value_is_integer</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines if a value can be type-cast to an integer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value (any): The value to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (bool): Whether it can be type-cast to an integer or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
 
           </div>

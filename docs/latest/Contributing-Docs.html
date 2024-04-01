@@ -66,6 +66,7 @@
   <ul>
 <li><a class="reference internal" href="#">Contributing to Evennia Docs</a><ul>
 <li><a class="reference internal" href="#source-file-structure">Source file structure</a></li>
+<li><a class="reference internal" href="#automatically-generated-doc-pages">Automatically generated doc pages</a></li>
 <li><a class="reference internal" href="#editing-syntax">Editing syntax</a><ul>
 <li><a class="reference internal" href="#italic-bold">Italic/Bold</a></li>
 <li><a class="reference internal" href="#headings">Headings</a></li>
@@ -186,6 +187,24 @@ result in Evennia. This is often on a tutorial or FAQ form and will refer to the
 <li><p><code class="docutils literal notranslate"><span class="pre">source/_templates</span></code> and <code class="docutils literal notranslate"><span class="pre">source/_static</span></code> hold files for the doc itself. They should only be modified if wanting to change the look and structure of the documentation generation itself.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">conf.py</span></code> holds the Sphinx configuration. It should usually not be modified except to update the Evennia version on a new branch.</p></li>
 </ul>
+</section>
+<section id="automatically-generated-doc-pages">
+<h2>Automatically generated doc pages<a class="headerlink" href="#automatically-generated-doc-pages" title="Permalink to this headline">¶</a></h2>
+<p>Some doc pages are automatically generated. Changes to their generated markdown file will be overwritten. Instead they must be modified at the point the automation reads the text from.</p>
+<ul class="simple">
+<li><p>All API docs under <code class="docutils literal notranslate"><span class="pre">source/api</span></code> are built from the doc strings of Evennia core code. Documentation fixes for these needs to be done in the doc strings of the relevant module, function, class or method.</p></li>
+<li><p><a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">Contribs/Contribs-Overview.md</span></a> is completely generated from scratch when building the docs, by the script <code class="docutils literal notranslate"><span class="pre">evennia/docs/pylib/contrib_readmes2docs.py</span></code>.</p>
+<ul>
+<li><p>All contrib blurbs on the above page are taken from the first paragraph of each contrib’s <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, found under <code class="docutils literal notranslate"><span class="pre">evennia/contrib/*/*/README.md</span></code>.</p></li>
+<li><p>Similarly, all contrib documentation linked from the above page is generated from each contrib’s <code class="docutils literal notranslate"><span class="pre">README.md</span></code> file.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Components/Default-Commands.html"><span class="doc std std-doc">Components/Default-Commands.md</span></a> is generated from the command classes found under <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/</span></code>.</p></li>
+<li><p><a class="reference internal" href="Coding/Evennia-Code-Style.html"><span class="doc std std-doc">Coding/Evennia-Code-Style.md</span></a> is generated from <code class="docutils literal notranslate"><span class="pre">evennia/CODING_STYLE.md</span></code>.</p></li>
+<li><p><a class="reference internal" href="Coding/Changelog.html"><span class="doc std std-doc">Coding/Changelog.md</span></a> is generated from <code class="docutils literal notranslate"><span class="pre">evennia/CHANGELOG.md</span></code></p></li>
+<li><p><a class="reference internal" href="Setup/Settings-Default.html"><span class="doc std std-doc">Setup/Settings-Default.md</span></a> is generated from the default settings file <code class="docutils literal notranslate"><span class="pre">evennia/default_settings.py</span></code></p></li>
+</ul>
+<p>Most auto-generated pages have a warning in the header indicating that it’s auto-generated.</p>
 </section>
 <section id="editing-syntax">
 <h2>Editing syntax<a class="headerlink" href="#editing-syntax" title="Permalink to this headline">¶</a></h2>
