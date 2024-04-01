@@ -43,7 +43,6 @@ import re
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia import CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils import dedent, fill, is_iter, justify, logger, to_str, utils
@@ -468,7 +467,8 @@ class CmdEditorGroup(CmdEditorBase):
 
         linebuffer = self.linebuffer
         lstart, lend = self.lstart, self.lend
-        cmd = self.cmdstring
+        # preserve the cmdname including case (otherwise uu and UU would be the same)
+        cmd = self.raw_string[:len(self.cmdstring)]
         echo_mode = self.editor._echo_mode
 
         if cmd == ":":
