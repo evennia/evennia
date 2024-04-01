@@ -218,10 +218,13 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
       alias <obj> [= [alias[,alias,alias,...]]]
       alias <obj> =
       alias/category <obj> = [alias[,alias,...]:<category>
+      alias/delete <obj> = <alias>
 
     Switches:
       category - requires ending input with :category, to store the
         given aliases with the given category.
+      delete - deletes all occurrences of the given alias, regardless
+        of category
 
     Assigns aliases to an object so it can be referenced by more
     than one name. Assign empty to remove all aliases from object. If
@@ -235,7 +238,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "setobjalias"
-    switch_options = ("category",)
+    switch_options = ("category", "delete")
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -252,12 +255,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         objname = self.lhs
 
-        # Find the object to receive aliases
+        # Find the object to receive/delete aliases
         obj = caller.search(objname)
         if not obj:
             return
-        if self.rhs is None:
-            # no =, so we just list aliases on object.
+        if self.rhs is None and 'delete' not in self.switches:
+            # no =, and not deleting, so we just list aliases on object.
             aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
                 caller.msg(
@@ -280,7 +283,9 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.rhs:
-            # we have given an empty =, so delete aliases
+            # we have given an empty =, so delete aliases.
+            # as a side-effect, 'alias/delete obj' and 'alias/delete obj='
+            # will also be caught here, which is fine
             old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg(
@@ -290,6 +295,19 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 obj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
+            return
+
+        if "delete" in self.switches:
+            # delete all matching keys, regardless of category
+            existed = False
+            for key, category in  obj.aliases.all(return_key_and_category=True):
+                if key == self.rhs:
+                    obj.aliases.remove(key=self.rhs, category=category)
+                    existed = True
+            if existed:
+                caller.msg("Alias '%s' deleted from %s." % (self.rhs, obj.get_display_name(caller)))
+            else:
+                caller.msg("%s has no alias '%s'." % (obj.get_display_name(caller), self.rhs))
             return
 
         category = None
