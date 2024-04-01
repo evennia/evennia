@@ -180,7 +180,7 @@
 
 <span class="sd"> :y  &lt;l&gt;        - yank (copy) line(s) &lt;l&gt; to the copy buffer</span>
 <span class="sd"> :x  &lt;l&gt;        - cut line(s) &lt;l&gt; and store it in the copy buffer</span>
-<span class="sd"> :p  &lt;l&gt;        - put (paste) previously copied line(s) directly after &lt;l&gt;</span>
+<span class="sd"> :p  &lt;l&gt;        - put (paste) previously copied line(s) directly before &lt;l&gt;</span>
 <span class="sd"> :i  &lt;l&gt; &lt;txt&gt;  - insert new text &lt;txt&gt; at line &lt;l&gt;. Old line will move down</span>
 <span class="sd"> :r  &lt;l&gt; &lt;txt&gt;  - replace line &lt;l&gt; with text &lt;txt&gt;</span>
 <span class="sd"> :I  &lt;l&gt; &lt;txt&gt;  - insert text at the beginning of line &lt;l&gt;</span>
@@ -506,7 +506,7 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n (|g</span><span class="si">%s</span><span class="s2">|n) </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)))</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdEditorGroup"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorGroup">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorGroup</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
