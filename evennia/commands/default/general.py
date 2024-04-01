@@ -379,8 +379,58 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             string = f"|wYou are carrying:\n{table}"
         self.msg(text=(string, {"type": "inventory"}))
 
+class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
+    """
+    A class that parses out an optional number component from the input string. This
+    class is intended to be inherited from to provide additional functionality, rather
+    than used on its own.
 
-class CmdGet(COMMAND_DEFAULT_CLASS):
+    Note that the class's __doc__ string (this text) is used by Evennia to create the
+    automatic help entry for the command, so make sure to document consistently here. 
+    """
+    def parse(self):
+        """
+        This method is called by the cmdhandler once the command name
+        has been identified. It creates a new set of member variables
+        that can be later accessed from self.func() (see below)
+
+        The following variables are available for our use when entering this
+        method (from the command definition, and assigned on the fly by the
+        cmdhandler):
+            self.key - the name of this command ('look')
+            self.aliases - the aliases of this cmd ('l')
+            self.permissions - permission string for this command
+            self.help_category - overall category of command
+
+            self.caller - the object calling this command
+            self.cmdstring - the actual command name used to call this
+                             (this allows you to know which alias was used,
+                             for example)
+            self.args - the raw input; everything following self.cmdstring.
+            self.cmdset - the cmdset from which this command was picked. Not
+                          often used (useful for commands like 'help' or to
+                          list all available commands etc)
+            self.obj - the object on which this command was defined. It is often
+                       the same as self.caller.
+
+        This parser does additional parsing on self.args to identify a leading number,
+        storing the results in the following variables:
+            self.number = an integer representing the amount, or 0 if none was given
+            self.args = the re-defined input with the leading number removed
+        """
+        super().parse()
+        self.number = 0
+        if self.args:
+            # check for numbering
+            count, *args = self.args.split(maxsplit=1)
+            # we only use the first word as a count if it's a number and
+            # there is more text afterwards
+            if args and count.isdecimal():
+                self.number = int(count)
+                self.args = args[0]
+
+
+class CmdGet(NumberedTargetCommand):
     """
     pick up something
 
@@ -395,17 +445,6 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
-    def parse(self):
-        super().parse()
-        self.number = 0
-        if self.args:
-            # check for numbering
-            count, *args = self.args.split(maxsplit=1)
-            # we only use the first word as a count if it's a number and
-            # there is more text afterwards
-            if args and count.isdecimal():
-                self.number = int(count)
-                self.args = args[0]
 
     def func(self):
         """implements the command."""
@@ -451,11 +490,11 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             # none of the objects were successfully moved
             self.msg("That can't be picked up.")
         else:
-            singular, plural = moved[0].get_numbered_name(len(moved), caller)
-            caller.location.msg_contents(f"$You() $conj(pick) up {plural if len(moved) > 1 else singular}.", from_obj=caller)
+            obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.location.msg_contents(f"$You() $conj(pick) up {obj_name}.", from_obj=caller)
 
 
-class CmdDrop(COMMAND_DEFAULT_CLASS):
+class CmdDrop(NumberedTargetCommand):
     """
     drop something
 
@@ -469,18 +508,6 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
     key = "drop"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
-
-    def parse(self):
-        super().parse()
-        self.number = 0
-        if self.args:
-            # check for numbering
-            count, *args = self.args.split(maxsplit=1)
-            # we only use the first word as a count if it's a number and
-            # there is more text afterwards
-            if args and count.isdecimal():
-                self.number = int(count)
-                self.args = args[0]
 
     def func(self):
         """Implement command"""
@@ -523,11 +550,11 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
             # none of the objects were successfully moved
             self.msg("That can't be dropped.")
         else:
-            singular, plural = obj.get_numbered_name(len(moved), caller)
-            caller.location.msg_contents(f"$You() $conj(drop) {plural if len(moved) > 1 else singular}.", from_obj=caller)
+            obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.location.msg_contents(f"$You() $conj(drop) {obj_name}.", from_obj=caller)
 
 
-class CmdGive(COMMAND_DEFAULT_CLASS):
+class CmdGive(NumberedTargetCommand):
     """
     give away something to someone
 
@@ -543,17 +570,6 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
-    def parse(self):
-        super().parse()
-        self.number = 0
-        if self.lhs:
-            # check for numbering
-            count, *args = self.lhs.split(maxsplit=1)
-            # we only use the first word as a count if it's a number and
-            # there is more text afterwards
-            if args and count.isdecimal():
-                self.number = int(count)
-                self.lhs = args[0]
 
     def func(self):
         """Implement give"""
@@ -604,10 +620,9 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not moved:
             caller.msg(f"You could not give that to {target.get_display_name(caller)}.")
         else:
-            singular, plural = to_give[0].get_numbered_name(len(moved), caller)
-            names = plural if len(moved) > 1 else singular
-            caller.msg(f"You give {names} to {target.get_display_name(caller)}.")
-            target.msg(f"{caller.get_display_name(target)} gives you {names}.")
+            obj_name = to_give[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.msg(f"You give {obj_name} to {target.get_display_name(caller)}.")
+            target.msg(f"{caller.get_display_name(target)} gives you {obj_name}.")
 
 
 class CmdSetDesc(COMMAND_DEFAULT_CLASS):
