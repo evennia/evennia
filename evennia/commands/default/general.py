@@ -379,6 +379,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             string = f"|wYou are carrying:\n{table}"
         self.msg(text=(string, {"type": "inventory"}))
 
+
 class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
     """
     A class that parses out an optional number component from the input string. This
@@ -386,8 +387,9 @@ class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
     than used on its own.
 
     Note that the class's __doc__ string (this text) is used by Evennia to create the
-    automatic help entry for the command, so make sure to document consistently here. 
+    automatic help entry for the command, so make sure to document consistently here.
     """
+
     def parse(self):
         """
         This method is called by the cmdhandler once the command name
@@ -417,13 +419,13 @@ class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
         storing the results in the following variables:
             self.number = an integer representing the amount, or 0 if none was given
             self.args = the re-defined input with the leading number removed
-        
+
         Optionally, if COMMAND_DEFAULT_CLASS is a MuxCommand, it applies the same
         parsing to self.lhs
         """
         super().parse()
         self.number = 0
-        if hasattr(self, 'lhs'):
+        if hasattr(self, "lhs"):
             # handle self.lhs but don't require it
             count, *args = self.lhs.split(maxsplit=1)
             # we only use the first word as a count if it's a number and
@@ -457,7 +459,6 @@ class CmdGet(NumberedTargetCommand):
     aliases = "grab"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
-
 
     def func(self):
         """implements the command."""
@@ -498,7 +499,7 @@ class CmdGet(NumberedTargetCommand):
                 moved.append(obj)
                 # calling at_get hook method
                 obj.at_get(caller)
-        
+
         if not moved:
             # none of the objects were successfully moved
             self.msg("That can't be picked up.")
@@ -558,7 +559,7 @@ class CmdDrop(NumberedTargetCommand):
                 moved.append(obj)
                 # Call the object's at_drop() method.
                 obj.at_drop(caller)
-        
+
         if not moved:
             # none of the objects were successfully moved
             self.msg("That can't be dropped.")
@@ -582,7 +583,6 @@ class CmdGive(NumberedTargetCommand):
     rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
     arg_regex = r"\s|$"
-
 
     def func(self):
         """Implement give"""
@@ -610,7 +610,6 @@ class CmdGive(NumberedTargetCommand):
         # NOTE: this behavior may be a bug, see issue #3432
         to_give = utils.make_iter(to_give)
 
-
         singular, plural = to_give[0].get_numbered_name(len(to_give), caller)
         if target == caller:
             caller.msg(f"You keep {plural if len(to_give) > 1 else singular} to yourself.")
@@ -629,7 +628,7 @@ class CmdGive(NumberedTargetCommand):
                 moved.append(obj)
                 # Call the object's at_give() method.
                 obj.at_give(caller, target)
-        
+
         if not moved:
             caller.msg(f"You could not give that to {target.get_display_name(caller)}.")
         else:
