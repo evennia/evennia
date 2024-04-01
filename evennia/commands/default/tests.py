@@ -18,18 +18,13 @@ import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from evennia import (
-    DefaultCharacter,
-    DefaultExit,
-    DefaultObject,
-    DefaultRoom,
-    ObjectDB,
-    search_object,
-)
+from evennia import (DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom,
+                     ObjectDB, search_object)
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import account, admin, batchprocess, building, comms, general
+from evennia.commands.default import (account, admin, batchprocess, building,
+                                      comms, general)
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -373,7 +368,8 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.timedelay = 5
         global _TASK_HANDLER
         if _TASK_HANDLER is None:
-            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+            from evennia.scripts.taskhandler import \
+                TASK_HANDLER as _TASK_HANDLER
         _TASK_HANDLER.clock = task.Clock()
         self.task_handler = _TASK_HANDLER
         self.task_handler.clear()
@@ -2071,6 +2067,10 @@ class TestComms(BaseEvenniaCommandTest):
             ),
             receiver=self.account,
         )
+        from evennia.comms.models import Msg
+        msgs = Msg.objects.filter(db_tags__db_key="page", db_tags__db_category="comms")
+        self.assertEqual(msgs[0].senders, [self.account])
+        self.assertEqual(msgs[0].receivers, [self.account2])
 
 
 @override_settings(DISCORD_BOT_TOKEN="notarealtoken", DISCORD_ENABLED=True)

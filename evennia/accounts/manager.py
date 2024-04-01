@@ -7,7 +7,6 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import UserManager
 from django.utils import timezone
-
 from evennia.server import signals
 from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils.utils import class_from_module, dbid_to_obj, make_iter
