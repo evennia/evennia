@@ -2,6 +2,11 @@
 
 ## Main branch
 
+- [Deprecation]: `DefaultObject.get_visible_contents` - unused in core, will be
+  removed. Use the new `.filter_visible` together with the `.get_display_*` methods instead..
+- [Deprecation]: `DefaultObject.get_content_names` - unused in core, will be
+  removed. Use the `DefaultObject.get_display_*` methods instead.
+
 - [Feature][pull3421]: New `utils.compress_whitespace` utility used with
   default object's `.format_appearance` to make it easier to overload without
   adding line breaks in hook returns. (InspectorCaracal)
@@ -17,6 +22,8 @@
   articles. (chiizujin)
 - Feature: Clean up the default Command variable list shown when a command has
   no `func()` defined (Griatch)
+- [Feature][issue3461]: Add `DefaultObject.filter_display_visible` helper method
+  to make it easier to customize object visibility rules. (Griatch)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -57,6 +64,7 @@
 [issue3450]: https://github.com/evennia/evennia/issues/3450
 [issue3462]: https://github.com/evennia/evennia/issues/3462
 [issue3460]: https://github.com/evennia/evennia/issues/3460
+[issue3461]: https://github.com/evennia/evennia/issues/3461
 
 ## Evennia 4.0.0
 

@@ -1419,6 +1419,27 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
+    def filter_visible(self, obj_list, looker, **kwargs):
+        """
+        Filter a list of objects to only include those that are visible to the looker.
+
+        Args:
+            obj_list (list): List of objects to filter.
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            list: The filtered list of visible objects.
+        Notes:
+            By default this simply checks the 'view' and 'search' locks on each object in the list.
+            Override this
+            method to implement custom visibility mechanics.
+
+        """
+        return [obj for obj in obj_list
+                if (obj.access(looker, "view")
+                    and obj.access(looker, "search", default=True))
+               ]
+
     # name and return_appearance hooks
 
     def get_display_name(self, looker=None, **kwargs):
@@ -1557,11 +1578,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The exits display data.
 
         """
-
-        def _filter_visible(obj_list):
-            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
-
-        exits = _filter_visible(self.contents_get(content_type="exit"))
+        exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
         exit_names = iter_to_str(exi.get_display_name(looker, **kwargs) for exi in exits)
 
         return f"|wExits:|n {exit_names}" if exit_names else ""
@@ -1577,11 +1594,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The character display data.
 
         """
-
-        def _filter_visible(obj_list):
-            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
-
-        characters = _filter_visible(self.contents_get(content_type="character"))
+        characters = self.filter_visible(self.contents_get(content_type="character"), looker,
+                                         **kwargs)
         character_names = iter_to_str(
             char.get_display_name(looker, **kwargs) for char in characters
         )
@@ -1599,12 +1613,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The things display data.
 
         """
-
-        def _filter_visible(obj_list):
-            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
-
         # sort and handle same-named things
-        things = _filter_visible(self.contents_get(content_type="object"))
+        things = self.filter_visible(self.contents_get(content_type="object"), looker, **kwargs)
 
         grouped_things = defaultdict(list)
         for thing in things:
@@ -2328,8 +2338,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def get_visible_contents(self, looker, **kwargs):
         """
+        DEPRECATED
         Get all contents of this object that a looker can see (whatever that means, by default it
-        checks the 'view' and 'search' locks), grouped by type. Helper method to return_appearance.
+        checks the 'view' and 'search' locks and excludes the looker themselves), grouped by type.
+        Helper method to return_appearance.
 
         Args:
             looker (Object): The entity looking.
@@ -2342,23 +2354,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
 
-        def filter_visible(obj_list):
-            return [
-                obj
-                for obj in obj_list
-                if obj != looker
-                and obj.access(looker, "view")
-                and obj.access(looker, "search", default=True)
-            ]
+        def _filter_visible(obj_list):
+            return [obj for obj in self.filter_visible(obj_list, looker, **kwargs) if obj != looker]
 
         return {
-            "exits": filter_visible(self.contents_get(content_type="exit")),
-            "characters": filter_visible(self.contents_get(content_type="character")),
-            "things": filter_visible(self.contents_get(content_type="object")),
+            "exits": _filter_visible(self.contents_get(content_type="exit")),
+            "characters": _filter_visible(self.contents_get(content_type="character")),
+            "things": _filter_visible(self.contents_get(content_type="object")),
         }
 
     def get_content_names(self, looker, **kwargs):
         """
+        DEPRECATED
         Get the proper names for all contents of this object. Helper method
         for return_appearance.
 
