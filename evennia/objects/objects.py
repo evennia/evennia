@@ -1505,12 +1505,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Examples:
         ::
-            - obj.get_numbered_name(3, looker, key="foo") -> ("a foo", "three foos")
-            - obj.get_numbered_name(1, looker, key="Foobert", return_string=True)
-                  -> "a Foobert"
-            - obj.get_numbered_name(1, looker, key="Foobert", return_string=True, no_article=True)
-                  -> "Foobert"
 
+            obj.get_numbered_name(3, looker, key="foo")
+                  -> ("a foo", "three foos")
+            obj.get_numbered_name(1, looker, key="Foobert", return_string=True)
+                  -> "a Foobert"
+            obj.get_numbered_name(1, looker, key="Foobert", return_string=True, no_article=True)
+                  -> "Foobert"
         """
         plural_category = "plural_key"
         key = kwargs.get("key", self.get_display_name(looker))
