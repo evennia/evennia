@@ -100,7 +100,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts</span> <span class="kn">import</span> <span class="n">bots</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
@@ -1430,8 +1430,24 @@
 
         <span class="c1"># get the messages we&#39;ve sent (not to channels)</span>
         <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_sender</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">)</span>
+        <span class="c1"># get only messages tagged as pages or not tagged at all (legacy pages)</span>
+        <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="n">pages_we_sent</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="n">db_tags__db_category__iexact</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">)</span>
+            <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># we need to default to True to allow for legacy pages</span>
+        <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="p">[</span><span class="n">msg</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">pages_we_sent</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
         <span class="c1"># get last messages we&#39;ve got</span>
         <span class="n">pages_we_got</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_receiver</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">)</span>
+        <span class="n">pages_we_got</span> <span class="o">=</span> <span class="n">pages_we_got</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="n">db_tags__db_category__iexact</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">)</span>
+            <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># we need to default to True to allow for legacy pages</span>
+        <span class="n">pages_we_got</span> <span class="o">=</span> <span class="p">[</span><span class="n">msg</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">pages_we_got</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+        <span class="c1"># get only messages tagged as pages or not tagged at all (legacy pages)</span>
         <span class="n">targets</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="s2">&quot;last&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
@@ -1452,6 +1468,7 @@
                     <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_obj</span><span class="p">)</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no = sign, handler this as well</span>
                 <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                     <span class="c1"># a number to specify a historic page</span>
@@ -1487,7 +1504,13 @@
                 <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="c1"># create the persistent message object</span>
-            <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">targets</span><span class="p">)</span>
+            <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
+                                  <span class="n">locks</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;read:id(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Admin);&quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;delete:id(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Admin);&quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;edit:id(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Admin)&quot;</span>
+                                        <span class="p">),</span>
+                                  <span class="n">tags</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="s2">&quot;comms&quot;</span><span class="p">)],</span>
+                                 <span class="p">)</span>
 
             <span class="c1"># tell the accounts they got a message.</span>
             <span class="n">received</span> <span class="o">=</span> <span class="p">[]</span>

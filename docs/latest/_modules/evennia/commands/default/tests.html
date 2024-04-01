@@ -110,18 +110,13 @@
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DefaultCharacter</span><span class="p">,</span>
-    <span class="n">DefaultExit</span><span class="p">,</span>
-    <span class="n">DefaultObject</span><span class="p">,</span>
-    <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="n">ObjectDB</span><span class="p">,</span>
-    <span class="n">search_object</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span>
+                     <span class="n">ObjectDB</span><span class="p">,</span> <span class="n">search_object</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">general</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span>
+                                      <span class="n">comms</span><span class="p">,</span> <span class="n">general</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">syscommands</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">unloggedin</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
@@ -465,7 +460,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="k">global</span> <span class="n">_TASK_HANDLER</span>
         <span class="k">if</span> <span class="n">_TASK_HANDLER</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
+            <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> \
+                <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
         <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span> <span class="o">=</span> <span class="n">_TASK_HANDLER</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -2162,7 +2158,11 @@
                 <span class="s2">&quot; later.|You paged TestAccount2 with: &#39;Test&#39;.&quot;</span>
             <span class="p">),</span>
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
+        <span class="n">msgs</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">senders</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">])</span></div></div>
 
 
 <div class="viewcode-block" id="TestDiscord"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">DISCORD_BOT_TOKEN</span><span class="o">=</span><span class="s2">&quot;notarealtoken&quot;</span><span class="p">,</span> <span class="n">DISCORD_ENABLED</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

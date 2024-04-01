@@ -103,13 +103,13 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">fill</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
 
 <span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
+
 
 
 <div class="viewcode-block" id="InterruptCommand"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.InterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">InterruptCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -579,31 +579,29 @@
 <span class="sd">        purposes when making commands.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">variables</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="s2">&quot; |w</span><span class="si">{}</span><span class="s2">|n (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables:</span>
-<span class="si">{</span><span class="n">variables</span><span class="si">}</span>
-<span class="s2">        &quot;&quot;&quot;</span>
-        <span class="c1"># a simple test command to show the available properties</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">|n - Command variables from evennia:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">name of cmd (self.key): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;cmd aliases (self.aliases): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;cmd locks (self.locks): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;help category (self.help_category): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;object calling (self.caller): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;object storing cmdset (self.obj): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;command string given (self.cmdstring): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span>
-        <span class="c1"># show cmdset.key instead of cmdset to shorten output</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="n">fill</span><span class="p">(</span>
-            <span class="s2">&quot;current cmdset (self.cmdset): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">output_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Command </span><span class="se">\&quot;</span><span class="si">{cmdname}</span><span class="se">\&quot;</span><span class="s2"> has no defined `func()` method. Available properties on this command are:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+<span class="s2">    </span><span class="si">{variables}</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; |w</span><span class="si">{}</span><span class="s2">|n (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span>
+                 <span class="p">((</span><span class="s2">&quot;self.key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.cmdname&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.raw_cmdname&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_cmdname</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.raw_string&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.aliases&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.args&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.caller&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.obj&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.session&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.locks&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.help_category&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="p">),</span>
+                  <span class="p">(</span><span class="s2">&quot;self.cmdset&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmdname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.func"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

@@ -204,6 +204,11 @@ adding line breaks in hook returns. (InspectorCaracal)</p></li>
 category after it was created (chiizujin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3467">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">alias/delete</span></code> switch for removing object aliases
 from in-game with default command (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3450">Feature</a>: The default <code class="docutils literal notranslate"><span class="pre">page</span></code> command now tags its <code class="docutils literal notranslate"><span class="pre">Msg</span></code> objects
+with tag ‘page’ (category ‘comms’) and also checks the <code class="docutils literal notranslate"><span class="pre">Msg</span></code>’ ‘read’ lock.
+made backwards compatible for old pages (Griatch)</p></li>
+<li><p>Feature: Clean up the default Command variable list shown when a command has
+no <code class="docutils literal notranslate"><span class="pre">func()</span></code> defined (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3446">Fix</a>: Use plural (‘no apples’) instead of singular (‘no apple’) in
 <code class="docutils literal notranslate"><span class="pre">get_numbered_name</span></code> for better grammatical form (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3453">Fix</a>: Object aliases not showing in search multi-match
@@ -221,6 +226,10 @@ duplicates (chiizujin)</p></li>
 way (chiizujin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3464">Fix</a>: EvEditor range:range specification didn’t return correct
 range (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3462">Fix</a>: EvEditor :UU and :DD etc commands were not properly
+differentiating from their lower-case alternatives (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3460">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">menu_login</span></code> contrib regression caused it to error out
+when creating a new character (Griatch)</p></li>
 <li><p>Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)</p></li>
 <li><p>Doc fixes (Griatch, InspectorCaracal)</p></li>
 </ul>
