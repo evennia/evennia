@@ -156,6 +156,13 @@ class TestEvEditor(BaseEvenniaCommandTest):
             "First test line\nInserted-New Replaced Second line-End\n test line\n:",
         )
 
+        self.call(
+            eveditor.CmdLineInput(),
+            "  Whitespace   echo    test     line.",
+            raw_string="  Whitespace   echo    test     line.",
+            msg="05  Whitespace   echo    test     line.",
+        )
+
     def test_eveditor_COLON_UU(self):
         eveditor.EvEditor(self.char1)
         self.call(
@@ -168,13 +175,13 @@ class TestEvEditor(BaseEvenniaCommandTest):
             eveditor.CmdLineInput(),
             'First test "line".',
             raw_string='First test "line".',
-            msg='01First test "line" .',
+            msg='01First test "line".',
         )
         self.call(
             eveditor.CmdLineInput(),
             "Second 'line'.",
             raw_string="Second 'line'.",
-            msg="02Second 'line' .",
+            msg="02Second 'line'.",
         )
         self.assertEqual(
             self.char1.ndb._eveditor.get_buffer(), "First test \"line\".\nSecond 'line'."

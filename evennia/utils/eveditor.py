@@ -414,7 +414,7 @@ class CmdLineInput(CmdEditorBase):
 
                 self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, raw(line)))
             else:
-                self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
+                self.caller.msg("|b%02i|||n %s" % (cline, raw(line)))
 
 
 class CmdEditorGroup(CmdEditorBase):
