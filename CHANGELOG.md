@@ -9,6 +9,9 @@
   category after it was created (chiizujin)
 - [Feature][pull3467]: Add `alias/delete` switch for removing object aliases
   from in-game with default command (chiizujin)
+- [Feature][issue3450]: The default `page` command now tags its `Msg` objects
+  with tag 'page' (category 'comms') and also checks the `Msg`' 'read' lock.
+  made backwards compatible for old pages.
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
 - [Fix][pull3453]: Object aliases not showing in search multi-match
@@ -41,6 +44,7 @@
 [pull3463]: https://github.com/evennia/evennia/pull/3463
 [pull3464]: https://github.com/evennia/evennia/pull/3464
 [pull3467]: https://github.com/evennia/evennia/pull/3467
+[issue3450]: https://github.com/evennia/evennia/issues/3450
 
 ## Evennia 4.0.0
 
