@@ -10,6 +10,7 @@ from evennia.typeclasses.tags import (
     TagProperty,
 )
 from evennia.utils import create, search
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
 
@@ -93,6 +94,21 @@ class DefaultObjectTest(BaseEvenniaTest):
         ex3, _ = DefaultExit.create("also_south", self.room2, self.room1, account=self.account)
         all_return_exit = ex1.get_return_exit(return_all=True)
         self.assertEqual(len(all_return_exit), 2)
+
+    def test_exit_order(self):
+        DefaultExit.create("south", self.room1, self.room2, account=self.account)
+        DefaultExit.create("portal", self.room1, self.room2, account=self.account)
+        DefaultExit.create("north", self.room1, self.room2, account=self.account)
+        DefaultExit.create("aperture", self.room1, self.room2, account=self.account)
+
+        # in creation order
+        exits = strip_ansi(self.room1.get_display_exits(self.char1))
+        self.assertEqual(exits, "Exits: out, south, portal, north, and aperture")
+
+        # in specified order with unspecified exits alpbabetically on the end
+        exit_order = ('north', 'south', 'out')
+        exits = strip_ansi(self.room1.get_display_exits(self.char1, exit_order=exit_order))
+        self.assertEqual(exits, "Exits: north, south, out, aperture, and portal")
 
     def test_urls(self):
         "Make sure objects are returning URLs"

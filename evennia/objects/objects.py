@@ -1572,12 +1572,34 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             looker (DefaultObject): Object doing the looking.
             **kwargs: Arbitrary data for use when overriding.
+
+        Keyword Args:
+            exit_order (iterable of str): The order in which exits should be listed, with
+                unspecified exits appearing at the end, alphabetically.
+
         Returns:
             str: The exits display data.
 
+        Examples:
+        ::
+
+            For a room with exits in the order 'portal', 'south', 'north', and 'out':
+                obj.get_display_name(looker, exit_order=('north', 'south'))
+                    -> "Exits: north, south, out, and portal."  (ANSI codes not shown here)
         """
+        def _sort_exit_names(names):
+            exit_order = kwargs.get("exit_order")
+            if not exit_order:
+                return names
+            sort_index = {name: key for key, name in enumerate(exit_order)}
+            names = sorted(names)
+            end_pos = len(names) + 1
+            names.sort(key=lambda name:sort_index.get(name, end_pos))
+            return names
+
         exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
-        exit_names = iter_to_str(exi.get_display_name(looker, **kwargs) for exi in exits)
+        exit_names = (exi.get_display_name(looker, **kwargs) for exi in exits)
+        exit_names = iter_to_str(_sort_exit_names(exit_names))
 
         return f"|wExits:|n {exit_names}" if exit_names else ""
 
