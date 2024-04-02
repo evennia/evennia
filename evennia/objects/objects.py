@@ -1434,7 +1434,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return [
             obj
             for obj in obj_list
-            if (obj.access(looker, "view") and obj.access(looker, "search", default=True))
+            if obj != looker and (obj.access(looker, "view") and obj.access(looker, "search", default=True))
         ]
 
     # name and return_appearance hooks
