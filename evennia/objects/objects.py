@@ -1576,7 +1576,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The exits display data.
 
         """
-        exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
+        exits = self.filter_visible(
+            self.contents_get(content_type="exit", exclude=looker), looker, **kwargs
+        )
         exit_names = iter_to_str(exi.get_display_name(looker, **kwargs) for exi in exits)
 
         return f"|wExits:|n {exit_names}" if exit_names else ""
@@ -1593,7 +1595,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         characters = self.filter_visible(
-            self.contents_get(content_type="character"), looker, **kwargs
+            self.contents_get(content_type="character", exclude=looker), looker, **kwargs
         )
         character_names = iter_to_str(
             char.get_display_name(looker, **kwargs) for char in characters
@@ -1613,7 +1615,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         # sort and handle same-named things
-        things = self.filter_visible(self.contents_get(content_type="object"), looker, **kwargs)
+        things = self.filter_visible(
+            self.contents_get(content_type="object", exclude=looker), looker, **kwargs
+        )
 
         grouped_things = defaultdict(list)
         for thing in things:
