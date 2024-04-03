@@ -101,7 +101,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
-
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultRoom</span>
 
@@ -400,7 +399,8 @@
     <span class="k">def</span> <span class="nf">xyzgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">GET_XYZGRID</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">GET_XYZGRID</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span> <span class="k">as</span> <span class="n">GET_XYZGRID</span>
+            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> \
+                <span class="n">get_xyzgrid</span> <span class="k">as</span> <span class="n">GET_XYZGRID</span>
         <span class="k">return</span> <span class="n">GET_XYZGRID</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -624,7 +624,8 @@
     <span class="k">def</span> <span class="nf">xyzgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">GET_XYZGRID</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">GET_XYZGRID</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span> <span class="k">as</span> <span class="n">GET_XYZGRID</span>
+            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> \
+                <span class="n">get_xyzgrid</span> <span class="k">as</span> <span class="n">GET_XYZGRID</span>
         <span class="k">return</span> <span class="n">GET_XYZGRID</span><span class="p">()</span>
 
     <span class="nd">@property</span>
