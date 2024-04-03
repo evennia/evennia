@@ -944,7 +944,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         you = from_obj or self
 
         if "you" not in mapping:
-            mapping[you] = you
+            mapping["you"] = you
 
         contents = self.contents
         if exclude:
