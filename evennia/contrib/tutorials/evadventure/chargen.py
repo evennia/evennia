@@ -4,7 +4,6 @@ EvAdventure character generation.
 """
 
 from django.conf import settings
-
 from evennia.objects.models import ObjectDB
 from evennia.prototypes.spawner import spawn
 from evennia.utils.create import create_object

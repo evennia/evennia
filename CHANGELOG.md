@@ -1,5 +1,15 @@
 # Changelog
 
+## Main branch
+
+- [Fix][pull3438]: Error with 'you' mapping in third-person style of
+  `msg_contents` (InspectorCaracal)
+- [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
+  (InspectorCaracal)
+
+[pull3438]: https://github.com/evennia/evennia/pull/3446
+
+
 ## Evennia 4.1.0
 
 April 1, 2024
