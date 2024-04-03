@@ -1585,7 +1585,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             For a room with exits in the order 'portal', 'south', 'north', and 'out':
                 obj.get_display_name(looker, exit_order=('north', 'south'))
-                    -> "Exits: north, south, out, and portal."  (ANSI codes not shown here)
+                    -> "Exits: north, south, out, and portal."  (markup not shown here)
         """
         def _sort_exit_names(names):
             exit_order = kwargs.get("exit_order")
