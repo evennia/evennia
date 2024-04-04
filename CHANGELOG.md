@@ -6,6 +6,8 @@
   `msg_contents` (InspectorCaracal)
 - [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
   (InspectorCaracal)
+- Fix: `find #dbref` results didn't include the results of
+  `.get_extra_display_name_info` (the #dbref display by default) (Griatch)
 
 [pull3438]: https://github.com/evennia/evennia/pull/3446
 
