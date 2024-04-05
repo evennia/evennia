@@ -332,6 +332,14 @@ will return true if any of the sessions use a screenreader.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_extra_display_name_info">
+<code class="sig-name descname">get_extra_display_name_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_extra_display_name_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_extra_display_name_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used in .get_display_name() to provide extra information to the looker. We split this
+to be consistent with the Object version of this method.</p>
+<p>This is used e.g. by the <strong>find</strong> command by default.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.get_display_name">
 <code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is used by channels and other OOC communications methods to give a
