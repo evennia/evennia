@@ -10,8 +10,11 @@
   `.get_extra_display_name_info` (the #dbref display by default) (Griatch)
 - Fix: Add `DefaultAccount.get_extra_display_name_info` method for API
   compliance with `DefaultObject` in commands. (Griatch)
+- Fix: Show `XYZRoom` subclass when repr() it. (Griatch)
+- [Fix][pull3485]: Typo in `sethome` message (chiizujin)
 
 [pull3438]: https://github.com/evennia/evennia/pull/3446
+[pull3485]: https://github.com/evennia/evennia/pull/3485
 
 
 ## Evennia 4.1.0
