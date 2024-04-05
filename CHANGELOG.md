@@ -12,9 +12,15 @@
   compliance with `DefaultObject` in commands. (Griatch)
 - Fix: Show `XYZRoom` subclass when repr() it. (Griatch)
 - [Fix][pull3485]: Typo in `sethome` message (chiizujin)
+- [Fix][pull3487]: Fix traceback when using `get`,`drop` and `give` with no
+  arguments (InspectorCaracal)
+- [Fix][issue3476]: Don't ignore EvEditor commands with wrong capitalization
+  (Griatch)
 
 [pull3438]: https://github.com/evennia/evennia/pull/3446
 [pull3485]: https://github.com/evennia/evennia/pull/3485
+[pull3487]: https://github.com/evennia/evennia/pull/3487
+[issue3476]: https://github.com/evennia/evennia/issues/3476
 
 
 ## Evennia 4.1.0
