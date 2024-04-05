@@ -1397,7 +1397,7 @@ class CmdSetHome(CmdLink):
             obj.home = new_home
             if old_home:
                 string = (
-                    f"Home location of {obj} was changed from {old_home}({old_home.dbref} to"
+                    f"Home location of {obj} was changed from {old_home}({old_home.dbref}) to"
                     f" {new_home}({new_home.dbref})."
                 )
             else:
