@@ -1,5 +1,13 @@
 # Changelog
 
+## Main branch
+
+- [Feature][pull3470]: New `exit_order` kwarg to
+  `DefaultObject.get_display_exits` to easier customize the order in which
+  standard exits are displayed in a room (chiizujin)
+
+[pull3470]: https://github.com/evennia/evennia/pull/3470
+
 ## Evennia 4.1.1
 
 April 6, 2024
