@@ -734,6 +734,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">AMP_CONNECTION</span><span class="p">,</span> <span class="n">REACTOR_RUN</span>
 
+    <span class="c1"># print(&quot;launcher: Sending to portal: {} + {}&quot;.format(ord(operation), arguments))</span>
+
     <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">AMP_HOST</span><span class="p">,</span> <span class="n">AMP_PORT</span><span class="p">,</span> <span class="n">AMP_INTERFACE</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_AMP_UNCONFIGURED</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>

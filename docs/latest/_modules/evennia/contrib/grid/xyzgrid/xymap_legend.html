@@ -112,11 +112,11 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">django_exceptions</span>
+
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MAPSCAN</span><span class="p">,</span> <span class="n">REVERSE_DIRECTIONS</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span>
-                    <span class="n">MapParserError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MAPSCAN</span><span class="p">,</span> <span class="n">REVERSE_DIRECTIONS</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span> <span class="n">MapParserError</span>
 
 <span class="n">NodeTypeclass</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">ExitTypeclass</span> <span class="o">=</span> <span class="kc">None</span>
@@ -423,7 +423,8 @@
             <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Multiple objects found: </span><span class="si">{</span><span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
                 <span class="s2">&quot;This may be due to manual creation of XYZRooms at this position. &quot;</span>
-                <span class="s2">&quot;Delete duplicates.&quot;</span><span class="p">,</span> <span class="bp">self</span>
+                <span class="s2">&quot;Delete duplicates.&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  updating existing room (if changed) at xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

@@ -102,10 +102,11 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
@@ -115,9 +116,17 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">ModelAttributeBackend</span><span class="p">,</span> <span class="n">NickHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">funcparser</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">class_from_module</span><span class="p">,</span> <span class="n">compress_whitespace</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span>
-                                 <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span>
-                                 <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">compress_whitespace</span><span class="p">,</span>
+    <span class="n">dbref</span><span class="p">,</span>
+    <span class="n">is_iter</span><span class="p">,</span>
+    <span class="n">iter_to_str</span><span class="p">,</span>
+    <span class="n">lazy_property</span><span class="p">,</span>
+    <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">to_str</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">_INFLECT</span> <span class="o">=</span> <span class="n">inflect</span><span class="o">.</span><span class="n">engine</span><span class="p">()</span>
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
@@ -1517,7 +1526,8 @@
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">obj</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span>
-            <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="p">]</span></div>
 
     <span class="c1"># name and return_appearance hooks</span>

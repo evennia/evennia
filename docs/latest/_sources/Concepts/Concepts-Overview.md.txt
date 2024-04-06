@@ -37,6 +37,7 @@ Banning.md
 ```{toctree}
 :maxdepth: 2
 
+Server-Lifecycle
 Protocols.md
 Models.md
 Zones.md

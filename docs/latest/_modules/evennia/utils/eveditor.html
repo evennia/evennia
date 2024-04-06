@@ -190,7 +190,7 @@
 <span class="sd"> :s &lt;l&gt; &lt;w&gt; &lt;txt&gt; - search/replace word or regex &lt;w&gt; in buffer or on line &lt;l&gt;</span>
 
 <span class="sd"> :j &lt;l&gt; &lt;w&gt; - justify buffer or line &lt;l&gt;. &lt;w&gt; is f, c, l or r. Default f (full)</span>
-<span class="sd"> :f &lt;l&gt;     - flood-fill entire buffer or line &lt;l&gt;: Equivalent to :j left</span>
+<span class="sd"> :f &lt;l&gt;     - flood-fill entire buffer or line &lt;l&gt;. Equivalent to :j &lt;l&gt; l</span>
 <span class="sd"> :fi &lt;l&gt;    - indent entire buffer or line &lt;l&gt;</span>
 <span class="sd"> :fd &lt;l&gt;    - de-indent entire buffer or line &lt;l&gt;</span>
 
@@ -441,7 +441,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="n">words</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="o">=</span> <span class="n">arg1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span> <span class="o">=</span> <span class="n">arg2</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span> <span class="o">=</span> <span class="n">arg2</span></div>
+
+<div class="viewcode-block" id="CmdEditorBase.insert_raw_string_into_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase.insert_raw_string_into_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">insert_raw_string_into_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert a line into the buffer. Used by both CmdLineInput and CmdEditorGroup.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">editor</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
+
+        <span class="c1"># add a line of text to buffer</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span> <span class="ow">and</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># if automatic indentation is active, add spaces</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">deduce_indent</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">buf</span> <span class="k">else</span> <span class="n">buf</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span><span class="p">:</span>
+            <span class="c1"># need to do it here or we will be off one line</span>
+            <span class="n">cline</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
+                <span class="c1"># display the current level of identation</span>
+                <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
+                <span class="k">if</span> <span class="n">indent</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n (|g</span><span class="si">%s</span><span class="s2">|n) </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -486,29 +515,7 @@
 <span class="sd">        If the editor handles code, it might add automatic</span>
 <span class="sd">        indentation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
-        <span class="n">editor</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
-        <span class="n">buf</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
-
-        <span class="c1"># add a line of text to buffer</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span> <span class="ow">and</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># if automatic indentation is active, add spaces</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">deduce_indent</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
-        <span class="n">buf</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">buf</span> <span class="k">else</span> <span class="n">buf</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span><span class="p">:</span>
-            <span class="c1"># need to do it here or we will be off one line</span>
-            <span class="n">cline</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
-                <span class="c1"># display the current level of identation</span>
-                <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
-                <span class="k">if</span> <span class="n">indent</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n (|g</span><span class="si">%s</span><span class="s2">|n) </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="n">line</span><span class="p">)))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert_raw_string_into_buffer</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="CmdEditorGroup"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorGroup">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorGroup</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
@@ -892,7 +899,10 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Auto-indentation turned off.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span></div></div>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># no match - insert as line in buffer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert_raw_string_into_buffer</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="EvEditorCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditorCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvEditorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>

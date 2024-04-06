@@ -289,8 +289,6 @@
         <span class="k">if</span> <span class="n">process</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_windows</span><span class="p">():</span>
             <span class="c1"># avoid zombie-process on Unix/BSD</span>
             <span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="c1"># unset the reset-mode flag on the portal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="AMPServerProtocol.wait_for_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -324,11 +322,18 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+                <span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">,</span> <span class="n">server_restart_mode</span><span class="o">=</span><span class="n">mode</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reset&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+                <span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">,</span> <span class="n">server_restart_mode</span><span class="o">=</span><span class="n">mode</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SSHUTD</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+                <span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SSHUTD</span><span class="p">,</span> <span class="n">server_restart_mode</span><span class="o">=</span><span class="n">mode</span>
+            <span class="p">)</span>
+        <span class="c1"># store the mode for use once server comes back up again</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="n">mode</span></div>
 
     <span class="c1"># sending amp data</span>
@@ -418,7 +423,6 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">server_connected</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
 
         <span class="c1"># logger.log_msg(&quot;Evennia Launcher-&gt;Portal operation %s:%s received&quot; % (ord(operation), arguments))</span>
-
         <span class="c1"># logger.log_msg(&quot;operation == amp.SSTART: {}: {}&quot;.format(operation == amp.SSTART, amp.loads(arguments)))</span>
 
         <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SSTART</span><span class="p">:</span>  <span class="c1"># portal start  #15</span>
@@ -497,10 +501,10 @@
 
         <span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
 
-        <span class="c1"># logger.log_msg(&quot;Evennia Server-&gt;Portal admin data %s:%s received&quot; % (sessid, kwargs))</span>
-
         <span class="n">operation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;operation&quot;</span><span class="p">)</span>
         <span class="n">portal_sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
+
+        <span class="c1"># logger.log_msg(f&quot;Evennia Server-&gt;Portal admin data operation {ord(operation)}&quot;)</span>
 
         <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SLOGIN</span><span class="p">:</span>  <span class="c1"># server_session_login</span>
             <span class="c1"># a session has authenticated; sync it.</span>
@@ -519,22 +523,28 @@
             <span class="n">portal_sessionhandler</span><span class="o">.</span><span class="n">server_disconnect_all</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reason&quot;</span><span class="p">))</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">:</span>  <span class="c1"># server reload</span>
+            <span class="c1"># set up callback to restart server once it has disconnected</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_connection</span><span class="o">.</span><span class="n">wait_for_disconnect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_twistd_cmd</span>
             <span class="p">)</span>
+            <span class="c1"># tell server to reload</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">:</span>  <span class="c1"># server reset</span>
+            <span class="c1"># set up callback to restart server once it has disconnected</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_connection</span><span class="o">.</span><span class="n">wait_for_disconnect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_twistd_cmd</span>
             <span class="p">)</span>
+            <span class="c1"># tell server to reset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SSHUTD</span><span class="p">:</span>  <span class="c1"># server-only shutdown</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PSHUTD</span><span class="p">:</span>  <span class="c1"># full server+server shutdown</span>
+            <span class="c1"># set up callback to shut down portal once server has disconnected</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_connection</span><span class="o">.</span><span class="n">wait_for_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">shutdown</span><span class="p">)</span>
+            <span class="c1"># tell server to shut down</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PSYNC</span><span class="p">:</span>  <span class="c1"># portal sync</span>
@@ -543,6 +553,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_process_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># this defaults to &#39;shutdown&#39; or whatever value set in server_stop</span>
             <span class="n">server_restart_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_restart_mode</span>
+            <span class="c1"># print(&quot;Server has connected. Sending session data to Server ... mode: {}&quot;.format(server_restart_mode))</span>
 
             <span class="n">sessdata</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span><span class="o">.</span><span class="n">get_all_sync_data</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
@@ -553,6 +564,7 @@
                 <span class="n">portal_start_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span><span class="o">.</span><span class="n">at_server_connection</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_connection</span><span class="p">:</span>
                 <span class="c1"># this is an indication the server has successfully connected, so</span>
@@ -572,7 +584,7 @@
             <span class="p">)</span>
 
             <span class="c1"># set a flag in case we are about to shut down soon</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="s2">&quot;shutdown&quot;</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SCONN</span><span class="p">:</span>  <span class="c1"># server_force_connection (for irc/etc)</span>
             <span class="n">portal_sessionhandler</span><span class="o">.</span><span class="n">server_connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
