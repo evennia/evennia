@@ -5,23 +5,22 @@ As part of your game design you may want to change how Evennia behaves when star
 
 Evennia has three main life cycles, all of which you can add custom behavior for:
 
-- **Database life cycle**: Evennia runs on top of one several [supported databases](../Setup/Choosing-a-Database.md). It's possible to wipe this database to 'start over' without needing to separately download Evennia anew. 
-- **Reboot life cycle**: From When Evennia starts from zero, to it being fully shut down, which means both Portal and Server are stopped. This kicks all players.
-- **Reload life cycle:** This is the main runtime, until a "reload" event. Reloads do not kick any players.
+- **Database life cycle**: Evennia uses a database. This exists in parallel to the code changes you do. The database exists until you choose to reset or delete it. Doing so doesn't require re-downloading Evennia.
+- **Reboot life cycle**: From When Evennia starts to it being fully shut down, which means both Portal and Server are stopped. At the end of this cycle, all players are disconnected.
+- **Reload life cycle:** This is the main runtime, until a "reload" event. Reloads refreshes game code but do not kick any players.
 
-## When Evennia first starts
+## When Evennia starts for the first time
 
-This is the beginning of the **Database life cycle**, just after the database is created and migrated for the first time. After that it won't run again unless you wipe the database and initialize a new one (see [Choosing a Database](../Setup/Choosing-a-Database.md)).
+This is the beginning of the **Database life cycle**, just after the database is created and migrated for the first time (or after it was deleted and re-built). See [Choosing a Database](../Setup/Choosing-a-Database.md) for instructions on how to reset a database, should you want to re-run this sequence after the first time.
 
 Hooks called, in sequence: 
 
-1.  `evennia.server.initial_setup.handle_setup(last_step=None)`: Evennia's core initialization function. This is what creates the #1 Character (tied to the superuser) and Limbo. It calls the next hook below and also understands to restart at the last failed step if there was some issue. You should normally not override this function unless you _really_ know what you are doing, but in that case you'd do so by setting `settings.INITIAL_SETUP_MODULE` to your own module with a `handle_setup` function in it.
+1.  `evennia.server.initial_setup.handle_setup(last_step=None)`: Evennia's core initialization function. This is what creates the #1 Character (tied to the superuser account) and `Limbo` room. It calls the next hook below and also understands to restart at the last failed step if there was some issue. You should normally not override this function unless you _really_ know what you are doing. To override, change `settings.INITIAL_SETUP_MODULE` to your own module with a `handle_setup` function in it.
 2. `mygame/server/conf/at_initial_setup.py` contains a single function, `at_initial_setup()`, which will be called without arguments. It's called last in the setup sequence by the above function. Use this to add your own custom behavior or to tweak the initialization. If you for example wanted to change the auto-generated Limbo room, you should do it from here. If you want to change where this function is found, you can do so by changing `settings.AT_INITIAL_SETUP_HOOK_MODULE`. 
-
 
 ## When Evennia starts and shutdowns 
 
-This is the **Reboot life cycle**. Evennia consists of two main processes, the [Portal and the Server](../Components/Portal-And-Server.md). On a reboot or shutdown, both Portal and Server shuts down, which means all players are disconnected. 
+This is part of the **Reboot life cycle**. Evennia consists of two main processes, the [Portal and the Server](../Components/Portal-And-Server.md). On a reboot or shutdown, both Portal and Server shuts down, which means all players are disconnected. 
 
 Each process call a series of hooks located in `mygame/server/conf/at_server_startstop.py`. You can customize the module used with `settings.AT_SERVER_STARTSTOP_MODULE` - this can even be a list of modules, if so, the appropriately-named functions will be called from each module, in sequence. 
 
