@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 4.1.1
+
+April 6, 2024
 
 - [Fix][pull3438]: Error with 'you' mapping in third-person style of
   `msg_contents` (InspectorCaracal)
