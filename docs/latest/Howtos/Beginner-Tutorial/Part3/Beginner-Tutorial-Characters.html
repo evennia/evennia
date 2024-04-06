@@ -132,22 +132,19 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="player-characters">
 <h1><span class="section-number">3. </span>Player Characters<a class="headerlink" href="#player-characters" title="Permalink to this headline">¶</a></h1>
-<p>In the <a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">previous lesson about rules and dice rolling</span></a> we made some
-assumptions about the “Player Character” entity:</p>
+<p>In the <a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">previous lesson about rules and dice rolling</span></a> we made some assumptions about the “Player Character” entity:</p>
 <ul class="simple">
 <li><p>It should store Abilities on itself as <code class="docutils literal notranslate"><span class="pre">character.strength</span></code>, <code class="docutils literal notranslate"><span class="pre">character.constitution</span></code> etc.</p></li>
 <li><p>It should have a <code class="docutils literal notranslate"><span class="pre">.heal(amount)</span></code>  method.</p></li>
 </ul>
-<p>So we have some guidelines of how it should look! A Character is a database entity with values that
-should be able to be changed over time. It makes sense to base it off Evennia’s
+<p>So we have some guidelines of how it should look! A Character is a database entity with values that should be able to be changed over time. It makes sense to base it off Evennia’s
 <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">DefaultCharacter Typeclass</span></a>. The Character class is like a ‘character sheet’ in a tabletop
 RPG, it will hold everything relevant to that PC.</p>
 <section id="inheritance-structure">
 <h2><span class="section-number">3.1. </span>Inheritance structure<a class="headerlink" href="#inheritance-structure" title="Permalink to this headline">¶</a></h2>
 <p>Player Characters (PCs) are not the only “living” things in our world. We also have <em>NPCs</em>
 (like shopkeepers and other friendlies) as well as <em>monsters</em> (mobs) that can attack us.</p>
-<p>In code, there are a few ways we could structure this. If NPCs/monsters were just special cases of PCs,
-we could use a class inheritance like this:</p>
+<p>In code, there are a few ways we could structure this. If NPCs/monsters were just special cases of PCs, we could use a class inheritance like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span> 
 
 <span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span> 
@@ -161,9 +158,7 @@ we could use a class inheritance like this:</p>
 </pre></div>
 </div>
 <p>All code we put on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class would now be inherited to <code class="docutils literal notranslate"><span class="pre">NPC</span></code> and <code class="docutils literal notranslate"><span class="pre">Mob</span></code> automatically.</p>
-<p>However, in <em>Knave</em>, NPCs and particularly monsters are <em>not</em> using the same rules as PCs - they are
-simplified to use a Hit-Die (HD) concept. So while still character-like, NPCs should be separate from
-PCs like this:</p>
+<p>However, in <em>Knave</em>, NPCs and particularly monsters are <em>not</em> using the same rules as PCs - they are simplified to use a Hit-Die (HD) concept. So while still character-like, NPCs should be separate from PCs like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span> 
 
 <span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span> 
@@ -185,8 +180,7 @@ PCs like this:</p>
 <li><p>All can loot their fallen foes.</p></li>
 <li><p>All can get looted when defeated.</p></li>
 </ul>
-<p>We don’t want to code this separately for every class but we no longer have a common parent
-class to put it on. So instead we’ll use the concept of a <em>mixin</em> class:</p>
+<p>We don’t want to code this separately for every class but we no longer have a common parent  class to put it on. So instead we’ll use the concept of a <em>mixin</em> class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span> 
 
 <span class="k">class</span> <span class="nc">LivingMixin</span><span class="p">:</span>
@@ -206,10 +200,7 @@ class to put it on. So instead we’ll use the concept of a <em>mixin</em> class
 <p>In <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.characters.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/characters.py</span></a>
 is an example of a character class structure.</p>
 </aside>
-<p>Above, the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class cannot work on its own - it just ‘patches’ the other classes with some
-extra functionality all living things should be able to do. This is an example of
-<em>multiple inheritance</em>. It’s useful to know about, but one should not over-do multiple inheritance
-since it can also get confusing to follow the code.</p>
+<p>Above, the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class cannot work on its own - it just ‘patches’ the other classes with some  extra functionality all living things should be able to do. This is an example of  <em>multiple inheritance</em>. It’s useful to know about, but one should not over-do multiple inheritance since it can also get confusing to follow the code.</p>
 </section>
 <section id="living-mixin-class">
 <h2><span class="section-number">3.2. </span>Living mixin class<a class="headerlink" href="#living-mixin-class" title="Permalink to this headline">¶</a></h2>
@@ -352,8 +343,7 @@ since it can also get confusing to follow the code.</p>
 </pre></div>
 </div>
 <p>We make an assumption about our rooms here - that they have a property <code class="docutils literal notranslate"><span class="pre">.allow_death</span></code>. We need  to make a note to actually add such a property to rooms later!</p>
-<p>In our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class we implement all attributes we want to simulate from the <em>Knave</em> ruleset.
-The <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways:</p>
+<p>In our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class we implement all attributes we want to simulate from the <em>Knave</em> ruleset. The <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways:</p>
 <ul class="simple">
 <li><p>As <code class="docutils literal notranslate"><span class="pre">character.strength</span></code></p></li>
 <li><p>As <code class="docutils literal notranslate"><span class="pre">character.db.strength</span></code></p></li>
@@ -364,15 +354,14 @@ The <code class="docutils literal notranslate"><span class="pre">AttributeProper
 <p>We implement the Player Character versions of <code class="docutils literal notranslate"><span class="pre">at_defeat</span></code> and <code class="docutils literal notranslate"><span class="pre">at_death</span></code>. We also make use of <code class="docutils literal notranslate"><span class="pre">.heal()</span></code>  from the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class.</p>
 <section id="funcparser-inlines">
 <h3><span class="section-number">3.3.1. </span>Funcparser inlines<a class="headerlink" href="#funcparser-inlines" title="Permalink to this headline">¶</a></h3>
-<p>This piece of code is worth some more explanation:</p>
+<p>This piece of code in the <code class="docutils literal notranslate"><span class="pre">at_defeat</span></code> method above is worth some more extra explanation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
     <span class="s2">&quot;$You() $conj(collapse) in a heap, alive but beaten.&quot;</span><span class="p">,</span>
     <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remember that <code class="docutils literal notranslate"><span class="pre">self</span></code> is the Character instance here. So <code class="docutils literal notranslate"><span class="pre">self.location.msg_contents</span></code> means “send a  message to everything inside my current location”. In other words, send a message to everyone  in the same place as the character.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">$You()</span> <span class="pre">$conj(collapse)</span></code> are <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">FuncParser inlines</span></a>. These are functions that
-execute  in the string. The resulting string may look different for different audiences. The <code class="docutils literal notranslate"><span class="pre">$You()</span></code> inline  function will use <code class="docutils literal notranslate"><span class="pre">from_obj</span></code> to figure out who ‘you’ are and either show your name or ‘You’.  The <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> (verb conjugator) will tweak the (English) verb to match.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">$You()</span> <span class="pre">$conj(collapse)</span></code> are <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">FuncParser inlines</span></a>. These are functions that  execute  in the string. The resulting string may look different for different audiences. The <code class="docutils literal notranslate"><span class="pre">$You()</span></code> inline  function will use <code class="docutils literal notranslate"><span class="pre">from_obj</span></code> to figure out who ‘you’ are and either show your name or ‘You’.  The <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> (verb conjugator) will tweak the (English) verb to match.</p>
 <ul class="simple">
 <li><p>You will see: <code class="docutils literal notranslate"><span class="pre">&quot;You</span> <span class="pre">collapse</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">heap,</span> <span class="pre">alive</span> <span class="pre">but</span> <span class="pre">beaten.&quot;</span></code></p></li>
 <li><p>Others in the room will see: <code class="docutils literal notranslate"><span class="pre">&quot;Thomas</span> <span class="pre">collapses</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">heap,</span> <span class="pre">alive</span> <span class="pre">but</span> <span class="pre">beaten.&quot;</span></code></p></li>
@@ -414,10 +403,7 @@ execute  in the string. The resulting string may look different for different au
 </pre></div>
 </div>
 <p>You can now do <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">self</span></code> to check your type updated.</p>
-<p>If you want <em>all</em> new Characters to be of this type you need to tell Evennia about it. Evennia
-uses a global setting <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span></code> to know which typeclass to use when creating
-Characters (when logging in, for example). This defaults to <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code> (that is,
-the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>).</p>
+<p>If you want <em>all</em> new Characters to be of this type you need to tell Evennia about it. Evennia  uses a global setting <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span></code> to know which typeclass to use when creating  Characters (when logging in, for example). This defaults to <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code> (that is, the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>).</p>
 <p>There are thus two ways to weave your new Character class into Evennia:</p>
 <ol class="simple">
 <li><p>Change <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and add <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span> <span class="pre">=</span> <span class="pre">&quot;evadventure.characters.EvAdventureCharacter&quot;</span></code>.</p></li>
@@ -437,8 +423,7 @@ instead.</p>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_characters.py</span></code></p>
 </div></blockquote>
-<p>For testing, we just need to create a new EvAdventure character and check
-that calling the methods on it doesn’t error out.</p>
+<p>For testing, we just need to create a new EvAdventure character and check  that calling the methods on it doesn’t error out.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_characters.py </span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
@@ -477,20 +462,16 @@ that calling the methods on it doesn’t error out.</p>
 
 </pre></div>
 </div>
-<p>If you followed the previous lessons, these tests should look familiar. Consider adding
-tests for other methods as practice. Refer to previous lessons for details.</p>
+<p>If you followed the previous lessons, these tests should look familiar. Consider adding  tests for other methods as practice. Refer to previous lessons for details.</p>
 <p>For running the tests you do:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia test --settings settings.py .evadventure.tests.test_character
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia test --settings settings.py .evadventure.tests.test_characters
 </pre></div>
 </div>
 </section>
 <section id="about-races-and-classes">
 <h2><span class="section-number">3.6. </span>About races and classes<a class="headerlink" href="#about-races-and-classes" title="Permalink to this headline">¶</a></h2>
-<p><em>Knave</em> doesn’t have any D&amp;D-style <em>classes</em> (like Thief, Fighter etc). It also does not bother with
-<em>races</em> (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you’d
-add these functions.</p>
-<p>In the framework we have sketched out for <em>Knave</em>, it would be simple - you’d add your race/class as
-an Attribute on your Character:</p>
+<p><em>Knave</em> doesn’t have any D&amp;D-style <em>classes</em> (like Thief, Fighter etc). It also does not bother with  <em>races</em> (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you’d  add these functions.</p>
+<p>In the framework we have sketched out for <em>Knave</em>, it would be simple - you’d add your race/class as  an Attribute on your Character:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">AttributeProperty</span>
@@ -505,32 +486,24 @@ an Attribute on your Character:</p>
 
 </pre></div>
 </div>
-<p>We use <code class="docutils literal notranslate"><span class="pre">charclass</span></code> rather than <code class="docutils literal notranslate"><span class="pre">class</span></code> here, because <code class="docutils literal notranslate"><span class="pre">class</span></code> is a reserved Python keyword. Naming
-<code class="docutils literal notranslate"><span class="pre">race</span></code> as <code class="docutils literal notranslate"><span class="pre">charrace</span></code> thus matches in style.</p>
+<p>We use <code class="docutils literal notranslate"><span class="pre">charclass</span></code> rather than <code class="docutils literal notranslate"><span class="pre">class</span></code> here, because <code class="docutils literal notranslate"><span class="pre">class</span></code> is a reserved Python keyword. Naming  <code class="docutils literal notranslate"><span class="pre">race</span></code> as <code class="docutils literal notranslate"><span class="pre">charrace</span></code> thus matches in style.</p>
 <p>We’d then need to expand our <a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">rules module</span></a> (and later
 <a class="reference internal" href="Beginner-Tutorial-Chargen.html"><span class="doc std std-doc">character generation</span></a> to check and include what these classes mean.</p>
 </section>
 <section id="summary">
 <h2><span class="section-number">3.7. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>With the <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> class in place, we have a better understanding of how our PCs will look
-like under <em>Knave</em>.</p>
-<p>For now, we only have bits and pieces and haven’t been testing this code in-game. But if you want
-you can swap yourself into <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> right now. Log into your game and run
-the command</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> class in place, we have a better understanding of how our PCs will look  like under <em>Knave</em>.</p>
+<p>For now, we only have bits and pieces and haven’t been testing this code in-game. But if you want  you can swap yourself into <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> right now. Log into your game and run the command</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>type self = evadventure.characters.EvAdventureCharacter 
 </pre></div>
 </div>
-<p>If all went well, <code class="docutils literal notranslate"><span class="pre">ex</span> <span class="pre">self</span></code> will now show your typeclass as being <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>.
-Check out your strength with</p>
+<p>If all went well, <code class="docutils literal notranslate"><span class="pre">ex</span> <span class="pre">self</span></code> will now show your typeclass as being <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>.  Check out your strength with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py self.strength = 3
 </pre></div>
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>When doing <code class="docutils literal notranslate"><span class="pre">ex</span> <span class="pre">self</span></code> you will <em>not</em> see all your Abilities listed yet. That’s because
-Attributes added with <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> are not available until they have been accessed at
-least once. So once you set (or look at) <code class="docutils literal notranslate"><span class="pre">.strength</span></code> above, <code class="docutils literal notranslate"><span class="pre">strength</span></code> will show in <code class="docutils literal notranslate"><span class="pre">examine</span></code> from
-then on.</p>
+<p>When doing <code class="docutils literal notranslate"><span class="pre">ex</span> <span class="pre">self</span></code> you will <em>not</em> see all your Abilities listed yet. That’s because Attributes added with <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> are not available until they have been accessed at least once. So once you set (or look at) <code class="docutils literal notranslate"><span class="pre">.strength</span></code> above, <code class="docutils literal notranslate"><span class="pre">strength</span></code> will show in <code class="docutils literal notranslate"><span class="pre">examine</span></code> from then on.</p>
 </div>
 </section>
 </section>
