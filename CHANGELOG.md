@@ -20,6 +20,7 @@
   a reload (regression).
 - [Docs] Added new [Server-Lifecycle][doc-server-lifecycle] page to describe
   the hooks called on server start/stop/reload (Griatch)
+- [Docs] Doc typo fixes (Griatch, chiizujin)
 
 [pull3438]: https://github.com/evennia/evennia/pull/3446
 [pull3485]: https://github.com/evennia/evennia/pull/3485
