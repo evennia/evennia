@@ -248,6 +248,22 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">attributes</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut property returning the host&#39;s primary key.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The Host&#39;s primary key.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is requried to allow AttributeProperties to correctly update `_SaverMutable` data</span>
+<span class="sd">            (like lists) in-place (since the DBField sits on the Component which doesn&#39;t itself</span>
+<span class="sd">            have a primary key, this save operation would otherwise fail).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">pk</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s In-Memory AttributeHandler (Non Persisted).</span>

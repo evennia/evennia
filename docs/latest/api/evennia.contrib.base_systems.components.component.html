@@ -247,6 +247,21 @@ To persist the value, the key must correspond to a DBField.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.base_systems.components.component.Component.pk">
+<em class="property">property </em><code class="sig-name descname">pk</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.pk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut property returning the host’s primary key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>int</em> – The Host’s primary key.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is requried to allow AttributeProperties to correctly update <strong>_SaverMutable</strong> data
+(like lists) in-place (since the DBField sits on the Component which doesn’t itself
+have a primary key, this save operation would otherwise fail).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.base_systems.components.component.Component.nattributes">
 <em class="property">property </em><code class="sig-name descname">nattributes</code><a class="headerlink" href="#evennia.contrib.base_systems.components.component.Component.nattributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut property returning the host’s In-Memory AttributeHandler (Non Persisted).</p>
