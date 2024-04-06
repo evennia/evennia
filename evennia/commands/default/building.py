@@ -5,13 +5,13 @@ Building and world design commands
 import re
 import typing
 
-import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
+
+import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import (generate_cmdset_providers,
-                                         get_and_merge_cmdsets)
+from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -24,10 +24,18 @@ from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import (class_from_module, crop, dbref, display_len,
-                                 format_grid, get_all_typeclasses,
-                                 inherits_from, interactive, list_to_string,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    crop,
+    dbref,
+    display_len,
+    format_grid,
+    get_all_typeclasses,
+    inherits_from,
+    interactive,
+    list_to_string,
+    variable_from_module,
+)
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -3274,11 +3282,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 string += f"\n   |RNo match found for '{searchstring}' in #dbref interval.|n"
             else:
                 result = result[0]
-                string += (f"\n|g   {result.get_display_name(caller)}"
-                           f"{result.get_extra_display_name_info(caller)} - {result.path}|n")
+                string += (
+                    f"\n|g   {result.get_display_name(caller)}"
+                    f"{result.get_extra_display_name_info(caller)} - {result.path}|n"
+                )
                 if "loc" in self.switches and not is_account and result.location:
-                    string += (f" (|wlocation|n: |g{result.location.get_display_name(caller)}"
-                               f"{result.get_extra_display_name_info(caller)}|n)")
+                    string += (
+                        f" (|wlocation|n: |g{result.location.get_display_name(caller)}"
+                        f"{result.get_extra_display_name_info(caller)}|n)"
+                    )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searches for key and aliases

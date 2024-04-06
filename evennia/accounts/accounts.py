@@ -16,13 +16,14 @@ import time
 import typing
 from random import getrandbits
 
-import evennia
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -30,17 +31,24 @@ from evennia.comms.models import ChannelDB
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.models import ServerConfig
-from evennia.server.signals import (SIGNAL_ACCOUNT_POST_CREATE,
-                                    SIGNAL_ACCOUNT_POST_LOGIN_FAIL,
-                                    SIGNAL_OBJECT_POST_PUPPET,
-                                    SIGNAL_OBJECT_POST_UNPUPPET)
+from evennia.server.signals import (
+    SIGNAL_ACCOUNT_POST_CREATE,
+    SIGNAL_ACCOUNT_POST_LOGIN_FAIL,
+    SIGNAL_OBJECT_POST_PUPPET,
+    SIGNAL_OBJECT_POST_UNPUPPET,
+)
 from evennia.server.throttle import Throttle
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-from evennia.utils.utils import (is_iter, lazy_property, make_iter, to_str,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    is_iter,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 

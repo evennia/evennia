@@ -642,6 +642,8 @@ def send_instruction(operation, arguments, callback=None, errback=None):
     """
     global AMP_CONNECTION, REACTOR_RUN
 
+    # print("launcher: Sending to portal: {} + {}".format(ord(operation), arguments))
+
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()

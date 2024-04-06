@@ -16,11 +16,17 @@
   arguments (InspectorCaracal)
 - [Fix][issue3476]: Don't ignore EvEditor commands with wrong capitalization
   (Griatch)
+- [Fix][issue3477]: The `at_server_reload_start()` hook was not firing on
+  a reload (regression).
+- [Docs] Added new [Server-Lifecycle][doc-server-lifecycle] page to describe
+  the hooks called on server start/stop/reload (Griatch)
 
 [pull3438]: https://github.com/evennia/evennia/pull/3446
 [pull3485]: https://github.com/evennia/evennia/pull/3485
 [pull3487]: https://github.com/evennia/evennia/pull/3487
 [issue3476]: https://github.com/evennia/evennia/issues/3476
+[issue3477]: https://github.com/evennia/evennia/issues/3477
+[doc-server-lifecycle]: https://www.evennia.com/docs/latest/Concepts/Server-Lifecycle.html
 
 
 ## Evennia 4.1.0
