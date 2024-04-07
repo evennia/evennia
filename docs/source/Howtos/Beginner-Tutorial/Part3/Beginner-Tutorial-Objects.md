@@ -92,7 +92,7 @@ class EvAdventureObject(DefaultObject):
 	    """The top of the description""" 
 	    return "" 
 
-	def get_display_desc(self, looker, **kwargs)
+	def get_display_desc(self, looker, **kwargs):
 		"""The main display - show object stats""" 
 		return get_obj_stats(self, owner=looker)
 
@@ -216,7 +216,7 @@ class EvAdventureConsumable(EvAdventureObject):
         """Called when using the item""" 
         pass
     
-    def at_post_use(self. user, *args, **kwargs):
+    def at_post_use(self, user, *args, **kwargs):
         """Called after using the item""" 
         # detract a usage, deleting the item if used up.
         self.uses -= 1
@@ -452,7 +452,7 @@ _BARE_HANDS = None
 
 # ... 
 
-class WeaponBareHands(EvAdventureWeapon)
+class WeaponBareHands(EvAdventureWeapon):
      obj_type = ObjType.WEAPON
      inventory_use_slot = WieldLocation.WEAPON_HAND
      attack_type = Ability.STR

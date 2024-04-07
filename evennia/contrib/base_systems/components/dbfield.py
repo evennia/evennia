@@ -6,7 +6,8 @@ This file contains the Descriptors used to set Fields in Components
 
 import typing
 
-from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
+from evennia.typeclasses.attributes import (AttributeProperty,
+                                            NAttributeProperty)
 
 if typing.TYPE_CHECKING:
     from .components import Component

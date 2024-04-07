@@ -1,5 +1,39 @@
 # Changelog
 
+## Evennia 4.1.1
+
+April 6, 2024
+
+- [Fix][pull3438]: Error with 'you' mapping in third-person style of
+  `msg_contents` (InspectorCaracal)
+- [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
+  (InspectorCaracal)
+- Fix: `find #dbref` results didn't include the results of
+  `.get_extra_display_name_info` (the #dbref display by default) (Griatch)
+- Fix: Add `DefaultAccount.get_extra_display_name_info` method for API
+  compliance with `DefaultObject` in commands. (Griatch)
+- Fix: Show `XYZRoom` subclass when repr() it. (Griatch)
+- [Fix][pull3485]: Typo in `sethome` message (chiizujin)
+- [Fix][pull3487]: Fix traceback when using `get`,`drop` and `give` with no
+  arguments (InspectorCaracal)
+- [Fix][issue3476]: Don't ignore EvEditor commands with wrong capitalization (Griatch)
+- [Fix][issue3477]: The `at_server_reload_start()` hook was not firing on
+  a reload (regression).
+- [Fix][issue3488]: `AttributeProperty(<default>, autocreate=False)`, where
+  `<default>` was mutable would not update/save properly in-place (Griatch)
+- [Docs] Added new [Server-Lifecycle][doc-server-lifecycle] page to describe
+  the hooks called on server start/stop/reload (Griatch)
+- [Docs] Doc typo fixes (Griatch, chiizujin)
+
+[pull3438]: https://github.com/evennia/evennia/pull/3446
+[pull3485]: https://github.com/evennia/evennia/pull/3485
+[pull3487]: https://github.com/evennia/evennia/pull/3487
+[issue3476]: https://github.com/evennia/evennia/issues/3476
+[issue3477]: https://github.com/evennia/evennia/issues/3477
+[issue3488]: https://github.com/evennia/evennia/issues/3488
+[doc-server-lifecycle]: https://www.evennia.com/docs/latest/Concepts/Server-Lifecycle.html
+
+
 ## Evennia 4.1.0
 
 April 1, 2024
@@ -49,7 +83,8 @@ April 1, 2024
   differentiating from their lower-case alternatives (Griatch)
 - [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
   when creating a new character (Griatch)
-- Doc: Added Beginner Tutorial lessons for AI, Quests and Procedural dungeon (Griatch)
+- Doc: Added Beginner Tutorial lessons for [Monster and NPC AI][docAI],
+  [Quests][docQuests] and [Making a Procedural dungeon][docDungeon] (Griatch)
 - Doc fixes (Griatch, InspectorCaracal, homeofpoe)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
@@ -70,6 +105,9 @@ April 1, 2024
 [issue3462]: https://github.com/evennia/evennia/issues/3462
 [issue3460]: https://github.com/evennia/evennia/issues/3460
 [issue3461]: https://github.com/evennia/evennia/issues/3461
+[docAI]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-AI.html
+[docQuests]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Quests.html
+[docDungeon]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Dungeon.html
 
 ## Evennia 4.0.0
 

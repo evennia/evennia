@@ -134,6 +134,17 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.obj2.location = self.char1
         self.call(general.CmdGive(), "2 Obj = Char2", "You give two Objs")
 
+    def test_numbered_target_command(self):
+        class CmdTest(general.NumberedTargetCommand):
+            key = "test"
+
+            def func(self):
+                self.msg(f"Number: {self.number} Args: {self.args}")
+
+        self.call(CmdTest(), "", "Number: 0 Args: ")
+        self.call(CmdTest(), "obj", "Number: 0 Args: obj")
+        self.call(CmdTest(), "1 obj", "Number: 1 Args: obj")
+
     def test_mux_command(self):
         class CmdTest(MuxCommand):
             key = "test"

@@ -9,6 +9,7 @@ used as stand-alone XYZ-coordinate-aware rooms.
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia.objects.manager import ObjectManager
 from evennia.objects.objects import DefaultExit, DefaultRoom
 
@@ -282,7 +283,7 @@ class XYZRoom(DefaultRoom):
 
     def __repr__(self):
         x, y, z = self.xyz
-        return f"<XYZRoom '{self.db_key}', XYZ=({x},{y},{z})>"
+        return f"<{self.__class__.__name__} '{self.db_key}', XYZ=({x},{y},{z})>"
 
     @property
     def xyz(self):
@@ -307,8 +308,7 @@ class XYZRoom(DefaultRoom):
     def xyzgrid(self):
         global GET_XYZGRID
         if not GET_XYZGRID:
-            from evennia.contrib.grid.xyzgrid.xyzgrid import \
-                get_xyzgrid as GET_XYZGRID
+            from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
         return GET_XYZGRID()
 
     @property
@@ -532,8 +532,7 @@ class XYZExit(DefaultExit):
     def xyzgrid(self):
         global GET_XYZGRID
         if not GET_XYZGRID:
-            from evennia.contrib.grid.xyzgrid.xyzgrid import \
-                get_xyzgrid as GET_XYZGRID
+            from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
         return GET_XYZGRID()
 
     @property

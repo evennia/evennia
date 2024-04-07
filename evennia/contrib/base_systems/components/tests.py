@@ -268,7 +268,7 @@ class TestComponents(EvenniaTest):
 
     def test_mutables_are_not_shared_when_autocreate(self):
         self.char1.test_a.my_list.append(1)
-        self.assertNotEqual(self.char1.test_a.my_list, self.char2.test_a.my_list)
+        self.assertIsNot(self.char1.test_a.my_list, self.char2.test_a.my_list)
 
     def test_replacing_class_component_slot_with_runtime_component(self):
         self.char1.components.add_default("replacement_inherited_test_a")

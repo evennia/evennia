@@ -4,8 +4,9 @@ General Character commands usually available to all characters
 
 import re
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -397,7 +398,7 @@ class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
         """
         super().parse()
         self.number = 0
-        if hasattr(self, "lhs"):
+        if getattr(self, "lhs", None):
             # handle self.lhs but don't require it
             count, *args = self.lhs.split(maxsplit=1)
             # we only use the first word as a count if it's a number and
