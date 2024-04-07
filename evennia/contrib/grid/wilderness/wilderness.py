@@ -682,7 +682,7 @@ class WildernessExit(DefaultExit):
         Returns:
             bool: True if traversing_object is allowed to traverse
         """
-        return True
+        return self.wilderness.is_valid_coordinates(new_coordinates)
 
     def at_traverse(self, traversing_object, target_location):
         """
