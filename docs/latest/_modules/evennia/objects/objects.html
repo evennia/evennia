@@ -1665,12 +1665,34 @@
 <span class="sd">        Args:</span>
 <span class="sd">            looker (DefaultObject): Object doing the looking.</span>
 <span class="sd">            **kwargs: Arbitrary data for use when overriding.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            exit_order (iterable of str): The order in which exits should be listed, with</span>
+<span class="sd">                unspecified exits appearing at the end, alphabetically.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The exits display data.</span>
 
+<span class="sd">        Examples:</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            For a room with exits in the order &#39;portal&#39;, &#39;south&#39;, &#39;north&#39;, and &#39;out&#39;:</span>
+<span class="sd">                obj.get_display_name(looker, exit_order=(&#39;north&#39;, &#39;south&#39;))</span>
+<span class="sd">                    -&gt; &quot;Exits: north, south, out, and portal.&quot;  (markup not shown here)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">_sort_exit_names</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">exit_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exit_order&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_order</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">names</span>
+            <span class="n">sort_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">exit_order</span><span class="p">)}</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+            <span class="n">end_pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">:</span><span class="n">sort_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">names</span>
+
         <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">),</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">exit_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="n">exi</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">exits</span><span class="p">)</span>
+        <span class="n">exit_names</span> <span class="o">=</span> <span class="p">(</span><span class="n">exi</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">exits</span><span class="p">)</span>
+        <span class="n">exit_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="n">_sort_exit_names</span><span class="p">(</span><span class="n">exit_names</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|wExits:|n </span><span class="si">{</span><span class="n">exit_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">exit_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
