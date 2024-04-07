@@ -663,12 +663,16 @@
         <span class="c1"># initialize any</span>
         <span class="c1"># Note that .trait_data retains the connection to the database, meaning every</span>
         <span class="c1"># update we do to .trait_data automatically syncs with database.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># no existing storage; initialize it, we then have to fetch it again</span>
             <span class="c1"># to retain the db connection</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_attribute_key</span><span class="p">,</span> <span class="p">{},</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -687,7 +691,9 @@
             <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">trait_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trait_class</span><span class="p">(</span><span class="n">trait_key</span><span class="o">=</span><span class="n">trait_key</span><span class="p">)</span>
-            <span class="n">valid_keys</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">trait_cls</span><span class="o">.</span><span class="n">default_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">)</span>
+            <span class="n">valid_keys</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">trait_cls</span><span class="o">.</span><span class="n">default_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;or&quot;</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Trait object not settable directly. Assign to </span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">valid_keys</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
@@ -719,7 +725,9 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">trait_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">[</span><span class="n">trait_key</span><span class="p">][</span><span class="s2">&quot;trait_type&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait class for Trait </span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Trait class for Trait </span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span>
+                <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_TRAIT_CLASSES</span><span class="p">[</span><span class="n">trait_type</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -749,11 +757,18 @@
         <span class="k">if</span> <span class="n">trait</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">:</span>
             <span class="n">trait_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">[</span><span class="n">trait_key</span><span class="p">][</span><span class="s2">&quot;trait_type&quot;</span><span class="p">]</span>
             <span class="n">trait_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trait_class</span><span class="p">(</span><span class="n">trait_type</span><span class="p">)</span>
-            <span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">trait_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_cls</span><span class="p">(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;trait_data&quot;</span><span class="p">)[</span><span class="n">trait_key</span><span class="p">])</span>
+            <span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">trait_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_cls</span><span class="p">(</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;trait_data&quot;</span><span class="p">)[</span><span class="n">trait_key</span><span class="p">]</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">trait</span></div>
 
 <div class="viewcode-block" id="TraitHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="n">DEFAULT_TRAIT_TYPE</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">trait_properties</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">trait_key</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">trait_type</span><span class="o">=</span><span class="n">DEFAULT_TRAIT_TYPE</span><span class="p">,</span>
+        <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">trait_properties</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new Trait and add it to the handler.</span>
@@ -840,7 +855,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TraitProperty.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="n">DEFAULT_TRAIT_TYPE</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">trait_properties</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitProperty.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="n">DEFAULT_TRAIT_TYPE</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">trait_properties</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a TraitField. Mimics TraitHandler.add input except no `trait_key`.</span>
 
@@ -859,7 +876,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_traithandler_name</span> <span class="o">=</span> <span class="n">trait_properties</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;traithandler_name&quot;</span><span class="p">,</span> <span class="s2">&quot;traits&quot;</span><span class="p">)</span>
 
-        <span class="n">trait_properties</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="n">trait_type</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">})</span>
+        <span class="n">trait_properties</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="n">trait_type</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">}</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trait_properties</span> <span class="o">=</span> <span class="n">trait_properties</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
@@ -899,7 +918,9 @@
             <span class="k">if</span> <span class="n">trait</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># initialize the trait</span>
                 <span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_properties</span><span class="p">)</span>
-                <span class="n">trait</span> <span class="o">=</span> <span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span><span class="p">)</span>  <span class="c1"># caches it in the traithandler</span>
+                <span class="n">trait</span> <span class="o">=</span> <span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span>
+                <span class="p">)</span>  <span class="c1"># caches it in the traithandler</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span>
 
@@ -1007,13 +1028,21 @@
 
         <span class="k">if</span> <span class="n">MandatoryTraitKey</span> <span class="ow">in</span> <span class="n">unset_defaults</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="c1"># we have one or more unset keys that was mandatory</span>
-            <span class="n">_raise_err</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">unset_defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">MandatoryTraitKey</span><span class="p">])</span>
+            <span class="n">_raise_err</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">key</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">unset_defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">MandatoryTraitKey</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
         <span class="c1"># apply the default values</span>
         <span class="n">trait_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">unset_defaults</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">allow_extra_properties</span><span class="p">:</span>
             <span class="c1"># don&#39;t allow any extra properties - remove the extra data</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">inp</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">inp</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">del</span> <span class="n">trait_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">trait_data</span></div>
@@ -1037,7 +1066,12 @@
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Access extra parameters as attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;default_keys&quot;</span><span class="p">,</span> <span class="s2">&quot;data_default&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">,</span> <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;default_keys&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;data_default&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;trait_type&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1368,7 +1402,7 @@
                 <span class="p">)</span>
         <span class="c1"># set up rate</span>
         <span class="k">if</span> <span class="n">trait_data</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">trait_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="n">trait_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_update&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">trait_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">trait_data</span></div>
@@ -1402,7 +1436,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if we passed the ratetarget in either direction.&quot;&quot;&quot;</span>
         <span class="n">ratetarget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;ratetarget&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ratetarget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">ratetarget</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="n">ratetarget</span><span class="p">)</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">ratetarget</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="n">ratetarget</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1527,7 +1562,9 @@
     <span class="nd">@current</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_start_timer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="nd">@current</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1644,6 +1681,7 @@
         <span class="n">rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span>
         <span class="k">if</span> <span class="n">rate</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
             <span class="n">tdiff</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span>
             <span class="n">current</span> <span class="o">+=</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">tdiff</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">current</span>
@@ -1749,13 +1787,17 @@
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The `current` value of the gauge.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="nd">@current</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_start_timer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="nd">@current</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
