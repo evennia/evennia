@@ -1588,6 +1588,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.get_display_name(looker, exit_order=('north', 'south'))
                     -> "Exits: north, south, out, and portal."  (markup not shown here)
         """
+
         def _sort_exit_names(names):
             exit_order = kwargs.get("exit_order")
             if not exit_order:
@@ -1595,7 +1596,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             sort_index = {name: key for key, name in enumerate(exit_order)}
             names = sorted(names)
             end_pos = len(names) + 1
-            names.sort(key=lambda name:sort_index.get(name, end_pos))
+            names.sort(key=lambda name: sort_index.get(name, end_pos))
             return names
 
         exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)

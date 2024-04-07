@@ -3,8 +3,12 @@ from unittest import skip
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.typeclasses.tags import (AliasProperty, PermissionProperty,
-                                      TagCategoryProperty, TagProperty)
+from evennia.typeclasses.tags import (
+    AliasProperty,
+    PermissionProperty,
+    TagCategoryProperty,
+    TagProperty,
+)
 from evennia.utils import create, search
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
@@ -102,7 +106,7 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(exits, "Exits: out, south, portal, north, and aperture")
 
         # in specified order with unspecified exits alpbabetically on the end
-        exit_order = ('north', 'south', 'out')
+        exit_order = ("north", "south", "out")
         exits = strip_ansi(self.room1.get_display_exits(self.char1, exit_order=exit_order))
         self.assertEqual(exits, "Exits: north, south, out, aperture, and portal")
 
@@ -589,7 +593,6 @@ class TestProperties(EvenniaTestCase):
         # check cross-instance sharing
         self.assertEqual(obj2.attr5, [], "cross-instance sharing detected")
 
-
     def test_mutable_defaults__autocreate_false(self):
         """
         Test https://github.com/evennia/evennia/issues/3488, where a mutable default value (like a
@@ -631,7 +634,6 @@ class TestProperties(EvenniaTestCase):
         # check cross-instance sharing
         self.assertEqual(obj2.attr7, [])
 
-
     def test_mutable_defaults__autocreate_true(self):
         """
         Test mutable defaults with autocreate=True.
@@ -652,4 +654,3 @@ class TestProperties(EvenniaTestCase):
 
         obj1.delete()
         obj2.delete()
-
