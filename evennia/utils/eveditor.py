@@ -647,29 +647,34 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg(
-                        _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
-                            arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend
-                        )
-                    )
-                else:
-                    caller.msg(
-                        _("Search-replaced {arg1} -> {arg2} for {line}.").format(
-                            arg1=self.arg1, arg2=self.arg2, line=self.lstr
-                        )
-                    )
                 sarea = "\n".join(linebuffer[lstart:lend])
 
                 regex = r"%s|^%s(?=\s)|(?<=\s)%s(?=\s)|^%s$|(?<=\s)%s$"
                 regarg = self.arg1.strip("'").strip('"')
                 if " " in regarg:
                     regarg = regarg.replace(" ", " +")
-                sarea = re.sub(
-                    regex % (regarg, regarg, regarg, regarg, regarg),
-                    self.arg2.strip("'").strip('"'),
-                    sarea,
-                    re.MULTILINE,
-                )
+                try:
+                    sarea = re.sub(
+                        regex % (regarg, regarg, regarg, regarg, regarg),
+                        self.arg2.strip("'").strip('"'),
+                        sarea,
+                        re.MULTILINE,
+                    )
+                except re.error as e:
+                    caller.msg(_("Invalid regular expression."))
+                else:
+                    if not self.linerange:
+                        caller.msg(
+                            _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
+                                arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend
+                            )
+                        )
+                    else:
+                        caller.msg(
+                            _("Search-replaced {arg1} -> {arg2} for {line}.").format(
+                                arg1=self.arg1, arg2=self.arg2, line=self.lstr
+                            )
+                        )
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":f":
