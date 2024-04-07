@@ -69,9 +69,9 @@ from django.conf import settings
 
 from evennia.utils import logger, utils
 from evennia.utils.utils import to_str
-from evennia.utils.hex_colors import HexToTruecolor
+from evennia.utils.hex_colors import HexColors
 
-hex_sub = HexToTruecolor.hex_sub
+hex_sub = HexColors.hex_sub
 
 MXP_ENABLED = settings.MXP_ENABLED
 
@@ -470,7 +470,7 @@ class ANSIParser(object):
         string = self.brightbg_sub.sub(self.sub_brightbg, string)
 
         def do_truecolor(part: re.Match, truecolor=truecolor):
-            hex2truecolor = HexToTruecolor()
+            hex2truecolor = HexColors()
             return hex2truecolor.sub_truecolor(part, truecolor)
 
         def do_xterm256_fg(part):

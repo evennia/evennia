@@ -1,7 +1,7 @@
 import re
 
 
-class HexToTruecolor:
+class HexColors:
     """
     This houses a method for converting hex codes to xterm truecolor codes
     or falls back to evennia xterm256 codes to be handled by sub_xterm256
@@ -14,18 +14,17 @@ class HexToTruecolor:
     _RE_FG_OR_BG = '\|\[?#'
     _RE_HEX_LONG = '[0-9a-fA-F]{6}'
     _RE_HEX_SHORT = '[0-9a-fA-F]{3}'
-    _RE_BYTE = '[0-2][0-9][0-9]'
-    _RE_3_BYTES = f'({_RE_BYTE})({_RE_BYTE})({_RE_BYTE})'
+    _RE_BYTE = '[0-2]?[0-9]?[0-9]'
+    _RE_XTERM_TRUECOLOR = rf'\[([34])8;2;({_RE_BYTE});({_RE_BYTE});({_RE_BYTE})m'
 
     # Used in hex_sub
     _RE_HEX_PATTERN = f'({_RE_FG_OR_BG})({_RE_HEX_LONG}|{_RE_HEX_SHORT})'
 
-    # Used for truecolor_sub
-    _RE_24_BIT_RGB_FG = f'{_RE_FG}{_RE_3_BYTES}'
-    _RE_24_BIT_RGB_BG = f'{_RE_BG}{_RE_3_BYTES}'
-
     # Used for greyscale
     _GREYS = "abcdefghijklmnopqrstuvwxyz"
+
+    TRUECOLOR_FG = f'\x1b\[38;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m'
+    TRUECOLOR_BG = f'\x1b\[48;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m'
 
     # Our matchers for use with ANSIParser and ANSIString
     hex_sub = re.compile(rf'{_RE_HEX_PATTERN}', re.DOTALL)
@@ -72,6 +71,35 @@ class HexToTruecolor:
 
                 xtag += f"8;2;{r};{g};{b}m"
                 return xtag
+
+    def xterm_truecolor_to_html_style(self, fg="", bg="") -> str:
+        """
+        Converts xterm truecolor to an html style property
+
+        Args:
+            fg: xterm truecolor
+            bg: xterm truecolor
+
+        Returns: style='color and or background-color'
+
+        """
+        prop = 'style="'
+        if fg != '':
+            res = re.search(self._RE_XTERM_TRUECOLOR, fg, re.DOTALL)
+            fg_bg, r, g, b = res.groups()
+            r = hex(int(r))[2:].zfill(2)
+            g = hex(int(g))[2:].zfill(2)
+            b = hex(int(b))[2:].zfill(2)
+            prop += f"color: #{r}{g}{b};"
+        if bg != '':
+            res = re.search(self._RE_XTERM_TRUECOLOR, bg, re.DOTALL)
+            fg_bg, r, g, b = res.groups()
+            r = hex(int(r))[2:].zfill(2)
+            g = hex(int(g))[2:].zfill(2)
+            b = hex(int(b))[2:].zfill(2)
+            prop += f"background-color: #{r}{g}{b};"
+        prop += f'"'
+        return prop
 
     def _split_hex_to_bytes(self, tag: str) -> tuple[str, str, str]:
         """
