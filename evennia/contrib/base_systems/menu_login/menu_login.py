@@ -90,7 +90,7 @@ def node_enter_username(caller, raw_text, **kwargs):
         else:
             new_user = False
 
-        if new_user and not settings.ACCOUNT_REGISTRATION_ENABLED:
+        if new_user and not settings.NEW_ACCOUNT_REGISTRATION_ENABLED:
             caller.msg("Registration is currently disabled.")
             return None
 

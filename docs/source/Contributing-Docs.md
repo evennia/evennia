@@ -23,12 +23,25 @@ at the root of `evennia/docs/source/`.
   result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the documentation for further reading.
 - `source/Howtos/Beginner-Tutorial/` holds all documents part of the initial tutorial sequence.
 
-
  Other files and folders:
   - `source/api/` contains the auto-generated API documentation as `.html` files. Don't edit these files manually, they are auto-generated from sources.
   - `source/_templates` and `source/_static` hold files for the doc itself. They should only be modified if wanting to change the look and structure of the documentation generation itself. 
   - `conf.py` holds the Sphinx configuration. It should usually not be modified except to update the Evennia version on a new branch.
 
+## Automatically generated doc pages 
+
+Some doc pages are automatically generated. Changes to their generated markdown file will be overwritten. Instead they must be modified at the point the automation reads the text from.
+
+- All API docs under `source/api` are built from the doc strings of Evennia core code. Documentation fixes for these needs to be done in the doc strings of the relevant module, function, class or method.
+- [Contribs/Contribs-Overview.md](Contribs/Contribs-Overview.md) is completely generated from scratch when building the docs, by the script `evennia/docs/pylib/contrib_readmes2docs.py`. 
+    - All contrib blurbs on the above page are taken from the first paragraph of each contrib's `README.md`, found under `evennia/contrib/*/*/README.md`. 
+    - Similarly, all contrib documentation linked from the above page is generated from each contrib's `README.md` file. 
+- [Components/Default-Commands.md](Components/Default-Commands.md) is generated from the command classes found under `evennia/commands/default/`. 
+- [Coding/Evennia-Code-Style.md](Coding/Evennia-Code-Style.md) is generated from `evennia/CODING_STYLE.md`. 
+- [Coding/Changelog.md](Coding/Changelog.md) is generated from `evennia/CHANGELOG.md`
+- [Setup/Settings-Default.md](Setup/Settings-Default.md) is generated from the default settings file `evennia/default_settings.py` 
+
+Most auto-generated pages have a warning in the header indicating that it's auto-generated.
 
 ## Editing syntax
 

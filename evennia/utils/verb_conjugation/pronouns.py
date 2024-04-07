@@ -25,6 +25,7 @@ viewpoint/pronouns    Subject  Object    Possessive  Possessive  Reflexive
 3rd person plural       they     them      their      theirs     themselves
 ====================  =======  ========  ==========  ==========  ===========
 """
+
 from evennia.utils.utils import copy_word_case, is_iter
 
 DEFAULT_PRONOUN_TYPE = "subject pronoun"

@@ -3,13 +3,14 @@
 Tests for the XYZgrid system.
 
 """
+
 from random import randint
 from unittest import mock
 
 from django.test import TestCase
-from evennia.utils.test_resources import (BaseEvenniaCommandTest,
-                                          BaseEvenniaTest)
 from parameterized import parameterized
+
+from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest
 
 from . import commands, xymap, xymap_legend, xyzgrid, xyzroom
 

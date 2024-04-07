@@ -9,7 +9,6 @@ in a separate module (e.g. if they could have been re-used elsewhere.)
 
 """
 
-
 import random
 
 # the system error-handling module is defined in the settings. We load the

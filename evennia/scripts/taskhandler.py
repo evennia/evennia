@@ -205,7 +205,6 @@ class TaskHandlerTask:
 
 
 class TaskHandler:
-
     """A light singleton wrapper allowing to access permanent tasks.
 
     When `utils.delay` is called, the task handler is used to create

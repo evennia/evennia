@@ -40,6 +40,8 @@ You can find an AIHandler implemented in `evennia/contrib/tutorials`, in [evadve
 ```
 This is the core logic for managing AI states. Create a new file `evadventure/ai.py`.
 
+> Create a new file `evadventure/ai.py`.
+
 ```{code-block} python
 :linenos: 
 :emphasize-lines: 10,11-13,16,23

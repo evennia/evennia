@@ -14,6 +14,7 @@ The most common inputfunc is "text", which takes just the text input
 from the command line and interprets it as an Evennia Command: `["text", ["look"], {}]`
 
 """
+
 import html
 import json
 import re

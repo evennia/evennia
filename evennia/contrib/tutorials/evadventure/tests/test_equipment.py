@@ -3,7 +3,6 @@ Test the EvAdventure equipment handler.
 
 """
 
-
 from unittest.mock import MagicMock, patch
 
 from parameterized import parameterized

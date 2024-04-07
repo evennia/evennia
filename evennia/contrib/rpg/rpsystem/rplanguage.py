@@ -137,6 +137,7 @@ This allows to quickly build a large corpus of translated words
 that never change (if this is desired).
 
 """
+
 import re
 from collections import defaultdict
 from random import choice, randint

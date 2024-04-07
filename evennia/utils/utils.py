@@ -28,7 +28,6 @@ from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
 
-import evennia
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -36,11 +35,13 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
-from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from twisted.internet.task import deferLater
+
+import evennia
+from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
@@ -474,6 +475,7 @@ iter_to_string = iter_to_str
 
 re_empty = re.compile("\n\s*\n")
 
+
 def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     """
     Removes extra sequential whitespace in a block of text. This will also remove any trailing
@@ -492,9 +494,9 @@ def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     # this allows the blank-line compression to eliminate them if needed
     text = re_empty.sub("\n\n", text)
     # replace groups of extra spaces with the maximum number of spaces
-    text = re.sub(f"(?<=\S) {{{max_spacing},}}", " "*max_spacing, text)
+    text = re.sub(f"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
     # replace groups of extra newlines with the maximum number of newlines
-    text = re.sub(f"\n{{{max_linebreaks},}}", "\n"*max_linebreaks, text)
+    text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
     return text
 
 
@@ -2070,7 +2072,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
                     else:
                         row += " " * max(0, width - lrow)
                     rows.append(row)
-                    row = ""
+                    row = element
                     ic = 0
                 else:
                     # add a new slot
@@ -2402,21 +2404,19 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 # result is a typeclassed entity where `.aliases` is an AliasHandler.
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
-                aliases = [
-                    alias
-                    for alias in aliases
-                    if hasattr(alias, "category") and alias.category not in ("plural_key",)
-                ]
+                aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
                 aliases = result.aliases
 
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
-                name=result.get_display_name(caller)
-                if hasattr(result, "get_display_name")
-                else query,
-                aliases=" [{alias}]".format(alias=";".join(aliases) if aliases else ""),
+                name=(
+                    result.get_display_name(caller)
+                    if hasattr(result, "get_display_name")
+                    else query
+                ),
+                aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                 info=result.get_extra_info(caller),
             )
         matches = None
@@ -3077,3 +3077,21 @@ def ip_from_request(request, exclude=None) -> str:
 
     logger.log_warn("ip_from_request: No valid IP address found in request. Using remote_addr.")
     return remote_addr
+
+
+def value_is_integer(value):
+    """
+    Determines if a value can be type-cast to an integer.
+
+    Args:
+        value (any): The value to check.
+
+    Returns:
+        result (bool): Whether it can be type-cast to an integer or not.
+    """
+    try:
+        int(value)
+    except ValueError:
+        return False
+
+    return True

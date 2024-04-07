@@ -18,7 +18,6 @@ action that takes several vulnerable turns to complete.
 
 """
 
-
 import random
 from collections import defaultdict
 
@@ -842,6 +841,8 @@ class TurnCombatCmdSet(CmdSet):
     """
     CmdSet for the turn-based combat.
     """
+
+    key = "turncombat_cmdset"
 
     def at_cmdset_creation(self):
         self.add(CmdTurnAttack())

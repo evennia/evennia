@@ -17,7 +17,6 @@ Attacks using |w{attack_type_name}|n against |w{defense_type_name}|n
 Damage roll: |w{damage_roll}|n""".strip()
 
 
-
 def get_obj_stats(obj, owner=None):
     """
     Get a string of stats about the object.

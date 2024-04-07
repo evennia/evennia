@@ -1,10 +1,12 @@
 """
 General Character commands usually available to all characters
 """
+
 import re
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -378,20 +380,57 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
         self.msg(text=(string, {"type": "inventory"}))
 
 
-class CmdGet(COMMAND_DEFAULT_CLASS):
+class NumberedTargetCommand(COMMAND_DEFAULT_CLASS):
+    """
+    A class that parses out an optional number component from the input string. This
+    class is intended to be inherited from to provide additional functionality, rather
+    than used on its own.
+    """
+
+    def parse(self):
+        """
+        Parser that extracts a `.number` property from the beginning of the input string.
+
+        For example, if the input string is "3 apples", this parser will set `self.number = 3` and
+        `self.args = "apples"`. If the input string is "apples", this parser will set
+        `self.number = 0` and `self.args = "apples"`.
+
+        """
+        super().parse()
+        self.number = 0
+        if getattr(self, "lhs", None):
+            # handle self.lhs but don't require it
+            count, *args = self.lhs.split(maxsplit=1)
+            # we only use the first word as a count if it's a number and
+            # there is more text afterwards
+            if args and count.isdecimal():
+                self.number = int(count)
+                self.lhs = args[0]
+        if self.args:
+            # check for numbering
+            count, *args = self.args.split(maxsplit=1)
+            # we only use the first word as a count if it's a number and
+            # there is more text afterwards
+            if args and count.isdecimal():
+                self.args = args[0]
+                # we only re-assign self.number if it wasn't already taken from self.lhs
+                if not self.number:
+                    self.number = int(count)
+
+
+class CmdGet(NumberedTargetCommand):
     """
     pick up something
 
     Usage:
       get <obj>
 
-    Picks up an object from your location and puts it in
-    your inventory.
+    Picks up an object from your location and puts it in your inventory.
     """
 
     key = "get"
     aliases = "grab"
-    locks = "cmd:all();view:perm(Developer);read:perm(Developer)"
+    locks = "cmd:all()"
     arg_regex = r"\s|$"
 
     def func(self):
@@ -400,36 +439,49 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Get what?")
+            self.msg("Get what?")
             return
-        obj = caller.search(self.args, location=caller.location)
-        if not obj:
+        objs = caller.search(self.args, location=caller.location, stacked=self.number)
+        if not objs:
             return
-        if caller == obj:
-            caller.msg("You can't get yourself.")
-            return
-        if not obj.access(caller, "get"):
-            if obj.db.get_err_msg:
-                caller.msg(obj.db.get_err_msg)
-            else:
-                caller.msg("You can't get that.")
+        # the 'stacked' search sometimes returns a list, sometimes not, so we make it always a list
+        # NOTE: this behavior may be a bug, see issue #3432
+        objs = utils.make_iter(objs)
+
+        if len(objs) == 1 and caller == objs[0]:
+            self.msg("You can't get yourself.")
             return
 
-        # calling at_pre_get hook method
-        if not obj.at_pre_get(caller):
-            return
+        # if we aren't allowed to get any of the objects, cancel the get
+        for obj in objs:
+            # check the locks
+            if not obj.access(caller, "get"):
+                if obj.db.get_err_msg:
+                    self.msg(obj.db.get_err_msg)
+                else:
+                    self.msg("You can't get that.")
+                return
+            # calling at_pre_get hook method
+            if not obj.at_pre_get(caller):
+                return
 
-        success = obj.move_to(caller, quiet=True, move_type="get")
-        if not success:
-            caller.msg("This can't be picked up.")
+        moved = []
+        # attempt to move all of the objects
+        for obj in objs:
+            if obj.move_to(caller, quiet=True, move_type="get"):
+                moved.append(obj)
+                # calling at_get hook method
+                obj.at_get(caller)
+
+        if not moved:
+            # none of the objects were successfully moved
+            self.msg("That can't be picked up.")
         else:
-            singular, _ = obj.get_numbered_name(1, caller)
-            caller.location.msg_contents(f"$You() $conj(pick) up {singular}.", from_obj=caller)
-            # calling at_get hook method
-            obj.at_get(caller)
+            obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.location.msg_contents(f"$You() $conj(pick) up {obj_name}.", from_obj=caller)
 
 
-class CmdDrop(COMMAND_DEFAULT_CLASS):
+class CmdDrop(NumberedTargetCommand):
     """
     drop something
 
@@ -454,30 +506,42 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        obj = caller.search(
+        objs = caller.search(
             self.args,
             location=caller,
             nofound_string=f"You aren't carrying {self.args}.",
             multimatch_string=f"You carry more than one {self.args}:",
+            stacked=self.number,
         )
-        if not obj:
+        if not objs:
             return
+        # the 'stacked' search sometimes returns a list, sometimes not, so we make it always a list
+        # NOTE: this behavior may be a bug, see issue #3432
+        objs = utils.make_iter(objs)
 
-        # Call the object script's at_pre_drop() method.
-        if not obj.at_pre_drop(caller):
-            return
+        # if any objects fail the drop permission check, cancel the drop
+        for obj in objs:
+            # Call the object's at_pre_drop() method.
+            if not obj.at_pre_drop(caller):
+                return
 
-        success = obj.move_to(caller.location, quiet=True, move_type="drop")
-        if not success:
-            caller.msg("This couldn't be dropped.")
+        # do the actual dropping
+        moved = []
+        for obj in objs:
+            if obj.move_to(caller.location, quiet=True, move_type="drop"):
+                moved.append(obj)
+                # Call the object's at_drop() method.
+                obj.at_drop(caller)
+
+        if not moved:
+            # none of the objects were successfully moved
+            self.msg("That can't be dropped.")
         else:
-            singular, _ = obj.get_numbered_name(1, caller)
-            caller.location.msg_contents(f"$You() $conj(drop) {singular}.", from_obj=caller)
-            # Call the object script's at_drop() method.
-            obj.at_drop(caller)
+            obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.location.msg_contents(f"$You() $conj(drop) {obj_name}.", from_obj=caller)
 
 
-class CmdGive(COMMAND_DEFAULT_CLASS):
+class CmdGive(NumberedTargetCommand):
     """
     give away something to someone
 
@@ -500,37 +564,50 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not self.args or not self.rhs:
             caller.msg("Usage: give <inventory object> = <target>")
             return
+        # find the thing(s) to give away
         to_give = caller.search(
             self.lhs,
             location=caller,
             nofound_string=f"You aren't carrying {self.lhs}.",
             multimatch_string=f"You carry more than one {self.lhs}:",
+            stacked=self.number,
         )
+        if not to_give:
+            return
+        # find the target to give to
         target = caller.search(self.rhs)
-        if not (to_give and target):
+        if not target:
             return
 
-        singular, _ = to_give.get_numbered_name(1, caller)
+        # the 'stacked' search sometimes returns a list, sometimes not, so we make it always a list
+        # NOTE: this behavior may be a bug, see issue #3432
+        to_give = utils.make_iter(to_give)
+
+        singular, plural = to_give[0].get_numbered_name(len(to_give), caller)
         if target == caller:
-            caller.msg(f"You keep {singular} to yourself.")
-            return
-        if not to_give.location == caller:
-            caller.msg(f"You are not holding {singular}.")
+            caller.msg(f"You keep {plural if len(to_give) > 1 else singular} to yourself.")
             return
 
-        # calling at_pre_give hook method
-        if not to_give.at_pre_give(caller, target):
-            return
+        # if any of the objects aren't allowed to be given, cancel the give
+        for obj in to_give:
+            # calling at_pre_give hook method
+            if not obj.at_pre_give(caller, target):
+                return
 
-        # give object
-        success = to_give.move_to(target, quiet=True, move_type="give")
-        if not success:
-            caller.msg(f"You could not give {singular} to {target.key}.")
+        # do the actual moving
+        moved = []
+        for obj in to_give:
+            if obj.move_to(target, quiet=True, move_type="give"):
+                moved.append(obj)
+                # Call the object's at_give() method.
+                obj.at_give(caller, target)
+
+        if not moved:
+            caller.msg(f"You could not give that to {target.get_display_name(caller)}.")
         else:
-            caller.msg(f"You give {singular} to {target.key}.")
-            target.msg(f"{caller.key} gives you {singular}.")
-            # Call the object script's at_give() method.
-            to_give.at_give(caller, target)
+            obj_name = to_give[0].get_numbered_name(len(moved), caller, return_string=True)
+            caller.msg(f"You give {obj_name} to {target.get_display_name(caller)}.")
+            target.msg(f"{caller.get_display_name(target)} gives you {obj_name}.")
 
 
 class CmdSetDesc(COMMAND_DEFAULT_CLASS):

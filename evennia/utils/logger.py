@@ -13,7 +13,6 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 """
 
-
 import os
 import time
 from datetime import datetime

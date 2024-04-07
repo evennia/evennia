@@ -30,6 +30,7 @@ or implement the same locks/hooks in your own typeclasses.
     at_pre_get_from(getter, target, **kwargs) - called with the pre-get hooks
     at_pre_put_in(putter, target, **kwargs)   - called with the pre-put hooks
 """
+
 from django.conf import settings
 
 from evennia import AttributeProperty, CmdSet, DefaultObject

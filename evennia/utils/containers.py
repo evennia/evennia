@@ -10,7 +10,6 @@ evennia.OPTION_CLASSES
 
 """
 
-
 from pickle import dumps
 
 from django.conf import settings

@@ -251,7 +251,6 @@ def phrase_event(callbacks, parameters):
 
 
 class InterruptEvent(RuntimeError):
-
     """
     Interrupt the current event.
 

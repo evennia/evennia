@@ -237,7 +237,7 @@ class CraftingRecipeBase:
             **kwargs: Any optional properties relevant to this send.
 
         """
-        self.crafter.msg(message, {"type": "crafting"})
+        self.crafter.msg(text=(message, {"type": "crafting"}))
 
     def pre_craft(self, **kwargs):
         """
@@ -615,9 +615,11 @@ class CraftingRecipe(CraftingRecipeBase):
             )
         else:
             self.output_names = [
-                prot.get("key", prot.get("typeclass", "unnamed"))
-                if isinstance(prot, dict)
-                else str(prot)
+                (
+                    prot.get("key", prot.get("typeclass", "unnamed"))
+                    if isinstance(prot, dict)
+                    else str(prot)
+                )
                 for prot in self.output_prototypes
             ]
 

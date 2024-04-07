@@ -8,6 +8,7 @@ Config values should usually be set through the
 manager's conf() method.
 
 """
+
 from django.db import models
 
 from evennia.server.manager import ServerConfigManager

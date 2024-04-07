@@ -2,6 +2,7 @@
 EvAdventure NPCs. This includes both friends and enemies, only separated by their AI.
 
 """
+
 from random import choice
 
 from evennia import DefaultCharacter
@@ -253,6 +254,7 @@ class EvAdventureMob(EvAdventureNPC):
     Mob (mobile) NPC; this is usually an enemy.
 
     """
+
     # change this to make the mob more or less likely to perform different actions
     combat_probabilities = {
         "hold": 0.0,

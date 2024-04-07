@@ -374,8 +374,12 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import (auto_link_remapper, contrib_readmes2docs,
-                            update_default_cmd_index, update_dynamic_pages)
+    from docs.pylib import (
+        auto_link_remapper,
+        contrib_readmes2docs,
+        update_default_cmd_index,
+        update_dynamic_pages,
+    )
 
     _no_autodoc = os.environ.get("NOAUTODOC")
     update_default_cmd_index.run_update(no_autodoc=_no_autodoc)

@@ -2,16 +2,120 @@
 
 ## Main branch
 
+- [Feature][pull3470]: New `exit_order` kwarg to
+  `DefaultObject.get_display_exits` to easier customize the order in which
+  standard exits are displayed in a room (chiizujin)
+
+[pull3470]: https://github.com/evennia/evennia/pull/3470
+
+## Evennia 4.1.1
+
+April 6, 2024
+
+- [Fix][pull3438]: Error with 'you' mapping in third-person style of
+  `msg_contents` (InspectorCaracal)
+- [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
+  (InspectorCaracal)
+- Fix: `find #dbref` results didn't include the results of
+  `.get_extra_display_name_info` (the #dbref display by default) (Griatch)
+- Fix: Add `DefaultAccount.get_extra_display_name_info` method for API
+  compliance with `DefaultObject` in commands. (Griatch)
+- Fix: Show `XYZRoom` subclass when repr() it. (Griatch)
+- [Fix][pull3485]: Typo in `sethome` message (chiizujin)
+- [Fix][pull3487]: Fix traceback when using `get`,`drop` and `give` with no
+  arguments (InspectorCaracal)
+- [Fix][issue3476]: Don't ignore EvEditor commands with wrong capitalization (Griatch)
+- [Fix][issue3477]: The `at_server_reload_start()` hook was not firing on
+  a reload (regression).
+- [Fix][issue3488]: `AttributeProperty(<default>, autocreate=False)`, where
+  `<default>` was mutable would not update/save properly in-place (Griatch)
+- [Docs] Added new [Server-Lifecycle][doc-server-lifecycle] page to describe
+  the hooks called on server start/stop/reload (Griatch)
+- [Docs] Doc typo fixes (Griatch, chiizujin)
+
+[pull3438]: https://github.com/evennia/evennia/pull/3446
+[pull3485]: https://github.com/evennia/evennia/pull/3485
+[pull3487]: https://github.com/evennia/evennia/pull/3487
+[issue3476]: https://github.com/evennia/evennia/issues/3476
+[issue3477]: https://github.com/evennia/evennia/issues/3477
+[issue3488]: https://github.com/evennia/evennia/issues/3488
+[doc-server-lifecycle]: https://www.evennia.com/docs/latest/Concepts/Server-Lifecycle.html
+
+
+## Evennia 4.1.0
+
+April 1, 2024
+
+- [Deprecation]: `DefaultObject.get_visible_contents` - unused in core, will be
+  removed. Use the new `.filter_visible` together with the `.get_display_*` methods instead..
+- [Deprecation]: `DefaultObject.get_content_names` - unused in core, will be
+  removed. Use the `DefaultObject.get_display_*` methods instead.
+
 - [Feature][pull3421]: New `utils.compress_whitespace` utility used with
   default object's `.format_appearance` to make it easier to overload without
   adding line breaks in hook returns. (InspectorCaracal)
+- [Feature][pull3458]: New `sethelp/category` switch to change a help topic's
+  category after it was created (chiizujin)
+- [Feature][pull3467]: Add `alias/delete` switch for removing object aliases
+  from in-game with default command (chiizujin)
+- [Feature][issue3450]: The default `page` command now tags its `Msg` objects
+  with tag 'page' (category 'comms') and also checks the `Msg`' 'read' lock.
+  made backwards compatible for old pages (Griatch)
+- [Feature][pull3466]: Add optional `no_article` kwarg to
+  `DefaultObject.get_numbered_name` for the system to skip adding automatic
+  articles. (chiizujin)
+- [Feature][pull3433]: Add ability to default get/drop to affect stacks of
+  items, such as `get/drop 3 rock` by a custom class parent (InspectorCaracal)
+- Feature: Clean up the default Command variable list shown when a command has
+  no `func()` defined (Griatch)
+- [Feature][issue3461]: Add `DefaultObject.filter_display_visible` helper method
+  to make it easier to customize object visibility rules. (Griatch)
 - [Fix][pull3446]: Use plural ('no apples') instead of singular ('no apple') in
   `get_numbered_name` for better grammatical form (InspectorCaracal)
-- Doc: Added Beginner Tutorial lessons for AI and Procedural dungeon (Griatch)
-- Doc fixes (Griatch, InspectorCaracal)
+- [Fix][pull3453]: Object aliases not showing in search multi-match
+  disambiguation display (chiizujin)
+- [Fix][pull3455]: `sethelp/edit <topic>` without a `= text` created a `None`
+  entry that would lose the edit. (chiiziujin)
+- [Fix][pull3456]: `format_grid` utility used for `help` command caused commands
+  to disappear for wider client widths (chiizujin)
+- [Fix][pull3457]: Help topic categories with different case would appear as
+  duplicates (chiizujin)
+- [Fix][pull3454]: Traceback in crafting contrib's `recipe.msg`
+  (InspectorCaracal)
+- [Fix][pull3459]: EvEditor line-echo compacted whitespace erroneously (chiizujin)
+- [Fix][pull3463]: EvEditor :help described the :paste operation in the wrong
+  way (chiizujin)
+- [Fix][pull3464]: EvEditor range:range specification didn't return correct
+  range (chiizujin)
+- [Fix][issue3462]: EvEditor :UU and :DD etc commands were not properly
+  differentiating from their lower-case alternatives (Griatch)
+- [Fix][issue3460]: The `menu_login` contrib regression caused it to error out
+  when creating a new character (Griatch)
+- Doc: Added Beginner Tutorial lessons for [Monster and NPC AI][docAI],
+  [Quests][docQuests] and [Making a Procedural dungeon][docDungeon] (Griatch)
+- Doc fixes (Griatch, InspectorCaracal, homeofpoe)
 
 [pull3421]: https://github.com/evennia/evennia/pull/3421
 [pull3446]: https://github.com/evennia/evennia/pull/3446
+[pull3453]: https://github.com/evennia/evennia/pull/3453
+[pull3455]: https://github.com/evennia/evennia/pull/3455
+[pull3456]: https://github.com/evennia/evennia/pull/3456
+[pull3457]: https://github.com/evennia/evennia/pull/3457
+[pull3458]: https://github.com/evennia/evennia/pull/3458
+[pull3454]: https://github.com/evennia/evennia/pull/3454
+[pull3459]: https://github.com/evennia/evennia/pull/3459
+[pull3463]: https://github.com/evennia/evennia/pull/3463
+[pull3464]: https://github.com/evennia/evennia/pull/3464
+[pull3466]: https://github.com/evennia/evennia/pull/3466
+[pull3467]: https://github.com/evennia/evennia/pull/3467
+[pull3433]: https://github.com/evennia/evennia/pull/3433
+[issue3450]: https://github.com/evennia/evennia/issues/3450
+[issue3462]: https://github.com/evennia/evennia/issues/3462
+[issue3460]: https://github.com/evennia/evennia/issues/3460
+[issue3461]: https://github.com/evennia/evennia/issues/3461
+[docAI]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-AI.html
+[docQuests]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Quests.html
+[docDungeon]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Dungeon.html
 
 ## Evennia 4.0.0
 

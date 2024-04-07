@@ -13,12 +13,14 @@ Attributes are separate objects that store values persistently onto
 the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
+
 from collections import defaultdict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
+
 from evennia.objects.manager import ObjectDBManager
 from evennia.typeclasses.models import TypedObject
 from evennia.utils import logger

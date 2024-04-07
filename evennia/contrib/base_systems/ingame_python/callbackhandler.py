@@ -6,7 +6,6 @@ from collections import namedtuple
 
 
 class CallbackHandler(object):
-
     """
     The callback handler for a specific object.
 

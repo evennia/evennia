@@ -25,7 +25,6 @@ OLD_EVENTS = {}
 
 
 class TestEventHandler(BaseEvenniaTest):
-
     """
     Test cases of the event handler to add, edit or delete events.
     """
@@ -259,7 +258,6 @@ class TestEventHandler(BaseEvenniaTest):
 
 
 class TestCmdCallback(BaseEvenniaCommandTest):
-
     """Test the @callback command."""
 
     def setUp(self):
@@ -448,7 +446,6 @@ class TestCmdCallback(BaseEvenniaCommandTest):
 
 
 class TestDefaultCallbacks(BaseEvenniaCommandTest):
-
     """Test the default callbacks."""
 
     def setUp(self):

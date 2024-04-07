@@ -8,14 +8,15 @@ which is a non-db version of Attributes.
 
 
 """
+
 import fnmatch
 import re
 from collections import defaultdict
+from copy import copy
 
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -165,6 +166,7 @@ class AttributeProperty:
     """
 
     attrhandler_name = "attributes"
+    cached_default_name_template = "_property_attribute_default_{key}"
 
     def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=True):
         """
@@ -206,21 +208,6 @@ class AttributeProperty:
         self._autocreate = autocreate
         self._key = ""
 
-    @property
-    def _default(self):
-        """
-        Tries returning a new instance of default if callable.
-
-        """
-        if callable(self.__default):
-            return self.__default()
-
-        return self.__default
-
-    @_default.setter
-    def _default(self, value):
-        self.__default = value
-
     def __set_name__(self, cls, name):
         """
         Called when descriptor is first assigned to the class. It is called with
@@ -229,17 +216,35 @@ class AttributeProperty:
         """
         self._key = name
 
+    def _get_and_cache_default(self, instance):
+        """
+        Get and cache the default value for this attribute. We make sure to convert any mutables
+        into _Saver* equivalent classes here and cache the result on the instance's AttributeHandler.
+
+        """
+        attrhandler = getattr(instance, self.attrhandler_name)
+        value = getattr(attrhandler, self.cached_default_name_template.format(key=self._key), None)
+        if not value:
+            if callable(self._default):
+                value = self._default()
+            else:
+                value = copy(self._default)
+            value = from_pickle(value, db_obj=instance)
+            setattr(attrhandler, self.cached_default_name_template.format(key=self._key), value)
+        return value
+
     def __get__(self, instance, owner):
         """
         Called when the attrkey is retrieved from the instance.
 
         """
-        value = self._default
+        value = self._get_and_cache_default(instance)
+
         try:
             value = self.at_get(
                 getattr(instance, self.attrhandler_name).get(
                     key=self._key,
-                    default=self._default,
+                    default=value,
                     category=self._category,
                     strattr=self._strattr,
                     raise_exception=self._autocreate,
@@ -249,7 +254,7 @@ class AttributeProperty:
         except AttributeError:
             if self._autocreate:
                 # attribute didn't exist and autocreate is set
-                self.__set__(instance, self._default)
+                self.__set__(instance, value)
             else:
                 raise
         return value

@@ -780,13 +780,14 @@ class CmdSetHelp(CmdHelp):
     Edit the help database.
 
     Usage:
-      sethelp[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
-
+      sethelp[/switches] <topic>[[;alias;alias][,category[,locks]]
+                [= <text or new category>]
     Switches:
       edit - open a line editor to edit the topic's help text.
       replace - overwrite existing help topic.
       append - add text to the end of existing topic with a newline between.
       extend - as append, but don't add a newline.
+      category - change category of existing help topic.
       delete - remove help topic.
 
     Examples:
@@ -794,6 +795,7 @@ class CmdSetHelp(CmdHelp):
       sethelp/append pickpocketing,Thievery = This steals ...
       sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
       sethelp/edit thievery
+      sethelp/category thievery = classes
 
     If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category
     will be used. If no lockstring is specified, everyone will be able to read
@@ -840,7 +842,7 @@ class CmdSetHelp(CmdHelp):
 
     key = "sethelp"
     aliases = []
-    switch_options = ("edit", "replace", "append", "extend", "delete")
+    switch_options = ("edit", "replace", "append", "extend", "category", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
     arg_regex = None
@@ -857,7 +859,7 @@ class CmdSetHelp(CmdHelp):
 
         if not self.args:
             self.msg(
-                "Usage: sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>"
+                "Usage: sethelp[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text or new category>]"
             )
             return
 
@@ -953,7 +955,7 @@ class CmdSetHelp(CmdHelp):
             else:
                 helpentry = create.create_help_entry(
                     topicstr,
-                    self.rhs,
+                    self.rhs if self.rhs is not None else "",
                     category=category,
                     locks=lockstring,
                     aliases=aliases,
@@ -984,6 +986,19 @@ class CmdSetHelp(CmdHelp):
                 old_entry.entrytext += "\n%s" % self.rhs
             old_entry.aliases.add(aliases)
             self.msg(f"Entry updated:\n{old_entry.entrytext}{aliastxt}")
+            return
+
+        if "category" in switches:
+            # set the category
+            if not old_entry:
+                self.msg(f"Could not find topic '{topicstr}'{aliastxt}.")
+                return
+            if not self.rhs:
+                self.msg("You must supply a category.")
+                return
+            category = self.rhs.lower()
+            old_entry.help_category = category
+            self.msg(f"Category for entry '{topicstr}'{aliastxt} changed to '{category}'.")
             return
 
         if "delete" in switches or "del" in switches:

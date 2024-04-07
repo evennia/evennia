@@ -7,6 +7,7 @@ documentation specifically regarding DRF integration.
 https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 
 """
+
 from typing import Union
 
 from django.db.models import Q
@@ -138,7 +139,6 @@ class ScriptDBFilterSet(BaseTypeclassFilterSet):
 
 
 class HelpFilterSet(FilterSet):
-
     """
     Filter for help entries
 

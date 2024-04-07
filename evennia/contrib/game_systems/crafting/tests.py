@@ -78,7 +78,7 @@ class TestCraftingRecipeBase(BaseEvenniaTestCase):
         """Test messaging to crafter"""
 
         self.recipe.msg("message")
-        self.crafter.msg.assert_called_with("message", {"type": "crafting"})
+        self.crafter.msg.assert_called_with(text=("message", {"type": "crafting"}))
 
     def test_pre_craft(self):
         """Test validating hook"""
@@ -206,7 +206,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         self.assertEqual(result[0].key, "Result1")
         self.assertEqual(result[0].tags.all(), ["result1", "resultprot"])
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+            text=(recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
         )
 
         # make sure consumables are gone
@@ -235,7 +235,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         self.assertEqual(result[0].key, "Result1")
         self.assertEqual(result[0].tags.all(), ["result1", "resultprot"])
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+            text=(recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
         )
 
         # make sure consumables are gone
@@ -251,8 +251,10 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_tool_missing_message.format(outputs="Result1", missing="tool2"),
-            {"type": "crafting"},
+            text=(
+                recipe.error_tool_missing_message.format(outputs="Result1", missing="tool2"),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there
@@ -269,8 +271,10 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
-            {"type": "crafting"},
+            text=(
+                recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there
@@ -293,8 +297,10 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
 
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
-            {"type": "crafting"},
+            text=(
+                recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are deleted even though we failed
@@ -317,10 +323,12 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_tool_excess_message.format(
-                outputs="Result1", excess=wrong.get_display_name(looker=self.crafter)
-            ),
-            {"type": "crafting"},
+            text=(
+                recipe.error_tool_excess_message.format(
+                    outputs="Result1", excess=wrong.get_display_name(looker=self.crafter)
+                ),
+                {"type": "crafting"},
+            )
         )
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -342,10 +350,12 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_tool_excess_message.format(
-                outputs="Result1", excess=tool3.get_display_name(looker=self.crafter)
-            ),
-            {"type": "crafting"},
+            text=(
+                recipe.error_tool_excess_message.format(
+                    outputs="Result1", excess=tool3.get_display_name(looker=self.crafter)
+                ),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there
@@ -369,10 +379,12 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_excess_message.format(
-                outputs="Result1", excess=cons4.get_display_name(looker=self.crafter)
-            ),
-            {"type": "crafting"},
+            text=(
+                recipe.error_consumable_excess_message.format(
+                    outputs="Result1", excess=cons4.get_display_name(looker=self.crafter)
+                ),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there
@@ -396,7 +408,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertTrue(result)
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+            text=(recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
         )
 
         # make sure consumables are gone
@@ -419,7 +431,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertTrue(result)
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+            text=(recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
         )
 
         # make sure consumables are gone
@@ -439,10 +451,12 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_tool_order_message.format(
-                outputs="Result1", missing=self.tool2.get_display_name(looker=self.crafter)
-            ),
-            {"type": "crafting"},
+            text=(
+                recipe.error_tool_order_message.format(
+                    outputs="Result1", missing=self.tool2.get_display_name(looker=self.crafter)
+                ),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there
@@ -462,10 +476,12 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_order_message.format(
-                outputs="Result1", missing=self.cons3.get_display_name(looker=self.crafter)
-            ),
-            {"type": "crafting"},
+            text=(
+                recipe.error_consumable_order_message.format(
+                    outputs="Result1", missing=self.cons3.get_display_name(looker=self.crafter)
+                ),
+                {"type": "crafting"},
+            )
         )
 
         # make sure consumables are still there

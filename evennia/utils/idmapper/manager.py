@@ -1,6 +1,7 @@
 """
 IDmapper extension to the default manager.
 """
+
 from django.db.models.manager import Manager
 
 

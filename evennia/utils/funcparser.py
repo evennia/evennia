@@ -43,6 +43,7 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 ---
 
 """
+
 import dataclasses
 import inspect
 import random

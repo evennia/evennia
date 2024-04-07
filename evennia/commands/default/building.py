@@ -1,16 +1,17 @@
 """
 Building and world design commands
 """
+
 import re
 import typing
 
-import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
+
+import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import (generate_cmdset_providers,
-                                         get_and_merge_cmdsets)
+from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -23,10 +24,18 @@ from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import (class_from_module, crop, dbref, display_len,
-                                 format_grid, get_all_typeclasses,
-                                 inherits_from, interactive, list_to_string,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    crop,
+    dbref,
+    display_len,
+    format_grid,
+    get_all_typeclasses,
+    inherits_from,
+    interactive,
+    list_to_string,
+    variable_from_module,
+)
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -68,7 +77,7 @@ __all__ = (
 )
 
 # used by set
-from ast import literal_eval as _LITERAL_EVAL
+from ast import literal_eval as _LITERAL_EVAL  # noqa
 
 LIST_APPEND_CHAR = "+"
 
@@ -218,10 +227,13 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
       alias <obj> [= [alias[,alias,alias,...]]]
       alias <obj> =
       alias/category <obj> = [alias[,alias,...]:<category>
+      alias/delete <obj> = <alias>
 
     Switches:
       category - requires ending input with :category, to store the
         given aliases with the given category.
+      delete - deletes all occurrences of the given alias, regardless
+        of category
 
     Assigns aliases to an object so it can be referenced by more
     than one name. Assign empty to remove all aliases from object. If
@@ -235,7 +247,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "setobjalias"
-    switch_options = ("category",)
+    switch_options = ("category", "delete")
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -252,12 +264,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         objname = self.lhs
 
-        # Find the object to receive aliases
+        # Find the object to receive/delete aliases
         obj = caller.search(objname)
         if not obj:
             return
-        if self.rhs is None:
-            # no =, so we just list aliases on object.
+        if self.rhs is None and "delete" not in self.switches:
+            # no =, and not deleting, so we just list aliases on object.
             aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
                 caller.msg(
@@ -280,7 +292,9 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.rhs:
-            # we have given an empty =, so delete aliases
+            # we have given an empty =, so delete aliases.
+            # as a side-effect, 'alias/delete obj' and 'alias/delete obj='
+            # will also be caught here, which is fine
             old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg(
@@ -290,6 +304,19 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 obj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
+            return
+
+        if "delete" in self.switches:
+            # delete all matching keys, regardless of category
+            existed = False
+            for key, category in obj.aliases.all(return_key_and_category=True):
+                if key == self.rhs:
+                    obj.aliases.remove(key=self.rhs, category=category)
+                    existed = True
+            if existed:
+                caller.msg("Alias '%s' deleted from %s." % (self.rhs, obj.get_display_name(caller)))
+            else:
+                caller.msg("%s has no alias '%s'." % (obj.get_display_name(caller), self.rhs))
             return
 
         category = None
@@ -1378,7 +1405,7 @@ class CmdSetHome(CmdLink):
             obj.home = new_home
             if old_home:
                 string = (
-                    f"Home location of {obj} was changed from {old_home}({old_home.dbref} to"
+                    f"Home location of {obj} was changed from {old_home}({old_home.dbref}) to"
                     f" {new_home}({new_home.dbref})."
                 )
             else:
@@ -2938,9 +2965,9 @@ class CmdExamine(ObjManipCommand):
         ):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
-            objdata[
-                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
-            ] = self.format_current_cmds(obj, current_cmdset)
+            objdata[f"Commands available to {obj.key} (result of Merged Cmdset(s))"] = (
+                self.format_current_cmds(obj, current_cmdset)
+            )
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
             objdata["Persistent"] = self.format_script_is_persistent(obj)
@@ -3255,9 +3282,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 string += f"\n   |RNo match found for '{searchstring}' in #dbref interval.|n"
             else:
                 result = result[0]
-                string += f"\n|g   {result.get_display_name(caller)} - {result.path}|n"
+                string += (
+                    f"\n|g   {result.get_display_name(caller)}"
+                    f"{result.get_extra_display_name_info(caller)} - {result.path}|n"
+                )
                 if "loc" in self.switches and not is_account and result.location:
-                    string += f" (|wlocation|n: |g{result.location.get_display_name(caller)}|n)"
+                    string += (
+                        f" (|wlocation|n: |g{result.location.get_display_name(caller)}"
+                        f"{result.get_extra_display_name_info(caller)}|n)"
+                    )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searches for key and aliases
@@ -3397,9 +3430,11 @@ class ScriptEvMore(EvMore):
 
             table.add_row(
                 f"#{script.id}",
-                f"{script.obj.key}({script.obj.dbref})"
-                if (hasattr(script, "obj") and script.obj)
-                else "<Global>",
+                (
+                    f"{script.obj.key}({script.obj.dbref})"
+                    if (hasattr(script, "obj") and script.obj)
+                    else "<Global>"
+                ),
                 script.key,
                 script.interval if script.interval > 0 else "--",
                 nextrep,

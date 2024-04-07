@@ -2,6 +2,7 @@
 Unit tests for the Evscaperoom
 
 """
+
 import inspect
 import pkgutil
 from os import path

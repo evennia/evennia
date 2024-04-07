@@ -39,6 +39,7 @@ The editor can also be used to format Python code and be made to
 survive a reload. See the `EvEditor` class for more details.
 
 """
+
 import re
 
 from django.conf import settings
@@ -88,7 +89,7 @@ _HELP_TEXT = _(
 
  :y  <l>        - yank (copy) line(s) <l> to the copy buffer
  :x  <l>        - cut line(s) <l> and store it in the copy buffer
- :p  <l>        - put (paste) previously copied line(s) directly after <l>
+ :p  <l>        - put (paste) previously copied line(s) directly before <l>
  :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
  :r  <l> <txt>  - replace line <l> with text <txt>
  :I  <l> <txt>  - insert text at the beginning of line <l>
@@ -97,7 +98,7 @@ _HELP_TEXT = _(
  :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
 
  :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f (full)
- :f <l>     - flood-fill entire buffer or line <l>: Equivalent to :j left
+ :f <l>     - flood-fill entire buffer or line <l>. Equivalent to :j <l> l
  :fi <l>    - indent entire buffer or line <l>
  :fd <l>    - de-indent entire buffer or line <l>
 
@@ -305,12 +306,13 @@ class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
         linerange = False
         if arglist and arglist[0].count(":") == 1:
             part1, part2 = arglist[0].split(":")
-            if part1 and part1.isdigit():
-                lstart = min(max(0, int(part1)) - 1, nlines)
-                linerange = True
-            if part2 and part2.isdigit():
-                lend = min(lstart + 1, int(part2)) + 1
-                linerange = True
+            lstart = min(max(1, int(part1)), nlines) - 1 if utils.value_is_integer(part1) else 0
+            lend = (
+                min(max(lstart + 1, int(part2)), nlines)
+                if utils.value_is_integer(part2)
+                else nlines
+            )
+            linerange = True
         elif arglist and arglist[0].isdigit():
             lstart = min(max(0, int(arglist[0]) - 1), nlines)
             lend = lstart + 1
@@ -348,6 +350,35 @@ class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
         self.args = args
         self.arg1 = arg1
         self.arg2 = arg2
+
+    def insert_raw_string_into_buffer(self):
+        """
+        Insert a line into the buffer. Used by both CmdLineInput and CmdEditorGroup.
+
+        """
+        caller = self.caller
+        editor = caller.ndb._eveditor
+        buf = editor.get_buffer()
+
+        # add a line of text to buffer
+        line = self.raw_string.strip("\r\n")
+        if editor._codefunc and editor._indent >= 0:
+            # if automatic indentation is active, add spaces
+            line = editor.deduce_indent(line, buf)
+        buf = line if not buf else buf + "\n%s" % line
+        self.editor.update_buffer(buf)
+        if self.editor._echo_mode:
+            # need to do it here or we will be off one line
+            cline = len(self.editor.get_buffer().split("\n"))
+            if editor._codefunc:
+                # display the current level of identation
+                indent = editor._indent
+                if indent < 0:
+                    indent = "off"
+
+                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, raw(line)))
+            else:
+                self.caller.msg("|b%02i|||n %s" % (cline, raw(line)))
 
 
 def _load_editor(caller):
@@ -392,29 +423,7 @@ class CmdLineInput(CmdEditorBase):
         If the editor handles code, it might add automatic
         indentation.
         """
-        caller = self.caller
-        editor = caller.ndb._eveditor
-        buf = editor.get_buffer()
-
-        # add a line of text to buffer
-        line = self.raw_string.strip("\r\n")
-        if editor._codefunc and editor._indent >= 0:
-            # if automatic indentation is active, add spaces
-            line = editor.deduce_indent(line, buf)
-        buf = line if not buf else buf + "\n%s" % line
-        self.editor.update_buffer(buf)
-        if self.editor._echo_mode:
-            # need to do it here or we will be off one line
-            cline = len(self.editor.get_buffer().split("\n"))
-            if editor._codefunc:
-                # display the current level of identation
-                indent = editor._indent
-                if indent < 0:
-                    indent = "off"
-
-                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, raw(line)))
-            else:
-                self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
+        self.insert_raw_string_into_buffer()
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -471,7 +480,8 @@ class CmdEditorGroup(CmdEditorBase):
 
         linebuffer = self.linebuffer
         lstart, lend = self.lstart, self.lend
-        cmd = self.cmdstring
+        # preserve the cmdname including case (otherwise uu and UU would be the same)
+        cmd = self.raw_string[: len(self.cmdstring)]
         echo_mode = self.editor._echo_mode
 
         if cmd == ":":
@@ -798,6 +808,9 @@ class CmdEditorGroup(CmdEditorBase):
                     caller.msg(_("Auto-indentation turned off."))
             else:
                 caller.msg(_("This command is only available in code editor mode."))
+        else:
+            # no match - insert as line in buffer
+            self.insert_raw_string_into_buffer()
 
 
 class EvEditorCmdSet(CmdSet):

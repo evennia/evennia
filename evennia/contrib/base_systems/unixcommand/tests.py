@@ -9,7 +9,6 @@ from .unixcommand import UnixCommand
 
 
 class CmdDummy(UnixCommand):
-
     """A dummy UnixCommand."""
 
     key = "dummy"

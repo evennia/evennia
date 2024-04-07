@@ -6,6 +6,8 @@ Unit tests for the scripts package
 from collections import defaultdict
 from unittest import TestCase, mock
 
+from parameterized import parameterized
+
 from evennia import DefaultScript
 from evennia.objects.objects import DefaultObject
 from evennia.scripts.manager import ScriptDBManager
@@ -17,7 +19,6 @@ from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.create import create_script
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
-from parameterized import parameterized
 
 
 class TestScript(BaseEvenniaTest):

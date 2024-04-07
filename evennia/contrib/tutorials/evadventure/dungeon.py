@@ -105,9 +105,9 @@ class EvAdventureDungeonRoom(EvAdventureRoom):
 
         """
         self.tags.add("not_clear", category="dungeon_room")
+
     def clear_room(self):
         self.tags.remove("not_clear", category="dungeon_room")
-
 
     @property
     def is_room_clear(self):
@@ -146,9 +146,7 @@ class EvAdventureDungeonExit(DefaultExit):
         dungeon_branch = self.location.db.dungeon_branch
         if target_location == self.location:
             # destination points back to us - create a new room
-            self.destination = target_location = dungeon_branch.new_room(
-                self
-            )
+            self.destination = target_location = dungeon_branch.new_room(self)
             dungeon_branch.register_exit_traversed(self)
 
         super().at_traverse(traversing_object, target_location, **kwargs)

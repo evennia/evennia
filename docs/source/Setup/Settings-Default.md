@@ -31,6 +31,7 @@ value - which may change as Evennia is developed. This way you can
 always be sure of what you have changed and what is default behaviour.
 
 """
+
 import os
 import sys
 

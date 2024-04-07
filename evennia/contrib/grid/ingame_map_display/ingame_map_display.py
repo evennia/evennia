@@ -56,6 +56,7 @@ This changes the default map width/height. 2-5 for most clients is sensible.
 If you don't want the player to be able to specify the size of the map, ignore any
 arguments passed into the Map command.
 """
+
 import time
 
 from django.conf import settings

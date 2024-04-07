@@ -10,6 +10,7 @@ functionality:
     an action whenever that Attribute *changes* for whatever reason.
 
 """
+
 import inspect
 from collections import defaultdict
 

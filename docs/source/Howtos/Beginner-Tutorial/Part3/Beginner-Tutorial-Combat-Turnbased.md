@@ -80,7 +80,7 @@ The advantage of using a menu is that you have all possible actions directly ava
 ## General Principle
 
 ```{sidebar}
-An example of an implemented Turnbased combat system can be found in [evennia/contrib/tutorials/evadventure/combat_turnbased.py](evennia.contrib.tutorials.evadventure.combat_turnbased).
+An example of an implemented Turnbased combat system can be found under `evennia/contrib/tutorials/evadventure/`, in [combat_turnbased.py](evennia.contrib.tutorials.evadventure.combat_turnbased).
 ```
 Here is the general principle of the Turnbased combat handler:
 

@@ -7,6 +7,7 @@ when starting and will warn if this was not possible. These will appear as files
 ssl.cert in mygame/server/.
 
 """
+
 import os
 
 try:

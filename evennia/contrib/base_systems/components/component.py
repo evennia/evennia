@@ -156,6 +156,22 @@ class Component(metaclass=BaseComponent):
         return self.host.attributes
 
     @property
+    def pk(self):
+        """
+        Shortcut property returning the host's primary key.
+
+        Returns:
+            int: The Host's primary key.
+
+        Notes:
+            This is requried to allow AttributeProperties to correctly update `_SaverMutable` data
+            (like lists) in-place (since the DBField sits on the Component which doesn't itself
+            have a primary key, this save operation would otherwise fail).
+
+        """
+        return self.host.pk
+
+    @property
     def nattributes(self):
         """
         Shortcut property returning the host's In-Memory AttributeHandler (Non Persisted).

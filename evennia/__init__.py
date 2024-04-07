@@ -16,6 +16,7 @@ to launch such a shell (using python or ipython depending on your install).
 See www.evennia.com for full documentation.
 
 """
+
 import evennia
 
 # docstring header

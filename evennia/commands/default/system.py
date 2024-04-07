@@ -4,7 +4,6 @@ System commands
 
 """
 
-
 import code
 import datetime
 import os
@@ -112,7 +111,6 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
 
 
 class CmdShutdown(COMMAND_DEFAULT_CLASS):
-
     """
     stop the server completely
 
@@ -277,7 +275,6 @@ def evennia_local_vars(caller):
 
 
 class EvenniaPythonConsole(code.InteractiveConsole):
-
     """Evennia wrapper around a Python interactive console."""
 
     def __init__(self, caller):

@@ -14,6 +14,7 @@ and/or
     {'prototype_parent': 'xyz_exit', ...}
 
 """
+
 from django.conf import settings
 
 try:

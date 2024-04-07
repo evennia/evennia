@@ -309,7 +309,6 @@ def schedule(callback, repeat=False, **kwargs):
 
 
 class GametimeScript(DefaultScript):
-
     """Gametime-sensitive script."""
 
     def at_script_creation(self):

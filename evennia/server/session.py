@@ -3,6 +3,7 @@ This module defines a generic session class. All connection instances
 (both on Portal and Server side) should inherit from this class.
 
 """
+
 import time
 
 from django.conf import settings

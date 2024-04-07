@@ -2,6 +2,7 @@
 Test the ai module.
 
 """
+
 from unittest.mock import Mock, patch
 
 from evennia import create_object

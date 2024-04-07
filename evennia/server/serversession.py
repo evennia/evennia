@@ -6,6 +6,7 @@ connection actually happens (so it's the same for telnet, web, ssh etc).
 It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
+
 import time
 
 from django.conf import settings

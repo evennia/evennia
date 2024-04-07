@@ -452,7 +452,6 @@ class Character(DefaultCharacter):
 
 """
 
-
 from functools import total_ordering
 from time import time
 

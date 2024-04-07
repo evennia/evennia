@@ -92,6 +92,7 @@ See `./example.py` for a full grid example.
 
 ----
 """
+
 import pickle
 from collections import defaultdict
 from os import mkdir
@@ -108,6 +109,7 @@ except ImportError as err:
         "the SciPy package. Install with `pip install scipy'."
     )
 from django.conf import settings
+
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.spawner import flatten_prototype
 from evennia.utils import logger
@@ -172,6 +174,7 @@ class XYMap:
     but recommended for readability!
 
     """
+
     mapcorner_symbol = "+"
     max_pathfinding_length = 500
     empty_symbol = " "
@@ -475,10 +478,10 @@ class XYMap:
                     max_X, max_Y = max(max_X, iX), max(max_Y, iY)
                     node_index += 1
 
-                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[
-                        node_index
-                    ] = mapnode_or_link_class(
-                        x=ix, y=iy, Z=self.Z, node_index=node_index, symbol=char, xymap=self
+                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = (
+                        mapnode_or_link_class(
+                            x=ix, y=iy, Z=self.Z, node_index=node_index, symbol=char, xymap=self
+                        )
                     )
 
                 else:
@@ -668,8 +671,7 @@ class XYMap:
         """
         global _XYZROOMCLASS
         if not _XYZROOMCLASS:
-            from evennia.contrib.grid.xyzgrid.xyzroom import \
-                XYZRoom as _XYZROOMCLASS
+            from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
         x, y = xy
         wildcard = "*"
         spawned = []

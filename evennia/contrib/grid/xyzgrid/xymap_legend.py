@@ -20,11 +20,11 @@ import uuid
 from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
+
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
-from .utils import (BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError,
-                    MapParserError)
+from .utils import BIGVAL, MAPSCAN, REVERSE_DIRECTIONS, MapError, MapParserError
 
 NodeTypeclass = None
 ExitTypeclass = None
@@ -327,6 +327,13 @@ class MapNode:
             nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
             if err:
                 raise RuntimeError(err)
+        except django_exceptions.MultipleObjectsReturned:
+            raise MapError(
+                f"Multiple objects found: {NodeTypeclass.objects.filter_xyz(xyz=xyz)}. "
+                "This may be due to manual creation of XYZRooms at this position. "
+                "Delete duplicates.",
+                self,
+            )
         else:
             self.log(f"  updating existing room (if changed) at xyz={xyz}")
 
@@ -844,6 +851,7 @@ class SmartRerouterMapLink(MapLink):
         /|
 
     """
+
     multilink = True
 
     def get_direction(self, start_direction):

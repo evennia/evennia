@@ -15,6 +15,7 @@ and examples, including how to allow players to choose and confirm
 character names from within the menu.
 
 """
+
 import string
 from random import choices
 

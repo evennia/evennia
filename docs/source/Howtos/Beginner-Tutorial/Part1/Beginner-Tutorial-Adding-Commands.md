@@ -91,47 +91,34 @@ The `me.cmdset` is the store of all cmdsets stored on us. By giving the path to 
 Now try
 
     > echo
-    Command echo has no defined `func()` - showing on-command variables:
-    ...
-    ...
+    Command "echo" has no defined `func()`. Available properties ...
+    ...(lots of stuff)...
 
-`echo` works! You should be getting a long list of outputs. The reason for this is that your `echo` function is not really "doing" anything yet and the default function is then to show all useful resources available to you when you use your Command. Let's look at some of those listed:
+`echo` works! You should be getting a long list of outputs. Your `echo` function is not really "doing" anything yet and the default function is then to show all useful resources available to you when you use your Command. Let's look at some of those listed:
 
-    Command echo has no defined `func()` - showing on-command variables:
-    obj (<class 'typeclasses.characters.Character'>): YourName
-    lockhandler (<class 'evennia.locks.lockhandler.LockHandler'>): cmd:all()
-    caller (<class 'typeclasses.characters.Character'>): YourName
-    cmdname (<class 'str'>): echo
-    raw_cmdname (<class 'str'>): echo
-    cmdstring (<class 'str'>): echo
-    args (<class 'str'>):
-    cmdset (<class 'evennia.commands.cmdset.CmdSet'>): @mail, about, access, accounts, addcom, alias, allcom, ban, batchcode, batchcommands, boot, cboot, ccreate,
-        cdesc, cdestroy, cemit, channels, charcreate, chardelete, checklockstring, clientwidth, clock, cmdbare, cmdsets, color, copy, cpattr, create, cwho, delcom,
-        desc, destroy, dig, dolphin, drop, echo, emit, examine, find, force, get, give, grapevine2chan, help, home, ic, inventory, irc2chan, ircstatus, link, lock,
-        look, menutest, mudinfo, mvattr, name, nick, objects, ooc, open, option, page, password, perm, pose, public, py, quell, quit, reload, reset, rss2chan, say,
-        script, scripts, server, service, sessions, set, setdesc, sethelp, sethome, shutdown, spawn, style, tag, tel, test2010, test2028, testrename, testtable,
-        tickers, time, tunnel, typeclass, unban, unlink, up, up, userpassword, wall, whisper, who, wipe
-    session (<class 'evennia.server.serversession.ServerSession'>): Griatch(#1)@1:2:7:.:0:.:0:.:1
-    account (<class 'typeclasses.accounts.Account'>): Griatch(account 1)
-    raw_string (<class 'str'>): echo
+```
+Command "echo" has no defined `func()` method. Available properties on this command are:
 
-    --------------------------------------------------
-    echo - Command variables from evennia:
-    --------------------------------------------------
-    name of cmd (self.key): echo
-    cmd aliases (self.aliases): []
-    cmd locks (self.locks): cmd:all();
-    help category (self.help_category): General
-    object calling (self.caller): Griatch
-    object storing cmdset (self.obj): Griatch
-    command string given (self.cmdstring): echo
-    current cmdset (self.cmdset): ChannelCmdSet
-
+     self.key (<class 'str'>): "echo"
+     self.cmdname (<class 'str'>): "echo"
+     self.raw_cmdname (<class 'str'>): "echo"
+     self.raw_string (<class 'str'>): "echo
+"
+     self.aliases (<class 'list'>): []
+     self.args (<class 'str'>): ""
+     self.caller (<class 'typeclasses.characters.Character'>): YourName
+     self.obj (<class 'typeclasses.characters.Character'>): YourName
+     self.session (<class 'evennia.server.serversession.ServerSession'>): YourName(#1)@1:2:7:.:0:.:0:.:1
+     self.locks (<class 'str'>): "cmd:all();"
+     self.help_category (<class 'str'>): "general"
+     self.cmdset (... a long list of commands ...)
+```
 These are all properties you can access with `.` on the Command instance, such as `.key`, `.args` and so on. Evennia makes these available to you and they will be different every time a command is run. The most important ones we will make use of now are:
 
  - `caller` - this is 'you', the person calling the command.
- - `args` - this is all arguments to the command. Now it's empty, but if you tried `echo foo bar` you'd find that this would be `" foo bar"`.
+ - `args` - this is all arguments to the command. Now it's empty, but if you tried `echo foo bar` you'd find that this would be `" foo bar"` (including the extra space  between `echo` and `foo` that you may want to strip away).
  - `obj` - this is object on which this Command (and CmdSet) "sits". So you, in this case.
+ - `raw_string` is not commonly used, but it's the completely unmodified input from the user. It even includes the line break used to send to the command to the server (that's why the end-quotes appear on the next line).
 
 The reason our command doesn't do anything yet is because it's missing a `func` method. This is what Evennia looks for to figure out what a Command actually does. Modify your `CmdEcho` class:
 
@@ -238,7 +225,7 @@ Tweak this file as follows:
 ```python
 # in mygame/commands/default_cmdsets.py 
 
-# ,.. 
+# ... 
 
 from . import mycommands    # <-------  
 
@@ -297,10 +284,9 @@ And Bob would see
 Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and `MyCmdSet`.
 
 ```{code-block} python
-# in mygame/commands/mycommands.py
-
 :linenos:
-:emphasize-lines: 3,4,11,14,15,17,18,19,21
+:emphasize-lines: 5,6,13,16,19,20,21,23
+# in mygame/commands/mycommands.py
 
 # ...
 
@@ -324,18 +310,17 @@ class CmdHit(Command):
             return
         self.caller.msg(f"You hit {target.key} with full force!")
         target.msg(f"You got hit by {self.caller.key} with full force!")
-# ...
 
+# ...
 ```
 
 A lot of things to dissect here:
-- **Line 3**: The normal `class` header. We inherit from `Command` which we imported at the top of this file.
-- **Lines 4-10**: The docstring and help-entry for the command. You could expand on this as much as you wanted.
-- **Line 11**: We want to write `hit` to use this command.
-- **Line 14**: We strip the whitespace from the argument like before. Since we don't want to have to do `self.args.strip()` over and over, we store the stripped version in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still have the whitespace and is not the same as `args` in this example.
+- **Line 5**: The normal `class` header. We inherit from `Command` which we imported at the top of this file.
+- **Lines 6-12**: The docstring and help-entry for the command. You could expand on this as much as you wanted.
+- **Line 13**: We want to write `hit` to use this command.
+- **Line 16**: We strip the whitespace from the argument like before. Since we don't want to have to do `self.args.strip()` over and over, we store the stripped version in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still have the whitespace and is not the same as `args` in this example.
 
 ```{sidebar} if-statements
-
 The full form of the if statement is
 	
 	if condition:
@@ -346,9 +331,9 @@ The full form of the if statement is
 	    ...
 
 There can be any number of `elifs` to mark when different branches of the code should run. If `else` is provided, it will run if none of the other conditions were truthy. 
-
 ```
-- **Line 15** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in Python it's usually easier to learn what is "falsy":
+
+- **Line 17** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in Python it's usually easier to learn what is "falsy":
     - `False` - this is a reserved boolean word in Python. The opposite is `True`.
     - `None` - another reserved word. This represents nothing, a null-result or value.
     - `0` or `0.0`
@@ -356,12 +341,20 @@ There can be any number of `elifs` to mark when different branches of the code s
     - Empty _iterables_ we haven't used yet, like empty lists `[]`, empty tuples `()` and empty dicts `{}`.
     - Everything else is "truthy".
 
-- **Line 16**'s condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the whole conditional becomes truthy. Let's continue in the code:
+    The conditional on **Line 16**'s condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the whole conditional becomes truthy. Let's continue in the code:
+```{sidebar} Errors in your code
+
+With longer code snippets to try, it gets more and more likely you'll
+make an error and get a `traceback` when you reload. This will either appear
+directly in-game or in your log (view it with `evennia -l` in a terminal).
+
+Don't panic - tracebacks are your friends! They are to be read bottom-up and usually describe exactly where your problem is. Refer to [The Python introduction lesson](./Beginner-Tutorial-Python-basic-introduction.md) for more hints. If you get stuck, reach out to the Evennia community for help.
+```
 - **Lines 16-17**: This code will only run if the `if` statement is truthy, in this case if `args` is the empty string.
-- **Line 17**: `return` is a reserved Python word that exits `func` immediately.
-- **Line 18**: We use `self.caller.search` to look for the target in the current location.
-- **Lines 19-20**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target. In that case, `target` will be `None` and we should just directly `return`.
-- **Lines 21-22**: At this point we have a suitable target and can send our punching strings to each.
+- **Line 19**: `return` is a reserved Python word that exits `func` immediately.
+- **Line 20**: We use `self.caller.search` to look for the target in the current location.
+- **Lines 21-22**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target. In that case, `target` will be `None` and we should just directly `return`.
+- **Lines 23-24**: At this point we have a suitable target and can send our punching strings to each.
 
 Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet`.
 
@@ -375,14 +368,6 @@ class MyCmdSet(CmdSet):
         self.add(CmdEcho)
         self.add(CmdHit)
 
-```
-
-```{sidebar} Errors in your code
-
-With longer code snippets to try, it gets more and more likely you'll
-make an error and get a `traceback` when you reload. This will either appear
-directly in-game or in your log (view it with `evennia -l` in a terminal).
-Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to [The Python introduction lesson](./Beginner-Tutorial-Python-basic-introduction.md) for more hints. If you get stuck, reach out to the Evennia community for help.
 ```
 
 Note that since we did `py self.cmdset.remove("commands.mycommands.MyCmdSet")` earlier, this cmdset is no longer available on our Character. Instead we will add these commands directly to our default cmdset.

@@ -1,6 +1,7 @@
 """
 Custom manager for HelpEntry objects.
 """
+
 from django.db import IntegrityError
 
 from evennia.server import signals

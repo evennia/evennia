@@ -823,7 +823,6 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
 
 
 class CmdExtendedRoomDetail(default_cmds.MuxCommand):
-
     """
     sets a detail on a room
 

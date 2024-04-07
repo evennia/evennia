@@ -2,6 +2,7 @@
 The client for sending data to the Evennia Game Index
 
 """
+
 import platform
 import urllib.error
 import urllib.parse

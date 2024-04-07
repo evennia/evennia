@@ -3,7 +3,6 @@ Sessionhandler for portal sessions.
 
 """
 
-
 import time
 from collections import deque, namedtuple
 

@@ -13,6 +13,7 @@ http://www.mushclient.com/mushclient/mxp.htm
 http://www.gammon.com.au/mushclient/addingservermxp.htm
 
 """
+
 import re
 
 from django.conf import settings

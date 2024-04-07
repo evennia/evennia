@@ -148,19 +148,25 @@ Extra Installation Instructions:
        `type/reset/force me = typeclasses.characters.Character`
 
 """
+
 import re
 from collections import defaultdict
 from string import punctuation
 
 import inflect
 from django.conf import settings
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import (iter_to_str, lazy_property, make_iter,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    iter_to_str,
+    lazy_property,
+    make_iter,
+    variable_from_module,
+)
 
 _INFLECT = inflect.engine()
 
@@ -1276,6 +1282,8 @@ class RPSystemCmdSet(CmdSet):
     """
     Mix-in for adding rp-commands to default cmdset.
     """
+
+    key = "rpsystem_cmdset"
 
     def at_cmdset_creation(self):
         self.add(CmdEmote())
