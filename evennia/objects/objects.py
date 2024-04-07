@@ -73,10 +73,16 @@ class ObjectSessionHandler:
         self._sessid_cache = list(
             set(int(val) for val in (self.obj.db_sessid or "").split(",") if val)
         )
-        if any(sessid for sessid in self._sessid_cache if sessid not in evennia.SESSION_HANDLER):
+        if any(
+            sessid
+            for sessid in self._sessid_cache
+            if sessid not in evennia.SESSION_HANDLER
+        ):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
             self._sessid_cache = [
-                sessid for sessid in self._sessid_cache if sessid in evennia.SESSION_HANDLER
+                sessid
+                for sessid in self._sessid_cache
+                if sessid in evennia.SESSION_HANDLER
             ]
             self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
             self.obj.save(update_fields=["db_sessid"])
@@ -99,13 +105,19 @@ class ObjectSessionHandler:
 
         if sessid:
             sessions = (
-                [evennia.SESSION_HANDLER[sessid] if sessid in evennia.SESSION_HANDLER else None]
+                [
+                    evennia.SESSION_HANDLER[sessid]
+                    if sessid in evennia.SESSION_HANDLER
+                    else None
+                ]
                 if sessid in self._sessid_cache
                 else []
             )
         else:
             sessions = [
-                evennia.SESSION_HANDLER[ssid] if ssid in evennia.SESSION_HANDLER else None
+                evennia.SESSION_HANDLER[ssid]
+                if ssid in evennia.SESSION_HANDLER
+                else None
                 for ssid in self._sessid_cache
             ]
         if None in sessions:
@@ -509,18 +521,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     def handle_search_results(self, searchdata, results, **kwargs):
         """
         This method is called by the search method to allow for handling of the final search result.
-
         Args:
             searchdata (str): The original search criterion (potentially modified by
                 `get_search_query_replacement`).
             results (list): The list of results from the search.
             **kwargs (any): These are the same as passed to the `search` method.
-
         Returns:
             Object, None or list: Normally this is a single object, but if `quiet=True` it should be
             a list.  If quiet=False and we have to handle a no/multi-match error (directly messaging
             the user), this should return `None`.
-
         """
         if kwargs.get("quiet"):
             # don't care about no/multi-match errors, just return list of whatever we have
@@ -530,6 +539,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         nofound_string = kwargs.get("nofound_string")
         multimatch_string = kwargs.get("multimatch_string")
+        return_quantity = kwargs.get("return_quantity")
+        return_type = kwargs.get("return_type")
 
         return _AT_SEARCH_RESULT(
             results,
@@ -537,6 +548,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             query=searchdata,
             nofound_string=nofound_string,
             multimatch_string=multimatch_string,
+            return_quantity=return_quantity,
+            return_type=return_type,
         )
 
     def search(
@@ -556,6 +569,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         use_dbref=None,
         tags=None,
         stacked=0,
+        return_quantity=1,
+        return_type=None,
     ):
         """
         Returns an Object matching a search string/condition
@@ -626,6 +641,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 list. If `stacked` is larger than number of matches, returns that number of matches.
                 If the found stack is a mix of objects, return None and handle the multi-match error
                 depending on the value of `quiet`.
+            return_quantity (int, optional): The number of matches to return.
+            return_type (SearchReturnType, optional): The type of return to make.
+                can be Default, All, One, or Multiple.
 
         Returns:
             Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
@@ -640,16 +658,21 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             messaging is assumed to be handled by the caller.
 
         """
+
         # store input kwargs for sub-methods (this must be done first in this method)
         input_kwargs = {
-            key: value for key, value in locals().items() if key not in ("self", "searchdata")
+            key: value
+            for key, value in locals().items()
+            if key not in ("self", "searchdata")
         }
 
         # replace incoming searchdata string with a potentially modified version
         searchdata = self.get_search_query_replacement(searchdata, **input_kwargs)
 
         # handle special input strings, like "me" or "here".
-        should_return, searchdata = self.get_search_direct_match(searchdata, **input_kwargs)
+        should_return, searchdata = self.get_search_direct_match(
+            searchdata, **input_kwargs
+        )
         if should_return:
             # we got an actual result, return it immediately
             return [searchdata] if quiet else searchdata
@@ -663,7 +686,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # convert tags into tag tuples suitable for query
         tags = [
-            (tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags or [])
+            (tagkey, tagcat[0] if tagcat else None)
+            for tagkey, *tagcat in make_iter(tags or [])
         ]
 
         # always use exact match for dbref/global searches
@@ -685,7 +709,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # filter out objects we are not allowed to search
         if use_locks:
-            results = [x for x in list(results) if x.access(self, "search", default=True)]
+            results = [
+                x for x in list(results) if x.access(self, "search", default=True)
+            ]
 
         # handle stacked objects
         is_stacked, results = self.get_stacked_results(results, **input_kwargs)
@@ -772,7 +798,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=True
         )
-        return _CMDHANDLER(self, raw_string, callertype="object", session=session, **kwargs)
+        return _CMDHANDLER(
+            self, raw_string, callertype="object", session=session, **kwargs
+        )
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
@@ -1092,7 +1120,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Call hook on source location
         if move_hooks and source_location:
             try:
-                source_location.at_object_leave(self, destination, move_type=move_type, **kwargs)
+                source_location.at_object_leave(
+                    self, destination, move_type=move_type, **kwargs
+                )
             except Exception as err:
                 logerr(errtxt.format(err="at_object_leave()"), err)
                 return False
@@ -1124,7 +1154,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # Perform eventual extra commands on the receiving location
             # (the object has already arrived at this point)
             try:
-                destination.at_object_receive(self, source_location, move_type=move_type, **kwargs)
+                destination.at_object_receive(
+                    self, source_location, move_type=move_type, **kwargs
+                )
             except Exception as err:
                 logerr(errtxt.format(err="at_object_receive()"), err)
                 return False
@@ -1145,7 +1177,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         object as a destination.
 
         """
-        for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
+        for out_exit in [
+            exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination
+        ]:
             out_exit.delete()
         for in_exit in ObjectDB.objects.filter(db_destination=self):
             in_exit.delete()
@@ -1178,7 +1212,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # If for some reason it's still None...
             if not home:
                 obj.location = None
-                obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
+                obj.msg(
+                    _(
+                        "Something went wrong! You are dumped into nowhere. Contact an admin."
+                    )
+                )
                 logger.log_err(
                     "Missing default home - '{name}(#{dbid})' now has a null location.".format(
                         name=obj.name, dbid=obj.dbid
@@ -1269,7 +1307,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get("locks")
         if (account or caller) and not lockstring:
-            lockstring = cls.get_default_lockstring(account=account, caller=caller, **kwargs)
+            lockstring = cls.get_default_lockstring(
+                account=account, caller=caller, **kwargs
+            )
             kwargs["locks"] = lockstring
 
         # Create object
@@ -1361,7 +1401,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # See if we need to kick the account off.
 
         for session in self.sessions.all():
-            session.msg(_("Your character {key} has been destroyed.").format(key=self.key))
+            session.msg(
+                _("Your character {key} has been destroyed.").format(key=self.key)
+            )
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:
@@ -1391,7 +1433,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return True
 
     def access(
-        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
+        self,
+        accessing_obj,
+        access_type="read",
+        default=False,
+        no_superuser_bypass=False,
+        **kwargs,
     ):
         """
         Determines if another object has permission to access this object
@@ -1435,7 +1482,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj
             for obj in obj_list
             if obj != looker
-            and (obj.access(looker, "view") and obj.access(looker, "search", default=True))
+            and (
+                obj.access(looker, "view")
+                and obj.access(looker, "search", default=True)
+            )
         ]
 
     # name and return_appearance hooks
@@ -1514,10 +1564,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         plural_category = "plural_key"
         key = kwargs.get("key", self.get_display_name(looker))
         raw_key = self.name
-        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
+        key = ansi.ANSIString(
+            key
+        )  # this is needed to allow inflection of colored names
         try:
             plural = _INFLECT.plural(key, count)
-            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
+            plural = "{} {}".format(
+                _INFLECT.number_to_words(count, threshold=12), plural
+            )
         except IndexError:
             # this is raised by inflect if the input is not a proper noun
             plural = key
@@ -1588,6 +1642,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.get_display_name(looker, exit_order=('north', 'south'))
                     -> "Exits: north, south, out, and portal."  (markup not shown here)
         """
+
         def _sort_exit_names(names):
             exit_order = kwargs.get("exit_order")
             if not exit_order:
@@ -1595,10 +1650,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             sort_index = {name: key for key, name in enumerate(exit_order)}
             names = sorted(names)
             end_pos = len(names) + 1
-            names.sort(key=lambda name:sort_index.get(name, end_pos))
+            names.sort(key=lambda name: sort_index.get(name, end_pos))
             return names
 
-        exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
+        exits = self.filter_visible(
+            self.contents_get(content_type="exit"), looker, **kwargs
+        )
         exit_names = (exi.get_display_name(looker, **kwargs) for exi in exits)
         exit_names = iter_to_str(_sort_exit_names(exit_names))
 
@@ -1636,7 +1693,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         # sort and handle same-named things
-        things = self.filter_visible(self.contents_get(content_type="object"), looker, **kwargs)
+        things = self.filter_visible(
+            self.contents_get(content_type="object"), looker, **kwargs
+        )
 
         grouped_things = defaultdict(list)
         for thing in things:
@@ -2071,7 +2130,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # deprecated alias
     at_before_move = at_pre_move
 
-    def announce_move_from(self, destination, msg=None, mapping=None, move_type="move", **kwargs):
+    def announce_move_from(
+        self, destination, msg=None, mapping=None, move_type="move", **kwargs
+    ):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -2109,7 +2170,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         location = self.location
         exits = [
-            o for o in location.contents if o.location is location and o.destination is destination
+            o
+            for o in location.contents
+            if o.location is location and o.destination is destination
         ]
         if not mapping:
             mapping = {}
@@ -2124,10 +2187,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         location.msg_contents(
-            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+            (string, {"type": move_type}),
+            exclude=(self,),
+            from_obj=self,
+            mapping=mapping,
         )
 
-    def announce_move_to(self, source_location, msg=None, mapping=None, move_type="move", **kwargs):
+    def announce_move_to(
+        self, source_location, msg=None, mapping=None, move_type="move", **kwargs
+    ):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -2197,7 +2265,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         destination.msg_contents(
-            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+            (string, {"type": move_type}),
+            exclude=(self,),
+            from_obj=self,
+            mapping=mapping,
         )
 
     def at_post_move(self, source_location, move_type="move", **kwargs):
@@ -2380,7 +2451,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
 
         def _filter_visible(obj_list):
-            return [obj for obj in self.filter_visible(obj_list, looker, **kwargs) if obj != looker]
+            return [
+                obj
+                for obj in self.filter_visible(obj_list, looker, **kwargs)
+                if obj != looker
+            ]
 
         return {
             "exits": _filter_visible(self.contents_get(content_type="exit")),
@@ -2416,9 +2491,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         contents_map = self.get_visible_contents(looker, **kwargs)
 
         character_names = [
-            char.get_display_name(looker, **kwargs) for char in contents_map["characters"]
+            char.get_display_name(looker, **kwargs)
+            for char in contents_map["characters"]
         ]
-        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]]
+        exit_names = [
+            exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]
+        ]
 
         # group all same-named things under one name
         things = defaultdict(list)
@@ -2433,7 +2511,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
 
-        return {"exits": exit_names, "characters": character_names, "things": thing_names}
+        return {
+            "exits": exit_names,
+            "characters": character_names,
+            "things": thing_names,
+        }
 
     def at_look(self, target, **kwargs):
         """
@@ -2724,7 +2806,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "speech": message,
             }
             self_mapping.update(custom_mapping)
-            self.msg(text=(msg_self.format_map(self_mapping), {"type": msg_type}), from_obj=self)
+            self.msg(
+                text=(msg_self.format_map(self_mapping), {"type": msg_type}),
+                from_obj=self,
+            )
 
         if receivers and msg_receivers:
             receiver_mapping = {
@@ -2749,7 +2834,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 receiver_mapping.update(individual_mapping)
                 receiver_mapping.update(custom_mapping)
                 receiver.msg(
-                    text=(msg_receivers.format_map(receiver_mapping), {"type": msg_type}),
+                    text=(
+                        msg_receivers.format_map(receiver_mapping),
+                        {"type": msg_type},
+                    ),
                     from_obj=self,
                 )
 
@@ -2758,7 +2846,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "self": "You",
                 "object": self,
                 "location": location,
-                "all_receivers": ", ".join(str(recv) for recv in receivers) if receivers else None,
+                "all_receivers": ", ".join(str(recv) for recv in receivers)
+                if receivers
+                else None,
                 "receiver": None,
                 "speech": message,
             }
@@ -2877,7 +2967,9 @@ class DefaultCharacter(DefaultObject):
         kwargs["key"] = key
 
         # Get permissions
-        kwargs["permissions"] = kwargs.get("permissions", settings.PERMISSION_ACCOUNT_DEFAULT)
+        kwargs["permissions"] = kwargs.get(
+            "permissions", settings.PERMISSION_ACCOUNT_DEFAULT
+        )
 
         # Get description if provided
         description = kwargs.pop("description", "")
@@ -3012,16 +3104,21 @@ class DefaultCharacter(DefaultObject):
         if self.location is None:
             # Make sure character's location is never None before being puppeted.
             # Return to last location (or home, which should always exist)
-            location = self.db.prelogout_location if self.db.prelogout_location else self.home
+            location = (
+                self.db.prelogout_location if self.db.prelogout_location else self.home
+            )
             if location:
                 self.location = location
                 self.location.at_object_receive(self, None)
 
         if self.location:
-            self.db.prelogout_location = self.location  # save location again to be sure.
+            self.db.prelogout_location = (
+                self.location
+            )  # save location again to be sure.
         else:
             account.msg(
-                _("|r{obj} has no location and no home is set.|n").format(obj=self), session=session
+                _("|r{obj} has no location and no home is set.|n").format(obj=self),
+                session=session,
             )
 
     def at_post_puppet(self, **kwargs):
@@ -3045,7 +3142,9 @@ class DefaultCharacter(DefaultObject):
 
         def message(obj, from_obj):
             obj.msg(
-                _("{name} has entered the game.").format(name=self.get_display_name(obj)),
+                _("{name} has entered the game.").format(
+                    name=self.get_display_name(obj)
+                ),
                 from_obj=from_obj,
             )
 
@@ -3185,7 +3284,9 @@ class DefaultRoom(DefaultObject):
 
             # Add locks
             if not locks:
-                locks = cls.get_default_lockstring(account=account, caller=caller, room=obj)
+                locks = cls.get_default_lockstring(
+                    account=account, caller=caller, room=obj
+                )
             if locks:
                 obj.locks.add(locks)
 
@@ -3213,7 +3314,14 @@ class DefaultRoom(DefaultObject):
 
         super().basetype_setup()
         self.locks.add(
-            ";".join(["get:false()", "puppet:false()", "teleport:false()", "teleport_here:true()"])
+            ";".join(
+                [
+                    "get:false()",
+                    "puppet:false()",
+                    "teleport:false()",
+                    "teleport_here:true()",
+                ]
+            )
         )  # would be weird to puppet a room ...
         self.location = None
 
@@ -3265,7 +3373,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
 
         """
         if self.obj.destination:
-            return " (exit to %s)" % self.obj.destination.get_display_name(caller, **kwargs)
+            return " (exit to %s)" % self.obj.destination.get_display_name(
+                caller, **kwargs
+            )
         else:
             return " (%s)" % self.obj.get_display_name(caller, **kwargs)
 
@@ -3394,7 +3504,9 @@ class DefaultExit(DefaultObject):
 
             # Set appropriate locks
             if not locks:
-                locks = cls.get_default_lockstring(account=account, caller=caller, exit=obj)
+                locks = cls.get_default_lockstring(
+                    account=account, caller=caller, exit=obj
+                )
             if locks:
                 obj.locks.add(locks)
 
@@ -3457,7 +3569,9 @@ class DefaultExit(DefaultObject):
 
         """
 
-        if "force_init" in kwargs or not self.cmdset.has_cmdset("ExitCmdSet", must_be_default=True):
+        if "force_init" in kwargs or not self.cmdset.has_cmdset(
+            "ExitCmdSet", must_be_default=True
+        ):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self), persistent=False)
 
@@ -3483,7 +3597,9 @@ class DefaultExit(DefaultObject):
 
         """
         source_location = traversing_object.location
-        if traversing_object.move_to(target_location, move_type="traverse", exit_obj=self):
+        if traversing_object.move_to(
+            target_location, move_type="traverse", exit_obj=self
+        ):
             self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:
@@ -3524,7 +3640,9 @@ class DefaultExit(DefaultObject):
             will be a queryset of all matching exits. Otherwise, it will be the first Exit matched.
 
         """
-        query = ObjectDB.objects.filter(db_location=self.destination, db_destination=self.location)
+        query = ObjectDB.objects.filter(
+            db_location=self.destination, db_destination=self.location
+        )
         if return_all:
             return query
         return query.first()
