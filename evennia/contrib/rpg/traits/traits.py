@@ -571,16 +571,12 @@ class TraitHandler:
         # initialize any
         # Note that .trait_data retains the connection to the database, meaning every
         # update we do to .trait_data automatically syncs with database.
-        self.trait_data = obj.attributes.get(
-            db_attribute_key, category=db_attribute_category
-        )
+        self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
         if self.trait_data is None:
             # no existing storage; initialize it, we then have to fetch it again
             # to retain the db connection
             obj.attributes.add(db_attribute_key, {}, category=db_attribute_category)
-            self.trait_data = obj.attributes.get(
-                db_attribute_key, category=db_attribute_category
-            )
+            self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
         self._cache = {}
 
     def __len__(self):
@@ -599,9 +595,7 @@ class TraitHandler:
             _SA(self, trait_key, value)
         else:
             trait_cls = self._get_trait_class(trait_key=trait_key)
-            valid_keys = list_to_string(
-                list(trait_cls.default_keys.keys()), endsep="or"
-            )
+            valid_keys = list_to_string(list(trait_cls.default_keys.keys()), endsep="or")
             raise TraitException(
                 f"Trait object not settable directly. Assign to {trait_key}.{valid_keys}."
             )
@@ -633,9 +627,7 @@ class TraitHandler:
             try:
                 trait_type = self.trait_data[trait_key]["trait_type"]
             except KeyError:
-                raise TraitException(
-                    f"Trait class for Trait {trait_key} could not be found."
-                )
+                raise TraitException(f"Trait class for Trait {trait_key} could not be found.")
         try:
             return _TRAIT_CLASSES[trait_type]
         except KeyError:
@@ -665,9 +657,7 @@ class TraitHandler:
         if trait is None and trait_key in self.trait_data:
             trait_type = self.trait_data[trait_key]["trait_type"]
             trait_cls = self._get_trait_class(trait_type)
-            trait = self._cache[trait_key] = trait_cls(
-                _GA(self, "trait_data")[trait_key]
-            )
+            trait = self._cache[trait_key] = trait_cls(_GA(self, "trait_data")[trait_key])
         return trait
 
     def add(
@@ -763,9 +753,7 @@ class TraitProperty:
 
     """
 
-    def __init__(
-        self, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties
-    ):
+    def __init__(self, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties):
         """
         Initialize a TraitField. Mimics TraitHandler.add input except no `trait_key`.
 
@@ -784,9 +772,7 @@ class TraitProperty:
         """
         self._traithandler_name = trait_properties.pop("traithandler_name", "traits")
 
-        trait_properties.update(
-            {"name": name, "trait_type": trait_type, "force": force}
-        )
+        trait_properties.update({"name": name, "trait_type": trait_type, "force": force})
         self._trait_properties = trait_properties
         self._cache = {}
 
@@ -826,9 +812,7 @@ class TraitProperty:
             if trait is None:
                 # initialize the trait
                 traithandler.add(self._trait_key, **self._trait_properties)
-                trait = traithandler.get(
-                    self._trait_key
-                )  # caches it in the traithandler
+                trait = traithandler.get(self._trait_key)  # caches it in the traithandler
             self._cache[instance] = trait
         return self._cache[instance]
 
@@ -936,21 +920,13 @@ class Trait:
 
         if MandatoryTraitKey in unset_defaults.values():
             # we have one or more unset keys that was mandatory
-            _raise_err(
-                [
-                    key
-                    for key, value in unset_defaults.items()
-                    if value == MandatoryTraitKey
-                ]
-            )
+            _raise_err([key for key, value in unset_defaults.items() if value == MandatoryTraitKey])
         # apply the default values
         trait_data.update(unset_defaults)
 
         if not cls.allow_extra_properties:
             # don't allow any extra properties - remove the extra data
-            for key in (
-                key for key in inp.difference(req) if key not in ("name", "trait_type")
-            ):
+            for key in (key for key in inp.difference(req) if key not in ("name", "trait_type")):
                 del trait_data[key]
 
         return trait_data
@@ -1344,8 +1320,7 @@ class CounterTrait(Trait):
         """Check if we passed the ratetarget in either direction."""
         ratetarget = self._data["ratetarget"]
         return ratetarget is not None and (
-            (self.rate < 0 and value <= ratetarget)
-            or (self.rate > 0 and value >= ratetarget)
+            (self.rate < 0 and value <= ratetarget) or (self.rate > 0 and value >= ratetarget)
         )
 
     def _stop_timer(self):
@@ -1470,9 +1445,7 @@ class CounterTrait(Trait):
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._check_and_start_timer(
-                self._enforce_boundaries(value)
-            )
+            self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter
     def current(self):
@@ -1695,17 +1668,13 @@ class GaugeTrait(CounterTrait):
     def current(self):
         """The `current` value of the gauge."""
         return self._update_current(
-            self._enforce_boundaries(
-                self._data.get("current", (self.base + self.mod) * self.mult)
-            )
+            self._enforce_boundaries(self._data.get("current", (self.base + self.mod) * self.mult))
         )
 
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._check_and_start_timer(
-                self._enforce_boundaries(value)
-            )
+            self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter
     def current(self):

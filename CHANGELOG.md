@@ -5,8 +5,11 @@
 - [Feature][pull3470]: New `exit_order` kwarg to
   `DefaultObject.get_display_exits` to easier customize the order in which
   standard exits are displayed in a room (chiizujin)
+- [Fix][pull3495]: Fix rate in Trait contribs not updating after reload
+  (jaborsh)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
+[pull3495]: https://github.com/evennia/evennia/pull/3495
 
 ## Evennia 4.1.1
 
