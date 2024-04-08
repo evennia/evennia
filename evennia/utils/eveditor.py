@@ -673,13 +673,13 @@ class CmdEditorGroup(CmdEditorBase):
                     if not self.linerange:
                         caller.msg(
                             _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
-                                arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend
+                                arg1=raw(self.arg1), arg2=raw(self.arg2), l1=lstart + 1, l2=lend
                             )
                         )
                     else:
                         caller.msg(
                             _("Search-replaced {arg1} -> {arg2} for {line}.").format(
-                                arg1=self.arg1, arg2=self.arg2, line=self.lstr
+                                arg1=raw(self.arg1), arg2=raw(self.arg2), line=self.lstr
                             )
                         )
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
