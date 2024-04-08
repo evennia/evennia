@@ -419,6 +419,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                - xterm256: Enforce xterm256 colors, regardless of TTYPE.
                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
+               - truecolor: Enforce truecolor, regardless of TTYPE.
                - raw: Pass string through without any ansi processing
                     (i.e. include Evennia ansi markers but do not
                     convert them into ansi tokens)

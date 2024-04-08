@@ -44,7 +44,7 @@ class Ttype:
     def __init__(self, protocol):
         """
         Initialize ttype by storing protocol on ourselves and calling
-        the client to see if it supporst ttype.
+        the client to see if it supports ttype.
 
         Args:
             protocol (Protocol): The protocol instance.
