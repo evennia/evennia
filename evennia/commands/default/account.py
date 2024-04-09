@@ -635,6 +635,11 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
+
+                    # If we're manually assign a display size, turn off auto-resizing
+                    if new_name in ['SCREENWIDTH', 'SCREENHEIGHT']:
+                        flags['AUTORESIZE'] = False
+
                     self.msg(
                         f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"
                         f" '|w{new_val}|n'."
@@ -657,6 +662,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "RAW": validate_bool,
             "SCREENHEIGHT": validate_size,
             "SCREENWIDTH": validate_size,
+            "AUTORESIZE": validate_bool,
             "SCREENREADER": validate_bool,
             "TERM": utils.to_str,
             "UTF-8": validate_bool,
