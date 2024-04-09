@@ -96,8 +96,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             # Do we have a NAWS update?
             if NAWS in data and len([data[i:i+1] for i in range(0, len(data))]) == 9:
                 self.sessionhandler.sync(self.sessionhandler.get(self.sessid))
-            else:
-                super().dataReceived(data)
+            super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
 
