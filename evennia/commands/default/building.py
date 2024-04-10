@@ -200,7 +200,14 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
                 errors. (which might be empty.)
         """
 
-        found_typeclass = typeclass or self.default_typeclasses.get(obj_type, None)
+        if obj_type == "room" and self.caller.location and inherits_from(
+            self.caller.location, "evennia.objects.objects.DefaultRoom"
+        ):
+            loc_typeclass = self.caller.location.typeclass_path
+        else:
+            loc_typeclass = None
+
+        found_typeclass = typeclass or loc_typeclass or self.default_typeclasses.get(obj_type, None)
         if not found_typeclass:
             return None, [f"No typeclass found for object type '{obj_type}'."]
 
