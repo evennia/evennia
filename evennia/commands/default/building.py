@@ -1028,7 +1028,7 @@ class CmdDig(ObjManipCommand):
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
 
-        room_string = f"Created room {new_room}({new_room.dbref}){alias_string} of type {new_room}."
+        room_string = f"Created room {new_room}({new_room.dbref}){alias_string} of type {new_room.typeclass_path}."
 
         # create exit to room
 
