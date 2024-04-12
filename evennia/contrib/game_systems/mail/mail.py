@@ -45,7 +45,7 @@ import re
 
 from evennia import AccountDB, ObjectDB, default_cmds
 from evennia.comms.models import Msg
-from evennia.utils import create, datetime_format, evtable, inherits_from, make_iter
+from evennia.utils import create, datetime_format, evtable, inherits_from, make_iter, utc_to_local
 
 _HEAD_CHAR = "|015-|n"
 _SUB_HEAD_CHAR = "-"
@@ -164,6 +164,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
 
         subject = ""
         body = ""
+        time_zone = self.account.options.get("timezone")
 
         if self.switches or self.args:
             if "delete" in self.switches or "del" in self.switches:
@@ -296,9 +297,10 @@ class CmdMail(default_cmds.MuxAccountCommand):
                         )
                         # note that we cannot use %-d format here since Windows does not support it
                         day = message.db_date_created.day
+                        date_created = utc_to_local(message.db_date_created, time_zone)
                         messageForm.append(
                             "|wSent:|n %s"
-                            % message.db_date_created.strftime(f"%b {day}, %Y - %H:%M:%S")
+                            % date_created.strftime(f"%b {day}, %Y - %H:%M:%S")
                         )
                         messageForm.append("|wSubject:|n %s" % message.header)
                         messageForm.append(_SUB_HEAD_CHAR * _WIDTH)
@@ -330,11 +332,12 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     if status == "NEW":
                         status = "|gNEW|n"
 
+                    date_created = utc_to_local(message.db_date_created, time_zone)
                     table.add_row(
                         index,
                         message.senders[0].get_display_name(self.caller),
                         message.header,
-                        datetime_format(message.db_date_created),
+                        datetime_format(date_created, time_zone),
                         status,
                     )
                     index += 1
