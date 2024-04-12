@@ -676,9 +676,9 @@ def datetime_format(dtobj, time_zone=None):
     Args:
         dtobj (datetime): An datetime object, e.g. from Django's
             `DateTimeField`.
-        time_zone (tzfile): If provided, `dtobj` is adjusted to
-            the given time zone for the elapsed time calculations.
-            This should be used if `dtobj` is not UTC.
+        time_zone (tzfile): If provided, the current date/time is
+             adjusted to the given time zone for the elapsed time
+             calculations. This should be used if `dtobj` is not UTC.
 
     Returns:
         deltatime (str): A string describing how long ago `dtobj`
