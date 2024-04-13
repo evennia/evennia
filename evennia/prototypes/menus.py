@@ -835,7 +835,7 @@ def _prototype_parent_actions(caller, raw_inp, **kwargs):
         return "node_prototype_parent"
 
 
-def _prototype_parent_select(caller, new_parent):
+def _prototype_parent_select(caller, new_parent, **kwargs):
     ret = None
     prototype_parent = protlib.search_prototype(new_parent)
     try:
