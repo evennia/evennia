@@ -25,8 +25,9 @@ from codecs import lookup as codecs_lookup
 
 from django.conf import settings
 
-from evennia.accounts.models import AccountDB
+from evennia import ObjectDB
 from evennia.commands.cmdhandler import cmdhandler
+from evennia.commands.default.general import CmdSay
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str
 
@@ -648,6 +649,26 @@ def msdp_send(session, *args, **kwargs):
         if varname.lower() in _monitorable:
             out[varname] = _monitorable[varname.lower()]
     session.msg(send=((), out))
+
+
+def is_typing_get_aliases(session, *args, **kwargs):
+    session.msg(is_typing={'type': 'aliases', 'payload': CmdSay.aliases})
+
+
+def is_typing_state(session, *args, **kwargs):
+    # audience = ObjectDB.objects.filter(db_typeclass_path="typeclasses.characters.Character",
+    #                                    db_location=session.puppet.location).exclude(db_key=session.puppet.key)
+
+    audience = ObjectDB.objects.filter(db_typeclass_path="typeclasses.characters.Character",
+                                       db_location=session.puppet.location)
+
+    for puppet in audience:
+        for puppet_session in puppet.sessions.all():
+            puppet_session.msg(is_typing={'type': 'typing',
+                                          'payload': {
+                                              'name': session.puppet.name,
+                                              'state': args[0]
+                                          }})
 
 
 # client specific

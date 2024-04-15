@@ -346,6 +346,33 @@ div {margin:0px;}
   text-decoration: underline;
 }
 
+#istyping {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: auto;
+    height: auto;
+    display: none;
+    color: white;
+}
+
+.player-is-typing {
+    animation: isTyping 2s ease 0s infinite normal forwards;
+}
+@keyframes isTyping {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.2;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
 
 /* XTERM256 colors */
 
