@@ -80,6 +80,7 @@ let is_typing = (function (){
         // A 'say' command is being used.
         if (Evennia.isConnected() &&
             inputfield.length === 1 &&
+            event.key.length === 1 &&
             inputfield.val().match(regex)) {
             // Enter. Message sent. Reset.
             if (event.which === 13) {
