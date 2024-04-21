@@ -337,13 +337,17 @@ Here the `caller` is the one sending the message and `receiver` the one to see i
   result of `you_obj.get_display_name(looker=receiver)`. This allows for a single string to echo differently
   depending on who sees it, and also to reference other people in the same way.
 - `$You([key])` - same as `$you` but always capitalized.
-- `$conj(verb)` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb
-  between 2nd person presens to 3rd person presence depending on who
+- `$conj(verb [,key])` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb
+  between 2nd person presence to 3rd person presence depending on who
   sees the string. For example `"$You() $conj(smiles)".` will show as "You smile." and "Tom smiles." depending
   on who sees it. This makes use of the tools in [evennia.utils.verb_conjugation](evennia.utils.verb_conjugation)
   to do this, and only works for English verbs.
-- `$pron(pronoun [,options])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically
+- `$pron(pronoun [,options] [,key])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically
   map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.
+- `$pconj(verb, [,key])` ([code](evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns)) - conjugates
+  a verb between 2nd and 3rd person, like `$conj`, but for pronouns instead of nouns to account for plural
+  gendering. For example `"$Pron(you) $pconj(smiles)"` will show to others as "He smiles" for a gender of "male", or
+  "They smile" for a gender of "plural".
 
 
 ### `evennia.prototypes.protfuncs`
