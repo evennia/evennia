@@ -397,7 +397,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # if candidates were already given, use them
         candidates = kwargs.get("candidates")
-        if candidates:
+        if candidates is not None:
             return candidates
 
         # find candidates based on location
