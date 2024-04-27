@@ -457,27 +457,30 @@
     <span class="k">return</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;past participle&quot;</span></div>
 
 
-<div class="viewcode-block" id="verb_actor_stance_components"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_actor_stance_components">[docs]</a><span class="k">def</span> <span class="nf">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_actor_stance_components"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_actor_stance_components">[docs]</a><span class="k">def</span> <span class="nf">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">plural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Figure out actor stance components of a verb.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        verb (str): The verb to analyze</span>
+<span class="sd">        plural (bool): Whether to force 3rd person to plural form </span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple: The 2nd person (you) and 3rd person forms of the verb,</span>
 <span class="sd">            in the same tense as the ingoing verb.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="n">them</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">plural</span> <span class="k">else</span> <span class="s2">&quot;3&quot;</span>
+    <span class="n">them_suff</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">plural</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
+        
     <span class="k">if</span> <span class="s2">&quot;participle&quot;</span> <span class="ow">in</span> <span class="n">tense</span> <span class="ow">or</span> <span class="s2">&quot;plural&quot;</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">verb</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;infinitive&quot;</span> <span class="ow">or</span> <span class="s2">&quot;present&quot;</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
         <span class="n">you_str</span> <span class="o">=</span> <span class="n">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span>
-        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span>
+        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="n">them</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="n">them_suff</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">you_str</span> <span class="o">=</span> <span class="n">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span>
-        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span>
+        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="n">them</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="n">them_suff</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">you_str</span><span class="p">,</span> <span class="n">them_str</span><span class="p">)</span></div>
 </pre></div>
 

@@ -1412,15 +1412,18 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_conjugate"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_conjugate"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Usage: $conj(word, [options])</span>
+<span class="sd">    Usage: $conj(word, [key])</span>
 
 <span class="sd">    Conjugate a verb according to if it should be 2nd or third person.</span>
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        caller (Object): The object who represents &#39;you&#39; in the string.</span>
 <span class="sd">        receiver (Object): The recipient of the string.</span>
+<span class="sd">        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is</span>
+<span class="sd">            used to find which object the optional `key` argument refers to. If not given, </span>
+<span class="sd">            the `caller` kwarg is used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The parsed string.</span>
@@ -1429,13 +1432,10 @@
 <span class="sd">        ParsingError: If `you` and `recipient` were not both supplied.</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        Note that the verb will not be capitalized. It also</span>
-<span class="sd">        assumes that the active party (You) is the one performing the verb.</span>
-<span class="sd">        This automatic conjugation will fail if the active part is another person</span>
-<span class="sd">        than &#39;you&#39;. The caller/receiver must be passed to the parser directly.</span>
-
+<span class="sd">        Note that the verb will not be capitalized.</span>
+<span class="sd">        </span>
 <span class="sd">    Examples:</span>
-<span class="sd">        This is often used in combination with the $you/You( callables.</span>
+<span class="sd">        This is often used in combination with the $you/You callables.</span>
 
 <span class="sd">        - `With a grin, $you() $conj(jump)`</span>
 
@@ -1448,14 +1448,76 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span> <span class="ow">and</span> <span class="n">receiver</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="s2">&quot;No caller/receiver supplied to $conj callable&quot;</span><span class="p">)</span>
 
-    <span class="n">second_person_str</span><span class="p">,</span> <span class="n">third_person_str</span> <span class="o">=</span> <span class="n">verb_actor_stance_components</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
+    <span class="n">verb</span><span class="p">,</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
+    <span class="k">if</span> <span class="n">mapping</span> <span class="ow">and</span> <span class="n">options</span><span class="p">:</span>
+        <span class="c1"># get the correct referenced object from the mapping, or fall back to caller</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">second_person_str</span><span class="p">,</span> <span class="n">third_person_str</span> <span class="o">=</span> <span class="n">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_conjugate_for_pronouns"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate_for_pronouns</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $pconj(word, [key])</span>
+
+<span class="sd">    Conjugate a verb according to if it should be 2nd or third person, respecting the</span>
+<span class="sd">    singular/plural gendering for third person.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        caller (Object): The object who represents &#39;you&#39; in the string.</span>
+<span class="sd">        receiver (Object): The recipient of the string.</span>
+<span class="sd">        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is</span>
+<span class="sd">            used to find which object the optional `key` argument refers to. If not given, </span>
+<span class="sd">            the `caller` kwarg is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The parsed string.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ParsingError: If `you` and `recipient` were not both supplied.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Note that the verb will not be capitalized.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        This is often used in combination with the $pron/Pron callables.</span>
+
+<span class="sd">        - `With a grin, $pron(you) $pconj(jump)`</span>
+
+<span class="sd">        You will see &quot;With a grin, you jump.&quot;</span>
+<span class="sd">        With your gender as &quot;male&quot;, others will see &quot;With a grin, he jumps.&quot;</span>
+<span class="sd">        With your gender as &quot;plural&quot;, others will see &quot;With a grin, they jump.&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span> <span class="ow">and</span> <span class="n">receiver</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="s2">&quot;No caller/receiver supplied to $conj callable&quot;</span><span class="p">)</span>
+
+    <span class="n">verb</span><span class="p">,</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
+    <span class="k">if</span> <span class="n">mapping</span> <span class="ow">and</span> <span class="n">options</span><span class="p">:</span>
+        <span class="c1"># get the correct referenced object from the mapping, or fall back to caller</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">caller</span><span class="p">)</span>
+
+    <span class="c1"># identify whether the 3rd person form should be singular or plural</span>
+    <span class="n">plural</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">gender</span><span class="p">):</span>
+            <span class="n">plural</span> <span class="o">=</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">gender</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;plural&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plural</span> <span class="o">=</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="s2">&quot;plural&quot;</span><span class="p">)</span>
+
+    <span class="n">second_person_str</span><span class="p">,</span> <span class="n">third_person_str</span> <span class="o">=</span> <span class="n">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">plural</span><span class="o">=</span><span class="n">plural</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
+
+
+<div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">    Usage: $pron(word, [options])</span>
+<span class="sd">    Usage: $pron(word, [options], [key])</span>
 
 <span class="sd">    Adjust pronouns to the expected form. Pronouns are words you use instead of a</span>
 <span class="sd">    proper name, such as &#39;him&#39;, &#39;herself&#39;, &#39;theirs&#39; etc. These look different</span>
@@ -1516,6 +1578,9 @@
 <span class="sd">            - `1st person`/`1st`/`1`</span>
 <span class="sd">            - `2nd person`/`2nd`/`2`</span>
 <span class="sd">            - `3rd person`/`3rd`/`3`</span>
+<span class="sd">        key (str, optional): If a mapping is provided, a string defining which object to</span>
+<span class="sd">            reference when finding the correct pronoun. If not provided, it defaults</span>
+<span class="sd">            to `caller`</span>
 
 <span class="sd">    Keyword Args:</span>
 
@@ -1527,6 +1592,9 @@
 <span class="sd">        receiver (Object): The recipient of the string. This being the same as</span>
 <span class="sd">            `caller` or not helps determine 2nd vs 3rd-person forms. This is</span>
 <span class="sd">            provided automatically by the funcparser.</span>
+<span class="sd">        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is</span>
+<span class="sd">            used to find which object the optional `key` argument refers to. If not given, </span>
+<span class="sd">            the `caller` kwarg is used.</span>
 <span class="sd">        capitalize (bool): The input retains its capitalization. If this is set the output is</span>
 <span class="sd">            always capitalized.</span>
 
@@ -1549,8 +1617,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="c1"># by default, we use the caller as the object being referred to</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
 
     <span class="n">pronoun</span><span class="p">,</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">mapping</span><span class="p">:</span>
+        <span class="c1"># check if the last argument is a valid mapping key</span>
+        <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="c1"># get the object and remove the key from options</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="c1"># options is either multiple args or a space-separated string</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1560,11 +1637,11 @@
     <span class="n">default_gender</span> <span class="o">=</span> <span class="s2">&quot;neutral&quot;</span>
     <span class="n">default_viewpoint</span> <span class="o">=</span> <span class="s2">&quot;2nd person&quot;</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">gender</span><span class="p">):</span>
-            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">gender</span><span class="p">):</span>
+            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">gender</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span>
+            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">gender</span>
 
     <span class="k">if</span> <span class="s2">&quot;viewpoint&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="c1"># passed into FuncParser initialization</span>
@@ -1582,7 +1659,7 @@
         <span class="n">pronoun_1st_or_2nd_person</span> <span class="o">=</span> <span class="n">pronoun_1st_or_2nd_person</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
         <span class="n">pronoun_3rd_person</span> <span class="o">=</span> <span class="n">pronoun_3rd_person</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">pronoun_1st_or_2nd_person</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">pronoun_3rd_person</span></div>
+    <span class="k">return</span> <span class="n">pronoun_1st_or_2nd_person</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">pronoun_3rd_person</span></div>
 
 
 <div class="viewcode-block" id="funcparser_callable_pronoun_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun_capitalize</span><span class="p">(</span>
@@ -1649,6 +1726,7 @@
     <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you</span><span class="p">,</span>
     <span class="s2">&quot;Obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you_capitalize</span><span class="p">,</span>
     <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_conjugate</span><span class="p">,</span>
+    <span class="s2">&quot;pconj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_conjugate_for_pronouns</span><span class="p">,</span>
     <span class="s2">&quot;pron&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_pronoun</span><span class="p">,</span>
     <span class="s2">&quot;Pron&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_pronoun_capitalize</span><span class="p">,</span>
     <span class="o">**</span><span class="n">FUNCPARSER_CALLABLES</span><span class="p">,</span>

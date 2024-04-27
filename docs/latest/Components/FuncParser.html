@@ -433,13 +433,17 @@ be replaced either with the string <code class="docutils literal notranslate"><s
 result of <code class="docutils literal notranslate"><span class="pre">you_obj.get_display_name(looker=receiver)</span></code>. This allows for a single string to echo differently
 depending on who sees it, and also to reference other people in the same way.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$You([key])</span></code> - same as <code class="docutils literal notranslate"><span class="pre">$you</span></code> but always capitalized.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$conj(verb)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate" title="evennia.utils.funcparser.funcparser_callable_conjugate"><span class="xref myst py py-func">code</span></a>) - conjugates a verb
-between 2nd person presens to 3rd person presence depending on who
+<li><p><code class="docutils literal notranslate"><span class="pre">$conj(verb</span> <span class="pre">[,key])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate" title="evennia.utils.funcparser.funcparser_callable_conjugate"><span class="xref myst py py-func">code</span></a>) - conjugates a verb
+between 2nd person presence to 3rd person presence depending on who
 sees the string. For example <code class="docutils literal notranslate"><span class="pre">&quot;$You()</span> <span class="pre">$conj(smiles)&quot;.</span></code> will show as “You smile.” and “Tom smiles.” depending
 on who sees it. This makes use of the tools in <a class="reference internal" href="../api/evennia.utils.verb_conjugation.html#evennia-utils-verb-conjugation"><span class="std std-ref">evennia.utils.verb_conjugation</span></a>
 to do this, and only works for English verbs.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$pron(pronoun</span> <span class="pre">[,options])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun" title="evennia.utils.funcparser.funcparser_callable_pronoun"><span class="xref myst py py-func">code</span></a>) - Dynamically
+<li><p><code class="docutils literal notranslate"><span class="pre">$pron(pronoun</span> <span class="pre">[,options]</span> <span class="pre">[,key])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun" title="evennia.utils.funcparser.funcparser_callable_pronoun"><span class="xref myst py py-func">code</span></a>) - Dynamically
 map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$pconj(verb,</span> <span class="pre">[,key])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns" title="evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns"><span class="xref myst py py-func">code</span></a>) - conjugates
+a verb between 2nd and 3rd person, like <code class="docutils literal notranslate"><span class="pre">$conj</span></code>, but for pronouns instead of nouns to account for plural
+gendering. For example <code class="docutils literal notranslate"><span class="pre">&quot;$Pron(you)</span> <span class="pre">$pconj(smiles)&quot;</span></code> will show to others as “He smiles” for a gender of “male”, or
+“They smile” for a gender of “plural”.</p></li>
 </ul>
 </section>
 <section id="evennia-prototypes-protfuncs">

@@ -151,33 +151,34 @@ the cases, see the module doc.</p>
 <dl class="py method">
 <dt id="evennia.commands.default.building.ObjManipCommand.get_object_typeclass">
 <code class="sig-name descname">get_object_typeclass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'object'</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'cmd_create'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="../_modules/evennia/commands/default/building.html#ObjManipCommand.get_object_typeclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.get_object_typeclass" title="Permalink to this definition">¶</a></dt>
-<dd><p>This hook is called by build commands to determine which typeclass to use for a specific purpose. For instance,
-when using dig, the system can use this to autodetect which kind of Room typeclass to use based on where the
-builder is currently located.</p>
-<dl class="simple">
-<dt>Note: Although intended to be used with typeclasses, as long as this hook returns a class with a create method,</dt><dd><p>which accepts the same API as DefaultObject.create(), build commands and other places should take it.</p>
-</dd>
-</dl>
+<dd><p>This hook is called by build commands to determine which typeclass to use for a specific
+purpose.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>obj_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of object that is being created. Defaults to “object”. Evennia provides
-“room”, “exit”, and “character” by default, but this can be extended.</p></li>
-<li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – The typeclass that was requested by the player. Defaults to None.
-Can also be an actual class.</p></li>
+<li><p><strong>obj_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of object that is being created. Defaults to
+“object”. Evennia provides “room”, “exit”, and “character” by default, but this can be
+extended.</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – The typeclass that was requested by the player. Defaults to
+None.  Can also be an actual class.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The method that is calling this hook. Defaults to “cmd_create”.
 Others are “cmd_dig”, “cmd_open”, “cmd_tunnel”, etc.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>results_tuple (tuple[Optional[Builder], list[str]])</em> –</p>
+<dd class="field-even"><p><p><em>tuple</em> –</p>
 <dl class="simple">
-<dt>A tuple containing the typeclass to use and a list of</dt><dd><p>errors. (which might be empty.)</p>
+<dt>A tuple containing the typeclass to use and a list of errors. (which might be</dt><dd><p>empty.)</p>
 </dd>
 </dl>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Although intended to be used with typeclasses, as long as this hook returns a class with
+a create method, which accepts the same API as DefaultObject.create(), build commands
+and other places should take it. While not used by default, one could picture using this
+for things like autodetecting which room to build next based on the current location.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1414,7 +1415,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;type', '&#64;update', '&#64;typeclasses', '&#64;swap', '&#64;parent']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;swap', '&#64;update', '&#64;type', '&#64;parent', '&#64;typeclasses']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1445,7 +1446,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;type &#64;update &#64;typeclasses &#64;swap &#64;parent', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass type update typeclasses swap parent', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;swap &#64;update &#64;type &#64;parent &#64;typeclasses', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass swap update type parent typeclasses', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

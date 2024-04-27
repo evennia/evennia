@@ -109,6 +109,7 @@
 <span class="kn">from</span> <span class="nn">evennia.help.filehelp</span> <span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
 <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
 <span class="kn">from</span> <span class="nn">evennia.help.utils</span> <span class="kn">import</span> <span class="n">help_search_with_index</span><span class="p">,</span> <span class="n">parse_entry_for_subcategories</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
@@ -873,13 +874,14 @@
 
 <span class="sd">    Usage:</span>
 <span class="sd">      sethelp[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]]</span>
-<span class="sd">                [= &lt;text or new category&gt;]</span>
+<span class="sd">                [= &lt;text or new value&gt;]</span>
 <span class="sd">    Switches:</span>
 <span class="sd">      edit - open a line editor to edit the topic&#39;s help text.</span>
 <span class="sd">      replace - overwrite existing help topic.</span>
 <span class="sd">      append - add text to the end of existing topic with a newline between.</span>
 <span class="sd">      extend - as append, but don&#39;t add a newline.</span>
 <span class="sd">      category - change category of existing help topic.</span>
+<span class="sd">      locks - change locks of existing help topic.</span>
 <span class="sd">      delete - remove help topic.</span>
 
 <span class="sd">    Examples:</span>
@@ -887,6 +889,7 @@
 <span class="sd">      sethelp/append pickpocketing,Thievery = This steals ...</span>
 <span class="sd">      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...</span>
 <span class="sd">      sethelp/edit thievery</span>
+<span class="sd">      sethelp/locks thievery = read:all()</span>
 <span class="sd">      sethelp/category thievery = classes</span>
 
 <span class="sd">    If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category</span>
@@ -934,7 +937,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sethelp&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;extend&quot;</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;extend&quot;</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Helper)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
@@ -948,6 +951,7 @@
 
         <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
         <span class="n">lhslist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span>
+        <span class="n">rhslist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhslist</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -1024,7 +1028,17 @@
                     <span class="c1"># types of entries.</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rWarning:</span><span class="se">\n</span><span class="s2">|r</span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
                     <span class="n">repl</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="s2">&quot;|wDo you still want to continue? Y/[N]?|n&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">):</span>
+                        <span class="c1"># find a db-based help entry if one already exists</span>
+                        <span class="n">db_topics</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">db_help_topics</span><span class="p">}</span>
+                        <span class="n">db_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                            <span class="nb">set</span><span class="p">(</span><span class="n">HelpCategory</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">help_category</span><span class="p">)</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">db_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                        <span class="p">)</span>
+                        <span class="n">entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="n">db_categories</span>
+                        <span class="n">match</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_search</span><span class="p">(</span><span class="n">querystr</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                            <span class="n">old_entry</span> <span class="o">=</span> <span class="n">match</span>
+                    <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
                         <span class="k">return</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1091,6 +1105,35 @@
             <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="n">old_entry</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Category for entry &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2"> changed to &#39;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;locks&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># set the locks</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_entry</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find topic &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">show_locks</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">rhslist</span>
+            <span class="n">clear_locks</span> <span class="o">=</span> <span class="n">rhslist</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">rhslist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">show_locks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current locks for entry &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2"> are: </span><span class="si">{</span><span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">clear_locks</span><span class="p">:</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;read:all()&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Locks for entry &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2"> reset to: read:all()&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rhslist</span><span class="p">)</span>
+            <span class="c1"># locks.validate() does not throw an exception for things like &quot;read:id(1),read:id(6)&quot;</span>
+            <span class="c1"># but locks.add() does</span>
+            <span class="n">existing_locks</span> <span class="o">=</span> <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">LockException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">existing_locks</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>  <span class="o">+</span> <span class="s2">&quot; Locks not changed.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Locks for entry &#39;</span><span class="si">{</span><span class="n">topicstr</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">aliastxt</span><span class="si">}</span><span class="s2"> changed to: </span><span class="si">{</span><span class="n">lockstring</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;del&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
