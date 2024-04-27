@@ -2885,7 +2885,7 @@ def int2str(number, adjective=False):
 
     Args:
         number (int): The number to convert. Floats will be converted to ints.
-        adjective (int): If set, map 1->1st, 2->2nd etc. If unset, map 1->one, 2->two etc.
+        adjective (bool): If True, map 1->1st, 2->2nd etc. If unset or False, map 1->one, 2->two etc.
             up to twelve.
     Return:
         str: The number expressed as a string.
