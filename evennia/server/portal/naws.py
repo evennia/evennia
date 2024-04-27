@@ -58,6 +58,7 @@ class Naws:
             option (Option): Not used.
 
         """
+        self.protocol.protocol_flags["AUTORESIZE"] = False
         self.protocol.handshake_done()
 
     def do_naws(self, option):
@@ -68,6 +69,7 @@ class Naws:
             option (Option): Not used.
 
         """
+        self.protocol.protocol_flags["AUTORESIZE"] = True
         self.protocol.handshake_done()
 
     def negotiate_sizes(self, options):

@@ -175,6 +175,7 @@ _CLIENT_OPTIONS = (
     "MCCP",
     "SCREENHEIGHT",
     "SCREENWIDTH",
+    "AUTORESIZE",
     "INPUTDEBUG",
     "RAW",
     "NOCOLOR",
@@ -201,6 +202,7 @@ def client_options(session, *args, **kwargs):
         mccp (bool): MCCP compression on/off
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
+        autoresize (bool): Use NAWS updates to dynamically adjust format
         inputdebug (bool): Debug input functions
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
@@ -256,6 +258,8 @@ def client_options(session, *args, **kwargs):
             flags["SCREENHEIGHT"] = validate_size(value)
         elif key == "screenwidth":
             flags["SCREENWIDTH"] = validate_size(value)
+        elif key == "autoresize":
+            flags["AUTORESIZE"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
         elif key == "nocolor":

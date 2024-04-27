@@ -269,7 +269,7 @@ class ServerSession(_BASE_SESSION_CLASS):
 
         Notes:
             Since protocols can vary, no checking is done
-            as to the existene of the flag or not. The input
+            as to the existence of the flag or not. The input
             data should have been validated before this call.
 
         """
