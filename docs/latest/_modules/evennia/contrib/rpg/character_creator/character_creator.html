@@ -177,7 +177,10 @@
         <span class="c1"># this gets called every time the player exits the chargen menu</span>
         <span class="k">def</span> <span class="nf">finish_char_callback</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
             <span class="n">char</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">new_char</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">:</span>
+                <span class="c1"># this means the character creation process was exited in the middle</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># this means character creation was completed - start playing!</span>
                 <span class="c1"># execute the ic command to start puppeting the character</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;ic </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
