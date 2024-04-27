@@ -6,6 +6,7 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
+
 import gc
 import importlib
 import importlib.machinery
@@ -23,6 +24,7 @@ import traceback
 import types
 from ast import literal_eval
 from collections import OrderedDict, defaultdict
+from enum import Enum
 from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from string import punctuation
@@ -117,7 +119,9 @@ def wrap(text, width=None, indent=0):
     if not text:
         return ""
     indent = " " * indent
-    return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
+    return to_str(
+        textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent)
+    )
 
 
 # alias - fill
@@ -174,7 +178,11 @@ def crop(text, width=None, suffix="[...]"):
         return text
     else:
         lsuffix = len(suffix)
-        text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
+        text = (
+            text[:width]
+            if lsuffix >= width
+            else "%s%s" % (text[: width - lsuffix], suffix)
+        )
         return to_str(text)
 
 
@@ -214,7 +222,8 @@ def dedent(text, baseline_index=None, indent=None):
         baseline = lines[baseline_index]
         spaceremove = len(baseline) - len(baseline.lstrip(" "))
         return "\n".join(
-            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :] for line in lines
+            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :]
+            for line in lines
         )
 
 
@@ -260,7 +269,9 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         if line_rest > 0:
             if align == "l":
                 if line[-1] == "\n\n":
-                    line[-1] = sp * (line_rest - 1) + "\n" + sp * width + "\n" + sp * width
+                    line[-1] = (
+                        sp * (line_rest - 1) + "\n" + sp * width + "\n" + sp * width
+                    )
                 else:
                     line[-1] += sp * line_rest
             elif align == "r":
@@ -270,7 +281,12 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
                 line[0] = pad + line[0]
                 if line[-1] == "\n\n":
                     line[-1] += (
-                        pad + sp * (line_rest % 2 - 1) + "\n" + sp * width + "\n" + sp * width
+                        pad
+                        + sp * (line_rest % 2 - 1)
+                        + "\n"
+                        + sp * width
+                        + "\n"
+                        + sp * width
                     )
                 else:
                     line[-1] = line[-1] + pad + sp * (line_rest % 2)
@@ -466,7 +482,9 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     elif len_iter == 2:
         return f"{endsep} ".join(str(v) for v in iterable)
     else:
-        return f"{sep} ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
+        return (
+            f"{sep} ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
+        )
 
 
 # legacy aliases
@@ -817,7 +835,11 @@ def dbref(inp, reqhash=True):
     if reqhash:
         num = (
             int(inp.lstrip("#"))
-            if (isinstance(inp, str) and inp.startswith("#") and inp.lstrip("#").isdigit())
+            if (
+                isinstance(inp, str)
+                and inp.startswith("#")
+                and inp.lstrip("#").isdigit()
+            )
             else None
         )
         return num if isinstance(num, int) and num > 0 else None
@@ -968,7 +990,9 @@ def to_bytes(text, session=None):
         except Exception:
             text = repr(text)
 
-    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
+    default_encoding = (
+        session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
+    )
     try:
         return text.encode(default_encoding)
     except (LookupError, UnicodeEncodeError):
@@ -1007,7 +1031,9 @@ def to_str(text, session=None):
         except Exception:
             return repr(text)
 
-    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
+    default_encoding = (
+        session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
+    )
     try:
         return text.decode(default_encoding)
     except (LookupError, UnicodeDecodeError):
@@ -1067,7 +1093,9 @@ def inherits_from(obj, parent):
         # this is a class
         obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.mro()]
     else:
-        obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
+        obj_paths = [
+            "%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()
+        ]
 
     if isinstance(parent, str):
         # a given string path, for direct matching
@@ -1163,7 +1191,14 @@ def delay(timedelay, callback, *args, **kwargs):
 
 
 def repeat(
-    interval, callback, persistent=True, idstring="", stop=False, store_key=None, *args, **kwargs
+    interval,
+    callback,
+    persistent=True,
+    idstring="",
+    stop=False,
+    store_key=None,
+    *args,
+    **kwargs,
 ):
     """
     Start a repeating task using the TickerHandler.
@@ -1209,7 +1244,10 @@ def repeat(
         )
     else:
         return _TICKER_HANDLER.add(
-            interval=interval, callback=callback, idstring=idstring, persistent=persistent
+            interval=interval,
+            callback=callback,
+            idstring=idstring,
+            persistent=persistent,
         )
 
 
@@ -1237,7 +1275,9 @@ def unrepeat(store_key):
 
 _PPOOL = None
 _PCMD = None
-_PROC_ERR = "A process has ended with a probable error condition: process ended by signal 9."
+_PROC_ERR = (
+    "A process has ended with a probable error condition: process ended by signal 9."
+)
 
 
 def run_async(to_execute, *args, **kwargs):
@@ -1386,7 +1426,9 @@ def mod_import_from_path(path):
     try:
         return importlib.machinery.SourceFileLoader(modname, path).load_module()
     except OSError:
-        logger.log_trace(f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'")
+        logger.log_trace(
+            f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'"
+        )
         return None
 
 
@@ -1468,7 +1510,9 @@ def callables_from_module(module):
     if not mod:
         return {}
     # make sure to only return callables actually defined in this module (not imports)
-    members = getmembers(mod, predicate=lambda obj: callable(obj) and getmodule(obj) == mod)
+    members = getmembers(
+        mod, predicate=lambda obj: callable(obj) and getmodule(obj) == mod
+    )
     return dict((key, val) for key, val in members if not key.startswith("_"))
 
 
@@ -1511,7 +1555,9 @@ def variable_from_module(module, variable=None, default=None):
     else:
         # get all
         result = [
-            val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))
+            val
+            for key, val in mod.__dict__.items()
+            if not (key.startswith("_") or ismodule(val))
         ]
 
     if len(result) == 1:
@@ -1629,7 +1675,9 @@ def class_from_module(path, defaultpaths=None, fallback=None):
         if "." in path:
             testpath, clsname = testpath.rsplit(".", 1)
         else:
-            raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
+            raise ImportError(
+                "the path '%s' is not on the form modulepath.Classname." % path
+            )
 
         try:
             if not importlib.util.find_spec(testpath, package="evennia"):
@@ -1679,7 +1727,9 @@ def init_new_account(account):
     """
     from evennia.utils import logger
 
-    logger.log_dep("evennia.utils.utils.init_new_account is DEPRECATED and should not be used.")
+    logger.log_dep(
+        "evennia.utils.utils.init_new_account is DEPRECATED and should not be used."
+    )
 
 
 def string_similarity(string1, string2):
@@ -1815,12 +1865,17 @@ def group_objects_by_key_and_desc(objects, caller=None, **kwargs):
 
     for obj in objects:
         key_descs[
-            (obj.get_display_name(caller, **kwargs), obj.get_display_desc(caller, **kwargs))
+            (
+                obj.get_display_name(caller, **kwargs),
+                obj.get_display_desc(caller, **kwargs),
+            )
         ].append(obj)
 
     return (
         (
-            objs[0].get_numbered_name(len(objs), caller, return_string=return_string, **kwargs),
+            objs[0].get_numbered_name(
+                len(objs), caller, return_string=return_string, **kwargs
+            ),
             desc,
             objs,
         )
@@ -2015,11 +2070,15 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
         will look strange for a single line.
         """
         wls = [display_len((elem)) for elem in elements]
-        wls_percentile = [wl for iw, wl in enumerate(wls) if iw not in verbatim_elements]
+        wls_percentile = [
+            wl for iw, wl in enumerate(wls) if iw not in verbatim_elements
+        ]
 
         if wls_percentile:
             # get the nth percentile as a good representation of average width
-            averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2  # include extra space
+            averlen = (
+                int(percentile(sorted(wls_percentile), 0.9)) + 2
+            )  # include extra space
             aver_per_row = width // averlen + 1
         else:
             # no adjustable rows, just keep all as-is
@@ -2354,48 +2413,65 @@ def display_len(target):
 # Replace this hook function by changing settings.SEARCH_AT_RESULT.
 
 
+class SearchReturnType(Enum):
+    DEFAULT = 1
+    ALL = 2
+    ONE = 3
+    MULTIPLE = 4
+
+
 def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     """
     This is a generic hook for handling all processing of a search
-    result, including error reporting. This is also called by the cmdhandler
-    to manage errors in command lookup.
+    result, including error reporting.
 
     Args:
-        matches (list): This is a list of 0, 1 or more typeclass
-            instances or Command instances, the matched result of the
-            search. If 0, a nomatch error should be echoed, and if >1,
-            multimatch errors should be given. Only if a single match
-            should the result pass through.
+        matches (list): This is a list of 0, 1 or more typeclass instances,
+            the matched result of the search. If 0, a nomatch error should
+            be echoed, and if >1, multimatch errors should be given. Only
+            if a single match should the result pass through.
         caller (Object): The object performing the search and/or which should
         receive error messages.
-        query (str, optional): The search query used to produce `matches`.
+    query (str, optional): The search query used to produce `matches`.
         quiet (bool, optional): If `True`, no messages will be echoed to caller
             on errors.
+
     Keyword Args:
         nofound_string (str): Replacement string to echo on a notfound error.
         multimatch_string (str): Replacement string to echo on a multimatch error.
 
     Returns:
         processed_result (Object or None): This is always a single result
-        or `None`. If `None`, any error reporting/handling should
-        already have happened. The returned object is of the type we are
-        checking multimatches for (e.g. Objects or Commands)
+            or `None`. If `None`, any error reporting/handling should
+            already have happened.
 
     """
 
     error = ""
     if not matches:
         # no results.
-        error = kwargs.get("nofound_string") or _("Could not find '{query}'.").format(query=query)
+        error = kwargs.get("nofound_string") or _("Could not find '{query}'.").format(
+            query=query
+        )
         matches = None
     elif len(matches) > 1:
+        return_quantity = kwargs.get("return_quantity", 1)
+        return_type = kwargs.get("return_type", SearchReturnType.DEFAULT)
+        if return_type == SearchReturnType.ONE:
+            return matches[return_quantity - 1]
+        elif return_type == SearchReturnType.MULTIPLE:
+            matches = matches[:return_quantity]
+            return matches
+        elif return_type == SearchReturnType.ALL:
+            return matches
+
         multimatch_string = kwargs.get("multimatch_string")
         if multimatch_string:
             error = "%s\n" % multimatch_string
         else:
-            error = _("More than one match for '{query}' (please narrow target):\n").format(
-                query=query
-            )
+            error = _(
+                "More than one match for '{query}' (please narrow target):\n"
+            ).format(query=query)
 
         for num, result in enumerate(matches):
             # we need to consider that result could be a Command, where .aliases
@@ -2404,7 +2480,11 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 # result is a typeclassed entity where `.aliases` is an AliasHandler.
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
-                aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
+                aliases = [
+                    alias.db_key
+                    for alias in aliases
+                    if alias.db_category != "plural_key"
+                ]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
                 aliases = result.aliases
@@ -2501,7 +2581,9 @@ def get_game_dir_path():
                 return gpath
         else:
             os.chdir(os.pardir)
-    raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
+    raise RuntimeError(
+        "server/conf/settings.py not found: Must start from inside game dir."
+    )
 
 
 def get_all_typeclasses(parent=None):
@@ -2857,7 +2939,9 @@ def run_in_main_thread(function_or_method, *args, **kwargs):
     if _IS_MAIN_THREAD:
         return function_or_method(*args, **kwargs)
     else:
-        return threads.blockingCallFromThread(reactor, function_or_method, *args, **kwargs)
+        return threads.blockingCallFromThread(
+            reactor, function_or_method, *args, **kwargs
+        )
 
 
 _INT2STR_MAP_NOUN = {
@@ -3075,7 +3159,9 @@ def ip_from_request(request, exclude=None) -> str:
         if all(not match_ip(addr, pattern) for pattern in exclude):
             return addr
 
-    logger.log_warn("ip_from_request: No valid IP address found in request. Using remote_addr.")
+    logger.log_warn(
+        "ip_from_request: No valid IP address found in request. Using remote_addr."
+    )
     return remote_addr
 
 
