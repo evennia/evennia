@@ -24,9 +24,9 @@ To allow players to check their achievements, you'll also want to add the `achie
 from evennia.contrib.game_systems.achievements.achievements import CmdAchieve
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
-	key = "DefaultCharacter"
+    key = "DefaultCharacter"
 
-	def at_cmdset_creation(self):
+    def at_cmdset_creation(self):
         # ...
         self.add(CmdAchieve)
 ```
@@ -191,11 +191,11 @@ A utility function for retrieving a specific achievement's data from the achieve
 from evennia.contrib.game_systems.achievements import get_achievement
 
 def toast(achiever, completed_list):
-	if completed_list:
+    if completed_list:
         # `completed_data` will be a list of dictionaries - unrecognized keys return empty dictionaries
-		completed_data = [get_achievement(key) for key in args]
-		names = [data.get('name') for data in completed]
-		achiever.msg(f"|wAchievement Get!|n {iter_to_str(name for name in names if name)}"))
+        completed_data = [get_achievement(key) for key in args]
+        names = [data.get('name') for data in completed]
+        achiever.msg(f"|wAchievement Get!|n {iter_to_str(name for name in names if name)}"))
 ```
 
 #### `search_achievement`
