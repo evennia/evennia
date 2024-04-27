@@ -1039,7 +1039,7 @@ class CmdSetHelp(CmdHelp):
                 old_entry.locks.add(lockstring)
             except LockException as e:
                 old_entry.locks.add(existing_locks)
-                self.msg(str(e)  + " Locks not changed.")
+                self.msg(str(e) + " Locks not changed.")
             else:
                 self.msg(f"Locks for entry '{topicstr}'{aliastxt} changed to: {lockstring}")
             return

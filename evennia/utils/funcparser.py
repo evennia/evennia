@@ -1330,7 +1330,7 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, mapping=Non
         caller (Object): The object who represents 'you' in the string.
         receiver (Object): The recipient of the string.
         mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
-            used to find which object the optional `key` argument refers to. If not given, 
+            used to find which object the optional `key` argument refers to. If not given,
             the `caller` kwarg is used.
 
     Returns:
@@ -1341,7 +1341,7 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, mapping=Non
 
     Notes:
         Note that the verb will not be capitalized.
-        
+
     Examples:
         This is often used in combination with the $you/You callables.
 
@@ -1366,7 +1366,9 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, mapping=Non
     return second_person_str if obj == receiver else third_person_str
 
 
-def funcparser_callable_conjugate_for_pronouns(*args, caller=None, receiver=None, mapping=None, **kwargs):
+def funcparser_callable_conjugate_for_pronouns(
+    *args, caller=None, receiver=None, mapping=None, **kwargs
+):
     """
     Usage: $pconj(word, [key])
 
@@ -1377,7 +1379,7 @@ def funcparser_callable_conjugate_for_pronouns(*args, caller=None, receiver=None
         caller (Object): The object who represents 'you' in the string.
         receiver (Object): The recipient of the string.
         mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
-            used to find which object the optional `key` argument refers to. If not given, 
+            used to find which object the optional `key` argument refers to. If not given,
             the `caller` kwarg is used.
 
     Returns:
@@ -1388,7 +1390,7 @@ def funcparser_callable_conjugate_for_pronouns(*args, caller=None, receiver=None
 
     Notes:
         Note that the verb will not be capitalized.
-        
+
     Examples:
         This is often used in combination with the $pron/Pron callables.
 
@@ -1414,15 +1416,17 @@ def funcparser_callable_conjugate_for_pronouns(*args, caller=None, receiver=None
     plural = False
     if hasattr(obj, "gender"):
         if callable(obj.gender):
-            plural = (obj.gender() == "plural")
+            plural = obj.gender() == "plural"
         else:
-            plural = (obj.gender == "plural")
+            plural = obj.gender == "plural"
 
     second_person_str, third_person_str = verb_actor_stance_components(verb, plural=plural)
     return second_person_str if obj == receiver else third_person_str
 
 
-def funcparser_callable_pronoun(*args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs):
+def funcparser_callable_pronoun(
+    *args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs
+):
     """
 
     Usage: $pron(word, [options], [key])
@@ -1501,7 +1505,7 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, mapping=None,
             `caller` or not helps determine 2nd vs 3rd-person forms. This is
             provided automatically by the funcparser.
         mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
-            used to find which object the optional `key` argument refers to. If not given, 
+            used to find which object the optional `key` argument refers to. If not given,
             the `caller` kwarg is used.
         capitalize (bool): The input retains its capitalization. If this is set the output is
             always capitalized.

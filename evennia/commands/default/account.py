@@ -638,8 +638,8 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     flags[new_name] = new_val
 
                     # If we're manually assign a display size, turn off auto-resizing
-                    if new_name in ['SCREENWIDTH', 'SCREENHEIGHT']:
-                        flags['AUTORESIZE'] = False
+                    if new_name in ["SCREENWIDTH", "SCREENHEIGHT"]:
+                        flags["AUTORESIZE"] = False
 
                     self.msg(
                         f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"

@@ -371,7 +371,7 @@ def verb_actor_stance_components(verb, plural=False):
 
     Args:
         verb (str): The verb to analyze
-        plural (bool): Whether to force 3rd person to plural form 
+        plural (bool): Whether to force 3rd person to plural form
 
     Returns:
         tuple: The 2nd person (you) and 3rd person forms of the verb,
@@ -380,7 +380,7 @@ def verb_actor_stance_components(verb, plural=False):
     tense = verb_tense(verb)
     them = "*" if plural else "3"
     them_suff = "" if plural else "s"
-        
+
     if "participle" in tense or "plural" in tense:
         return (verb, verb)
     if tense == "infinitive" or "present" in tense:
