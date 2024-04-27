@@ -5,13 +5,24 @@
 - [Feature][pull3470]: New `exit_order` kwarg to
   `DefaultObject.get_display_exits` to easier customize the order in which
   standard exits are displayed in a room (chiizujin)
+- [Feature][pull3498]: Properly update Evennia's screen width when client
+  changes width (assuming client supports NAWS properly) (michaelfaith84)
 - [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
 - [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
+- [Fix][pull3489]: Superuser could break wilderness contrib exits (t34lbytes)
+- [Fix][pull3496]: EvEditor would not correctly show search&replace feedback
+  when replacing colors (Chiizujin)
+- [Fix][pull3499]: Dig/tunnel commands didn't echo the typeclass of the newly
+  created room properly (chiizujin)
 - [Docs]: Doc fixes (Griatch, chiizujin)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
 [pull3495]: https://github.com/evennia/evennia/pull/3495
 [pull3491]: https://github.com/evennia/evennia/pull/3491
+[pull3489]: https://github.com/evennia/evennia/pull/3489
+[pull3496]: https://github.com/evennia/evennia/pull/3496
+[pull3498]: https://github.com/evennia/evennia/pull/3498
+[pull3499]: https://github.com/evennia/evennia/pull/3499
 
 
 ## Evennia 4.1.1

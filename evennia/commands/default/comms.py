@@ -9,7 +9,6 @@ Communication commands:
 
 from django.conf import settings
 from django.db.models import Q
-
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel

@@ -5,13 +5,13 @@ Building and world design commands
 import re
 import typing
 
+import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
-
-import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
+from evennia.commands.cmdhandler import (generate_cmdset_providers,
+                                         get_and_merge_cmdsets)
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -24,18 +24,10 @@ from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import (
-    class_from_module,
-    crop,
-    dbref,
-    display_len,
-    format_grid,
-    get_all_typeclasses,
-    inherits_from,
-    interactive,
-    list_to_string,
-    variable_from_module,
-)
+from evennia.utils.utils import (class_from_module, crop, dbref, display_len,
+                                 format_grid, get_all_typeclasses,
+                                 inherits_from, interactive, list_to_string,
+                                 variable_from_module)
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -178,26 +170,30 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
 
     def get_object_typeclass(
         self, obj_type: str = "object", typeclass: str = None, method: str = "cmd_create", **kwargs
-    ) -> tuple[typing.Optional["Builder"], list[str]]:
+    ) -> tuple[typing.Optional['Typeclass'], list[str]]:
         """
-        This hook is called by build commands to determine which typeclass to use for a specific purpose. For instance,
-        when using dig, the system can use this to autodetect which kind of Room typeclass to use based on where the
-        builder is currently located.
-
-        Note: Although intended to be used with typeclasses, as long as this hook returns a class with a create method,
-            which accepts the same API as DefaultObject.create(), build commands and other places should take it.
+        This hook is called by build commands to determine which typeclass to use for a specific
+        purpose.
 
         Args:
-            obj_type (str, optional): The type of object that is being created. Defaults to "object". Evennia provides
-                "room", "exit", and "character" by default, but this can be extended.
-            typeclass (str, optional): The typeclass that was requested by the player. Defaults to None.
-                Can also be an actual class.
+            obj_type (str, optional): The type of object that is being created. Defaults to
+                "object". Evennia provides "room", "exit", and "character" by default, but this can be
+                extended.
+            typeclass (str, optional): The typeclass that was requested by the player. Defaults to
+                None.  Can also be an actual class.
             method (str, optional): The method that is calling this hook. Defaults to "cmd_create".
                 Others are "cmd_dig", "cmd_open", "cmd_tunnel", etc.
 
         Returns:
-            results_tuple (tuple[Optional[Builder], list[str]]): A tuple containing the typeclass to use and a list of
-                errors. (which might be empty.)
+            tuple: A tuple containing the typeclass to use and a list of errors. (which might be
+                empty.)
+
+        Notes:
+            Although intended to be used with typeclasses, as long as this hook returns a class with
+            a create method, which accepts the same API as DefaultObject.create(), build commands
+            and other places should take it. While not used by default, one could picture using this
+            for things like autodetecting which room to build next based on the current location.
+
         """
 
         found_typeclass = typeclass or self.default_typeclasses.get(obj_type, None)
