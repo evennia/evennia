@@ -323,7 +323,7 @@ def prototype_from_object(obj):
         prot["prototype_locks"] = "spawn:all();edit:all()"
         prot["prototype_tags"] = []
     else:
-        prot = prot[0]
+        prot = prot[0].copy()
 
     prot["key"] = obj.db_key or hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]
     prot["typeclass"] = obj.db_typeclass_path
