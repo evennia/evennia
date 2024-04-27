@@ -72,6 +72,7 @@ from evennia.utils import logger, utils
 from evennia.utils.utils import to_str
 from evennia.utils.hex_colors import HexColors
 
+hex2truecolor = HexColors()
 hex_sub = HexColors.hex_sub
 
 MXP_ENABLED = settings.MXP_ENABLED
@@ -471,7 +472,6 @@ class ANSIParser(object):
         string = self.brightbg_sub.sub(self.sub_brightbg, string)
 
         def do_truecolor(part: re.Match, truecolor=truecolor):
-            hex2truecolor = HexColors()
             return hex2truecolor.sub_truecolor(part, truecolor)
 
         def do_xterm256_fg(part):
@@ -525,24 +525,28 @@ ANSI_PARSER = ANSIParser()
 #
 
 
-def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False, truecolor=False):
+def parse_ansi(
+    string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False, truecolor=False
+):
     """
     Parses a string, subbing color codes as needed.
 
     Args:
-        truecolor:
         string (str): The string to parse.
         strip_ansi (bool, optional): Strip all ANSI sequences.
         parser (ansi.AnsiParser, optional): A parser instance to use.
         xterm256 (bool, optional): Support xterm256 or not.
         mxp (bool, optional): Support MXP markup or not.
+        truecolor (bool, optional): Support for truecolor or not.
 
     Returns:
         string (str): The parsed string.
 
     """
     string = string or ""
-    return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp, truecolor=truecolor)
+    return parser.parse_ansi(
+        string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp, truecolor=truecolor
+    )
 
 
 def strip_ansi(string, parser=ANSI_PARSER):

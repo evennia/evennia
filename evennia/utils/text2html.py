@@ -75,7 +75,9 @@ class TextToHTMLparser(object):
         r"({}|{})".format(
             "|".join(
                 style_codes + ansi_color_codes + xterm_fg_codes + ansi_bg_codes + xterm_bg_codes
-            ).replace("[", r"\["), "|".join([HexColors.TRUECOLOR_FG, HexColors.TRUECOLOR_BG]))
+            ).replace("[", r"\["),
+            "|".join([HexColors.TRUECOLOR_FG, HexColors.TRUECOLOR_BG]),
+        )
     )
 
     colorlist = (
@@ -256,8 +258,8 @@ class TextToHTMLparser(object):
         fg = ANSI_WHITE
         # default bg is black
         bg = ANSI_BACK_BLACK
-        truecolor_fg = ''
-        truecolor_bg = ''
+        truecolor_fg = ""
+        truecolor_bg = ""
 
         for i, substr in enumerate(str_list):
             # reset all current styling
@@ -271,8 +273,8 @@ class TextToHTMLparser(object):
                 hilight = ANSI_UNHILITE
                 fg = ANSI_WHITE
                 bg = ANSI_BACK_BLACK
-                truecolor_fg = ''
-                truecolor_bg = ''
+                truecolor_fg = ""
+                truecolor_bg = ""
 
             # change color
             elif substr in self.ansi_color_codes + self.xterm_fg_codes:
@@ -289,7 +291,7 @@ class TextToHTMLparser(object):
                 bg = substr
 
             elif re.match(hex_colors.TRUECOLOR_FG, substr):
-                str_list[i] = ''
+                str_list[i] = ""
                 truecolor_fg = substr
 
             elif re.match(hex_colors.TRUECOLOR_BG, substr):
@@ -334,18 +336,18 @@ class TextToHTMLparser(object):
                         color_index = self.colorlist.index(fg)
 
                     if inverse:
-                        if truecolor_fg != '' and truecolor_bg != '':
+                        if truecolor_fg != "" and truecolor_bg != "":
                             # True startcolor only
                             truecolor_fg, truecolor_bg = truecolor_bg, truecolor_fg
-                        elif truecolor_fg != '' and truecolor_bg == '':
+                        elif truecolor_fg != "" and truecolor_bg == "":
                             # Truecolor fg, class based bg
                             truecolor_bg = truecolor_fg
-                            truecolor_fg = ''
+                            truecolor_fg = ""
                             color_class = "color-{}".format(str(bg_index).rjust(3, "0"))
-                        elif truecolor_fg == '' and truecolor_bg != '':
+                        elif truecolor_fg == "" and truecolor_bg != "":
                             # Truecolor bg, class based fg
                             truecolor_fg = truecolor_bg
-                            truecolor_bg = ''
+                            truecolor_bg = ""
                             bg_class = "bgcolor-{}".format(str(color_index).rjust(3, "0"))
                         else:
                             # inverse means swap fg and bg indices
@@ -364,13 +366,15 @@ class TextToHTMLparser(object):
                         classes.append(color_class)
 
                     # define the new style span
-                    if truecolor_fg == '' and truecolor_bg == '':
+                    if truecolor_fg == "" and truecolor_bg == "":
                         prefix = f'<span class="{" ".join(classes)}">'
                     else:
-                        # Classes can't be used for true color
-                        prefix = (f'<span '
-                                  f'class="{" ".join(classes)}" '
-                                  f'{hex_colors.xterm_truecolor_to_html_style(fg=truecolor_fg, bg=truecolor_bg)}>')
+                        # Classes can't be used for truecolor--but they can be extras such as 'blink'
+                        prefix = (
+                            f"<span "
+                            f'class="{" ".join(classes)}" '
+                            f"{hex_colors.xterm_truecolor_to_html_style(fg=truecolor_fg, bg=truecolor_bg)}>"
+                        )
 
                     # close any prior span
                     if not clean:
