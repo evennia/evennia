@@ -932,7 +932,17 @@ class CmdSetHelp(CmdHelp):
                     # types of entries.
                     self.msg(f"|rWarning:\n|r{warning}|n")
                     repl = yield ("|wDo you still want to continue? Y/[N]?|n")
-                    if repl.lower() not in ("y", "yes"):
+                    if repl.lower() in ("y", "yes"):
+                        # find a db-based help entry if one already exists
+                        db_topics = {**db_help_topics}
+                        db_categories = list(
+                            set(HelpCategory(topic.help_category) for topic in db_topics.values())
+                        )
+                        entries = list(db_topics.values()) + db_categories
+                        match, _ = self.do_search(querystr, entries)
+                        if match:
+                            old_entry = match
+                    else:
                         self.msg("Aborted.")
                         return
                 else:
