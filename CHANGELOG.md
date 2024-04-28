@@ -9,7 +9,6 @@
   changes width (assuming client supports NAWS properly) (michaelfaith84)
 - [Feature][pull3502]: New `sethelp/locks` allows for editing help entry
   locks after they were first created (chiizujin)
-- [Feature][pull3503]: `page` now shows timestamps in local time instead of in UTC.
 - [Feature][pull3514]: Support `$pron(pronoun, key)` and new `$pconj(verb, key)`
   (pronoun conjugation) for actor stance (InspectorCaracal)
 - [Feature][pull3521]: Allow `WORD` (fully capitalized) in GMCP command names
