@@ -1,5 +1,57 @@
 # Changelog
 
+## Main branch
+
+- [Feature][pull3470]: New `exit_order` kwarg to
+  `DefaultObject.get_display_exits` to easier customize the order in which
+  standard exits are displayed in a room (chiizujin)
+- [Feature][pull3498]: Properly update Evennia's screen width when client
+  changes width (assuming client supports NAWS properly) (michaelfaith84)
+- [Feature][pull3502]: New `sethelp/locks` allows for editing help entry
+  locks after they were first created (chiizujin)
+- [Feature][pull3514]: Support `$pron(pronoun, key)` and new `$pconj(verb, key)`
+  (pronoun conjugation) for actor stance (InspectorCaracal)
+- [Feature][pull3521]: Allow `WORD` (fully capitalized) in GMCP command names
+  instead of only `Word` (titled) to support specific clients better (InspectorCaracal)
+- [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
+- [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
+- [Fix][pull3489]: Superuser could break wilderness contrib exits (t34lbytes)
+- [Fix][pull3496]: EvEditor would not correctly show search&replace feedback
+  when replacing colors (Chiizujin)
+- [Fix][pull3499]: Dig/tunnel commands didn't echo the typeclass of the newly
+  created room properly (chiizujin)
+- [Fix][pull3501]: Using `sethelp` to create a help entry colliding with a
+  command-name made the entry impossible to edit/delete later (chiizujin)
+- [Fix][pull3506]: Fix Traceback when setting prototype parent in the in-game OLC wizard (chiizujin)
+- [Fix][pull3507]: Prototype wizard would not save changes if aborting the
+  updating of existing spawned instances (chiizujun)
+- [Fix][pull3516]: Quitting the chargen contrib menu will now trigger auto-look (InspectorCaracal)
+- [Fix][pull3517]: Supply `Object.search` with an empty `candidates` list caused
+  defaults to be used instead of finding nothing (InspectorCaracal)
+- [Fix][pull3518]: `GlobalScriptsContainer.all()` raised a traceback (InspectorCaracal)
+- [Fix][pull3520]: Exits not included in exit sort order were not listed correctly (chiizujin)
+- [Docs]: Doc fixes (Griatch, chiizujin)
+
+[pull3470]: https://github.com/evennia/evennia/pull/3470
+[pull3495]: https://github.com/evennia/evennia/pull/3495
+[pull3491]: https://github.com/evennia/evennia/pull/3491
+[pull3489]: https://github.com/evennia/evennia/pull/3489
+[pull3496]: https://github.com/evennia/evennia/pull/3496
+[pull3498]: https://github.com/evennia/evennia/pull/3498
+[pull3499]: https://github.com/evennia/evennia/pull/3499
+[pull3501]: https://github.com/evennia/evennia/pull/3501
+[pull3502]: https://github.com/evennia/evennia/pull/3502
+[pull3503]: https://github.com/evennia/evennia/pull/3503
+[pull3506]: https://github.com/evennia/evennia/pull/3506
+[pull3507]: https://github.com/evennia/evennia/pull/3507
+[pull3514]: https://github.com/evennia/evennia/pull/3514
+[pull3516]: https://github.com/evennia/evennia/pull/3516
+[pull3517]: https://github.com/evennia/evennia/pull/3517
+[pull3518]: https://github.com/evennia/evennia/pull/3518
+[pull3520]: https://github.com/evennia/evennia/pull/3520
+[pull3521]: https://github.com/evennia/evennia/pull/3521
+
+
 ## Evennia 4.1.1
 
 April 6, 2024
