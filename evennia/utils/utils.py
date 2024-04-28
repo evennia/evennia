@@ -688,7 +688,7 @@ def datetime_format(dtobj, time_zone=None):
 
     now = timezone.now()
     if time_zone:
-        now = utc_to_local(now, time_zone)
+        now = time_as_timezone(now, time_zone)
 
     if dtobj.year < now.year:
         # another year (Apr 5, 2019)
@@ -3103,21 +3103,18 @@ def value_is_integer(value):
     return True
 
 
-def utc_to_local(utc_time, time_zone):
+def time_as_timezone(base_time, time_zone):
     """
-    Convert a date/time from UTC to a local date/time based on `timezone`.
+    Convert a date/time to a local date/time based on `timezone`.
 
     Args:
-        utc_time (datetime): The time to convert.
+        base_time (datetime): The time to convert.
         time_zone (tzfile): The time zone to convert to.
 
     Returns
         result (datetime): The converted time.
     """
-    if not time_zone:
-        return utc_time
-    # don't convert a time that's not UTC
-    if utc_time.utcoffset().total_seconds() != 0:
-        return utc_time
+    if not time_zone or base_time.tzname() == time_zone.zone:
+        return base_time
 
-    return utc_time.replace(tzinfo=pytz.utc).astimezone(time_zone)
+    return base_time.astimezone(time_zone)
