@@ -730,8 +730,8 @@
                     <span class="n">flags</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_val</span>
 
                     <span class="c1"># If we&#39;re manually assign a display size, turn off auto-resizing</span>
-                    <span class="k">if</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SCREENWIDTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SCREENHEIGHT&#39;</span><span class="p">]:</span>
-                        <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;AUTORESIZE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">,</span> <span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">]:</span>
+                        <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Option |w</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">|n was changed from &#39;|w</span><span class="si">{</span><span class="n">old_val</span><span class="si">}</span><span class="s2">|n&#39; to&quot;</span>

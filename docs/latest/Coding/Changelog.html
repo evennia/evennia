@@ -204,6 +204,12 @@
 standard exits are displayed in a room (chiizujin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3498">Feature</a>: Properly update Evennia’s screen width when client
 changes width (assuming client supports NAWS properly) (michaelfaith84)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3502">Feature</a>: New <code class="docutils literal notranslate"><span class="pre">sethelp/locks</span></code> allows for editing help entry
+locks after they were first created (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3514">Feature</a>: Support <code class="docutils literal notranslate"><span class="pre">$pron(pronoun,</span> <span class="pre">key)</span></code> and new <code class="docutils literal notranslate"><span class="pre">$pconj(verb,</span> <span class="pre">key)</span></code>
+(pronoun conjugation) for actor stance (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3521">Feature</a>: Allow <code class="docutils literal notranslate"><span class="pre">WORD</span></code> (fully capitalized) in GMCP command names
+instead of only <code class="docutils literal notranslate"><span class="pre">Word</span></code> (titled) to support specific clients better (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3495">Fix</a>: Fix rate in Trait contribs not updating after reload (jaborsh)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3491">Fix</a>: Fix traceback in EvEditor when searching with malformed regex (chiizujin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3489">Fix</a>: Superuser could break wilderness contrib exits (t34lbytes)</p></li>
@@ -211,6 +217,16 @@ changes width (assuming client supports NAWS properly) (michaelfaith84)</p></li>
 when replacing colors (Chiizujin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3499">Fix</a>: Dig/tunnel commands didn’t echo the typeclass of the newly
 created room properly (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3501">Fix</a>: Using <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> to create a help entry colliding with a
+command-name made the entry impossible to edit/delete later (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3506">Fix</a>: Fix Traceback when setting prototype parent in the in-game OLC wizard (chiizujin)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3507">Fix</a>: Prototype wizard would not save changes if aborting the
+updating of existing spawned instances (chiizujun)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3516">Fix</a>: Quitting the chargen contrib menu will now trigger auto-look (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3517">Fix</a>: Supply <code class="docutils literal notranslate"><span class="pre">Object.search</span></code> with an empty <code class="docutils literal notranslate"><span class="pre">candidates</span></code> list caused
+defaults to be used instead of finding nothing (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3518">Fix</a>: <code class="docutils literal notranslate"><span class="pre">GlobalScriptsContainer.all()</span></code> raised a traceback (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3520">Fix</a>: Exits not included in exit sort order were not listed correctly (chiizujin)</p></li>
 <li><p>[Docs]: Doc fixes (Griatch, chiizujin)</p></li>
 </ul>
 </section>
