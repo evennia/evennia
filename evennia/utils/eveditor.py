@@ -97,10 +97,11 @@ _HELP_TEXT = _(
 
  :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
 
- :j <l> <a> =<w>  - justify buffer or line <l>. <a> is f, c, l or r. <w> is
-                    width. Default for <a> is l (left). Default for <w> is {_DEFAULT_WIDTH}
- :f <l> =<w>      - flood-fill entire buffer or line <l> to width <w>.
-                    Equivalent to :j <l> l
+ :j <l> <a> = <w> - justify buffer or line <l>. <a> is f, c, l or r. <w> is
+                    width. <a> and <w> are optional and default to l (left)
+                    and {_DEFAULT_WIDTH} respectively
+ :f <l> = <w>     - flood-fill entire buffer or line <l> to width <w>.
+                    Equivalent to :j <l> l. <w> is optional, as for :j
  :fi <l>    - indent entire buffer or line <l>
  :fd <l>    - de-indent entire buffer or line <l>
 
