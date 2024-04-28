@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Evennia Polish translation v0.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-29 18:53+0000\n"
-"PO-Revision-Date: 2024-04-27 10:34+0200\n"
+"PO-Revision-Date: 2024-04-28 08:16+0200\n"
 "Last-Translator: MoonyTheDream <moonchasered@gmail.com>\n"
 "Language-Team: MoonyTheDream\n"
 "Language: pl_PL\n"
@@ -378,7 +378,7 @@ msgid ""
 "You become |c{name}|n.\n"
 msgstr ""
 "\n"
-"Stajesz się |c{name}|n.\n"
+"Przybywasz jako |c{name}|n.\n"
 
 #: objects/objects.py:2687
 #, python-brace-format
