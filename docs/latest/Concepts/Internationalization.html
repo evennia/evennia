@@ -214,6 +214,7 @@ developer) to know English (you are reading this manual after all). So we
 translate <em>hard-coded strings that the end player may see</em> - things you
 can’t easily change from your mygame/ folder. Outputs from Commands and
 Typeclasses are generally <em>not</em> translated, nor are console/log outputs.</p>
+<p>To cut down on work, you may consider only translating the player-facing commands (look, get etc) and leave the default admin commands in English. To change the language of some commands (such as <code class="docutils literal notranslate"><span class="pre">look</span></code>) you need to override the relevant hook-methods on your Typeclasses (check out the code for the default command to see what it calls).</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Windows users</p>
