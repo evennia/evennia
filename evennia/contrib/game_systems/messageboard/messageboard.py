@@ -37,7 +37,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
     Read and post messages on a message board.
 
     Usage:
-      board[/switches] [message #] [subject = message]
+      board[/switches] [message #] [[subject] = message]
 
     Switches:
       unread - List only unread messages.
