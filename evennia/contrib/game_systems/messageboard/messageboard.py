@@ -68,6 +68,16 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
     aliases = ["@brd"]
     switch_options = ("read", "unread", "post", "reply", "change", "delete", "del", "clear", "edit")
 
+    post_template = """
+{separator}
+|hFrom:|n {author} |h@|n {date_time} [|h#{message_id}|n]
+{separator}
+|hSubject:|n {subject}
+
+{body}
+{separator}
+    """
+
     _MAX_SUBJECT_DISPLAY_LENGTH = 40
 
     def parse(self):
@@ -117,27 +127,14 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             separator = f"|{border_col}{separator_char * width}|n"
 
             msg = message["message"]
-            time_zone = self.caller.account.options.get("timezone")
-            date_time = self._utc_to_local(msg.date_created, time_zone).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-            info = (
-                f"|{border_col}From:|n "
-                f"{message['author_name']} |{border_col}@|n "
-                f"{date_time} |{border_col}[#{message_id}]|n"
-            )
-
             lines = msg.message.split("\n")
             subject = f"|{border_col}Subject:|n {lines[0]}"
             body = "\n".join(lines[1:])
+            author = message['author_name']
+            date_time = msg.date_created
 
             self.caller.msg(
-                f"{separator}\n"
-                f"{info}\n"
-                f"{separator}\n"
-                f"|h{subject}|n\n\n"
-                f"{body}\n"
-                f"{separator}"
+                self.format_post(message_id, separator, date_time, author, subject, body)
             )
             message["read_by"].add(self.caller)
 
@@ -279,12 +276,6 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             return
 
         # List messages
-        can_post = (
-            "You |gmay post|n on this message board"
-            if board.access(self.caller, "post")
-            else "You |rmay not post|n on this message board"
-        )
-
         if messages:
             if "unread" in self.switches:
                 # messages = [message for message in messages if self.caller not in message["read_by"]]
@@ -297,7 +288,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                     self.caller.msg("You have read all the messages on this board.")
                     return
 
-            table = self.styled_table("#", "From", "Subject", "Posted")
+            table = self.create_table()
             time_zone = self.caller.account.options.get("timezone")
             for message_id, message in messages.items():
                 unread_mark = "" if self.caller in message["read_by"] else "*"
@@ -305,13 +296,56 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 time = datetime_format(self._utc_to_local(message["post_date"], time_zone))
                 if len(subject) > self._MAX_SUBJECT_DISPLAY_LENGTH:
                     subject = subject[:self._MAX_SUBJECT_DISPLAY_LENGTH] + "..."
-                table.add_row(f"{unread_mark}{message_id}", message["author_name"], subject, time)
-                table.reformat_column(0, align="r")
+                self.add_table_row(
+                    table, f"{unread_mark}{message_id}", message["author_name"], subject, time
+                )
 
-            string = str(table) + f"\n  * Indicates an unread message.  {can_post}."
+            self.format_table(table)
+            string = self.get_table_header(board) + str(table) + self.get_table_footer(board)
         else:
-            string = f"There are no messages on this board yet. {can_post}."
+            string = (
+                "There are no messages on this board yet."
+                f"  {self.get_can_can_post_info(board)}."
+            )
         self.msg(string)
+
+    def format_post(self, message_id, separator, date_time, author, subject, body):
+        time_zone = self.caller.account.options.get("timezone")
+        date_time = self._utc_to_local(date_time, time_zone).strftime("%Y-%m-%d %H:%M:%S")
+
+        return self.post_template.format(
+            separator=separator,
+            message_id=message_id,
+            date_time=date_time,
+            author=author,
+            subject=subject,
+            body=body
+        ).strip()
+
+    def create_table(self):
+        """
+        table must override __str__()
+        """
+        return self.styled_table("#", "From", "Subject", "Posted")
+
+    def add_table_row(self, table, message_id, author, subject, date_time):
+        table.add_row(message_id, author, subject, date_time)
+
+    def format_table(self, table):
+        table.reformat_column(0, align="r")
+
+    def get_table_header(self, board):
+        return ""
+
+    def get_table_footer(self, board):
+        return f"\n  * Indicates an unread message.  {self.get_can_can_post_info(board)}."
+
+    def get_can_can_post_info(self, board):
+        return (
+            "You |gmay post|n on this message board"
+            if board.access(self.caller, "post")
+            else "You |rmay not post|n on this message board"
+        )
 
     def _utc_to_local(self, utc_time, time_zone):
         if not time_zone:
