@@ -12,6 +12,7 @@ from evennia.comms.models import Msg
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
+
 class EvMessageBoard(DefaultObject):
     messages = AttributeProperty(dict, autocreate=False)
     message_id = AttributeProperty(0, autocreate=False)
@@ -129,7 +130,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             lines = msg.message.split("\n")
             subject = f"|{border_col}Subject:|n {lines[0]}"
             body = "\n".join(lines[1:])
-            author = message['author_name']
+            author = message["author_name"]
             date_time = msg.date_created
 
             self.caller.msg(
@@ -157,8 +158,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
 
         if "reply" in self.switches:
             usage = (
-                "Usage: board/reply <message #> = <message>\n"
-                "       board/reply/edit <message #>"
+                f"Usage: board/reply <message #> = <message>\n       board/reply/edit <message #>"
             )
 
             if "edit" in self.switches:
@@ -264,7 +264,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 subject = message["subject"]
                 time = datetime_format(self._utc_to_local(message["post_date"], time_zone))
                 if len(subject) > self._MAX_SUBJECT_DISPLAY_LENGTH:
-                    subject = subject[:self._MAX_SUBJECT_DISPLAY_LENGTH] + "..."
+                    subject = subject[: self._MAX_SUBJECT_DISPLAY_LENGTH] + "..."
                 self.add_table_row(
                     table, f"{unread_mark}{message_id}", message["author_name"], subject, time
                 )
@@ -273,8 +273,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             string = self.get_table_header(board) + str(table) + self.get_table_footer(board)
         else:
             string = (
-                "There are no messages on this board yet."
-                f"  {self.get_can_can_post_info(board)}."
+                f"There are no messages on this board yet.  {self.get_can_can_post_info(board)}."
             )
         self.msg(string)
 
@@ -302,7 +301,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             savefunc=_board_editor_save,
             quitfunc=_board_editor_quit,
             key="board message",
-            persistent=True
+            persistent=True,
         )
 
     def format_post(self, message_id, separator, date_time, author, subject, body):
@@ -315,7 +314,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             date_time=date_time,
             author=author,
             subject=subject,
-            body=body
+            body=body,
         ).strip()
 
     def create_table(self):
@@ -403,6 +402,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
         board.message_id = 0
         caller.msg("Message board cleared.")
 
+
 def _board_get_messages(board):
     if not (messages := board.db.messages):
         board.db.messages = {}
@@ -410,11 +410,13 @@ def _board_get_messages(board):
 
     return messages
 
+
 def _board_editor_load(caller):
     buf = caller.db.message_board_buf or ""
     caller.attributes.remove("message_board_buf")
 
     return buf
+
 
 def _board_editor_save(caller, buf):
     if buf:
@@ -427,6 +429,7 @@ def _board_editor_save(caller, buf):
 
     caller.db.message_board_buf = buf
     return True
+
 
 def _board_editor_quit(caller):
     message = caller.db.message_board_buf
@@ -448,6 +451,7 @@ def _board_editor_quit(caller):
     caller.attributes.remove("message_board_buf")
     caller.attributes.remove("message_board_message_id")
 
+
 def board_post_message(caller, board, subject, body, message_id=None):
     if not caller.permissions.check("Builder"):
         subject = strip_ansi(subject)
@@ -461,7 +465,7 @@ def board_post_message(caller, board, subject, body, message_id=None):
             "author_name": caller.key,
             "subject": subject,
             "message": msg,
-            "read_by": {caller}
+            "read_by": {caller},
         }
 
         message_id = board.message_id + 1
