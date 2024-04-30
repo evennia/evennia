@@ -20,7 +20,7 @@ class EvMessageBoard(DefaultObject):
     def at_object_creation(self):
         super().at_object_creation()
 
-        self.locks.add("get:false();brdpost:all();brdchange:all();brdmanage:perm(Builder)")
+        self.locks.add("get:false();post:all();change:all();manage:perm(Builder)")
         self.tags.add("message_board", "contrib")
         self.db.desc = (
             "A board on which messages can be posted. Use the |hboard|n command to "
@@ -144,7 +144,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             return
 
         if "post" in self.switches:
-            if not board.access(self.caller, "brdpost"):
+            if not board.access(self.caller, "post"):
                 self.caller.msg("You are not allowed to post on this message board.")
                 return
             if use_editor:
@@ -208,9 +208,9 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             return
 
         if "change" in self.switches:
-            can_post = board.access(self.caller, "brdpost")
-            can_change = board.access(self.caller, "brdchange")
-            can_manage = board.access(self.caller, "brdmanage")
+            can_post = board.access(self.caller, "post")
+            can_change = board.access(self.caller, "change")
+            can_manage = board.access(self.caller, "manage")
 
             if not ((can_post and can_change) or can_manage):
                 self.caller.msg("You are not allowed to change posts on this message board.")
@@ -245,9 +245,9 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             return
 
         if "delete" in self.switches or "del" in self.switches:
-            can_post = board.access(self.caller, "brdpost")
-            can_change = board.access(self.caller, "brdchange")
-            can_manage = board.access(self.caller, "brdmanage")
+            can_post = board.access(self.caller, "post")
+            can_change = board.access(self.caller, "change")
+            can_manage = board.access(self.caller, "manage")
 
             if not ((can_post and can_change) or can_manage):
                 self.caller.msg("You are not allowed to delete messages from this board.")
@@ -271,7 +271,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             return
 
         if "clear" in self.switches:
-            if not board.access(self.caller, "brdmanage"):
+            if not board.access(self.caller, "manage"):
                 self.caller.msg("You are not allowed to clear this message board.")
                 return
 
@@ -281,7 +281,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
         # List messages
         can_post = (
             "You |gmay post|n on this message board"
-            if board.access(self.caller, "brdpost")
+            if board.access(self.caller, "post")
             else "You |rmay not post|n on this message board"
         )
 
