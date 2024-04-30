@@ -128,7 +128,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
 
             msg = message["message"]
             lines = msg.message.split("\n")
-            subject = f"|{border_col}Subject:|n {lines[0]}"
+            subject = lines[0]
             body = "\n".join(lines[1:])
             author = message["author_name"]
             date_time = msg.date_created
