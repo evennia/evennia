@@ -207,7 +207,9 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You may only change your own messages.")
                 return
 
-            self.start_editor(board, buf=message["message"].message, message_id=int(message_id))
+            lines = message["message"].message.split("\n")
+            buf = lines[0] + "\n\n" + "\n".join(lines[1:])
+            self.start_editor(board, buf=buf, message_id=int(message_id))
             return
 
         if "delete" in self.switches or "del" in self.switches:
