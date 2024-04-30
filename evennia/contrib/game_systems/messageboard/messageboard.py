@@ -23,7 +23,7 @@ class EvMessageBoard(DefaultObject):
         self.locks.add("get:false();post:all();change:all();manage:perm(Builder)")
         self.tags.add("message_board", "contrib")
         self.db.desc = (
-            "A board on which messages can be posted. Use the |hboard|n command to "
+            "A board on which messages can be posted. Use the |hboard|n command to\n"
             "read and post to it (if you have the required permissions)."
         )
 
