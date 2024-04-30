@@ -12,7 +12,6 @@ from evennia.comms.models import Msg
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
-
 class EvMessageBoard(DefaultObject):
     messages = AttributeProperty(dict, autocreate=False)
     message_id = AttributeProperty(0, autocreate=False)
@@ -144,24 +143,16 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             if not board.access(self.caller, "post"):
                 self.caller.msg("You are not allowed to post on this message board.")
                 return
-            if use_editor:
-                self._send_editor_intructions()
-                self.caller.db.message_board = board
-                EvEditor(
-                    self.caller,
-                    loadfunc=_board_editor_load,
-                    savefunc=_board_editor_save,
-                    quitfunc=_board_editor_quit,
-                    key="board message",
-                    persistent=True
-                )
-                return
-            else:
-                if not (self.lhs and self.rhs):
-                    self.caller.msg("Usage: board/post topic = message")
-                    return
-                _board_post_message(self.caller, board, self.lhs, self.rhs)
 
+            if use_editor:
+                self.start_editor(board)
+                return
+
+            if not (self.lhs and self.rhs):
+                self.caller.msg("Usage: board/post topic = message")
+                return
+
+            board_post_message(self.caller, board, self.lhs, self.rhs)
             return
 
         if "reply" in self.switches:
@@ -188,20 +179,10 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             subject = message["message"].message.split("\n")[0]
             subject = f"Re: {subject}"
             if use_editor:
-                self._send_editor_intructions()
-                self.caller.db.message_board = board
-                self.caller.db.message_board_buf = subject
-                EvEditor(
-                    self.caller,
-                    loadfunc=_board_editor_load,
-                    savefunc=_board_editor_save,
-                    quitfunc=_board_editor_quit,
-                    key="board message",
-                    persistent=True
-                )
+                self.start_editor(board, subject=subject)
                 return
 
-            _board_post_message(self.caller, board, subject, self.rhs)
+            board_post_message(self.caller, board, subject, self.rhs)
             return
 
         if "change" in self.switches:
@@ -226,19 +207,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You may only change your own messages.")
                 return
 
-            self._send_editor_intructions()
-            self.caller.db.message_board = board
-            self.caller.db.message_board_buf = message["message"].message
-            self.caller.db.message_board_message_id = int(message_id)
-            EvEditor(
-                self.caller,
-                loadfunc=_board_editor_load,
-                savefunc=_board_editor_save,
-                quitfunc=_board_editor_quit,
-                key="board message",
-                persistent=True
-            )
-
+            self.start_editor(board, buf=message["message"].message, message_id=int(message_id))
             return
 
         if "delete" in self.switches or "del" in self.switches:
@@ -309,6 +278,33 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             )
         self.msg(string)
 
+    def start_editor(self, board, subject=None, buf=None, message_id=None):
+        """
+        (WIP)
+        subject required if replying
+        buf and message_id (but not subject) required for editing (this will be changed)
+
+        Edit should call the module's
+          board_post_message(caller, board, subject, body, message_id=None)
+        """
+        self._send_editor_intructions()
+        self.caller.db.message_board = board
+        if subject:
+            self.caller.db.message_board_buf = subject
+        if buf:
+            self.caller.db.message_board_buf = buf
+        if message_id:
+            self.caller.db.message_board_message_id = message_id
+
+        EvEditor(
+            self.caller,
+            loadfunc=_board_editor_load,
+            savefunc=_board_editor_save,
+            quitfunc=_board_editor_quit,
+            key="board message",
+            persistent=True
+        )
+
     def format_post(self, message_id, separator, date_time, author, subject, body):
         time_zone = self.caller.account.options.get("timezone")
         date_time = self._utc_to_local(date_time, time_zone).strftime("%Y-%m-%d %H:%M:%S")
@@ -324,6 +320,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
 
     def create_table(self):
         """
+        (WIP)
         table must override __str__()
         """
         return self.styled_table("#", "From", "Subject", "Posted")
@@ -406,7 +403,6 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
         board.message_id = 0
         caller.msg("Message board cleared.")
 
-
 def _board_get_messages(board):
     if not (messages := board.db.messages):
         board.db.messages = {}
@@ -414,13 +410,11 @@ def _board_get_messages(board):
 
     return messages
 
-
 def _board_editor_load(caller):
     buf = caller.db.message_board_buf or ""
     caller.attributes.remove("message_board_buf")
 
     return buf
-
 
 def _board_editor_save(caller, buf):
     if buf:
@@ -434,7 +428,6 @@ def _board_editor_save(caller, buf):
     caller.db.message_board_buf = buf
     return True
 
-
 def _board_editor_quit(caller):
     message = caller.db.message_board_buf
     if not message:
@@ -447,16 +440,15 @@ def _board_editor_quit(caller):
 
     message_id = caller.db.message_board_message_id
     if message_id:
-        _board_post_message(caller, caller.db.message_board, subject, body, message_id=message_id)
+        board_post_message(caller, caller.db.message_board, subject, body, message_id=message_id)
     else:
-        _board_post_message(caller, caller.db.message_board, subject, body)
+        board_post_message(caller, caller.db.message_board, subject, body)
 
     caller.attributes.remove("message_board")
     caller.attributes.remove("message_board_buf")
     caller.attributes.remove("message_board_message_id")
 
-
-def _board_post_message(caller, board, subject, body, message_id=None):
+def board_post_message(caller, board, subject, body, message_id=None):
     if not caller.permissions.check("Builder"):
         subject = strip_ansi(subject)
 
