@@ -64,8 +64,8 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
     With no arguments, all messages on the board will be listed.
     """
 
-    key = "board"
-    aliases = ["brd"]
+    key = "@board"
+    aliases = ["@brd"]
     switch_options = ("read", "unread", "post", "reply", "change", "delete", "del", "clear", "edit")
 
     _MAX_SUBJECT_DISPLAY_LENGTH = 40
