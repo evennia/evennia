@@ -235,7 +235,20 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You may only delete your own messages.")
                 return
 
-            self._delete_message(self.caller, board, int(message_id))
+            message_id = int(message_id)
+            message = board.messages[message_id]["message"]
+            subject = message.message.split("\n")[0]
+            answer = yield (
+                f"Are you sure you want to delete the message '{subject}|n' (#{message_id}) yes/[no]?"
+            )
+            if not answer.lower() in ("yes", "y"):
+                self.caller.msg("Cancelled. Message not deleted.")
+                return
+
+            message.delete()
+            del board.messages[message_id]
+            self.caller.msg(f"Message #{message_id} deleted.")
+
             return
 
         if "clear" in self.switches:
@@ -243,7 +256,16 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You are not allowed to clear this message board.")
                 return
 
-            self._clear_board(self.caller, board)
+            answer = yield ("Are you sure you want to clear all messages from the board yes/[no]?")
+            if not answer.lower() in ("yes", "y"):
+                self.caller.msg("Cancelled. The message board was not cleared.")
+                return
+
+            Msg.objects.filter(db_receivers_objects=board).delete()
+            board.messages.clear()
+            board.message_id = 0
+            self.caller.msg("The message board has been cleared.")
+
             return
 
         # List messages
@@ -376,33 +398,6 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             "saving and quitting.|n\n"
         )
         self.caller.msg(string)
-
-    @interactive
-    def _delete_message(self, caller, board, message_id):
-        message = board.messages[message_id]["message"]
-        subject = message.message.split("\n")[0]
-        answer = yield (
-            f"Are you sure you want to delete the message '{subject}|n' (#{message_id}) yes/[no]?"
-        )
-        if not answer.lower() in ("yes", "y"):
-            caller.msg("Cancelled.")
-            return
-
-        message.delete()
-        del board.messages[message_id]
-        caller.msg(f"Message #{message_id} deleted.")
-
-    @interactive
-    def _clear_board(self, caller, board):
-        answer = yield ("Are you sure you want to clear all messages from the board yes/[no]?")
-        if not answer.lower() in ("yes", "y"):
-            caller.msg("Cancelled.")
-            return
-
-        Msg.objects.filter(db_receivers_objects=board).delete()
-        board.messages.clear()
-        board.message_id = 0
-        caller.msg("Message board cleared.")
 
 
 def _board_get_messages(board):
