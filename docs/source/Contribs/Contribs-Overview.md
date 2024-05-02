@@ -241,8 +241,8 @@ _Contribution by Griatch, 2019_
 A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
 spawn and join puzzle rooms that track their state independently. Any number of players
 can join to solve a room together. This is the engine created for 'EvscapeRoom', which won
-the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game
-content but contains the utilities and base classes and an empty example room.
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has only
+very minimal game content, it contains the utilities and base classes and an empty example room.
 
 [Read the documentation](./Contrib-Evscaperoom.md) - [Browse the Code](evennia.contrib.full_systems.evscaperoom)
 
