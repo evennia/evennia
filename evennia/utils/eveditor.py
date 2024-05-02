@@ -822,6 +822,7 @@ class EvEditorCmdSet(CmdSet):
     """CmdSet for the editor commands"""
 
     key = "editorcmdset"
+    priority = 150  # override other cmdsets.
     mergetype = "Replace"
 
     def at_cmdset_creation(self):
