@@ -126,17 +126,14 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             separator_char = self.caller.account.options.get("separator_fill")
             separator = f"|{border_col}{separator_char * width}|n"
 
-            msg = message["message"]
-            lines = msg.message.split("\n")
-            subject = lines[0]
-            body = "\n".join(lines[1:])
-            author = message["author_name"]
-            date_time = msg.date_created
+            author, subject = message.header.split("\n")
+            body = message.message
+            date_time = message.date_created
 
             self.caller.msg(
                 self.format_post(message_id, separator, date_time, author, subject, body)
             )
-            message["read_by"].add(self.caller)
+            message.tags.add(self.caller.dbid, category="read_by")
 
             return
 
@@ -165,18 +162,19 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 if len(self.arglist) != 1 or self.rhs:
                     self.caller.msg(usage)
                     return
+                message_id = self.arglist[0].strip()
                 use_editor = True
             else:
-                if len(self.arglist) < 1 or not self.rhs:
+                if not (self.lhs and self.rhs):
                     self.caller.msg(usage)
                     return
+                message_id = self.lhs
                 use_editor = False
 
-            message_id = self.arglist[0].strip()
             if not (message := self._get_message(board, message_id, usage)):
                 return
 
-            subject = message["message"].message.split("\n")[0]
+            subject = message.header.split("\n")[1]
             subject = f"Re: {subject}"
             if use_editor:
                 self.start_editor(board, subject=subject)
@@ -207,9 +205,9 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You may only change your own messages.")
                 return
 
-            lines = message["message"].message.split("\n")
-            buf = lines[0] + "\n\n" + "\n".join(lines[1:])
-            self.start_editor(board, buf=buf, message_id=int(message_id))
+            subject = message.header.split("\n")[1]
+            body = message.message
+            self.start_editor(board, subject=subject, body=body, message_id=int(message_id))
             return
 
         if "delete" in self.switches or "del" in self.switches:
@@ -222,10 +220,6 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 return
 
             message_id = self.args.strip()
-            if not message_id.isdigit():
-                self.caller.msg("Usage: board/delete <message #>")
-                return
-
             if not (
                 message := self._get_message(board, message_id, "Usage: board/delete <message #>")
             ):
@@ -235,18 +229,16 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 self.caller.msg("You may only delete your own messages.")
                 return
 
-            message_id = int(message_id)
-            message = board.messages[message_id]["message"]
-            subject = message.message.split("\n")[0]
+            subject = message.header.split("\n")[1]
             answer = yield (
                 f"Are you sure you want to delete the message '{subject}|n' (#{message_id}) yes/[no]?"
             )
             if not answer.lower() in ("yes", "y"):
-                self.caller.msg("Cancelled. Message not deleted.")
+                self.caller.msg("Cancelled. The message was not deleted.")
                 return
 
             message.delete()
-            del board.messages[message_id]
+            del board.messages[int(message_id)]
             self.caller.msg(f"Message #{message_id} deleted.")
 
             return
@@ -271,11 +263,10 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
         # List messages
         if messages:
             if "unread" in self.switches:
-                # messages = [message for message in messages if self.caller not in message["read_by"]]
                 messages = {
                     message_id: message
                     for message_id, message in messages.items()
-                    if not self.caller in message["read_by"]
+                    if not message.tags.get(self.caller.dbid, category="read_by")
                 }
                 if not messages:
                     self.caller.msg("You have read all the messages on this board.")
@@ -284,13 +275,13 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             table = self.create_table()
             time_zone = self.caller.account.options.get("timezone")
             for message_id, message in messages.items():
-                unread_mark = "" if self.caller in message["read_by"] else "*"
-                subject = message["subject"]
-                time = datetime_format(self._utc_to_local(message["post_date"], time_zone))
+                unread_mark = "" if message.tags.get(self.caller.dbid, category="read_by") else "*"
+                author, subject = message.header.split("\n")
                 if len(subject) > self._MAX_SUBJECT_DISPLAY_LENGTH:
                     subject = subject[: self._MAX_SUBJECT_DISPLAY_LENGTH] + "..."
+                time = datetime_format(self._utc_to_local(message.date_created, time_zone))
                 self.add_table_row(
-                    table, f"{unread_mark}{message_id}", message["author_name"], subject, time
+                    table, f"{unread_mark}{message_id}", author, subject, time
                 )
 
             self.format_table(table)
@@ -301,7 +292,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
             )
         self.msg(string)
 
-    def start_editor(self, board, subject=None, buf=None, message_id=None):
+    def start_editor(self, board, subject=None, body=None, message_id=None):
         """
         (WIP)
         subject required if replying
@@ -310,12 +301,14 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
         Edit should call the module's
           board_post_message(caller, board, subject, body, message_id=None)
         """
+
         self._send_editor_intructions()
         self.caller.db.message_board = board
+        self.caller.db.message_board_buf = ""
         if subject:
-            self.caller.db.message_board_buf = subject
-        if buf:
-            self.caller.db.message_board_buf = buf
+            self.caller.db.message_board_buf = f"{subject}\n"
+        if body:
+            self.caller.db.message_board_buf += f"\n{body}"
         if message_id:
             self.caller.db.message_board_message_id = message_id
 
@@ -454,16 +447,16 @@ def board_post_message(caller, board, subject, body, message_id=None):
         subject = strip_ansi(subject)
 
     if message_id is None:
-        msg = create_message(
-            caller, subject + "\n" + body, receivers=board, tags=[("board_message", "comms")]
+        message = create_message(
+            caller,
+            body,
+            header=f"{caller.key}\n{subject}",
+            receivers=board,
+            tags=[
+                ("board_message", "comms"),
+                (caller.dbid, "read_by")
+            ]
         )
-        message = {
-            "post_date": msg.date_created,
-            "author_name": caller.key,
-            "subject": subject,
-            "message": msg,
-            "read_by": {caller},
-        }
 
         message_id = board.message_id + 1
         board.message_id = message_id
@@ -476,6 +469,7 @@ def board_post_message(caller, board, subject, body, message_id=None):
             caller.msg(f"Message #{message_id} has been deleted. Change cancelled.")
             return
 
-        message["subject"] = subject
-        message["message"].message = subject + "\n" + body
+        author = message.header.split('\n')[0]
+        message.header = f"{author}\n{subject}"
+        message.message = body
         caller.msg(f"Message #{message_id} has been changed.")
