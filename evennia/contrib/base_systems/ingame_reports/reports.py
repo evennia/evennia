@@ -1,21 +1,48 @@
 """
-In-Game Reports
-"""
+In-Game Reporting System
 
-# TODO: docstring
+This contrib provides an in-game reporting system, with player-facing commands and a staff
+management interface.
+
+# Installation
+
+To install, just add the provided cmdset to your default AccountCmdSet:
+
+    # in commands/default_cmdset.py
+
+    from evennia.contrib.base_systems.ingame_reports import ReportsCmdSet
+
+    class AccountCmdSet(default_cmds.AccountCmdSet):
+        # ...
+
+        def at_cmdset_creation(self):
+            # ...
+            self.add(ReportsCmdSet)
+
+# Features
+
+The contrib provides three commands by default and their associated report types: `CmdBug`, `CmdIdea`,
+and `CmdReport` (which is for reporting other players).
+            
+The `ReportCmdBase` class holds most of the functionality for creating new reports, providing a
+convenient parent class for adding your own categories of reports.
+
+The contrib can be further configured through two settings, `INGAME_REPORT_TYPES` and `INGAME_REPORT_STATUS_TAGS`
+
+"""
 
 from django.conf import settings
 
 from evennia import CmdSet
 from evennia.utils import create, evmenu, logger, search
-from evennia.utils.utils import datetime_format, is_iter, iter_to_str
+from evennia.utils.utils import class_from_module, datetime_format, is_iter, iter_to_str
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.comms.models import Msg
 
 from . import menu
 
 # TODO: use actual default command class
-_DEFAULT_COMMAND_CLASS = MuxCommand
+_DEFAULT_COMMAND_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # the default report types
 _REPORT_TYPES = ("bugs", "ideas", "players")
@@ -116,6 +143,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
     require_target = False
     # the message sent to the reporter after the report has been created
     success_msg = "Your report has been filed."
+    # the report type for this command, if different from the key
     report_type = None
 
     def at_pre_cmd(self):
@@ -134,13 +162,13 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
             return
         if self.rhs:
             message = self.rhs
-            target = self.lhs
+            target_str = self.lhs
         else:
             message = self.lhs
-            target = None
+            target_str = ""
 
-        if target:
-            target = self.caller.search(target)
+        if target_str:
+            target = self.caller.search(target_str)
             if not target:
                 return
         elif self.require_target:
@@ -171,7 +199,7 @@ class CmdBug(ReportCmdBase):
     file a bug
 
     Usage:
-        bug [target] = message
+        bug [<target> =] <message>
 
     Note: If a specific object, location or character is bugged, please target it for the report.
 
@@ -189,7 +217,7 @@ class CmdReport(ReportCmdBase):
     report a player
 
     Usage:
-        report player = message
+        report <player> = <message>
 
     All player reports will be reviewed.
     """
@@ -197,6 +225,7 @@ class CmdReport(ReportCmdBase):
     key = "report"
     report_type = "player"
     require_target = True
+    account_caller = True
 
 
 class CmdIdea(ReportCmdBase):

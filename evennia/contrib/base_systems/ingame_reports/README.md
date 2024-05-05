@@ -96,7 +96,7 @@ INGAME_REPORT_TYPES = ('bugs', 'players')
 * `report_type` - The type of report this command is for (e.g. `player`). You only need to set it if you want a different string from the key.
 * `report_locks` - The locks you want applied to the created reports. Defaults to `"read:pperm(Admin)"`
 * `success_msg` - The string which is sent to players after submitting a report of this type. Defaults to `"Your report has been filed."`
-* `require_target`: Set to `True` if your report requires a target (e.g. player reports).
+* `require_target`: Set to `True` if your report type requires a target (e.g. player reports).
 
 > Note: The contrib's own commands - `CmdBug`, `CmdIdea`, and `CmdReport` - are implemented the same way, so you can review them as examples.
 
