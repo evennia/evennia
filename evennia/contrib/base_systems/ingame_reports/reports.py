@@ -86,7 +86,7 @@ Initializes a menu for reviewing and changing the status of current reports.
         return helptext
 
     def func(self):
-        _, report_type = self.cmdstring.split()[-1]
+        report_type = self.cmdstring.split()[-1]
         if report_type == "reports":
             report_type = "players"
         if report_type not in _REPORT_TYPES:
@@ -98,7 +98,9 @@ Initializes a menu for reviewing and changing the status of current reports.
         if not hub:
             self.msg("You cannot manage that.")
 
-        evmenu.EvMenu(self.account, menu, startnode="menunode_list_reports", hub=hub, persistent=True)
+        evmenu.EvMenu(
+            self.account, menu, startnode="menunode_list_reports", hub=hub, persistent=True
+        )
 
 
 class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
@@ -212,6 +214,7 @@ class CmdIdea(ReportCmdBase):
     key = "idea"
     aliases = ("ideas",)
     report_locks = "read:pperm(Builder)"
+    success_msg = "Thank you for your suggestion!"
 
     def func(self):
         # we add an extra feature to this command, allowing you to see all your submitted ideas
