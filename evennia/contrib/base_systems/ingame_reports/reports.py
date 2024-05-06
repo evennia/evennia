@@ -167,6 +167,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
             message = self.lhs
             target_str = ""
 
+        target = None
         if target_str:
             target = self.caller.search(target_str)
             if not target:
