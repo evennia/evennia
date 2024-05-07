@@ -487,6 +487,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 {"field_name": "tags", "boost": 1},  # tags are not used by default
             ]
         match, suggestions = None, None
+        base_query = query.lstrip("@")
         for match_query in (query, f"{query}*"):
             # We first do an exact word-match followed by a start-by query. The
             # return of this will either be a HelpCategory, a Command or a
@@ -494,9 +495,28 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             matches, suggestions = help_search_with_index(
                 match_query, entries, suggestion_maxnum=self.suggestion_maxnum, fields=search_fields
             )
+            # Move an exact match (including aliases) to the front of the list, treating 'command'
+            # and '@command' as the same thing
+            for m in matches[:]:
+                aliases = [m.key]
+                if not isinstance(m, HelpCategory):
+                    # Aliases for help created with 'sethelp' is an AliasHandler
+                    aliases += m.aliases if isinstance(m.aliases, list) else m.aliases.all()
+                if base_query in [alias.lstrip("@") for alias in aliases]:
+                    matches.remove(m)
+                    matches.insert(0, m)
+                    break
             if matches:
                 match = matches[0]
                 break
+        if match:
+            # Move an exact suggestion match to the front of the list
+            for s in suggestions[:]:
+                if base_query == s.lstrip("@"):
+                    suggestions.remove(s)
+                    suggestions.insert(0, s)
+                    break
+
         return match, suggestions
 
     def parse(self):
