@@ -112,7 +112,7 @@ class CmdEvMessageBoard(COMMAND_DEFAULT_CLASS):
                 unread = {
                     id: message
                     for id, message in messages.items()
-                    if self.caller not in message["read_by"]
+                    if not message.tags.has(self.caller.dbid, category="read_by")
                 }
                 if not unread:
                     self.caller.msg("You have read all the messages on this board.")
