@@ -46,7 +46,8 @@ DATABASES = {
         "PASSWORD": "password",
         "HOST": "localhost",
         "PORT": "",  # use default
-        "TEST": {"NAME": "default"},
+        "TEST": {"NAME": "default", "CONN_MAX_AGE": None},
+        "CONN_MAX_AGE": None,
     }
 }
 
