@@ -322,7 +322,7 @@ class ObjectDBManager(TypedObjectManager):
             )
 
         # convert search term to partial-match regex
-        search_regex = r".* ".join(word for word in ostring.split())
+        search_regex = r".* ".join(re.escape(word) for word in ostring.split())
 
         # do the fuzzy search and return whatever it matches
         return (
