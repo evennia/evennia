@@ -331,8 +331,8 @@ class ObjectDBManager(TypedObjectManager):
                     cand_restriction
                     & type_restriction
                     & (
-                        Q(db_key__regex=search_regex)
-                        | Q(db_tags__db_key__regex=search_regex)
+                        Q(db_key__iregex=search_regex)
+                        | Q(db_tags__db_key__iregex=search_regex)
                         & Q(db_tags__db_tagtype__iexact="alias")
                     )
                 )

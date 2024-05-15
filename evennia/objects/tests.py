@@ -267,7 +267,7 @@ class TestObjectManager(BaseEvenniaTest):
         query = ObjectDB.objects.get_objs_with_key_or_alias("")
         self.assertFalse(query)
         query = ObjectDB.objects.get_objs_with_key_or_alias("", exact=False)
-        self.assertEqual(list(query), list(ObjectDB.objects.all()))
+        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by('id')))
 
         query = ObjectDB.objects.get_objs_with_key_or_alias(
             "", exact=False, typeclasses="evennia.objects.objects.DefaultCharacter"
@@ -277,19 +277,18 @@ class TestObjectManager(BaseEvenniaTest):
     def test_search_object(self):
         self.char1.tags.add("test tag")
         self.obj1.tags.add("test tag")
-        
-        query = ObjectDB.objects.search_object(
-            "", exact=False, tags=[('test tag', None)]
-        )
+
+        query = ObjectDB.objects.search_object("", exact=False, tags=[("test tag", None)])
         self.assertEqual(list(query), [self.obj1, self.char1])
 
-        query = ObjectDB.objects.search_object(
-            "Char", tags=[('invalid tag', None)]
-        )
+        query = ObjectDB.objects.search_object("Char", tags=[("invalid tag", None)])
         self.assertFalse(query)
 
         query = ObjectDB.objects.search_object(
-            "", exact=False, tags=[('test tag', None)], typeclass="evennia.objects.objects.DefaultCharacter"
+            "",
+            exact=False,
+            tags=[("test tag", None)],
+            typeclass="evennia.objects.objects.DefaultCharacter",
         )
         self.assertEqual(list(query), [self.char1])
 
