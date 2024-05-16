@@ -10,6 +10,7 @@ character object, so you should customize that
 instead for most things).
 
 """
+
 import re
 import time
 import typing
@@ -371,6 +372,18 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             return any(
                 session.protocol_flags.get("SCREENREADER") for session in self.sessions.all()
             )
+
+    def get_extra_display_name_info(self, looker, **kwargs):
+        """
+        Used in .get_display_name() to provide extra information to the looker. We split this
+        to be consistent with the Object version of this method.
+
+        This is used e.g. by the `find` command by default.
+
+        """
+        if looker and self.locks.check_lockstring(looker, "perm(Admin)"):
+            return f"(#{self.id})"
+        return ""
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -1334,7 +1347,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if isinstance(searchdata, str):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self"):
-                return self
+                return [self] if quiet else self
+
         searchdata = self.nicks.nickreplace(
             searchdata, categories=("account",), include_account=False
         )

@@ -3,7 +3,6 @@ Sets up an api-access permission check using the in-game permission hierarchy.
 
 """
 
-
 from django.conf import settings
 from rest_framework import permissions
 

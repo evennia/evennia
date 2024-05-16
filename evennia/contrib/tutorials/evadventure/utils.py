@@ -3,6 +3,8 @@ Various utilities.
 
 """
 
+import random
+
 _OBJ_STATS = """
 |c{key}|n
 Value: ~|y{value}|n coins{carried}
@@ -50,3 +52,27 @@ def get_obj_stats(obj, owner=None):
         defense_type_name=defense_type.value if defense_type else "No defense",
         damage_roll=getattr(obj, "damage_roll", "None"),
     )
+
+
+def random_probability(self, probabilities):
+    """
+    Given a dictionary of probabilities, return the key of the chosen probability.
+
+    Args:
+        probabilities (dict): A dictionary of probabilities, where the key is the action and the
+            value is the probability of that action.
+
+    """
+    r = random.random()
+    # sort probabilities from higheest to lowest, making sure to normalize them 0..1
+    prob_total = sum(probabilities.values())
+    sorted_probs = sorted(
+        ((key, prob / prob_total) for key, prob in probabilities.items()),
+        key=lambda x: x[1],
+        reverse=True,
+    )
+    total = 0
+    for key, prob in sorted_probs:
+        total += prob
+        if r <= total:
+            return key

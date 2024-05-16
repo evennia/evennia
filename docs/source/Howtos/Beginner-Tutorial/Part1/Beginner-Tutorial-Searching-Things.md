@@ -149,6 +149,54 @@ If you you really want all matches to the search parameters you specify. In othe
 
 There are equivalent search functions for all the main resources. You can find a listing of them [in the Search functions section](../../../Evennia-API.md) of the API front page.
 
+## Understanding object relationships
+
+It's important to understand how objects relate to one another when searching. 
+
+Let's consider a `chest` with a `coin` inside it. The chest stands in a `dungeon` room. In the dungeon is also a `door` (an exit leading outside).
+
+```
+┌───────────────────────┐
+│dungeon                │
+│    ┌─────────┐        │
+│    │chest    │ ┌────┐ │
+│    │  ┌────┐ │ │door│ │
+│    │  │coin│ │ └────┘ │
+│    │  └────┘ │        │
+│    │         │        │
+│    └─────────┘        │
+│                       │
+└───────────────────────┘
+```
+
+If you have access to any in-game Object, you can find related objects by use if its `.location` and `.contents` properties.
+
+- `coin.location` is `chest`.
+- `chest.location` is `dungeon`.
+- `door.location` is `dungeon`.
+- `room.location` is `None` since it's not inside something else.
+
+One can use this to find what is inside what. For example, `coin.location.location` is the `dungeon`. 
+
+- `room.contents` is `[chest, door]`
+- `chest.contents` is `[coin]`
+- `coin.contents` is `[]`, the empty list since there's nothing 'inside' the coin.
+- `door.contents` is `[]` too.
+
+A convenient helper is `.contents_get` - this allows to restrict what is returned:
+
+- `room.contents_get(exclude=chest)` - this returns everything in the room except the chest (maybe it's hidden?)
+
+There is a special property for finding exits:
+
+- `room.exits` is `[door]`
+- `coin.exits` is `[]` since it has no exits (same for all the other objects)
+
+There is a property `.destination` which is only used by exits:
+
+- `door.destination` is `outside` (or wherever the door leads)
+- `room.destination` is `None` (same for all the other non-exit objects)
+
 ## What can be searched for
 
 These are the main database entities one can search for:
@@ -161,6 +209,8 @@ These are the main database entities one can search for:
 - [Help Entries](../../../Components/Help-System.md) (help entries created manually)
 
 Most of the time you'll likely spend your time searching for Objects and the occasional Accounts.
+
+Most search methods are available directly from `evennia`. But there are also a lot of useful search helpers found via `evennia.search`.
 
 So to find an entity, what can be searched for?
 
@@ -206,9 +256,9 @@ However, using `search_object` will find the rose wherever it's located:
      > py evennia.search_object("rose") 
      <QuerySet [Rose]> 
 
-However, if you demand that the room is in the current room, it won't be found: 
+The `evennia.search_object` method doesn't have a `location` argument. What you do instead is to limit the search by setting its `candidates` keyword to the `.contents` of the current location. This is the same as a location search, since it will only accept matches among those in the room. In this example we'll (correctly) find the rose is not in the room.
 
-    > py evennia.search_object("rose", location=here)
+    > py evennia.search_object("rose", candidate=here.contents)
     <QuerySet []>
 
 In general, the `Object.search` is a shortcut for doing the very common searches of things in the same location, whereas the `search_object` finds objects anywhere.
@@ -267,7 +317,7 @@ For example, let's say our plants have a 'growth state' that updates as it grows
 
 Now we can find the things that have a given growth state:
 
-    > py evennia.search_object_attribute("growth_state", "withering")
+    > py evennia.search_object("withering", attribute_name="growth_state")
     <QuerySet [Rose]> 
 
 > Searching by Attribute can be very practical. But if you want to group entities or search very often, using Tags and search by Tags is faster and more resource-efficient.
@@ -317,53 +367,11 @@ In legacy code bases you may be used to relying a lot on #dbrefs to find and tra
 ```
 
 
-## Finding objects relative each other
+## Summary
 
-It's important to understand how objects relate to one another when searching. 
-Let's consider a `chest` with a `coin` inside it. The chest stands in a room `dungeon`. In the dungeon is also a `door`. This is an exit leading outside.
+Knowing how to find things is important and the tools from this section will serve you well. These tools will cover most of your regular needs.
 
-```
-┌───────────────────────┐
-│dungeon                │
-│    ┌─────────┐        │
-│    │chest    │ ┌────┐ │
-│    │  ┌────┐ │ │door│ │
-│    │  │coin│ │ └────┘ │
-│    │  └────┘ │        │
-│    │         │        │
-│    └─────────┘        │
-│                       │
-└───────────────────────┘
-```
-
-- `coin.location` is `chest`.
-- `chest.location` is `dungeon`.
-- `door.location` is `dungeon`.
-- `room.location` is `None` since it's not inside something else.
-
-One can use this to find what is inside what. For example, `coin.location.location` is the `dungeon`.
-We can also find what is inside each object. This is a list of things.
-
-- `room.contents` is `[chest, door]`
-- `chest.contents` is `[coin]`
-- `coin.contents` is `[]`, the empty list since there's nothing 'inside' the coin.
-- `door.contents` is `[]` too.
-
-A convenient helper is `.contents_get` - this allows to restrict what is returned:
-
-- `room.contents_get(exclude=chest)` - this returns everything in the room except the chest (maybe it's hidden?)
-
-There is a special property for finding exits:
-
-- `room.exits` is `[door]`
-- `coin.exits` is `[]` (same for all the other objects)
-
-There is a property `.destination` which is only used by exits:
-
-- `door.destination` is `outside` (or wherever the door leads)
-- `room.destination` is `None` (same for all the other non-exit objects)
-
-You can also include this information in searches: 
+Not always though. If we go back to the example of a coin in a chest from before, you _could_ use the following to dynamically figure out if there are any chests in the room with coins inside:
 
 ```python 
 from evennia import search_object
@@ -372,13 +380,9 @@ from evennia import search_object
 dungeons = search_object("dungeon", typeclass="typeclasses.rooms.Room")
 chests = search_object("chest", location=dungeons[0])
 # find if there are any skulls in the chest 
-skulls = search_object("Skull", candidates=chests[0].contents)
+coins = search_object("coin", candidates=chests[0].contents)
 ```
 
-More advanced, nested queries like this can however often be made more efficient by using the hints in the next lesson.
+This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by directly querying the database.
 
-## Summary
-
-Knowing how to find things is important and the tools from this section will serve you well. These tools will cover most of your needs ... 
-
-... but not always. In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.
+In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.

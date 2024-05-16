@@ -70,7 +70,6 @@ Use the /del switch to remove callbacks that should not be connected.
 
 
 class CmdCallback(COMMAND_DEFAULT_CLASS):
-
     """
     Command to edit callbacks.
     """

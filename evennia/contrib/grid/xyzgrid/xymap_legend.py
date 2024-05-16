@@ -10,7 +10,7 @@ usually shows as an Exit, but the length of the link has no in-game equivalent.
 """
 
 try:
-    from scipy import zeros
+    from numpy import zeros
 except ImportError as err:
     raise ImportError(
         f"{err}\nThe XYZgrid contrib requires the SciPy package. Install with `pip install scipy'."
@@ -327,6 +327,13 @@ class MapNode:
             nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
             if err:
                 raise RuntimeError(err)
+        except django_exceptions.MultipleObjectsReturned:
+            raise MapError(
+                f"Multiple objects found: {NodeTypeclass.objects.filter_xyz(xyz=xyz)}. "
+                "This may be due to manual creation of XYZRooms at this position. "
+                "Delete duplicates.",
+                self,
+            )
         else:
             self.log(f"  updating existing room (if changed) at xyz={xyz}")
 
@@ -844,6 +851,7 @@ class SmartRerouterMapLink(MapLink):
         /|
 
     """
+
     multilink = True
 
     def get_direction(self, start_direction):

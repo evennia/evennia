@@ -4,6 +4,7 @@ communication to the AMP clients connecting to it (by default
 these are the Evennia Server and the evennia launcher).
 
 """
+
 import os
 import sys
 from subprocess import STDOUT, Popen
@@ -36,7 +37,6 @@ def getenv():
 
 
 class AMPServerFactory(protocol.ServerFactory):
-
     """
     This factory creates AMP Server connection. This acts as the 'Portal'-side communication to the
     'Server' process.
@@ -197,8 +197,6 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         if process and not _is_windows():
             # avoid zombie-process on Unix/BSD
             process.wait()
-        # unset the reset-mode flag on the portal
-        self.factory.portal.server_restart_mode = None
         return
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
@@ -232,11 +230,18 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         if mode == "reload":
-            self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SRELOAD)
+            self.send_AdminPortal2Server(
+                amp.DUMMYSESSION, operation=amp.SRELOAD, server_restart_mode=mode
+            )
         elif mode == "reset":
-            self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SRESET)
+            self.send_AdminPortal2Server(
+                amp.DUMMYSESSION, operation=amp.SRESET, server_restart_mode=mode
+            )
         elif mode == "shutdown":
-            self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SSHUTD)
+            self.send_AdminPortal2Server(
+                amp.DUMMYSESSION, operation=amp.SSHUTD, server_restart_mode=mode
+            )
+        # store the mode for use once server comes back up again
         self.factory.portal.server_restart_mode = mode
 
     # sending amp data
@@ -326,7 +331,6 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         _, server_connected, _, _, _, _ = self.get_status()
 
         # logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
-
         # logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
 
         if operation == amp.SSTART:  # portal start  #15
@@ -405,10 +409,10 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         sessid, kwargs = self.data_in(packed_data)
 
-        # logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
-
         operation = kwargs.pop("operation")
         portal_sessionhandler = evennia.PORTAL_SESSION_HANDLER
+
+        # logger.log_msg(f"Evennia Server->Portal admin data operation {ord(operation)}")
 
         if operation == amp.SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
@@ -427,22 +431,28 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             portal_sessionhandler.server_disconnect_all(reason=kwargs.get("reason"))
 
         elif operation == amp.SRELOAD:  # server reload
+            # set up callback to restart server once it has disconnected
             self.factory.server_connection.wait_for_disconnect(
                 self.start_server, self.factory.portal.server_twistd_cmd
             )
+            # tell server to reload
             self.stop_server(mode="reload")
 
         elif operation == amp.SRESET:  # server reset
+            # set up callback to restart server once it has disconnected
             self.factory.server_connection.wait_for_disconnect(
                 self.start_server, self.factory.portal.server_twistd_cmd
             )
+            # tell server to reset
             self.stop_server(mode="reset")
 
         elif operation == amp.SSHUTD:  # server-only shutdown
             self.stop_server(mode="shutdown")
 
         elif operation == amp.PSHUTD:  # full server+server shutdown
+            # set up callback to shut down portal once server has disconnected
             self.factory.server_connection.wait_for_disconnect(self.factory.portal.shutdown)
+            # tell server to shut down
             self.stop_server(mode="shutdown")
 
         elif operation == amp.PSYNC:  # portal sync
@@ -451,6 +461,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             self.factory.portal.server_process_id = kwargs.get("spid", None)
             # this defaults to 'shutdown' or whatever value set in server_stop
             server_restart_mode = self.factory.portal.server_restart_mode
+            # print("Server has connected. Sending session data to Server ... mode: {}".format(server_restart_mode))
 
             sessdata = evennia.PORTAL_SESSION_HANDLER.get_all_sync_data()
             self.send_AdminPortal2Server(
@@ -461,6 +472,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 portal_start_time=self.factory.portal.start_time,
             )
             evennia.PORTAL_SESSION_HANDLER.at_server_connection()
+            self.factory.portal.server_restart_mode = None
 
             if self.factory.server_connection:
                 # this is an indication the server has successfully connected, so
@@ -480,7 +492,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             )
 
             # set a flag in case we are about to shut down soon
-            self.factory.server_restart_mode = True
+            self.factory.server_restart_mode = "shutdown"
 
         elif operation == amp.SCONN:  # server_force_connection (for irc/etc)
             portal_sessionhandler.server_connect(**kwargs)

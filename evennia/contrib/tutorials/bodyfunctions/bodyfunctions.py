@@ -13,6 +13,7 @@ The script will only send messages to the object it is stored on, so
 make sure to put it on yourself or you won't see any messages!
 
 """
+
 import random
 
 from evennia import DefaultScript

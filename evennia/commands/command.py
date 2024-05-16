@@ -4,6 +4,7 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
+
 import inspect
 import math
 import re
@@ -21,7 +22,6 @@ CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
 
 class InterruptCommand(Exception):
-
     """Cleanly interrupt a command."""
 
     pass
@@ -487,31 +487,29 @@ class Command(metaclass=CommandMeta):
         purposes when making commands.
 
         """
-        variables = "\n".join(
-            " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
-        )
-        string = f"""
-Command {self} has no defined `func()` - showing on-command variables:
-{variables}
-        """
-        # a simple test command to show the available properties
-        string += "-" * 50
-        string += "\n|w%s|n - Command variables from evennia:\n" % self.key
-        string += "-" * 50
-        string += "\nname of cmd (self.key): |w%s|n\n" % self.key
-        string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
-        string += "cmd locks (self.locks): |w%s|n\n" % self.locks
-        string += "help category (self.help_category): |w%s|n\n" % self.help_category.capitalize()
-        string += "object calling (self.caller): |w%s|n\n" % self.caller
-        string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
-        string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
-        # show cmdset.key instead of cmdset to shorten output
-        string += fill(
-            "current cmdset (self.cmdset): |w%s|n\n"
-            % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__)
-        )
+        output_string = """
+Command \"{cmdname}\" has no defined `func()` method. Available properties on this command are:
 
-        self.msg(string)
+    {variables}"""
+        variables = [
+            " |w{}|n ({}): {}".format(key, type(val), f'"{val}"' if isinstance(val, str) else val)
+            for key, val in (
+                ("self.key", self.key),
+                ("self.cmdname", self.cmdstring),
+                ("self.raw_cmdname", self.raw_cmdname),
+                ("self.raw_string", self.raw_string),
+                ("self.aliases", self.aliases),
+                ("self.args", self.args),
+                ("self.caller", self.caller),
+                ("self.obj", self.obj),
+                ("self.session", self.session),
+                ("self.locks", self.locks),
+                ("self.help_category", self.help_category),
+                ("self.cmdset", self.cmdset),
+            )
+        ]
+        output = output_string.format(cmdname=self.key, variables="\n    ".join(variables))
+        self.msg(output)
 
     def func(self):
         """

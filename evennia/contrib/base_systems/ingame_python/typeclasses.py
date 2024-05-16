@@ -166,7 +166,6 @@ Variables you can use in this event:
 
 @register_events
 class EventCharacter(DefaultCharacter):
-
     """Typeclass to represent a character and call event types."""
 
     _events = {
@@ -625,7 +624,6 @@ Variables you can use in this event:
 
 @register_events
 class EventExit(DefaultExit):
-
     """Modified exit including management of events."""
 
     _events = {
@@ -721,7 +719,6 @@ Variables you can use in this event:
 
 @register_events
 class EventObject(DefaultObject):
-
     """Default object with management of events."""
 
     _events = {
@@ -892,7 +889,6 @@ Variables you can use in this event:
 
 @register_events
 class EventRoom(DefaultRoom):
-
     """Default room with management of events."""
 
     _events = {

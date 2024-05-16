@@ -65,7 +65,7 @@ class SharedMemorysTest(TestCase):
         # article_list = Article.objects.all().select_related('category')
         # last_article = article_list[0]
         # for article in article_list[1:]:
-        #    self.assertEquals(article.category2 is last_article.category2, False)
+        #    self.assertEqual(article.category2 is last_article.category2, False)
         #    last_article = article
 
     def testObjectDeletion(self):

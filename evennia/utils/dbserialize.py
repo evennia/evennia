@@ -18,6 +18,7 @@ in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """
+
 from collections import OrderedDict, defaultdict, deque
 from collections.abc import MutableMapping, MutableSequence, MutableSet
 from functools import update_wrapper

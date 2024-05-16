@@ -138,5 +138,5 @@ class TestFileHelp(TestCase):
         for inum, helpentry in enumerate(result):
             self.assertEqual(HELP_ENTRY_DICTS[inum]["key"], helpentry.key)
             self.assertEqual(HELP_ENTRY_DICTS[inum].get("aliases", []), helpentry.aliases)
-            self.assertEqual(HELP_ENTRY_DICTS[inum]["category"], helpentry.help_category)
+            self.assertEqual(HELP_ENTRY_DICTS[inum]["category"].lower(), helpentry.help_category)
             self.assertEqual(HELP_ENTRY_DICTS[inum]["text"], helpentry.entrytext)

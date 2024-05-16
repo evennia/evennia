@@ -3,6 +3,7 @@
 Tests for the XYZgrid system.
 
 """
+
 from random import randint
 from unittest import mock
 
@@ -676,14 +677,14 @@ class TestMap3(_MapTest):
             ((0, 0), (1, 0), ()),  # no node at (1, 0)!
             ((2, 0), (5, 0), ("e", "e")),  # straight path
             ((0, 0), (1, 1), ("ne",)),
-            ((4, 1), (4, 3), ("nw", "ne")),
-            ((4, 1), (4, 3), ("nw", "ne")),
+            ((4, 1), (4, 3), ("ne", "nw")),
+            ((4, 1), (4, 3), ("ne", "nw")),
             ((2, 2), (3, 5), ("nw", "ne")),
-            ((2, 2), (1, 5), ("nw", "n", "n")),
-            ((5, 5), (0, 0), ("sw", "s", "sw", "w", "sw", "sw")),
-            ((5, 5), (0, 0), ("sw", "s", "sw", "w", "sw", "sw")),
+            ((2, 2), (1, 5), ("nw", "ne", "w")),
+            ((5, 5), (0, 0), ("sw", "nw", "sw", "s", "s", "sw")),
+            ((5, 5), (0, 0), ("sw", "nw", "sw", "s", "s", "sw")),
             ((5, 2), (1, 2), ("sw", "nw", "w", "nw", "s")),
-            ((4, 1), (1, 1), ("s", "w", "nw")),
+            ((4, 1), (1, 1), ("nw", "w", "sw")),
         ]
     )
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
@@ -915,7 +916,7 @@ class TestMap8(_MapTest):
             ((5, 1), (0, 3), ("w", "w", "n", "w")),
             ((1, 1), (2, 2), ("n", "w", "s")),
             ((5, 3), (5, 3), ()),
-            ((5, 3), (0, 4), ("s", "n", "w", "n")),
+            ((5, 3), (0, 4), ("s", "n", "n", "w")),
             ((1, 4), (3, 3), ("e", "w", "e")),
         ]
     )

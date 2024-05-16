@@ -1,6 +1,7 @@
 """
 Custom manager for Objects.
 """
+
 import re
 
 from django.conf import settings
@@ -442,9 +443,6 @@ class ObjectDBManager(TypedObjectManager):
                 )
 
         def _search_by_tag(query, taglist):
-            if not query:
-                query = self.all()
-
             for tagkey, tagcategory in taglist:
                 query = query.filter(db_tags__db_key=tagkey, db_tags__db_category=tagcategory)
 
@@ -452,7 +450,7 @@ class ObjectDBManager(TypedObjectManager):
 
         if not searchdata and searchdata != 0:
             if tags:
-                return _search_by_tag(make_iter(tags))
+                return _search_by_tag(self.all(), make_iter(tags))
 
             return self.none()
 

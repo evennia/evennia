@@ -9,7 +9,8 @@ from evennia.typeclasses.tags import (
     TagCategoryProperty,
     TagProperty,
 )
-from evennia.utils import create
+from evennia.utils import create, search
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
 
@@ -94,6 +95,21 @@ class DefaultObjectTest(BaseEvenniaTest):
         all_return_exit = ex1.get_return_exit(return_all=True)
         self.assertEqual(len(all_return_exit), 2)
 
+    def test_exit_order(self):
+        DefaultExit.create("south", self.room1, self.room2, account=self.account)
+        DefaultExit.create("portal", self.room1, self.room2, account=self.account)
+        DefaultExit.create("north", self.room1, self.room2, account=self.account)
+        DefaultExit.create("aperture", self.room1, self.room2, account=self.account)
+
+        # in creation order
+        exits = strip_ansi(self.room1.get_display_exits(self.char1))
+        self.assertEqual(exits, "Exits: out, south, portal, north, and aperture")
+
+        # in specified order with unspecified exits alpbabetically on the end
+        exit_order = ("north", "south", "out")
+        exits = strip_ansi(self.room1.get_display_exits(self.char1, exit_order=exit_order))
+        self.assertEqual(exits, "Exits: north, south, out, aperture, and portal")
+
     def test_urls(self):
         "Make sure objects are returning URLs"
         self.assertTrue(self.char1.get_absolute_url())
@@ -137,6 +153,23 @@ class DefaultObjectTest(BaseEvenniaTest):
             DefaultObject.get_default_lockstring(account=self.account, caller=self.char1), pattern
         )
 
+    def test_search_by_tag_kwarg(self):
+        "Test the by_tag method"
+
+        self.obj1.tags.add("plugh", category="adventure")
+
+        self.assertEqual(self.char1.search("Obj", quiet=True), [self.obj1])
+        # should not find a match
+        self.assertEqual(self.char1.search("Dummy", quiet=True), [])
+        # should still not find a match
+        self.assertEqual(self.char1.search("Dummy", tags=[("plugh", "adventure")], quiet=True), [])
+
+        self.assertEqual(list(search.search_object("Dummy", tags=[("plugh", "adventure")])), [])
+        self.assertEqual(
+            list(search.search_object("Obj", tags=[("plugh", "adventure")])), [self.obj1]
+        )
+        self.assertEqual(list(search.search_object("Obj", tags=[("dummy", "adventure")])), [])
+
     def test_get_default_lockstring_room(self):
         pattern = (
             f"control:pid({self.account.id}) or id({self.char1.id}) or"
@@ -166,6 +199,12 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(
             DefaultCharacter.get_default_lockstring(account=self.account, caller=self.char1),
             pattern,
+        )
+
+    def test_get_name_without_article(self):
+        self.assertEqual(self.obj1.get_numbered_name(1, self.char1, return_string=True), "an Obj")
+        self.assertEqual(
+            self.obj1.get_numbered_name(1, self.char1, return_string=True, no_article=True), "Obj"
         )
 
 
@@ -333,6 +372,10 @@ class TestObjectPropertiesClass(DefaultObject):
     attr2 = AttributeProperty(default="attr2", category="attrcategory")
     attr3 = AttributeProperty(default="attr3", autocreate=False)
     attr4 = SubAttributeProperty(default="attr4")
+    attr5 = AttributeProperty(default=list, autocreate=False)
+    attr6 = AttributeProperty(default=[None], autocreate=False)
+    attr7 = AttributeProperty(default=list)
+    attr8 = AttributeProperty(default=[None])
     cusattr = CustomizedProperty(default=5)
     tag1 = TagProperty()
     tag2 = TagProperty(category="tagcategory")
@@ -515,6 +558,99 @@ class TestProperties(EvenniaTestCase):
         )
 
         self.assertEqual(list(query), [obj1])
+
+        obj1.delete()
+        obj2.delete()
+
+    def test_not_create_attribute_with_autocreate_false(self):
+        """
+        Test that AttributeProperty with autocreate=False does not create an attribute in the database.
+
+        """
+        obj = create.create_object(TestObjectPropertiesClass, key="obj1")
+
+        self.assertEqual(obj.attr3, "attr3")
+        self.assertEqual(obj.attributes.get("attr3"), None)
+
+        self.assertEqual(obj.attr5, [])
+        self.assertEqual(obj.attributes.get("attr5"), None)
+
+        obj.delete()
+
+    def test_callable_defaults__autocreate_false(self):
+        """
+        Test https://github.com/evennia/evennia/issues/3488, where a callable default value like `list`
+        would produce an infinitely empty result even when appended to.
+
+        """
+        obj1 = create.create_object(TestObjectPropertiesClass, key="obj1")
+        obj2 = create.create_object(TestObjectPropertiesClass, key="obj2")
+
+        self.assertEqual(obj1.attr5, [])
+        obj1.attr5.append(1)
+        self.assertEqual(obj1.attr5, [1])
+
+        # check cross-instance sharing
+        self.assertEqual(obj2.attr5, [], "cross-instance sharing detected")
+
+    def test_mutable_defaults__autocreate_false(self):
+        """
+        Test https://github.com/evennia/evennia/issues/3488, where a mutable default value (like a
+        list `[]` or `[None]`) would not be updated in the database when appended to.
+
+        Note that using a mutable default value is not recommended, as the mutable will share the
+        same memory space across all instances of the class. This means that if one instance modifiesA
+        the mutable, all instances will be affected.
+
+        """
+        obj1 = create.create_object(TestObjectPropertiesClass, key="obj1")
+        obj2 = create.create_object(TestObjectPropertiesClass, key="obj2")
+
+        self.assertEqual(obj1.attr6, [None])
+        obj1.attr6.append(1)
+        self.assertEqual(obj1.attr6, [None, 1])
+
+        obj1.attr6[1] = 2
+        self.assertEqual(obj1.attr6, [None, 2])
+
+        # check cross-instance sharing
+        self.assertEqual(obj2.attr6, [None], "cross-instance sharing detected")
+
+        obj1.delete()
+        obj2.delete()
+
+    def test_callable_defaults__autocreate_true(self):
+        """
+        Test callables with autocreate=True.
+
+        """
+        obj1 = create.create_object(TestObjectPropertiesClass, key="obj1")
+        obj2 = create.create_object(TestObjectPropertiesClass, key="obj1")
+
+        self.assertEqual(obj1.attr7, [])
+        obj1.attr7.append(1)
+        self.assertEqual(obj1.attr7, [1])
+
+        # check cross-instance sharing
+        self.assertEqual(obj2.attr7, [])
+
+    def test_mutable_defaults__autocreate_true(self):
+        """
+        Test mutable defaults with autocreate=True.
+
+        """
+        obj1 = create.create_object(TestObjectPropertiesClass, key="obj1")
+        obj2 = create.create_object(TestObjectPropertiesClass, key="obj2")
+
+        self.assertEqual(obj1.attr8, [None])
+        obj1.attr8.append(1)
+        self.assertEqual(obj1.attr8, [None, 1])
+
+        obj1.attr8[1] = 2
+        self.assertEqual(obj1.attr8, [None, 2])
+
+        # check cross-instance sharing
+        self.assertEqual(obj2.attr8, [None])
 
         obj1.delete()
         obj2.delete()

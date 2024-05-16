@@ -13,6 +13,7 @@ Attributes are separate objects that store values persistently onto
 the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
+
 from collections import defaultdict
 
 from django.conf import settings

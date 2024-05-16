@@ -8,6 +8,7 @@ discord bot set up via https://discord.com/developers/applications
 with the MESSAGE CONTENT toggle switched on, and your bot token
 added to `server/conf/secret_settings.py` as your  DISCORD_BOT_TOKEN
 """
+
 import json
 import os
 from io import BytesIO

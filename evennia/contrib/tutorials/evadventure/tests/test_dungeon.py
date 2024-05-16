@@ -1,5 +1,5 @@
 """
-Test Dungeon orchestrator / procedurally generated dungeon rooms.
+Test Dungeon branch / procedurally generated dungeon rooms.
 
 """
 
@@ -73,10 +73,10 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
         self.assertNotEqual(self.start_room, new_room_north)
         self.assertTrue(inherits_from(new_room_north, dungeon.EvAdventureDungeonRoom))
 
-        # check if Orchestrator was created
-        orchestrator = new_room_north.db.dungeon_orchestrator
-        self.assertTrue(bool(orchestrator))
-        self.assertTrue(orchestrator.key.startswith("dungeon_orchestrator_north_"))
+        # check if Dungeon Branch was created
+        branch = new_room_north.db.dungeon_branch
+        self.assertTrue(bool(branch))
+        self.assertTrue(branch.key.startswith("dungeon_branch_north_"))
 
     def test_different_start_directions(self):
         # first go north, this should generate a new room

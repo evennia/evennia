@@ -99,52 +99,50 @@ class EvAdventureQuestTest(EvAdventureMixin, BaseEvenniaTest):
 
     def test_help(self):
         """Get help"""
-        # get help for all quests
-        help_txt = self.character.quests.get_help()
-        self.assertEqual(help_txt, ["|ctestquest|n\n A test quest!\n\n - You need to do A first."])
-
-        # get help for one specific quest
-        help_txt = self.character.quests.get_help(_TestQuest.key)
-        self.assertEqual(help_txt, ["|ctestquest|n\n A test quest!\n\n - You need to do A first."])
+        quest = self._get_quest()
+        # get help for a specific quest
+        help_txt = quest.help()
+        self.assertEqual(help_txt, "You need to do A first.")
 
         # help for finished quest
-        self._get_quest().is_completed = True
-        help_txt = self.character.quests.get_help()
-        self.assertEqual(help_txt, ["|ctestquest|n\n A test quest!\n\n - This quest is completed!"])
+        quest.complete()
+        help_txt = quest.help()
+        self.assertEqual(help_txt, "You have completed this quest.")
 
     def test_progress__fail(self):
         """
         Check progress without having any.
         """
-        # progress all quests
-        self.character.quests.progress()
-        # progress one quest
-        self.character.quests.progress(_TestQuest.key)
+        quest = self._get_quest()
+        # progress quest
+        quest.progress()
 
         # still on step A
-        self.assertEqual(self._get_quest().current_step, "A")
+        self.assertEqual(quest.current_step, "A")
 
     def test_progress(self):
         """
-        Fulfill the quest steps in sequess
+        Fulfill the quest steps in sequence.
 
         """
+        quest = self._get_quest()
+
         # A requires a certain object in inventory
         self._fulfillA()
-        self.character.quests.progress()
-        self.assertEqual(self._get_quest().current_step, "B")
+        quest.progress()
+        self.assertEqual(quest.current_step, "B")
 
         # B requires progress be called with specific kwarg
         # should not step (no kwarg)
-        self.character.quests.progress()
-        self.assertEqual(self._get_quest().current_step, "B")
+        quest.progress()
+        self.assertEqual(quest.current_step, "B")
 
         # should step (kwarg sent)
-        self.character.quests.progress(complete_quest_B=True)
-        self.assertEqual(self._get_quest().current_step, "C")
+        quest.progress(complete_quest_B=True)
+        self.assertEqual(quest.current_step, "C")
 
         # C requires a counter Attribute on char be high enough
         self._fulfillC()
-        self.character.quests.progress()
-        self.assertEqual(self._get_quest().current_step, "C")  # still on last step
-        self.assertEqual(self._get_quest().is_completed, True)
+        quest.progress()
+        self.assertEqual(quest.current_step, "C")  # still on last step
+        self.assertEqual(quest.is_completed, True)

@@ -31,6 +31,7 @@ from twisted.internet.task import LoopingCall
 from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
 from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
 from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.server.portal.naws import NAWS
 from evennia.utils import ansi
 from evennia.utils.utils import class_from_module, to_bytes
 
@@ -91,8 +92,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         of incoming data.
 
         """
-        # print(f"telnet dataReceived: {data}")
         try:
+            # Do we have a NAWS update?
+            if (
+                NAWS in data
+                and len([data[i : i + 1] for i in range(0, len(data))]) == 9
+                and
+                # Is auto resizing on?
+                self.protocol_flags.get("AUTORESIZE")
+            ):
+                self.sessionhandler.sync(self.sessionhandler.get(self.sessid))
+
             super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger

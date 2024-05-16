@@ -18,6 +18,7 @@ connect to channels by use of a ChannelConnect object (this object is
 necessary to easily be able to delete connections on the fly).
 
 """
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone

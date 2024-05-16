@@ -188,7 +188,7 @@ var plugin_handler = (function () {
         if (!Evennia.isConnected()) {
             var reconnect = confirm("Not currently connected. Reconnect?");
             if (reconnect) {
-                onText(["Attempting to reconnnect..."], { cls: "sys" });
+                onText(["Attempting to reconnect..."], { cls: "sys" });
                 Evennia.connect();
             }
             // Don't try to send anything until the connection is back.

@@ -118,13 +118,32 @@ class TestGeneral(BaseEvenniaCommandTest):
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up an Obj.")
         self.call(general.CmdDrop(), "Obj", "You drop an Obj.")
+        # test stacking
+        self.obj2.key = "Obj"
+        self.call(general.CmdGet(), "2 Obj", "You pick up two Objs.")
+        self.call(general.CmdDrop(), "2 Obj", "You drop two Objs.")
 
     def test_give(self):
         self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
         self.call(general.CmdGive(), "Obj = Char2", "You aren't carrying Obj.")
-        self.call(general.CmdGet(), "Obj", "You pick up an Obj.")
+        self.call(general.CmdGet(), "Obj", "You pick up an Obj")
         self.call(general.CmdGive(), "Obj to Char2", "You give")
         self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
+        # test stacking
+        self.obj2.key = "Obj"
+        self.obj2.location = self.char1
+        self.call(general.CmdGive(), "2 Obj = Char2", "You give two Objs")
+
+    def test_numbered_target_command(self):
+        class CmdTest(general.NumberedTargetCommand):
+            key = "test"
+
+            def func(self):
+                self.msg(f"Number: {self.number} Args: {self.args}")
+
+        self.call(CmdTest(), "", "Number: 0 Args: ")
+        self.call(CmdTest(), "obj", "Number: 0 Args: obj")
+        self.call(CmdTest(), "1 obj", "Number: 1 Args: obj")
 
     def test_mux_command(self):
         class CmdTest(MuxCommand):
@@ -205,6 +224,12 @@ class TestHelp(BaseEvenniaCommandTest):
             cmdset=CharacterCmdSet(),
         )
         self.call(help_module.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
+        self.call(
+            help_module.CmdSetHelp(),
+            "/category testhelp = misc",
+            "Category for entry 'testhelp' changed to 'misc'.",
+            cmdset=CharacterCmdSet(),
+        )
 
     @parameterized.expand(
         [
@@ -569,7 +594,7 @@ class TestAdmin(BaseEvenniaCommandTest):
         self.call(
             admin.CmdForce(),
             "Char2=say test",
-            'Char2(#{}) says, "test"|You have forced Char2 to: say test'.format(cid),
+            'Char2 says, "test"|You have forced Char2 to: say test',
         )
 
 
@@ -781,19 +806,34 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdExamine(), "*TestAccount")
 
     def test_set_obj_alias(self):
-        oid = self.obj1.id
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
         self.call(
-            building.CmdSetObjAlias(),
-            "Obj = TestObj1b",
-            "Alias(es) for 'Obj(#{})' set to 'testobj1b'.".format(oid),
+            building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj' set to 'testobj1b'."
         )
         self.call(building.CmdSetObjAlias(), "", "Usage: ")
         self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
 
-        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj(#{}): 'testobj1b'".format(oid))
+        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj: 'testobj1b'")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
+
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj: testobj1b")
+        self.call(
+            building.CmdSetObjAlias(),
+            "/category Obj = testobj1b:category1",
+            "Alias(es) for 'Obj' set to 'testobj1b' (category: 'category1').",
+        )
+        self.call(
+            building.CmdSetObjAlias(),
+            "/category Obj = testobj1b:category2",
+            "Alias(es) for 'Obj' set to 'testobj1b,testobj1b' (category: 'category2').",
+        )
+        self.call(
+            building.CmdSetObjAlias(),  # delete both occurences of alias 'testobj1b'
+            "/delete Obj = testobj1b",
+            "Alias 'testobj1b' deleted from Obj.",
+        )
+        self.call(building.CmdSetObjAlias(), "Obj =", "No aliases to clear.")
 
     def test_copy(self):
         self.call(
@@ -1228,9 +1268,7 @@ class TestBuilding(BaseEvenniaCommandTest):
 
     def test_desc(self):
         oid = self.obj2.id
-        self.call(
-            building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#{}).".format(oid)
-        )
+        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2.")
         self.call(building.CmdDesc(), "", "Usage: ")
 
         with patch("evennia.commands.default.building.EvEditor") as mock_ed:
@@ -1251,7 +1289,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#{}).".format(oid))
+        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2.")
         assert self.obj2.db.desc == "" and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
 
@@ -1260,7 +1298,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#{}).".format(rid))
+        self.call(building.CmdDesc(), "Obj2", "The description was set on Room.")
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == "Obj2" and self.room1.db.desc != r1d
 
@@ -1283,16 +1321,11 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdDestroy(), settings.DEFAULT_HOME, "You are trying to delete"
         )  # DEFAULT_HOME should not be deleted
         self.char2.location = self.room2
-        charid = self.char2.id
-        room1id = self.room1.id
-        room2id = self.room2.id
         self.call(
             building.CmdDestroy(),
             self.room2.dbref,
-            "Char2(#{}) arrives to Room(#{}) from Room2(#{}).|Room2 was destroyed.".format(
-                charid, room1id, room2id
-            ),
-        )
+            "Char2 arrives to Room from Room2.|Room2 was destroyed.",
+        ),
         building.CmdDestroy.confirm = confirm
 
     def test_destroy_sequence(self):
@@ -1640,9 +1673,6 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.assertFalse(script3.pk)
 
     def test_teleport(self):
-        oid = self.obj1.id
-        rid = self.room1.id
-        rid2 = self.room2.id
         self.call(building.CmdTeleport(), "", "Usage: ")
         self.call(building.CmdTeleport(), "Obj = Room", "Obj is already at Room.")
         self.call(
@@ -1653,9 +1683,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = Room2",
-            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
-                oid, rid, rid2
-            ),
+            "Obj is leaving Room, heading for Room2.|Teleported Obj -> Room2.",
         )
         self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(
@@ -1663,7 +1691,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
 
         self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
-        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2")
         self.call(
             building.CmdTeleport(),
             "/t",  # /t switch is abbreviated form of /tonone
@@ -2069,6 +2097,11 @@ class TestComms(BaseEvenniaCommandTest):
             ),
             receiver=self.account,
         )
+        from evennia.comms.models import Msg
+
+        msgs = Msg.objects.filter(db_tags__db_key="page", db_tags__db_category="comms")
+        self.assertEqual(msgs[0].senders, [self.account])
+        self.assertEqual(msgs[0].receivers, [self.account2])
 
 
 @override_settings(DISCORD_BOT_TOKEN="notarealtoken", DISCORD_ENABLED=True)

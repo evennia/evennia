@@ -15,6 +15,7 @@ and examples, including how to allow players to choose and confirm
 character names from within the menu.
 
 """
+
 import string
 from random import choices
 
@@ -84,7 +85,10 @@ class ContribCmdCharCreate(MuxAccountCommand):
         # this gets called every time the player exits the chargen menu
         def finish_char_callback(session, menu):
             char = session.new_char
-            if not char.db.chargen_step:
+            if char.db.chargen_step:
+                # this means the character creation process was exited in the middle
+                account.execute_cmd("look")
+            else:
                 # this means character creation was completed - start playing!
                 # execute the ic command to start puppeting the character
                 account.execute_cmd("ic {}".format(char.key))

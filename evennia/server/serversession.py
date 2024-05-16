@@ -6,6 +6,7 @@ connection actually happens (so it's the same for telnet, web, ssh etc).
 It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
+
 import time
 
 from django.conf import settings
@@ -268,7 +269,7 @@ class ServerSession(_BASE_SESSION_CLASS):
 
         Notes:
             Since protocols can vary, no checking is done
-            as to the existene of the flag or not. The input
+            as to the existence of the flag or not. The input
             data should have been validated before this call.
 
         """

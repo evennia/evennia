@@ -4,8 +4,7 @@
 If you are converting an existing game from a previous Evennia version, you will need to upgrade.
 ```
 
-The fastest way to install Evennia is to use the `pip` installer that comes with Python (read on).
-You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
+The fastest way to install Evennia is to use the `pip` installer that comes with Python (read on). You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 If you are converting an existing game, please follow the [upgrade instructions](./Installation-Upgrade.md).
 
@@ -14,7 +13,7 @@ If you are converting an existing game, please follow the [upgrade instructions]
 ```{sidebar} Develop in isolation
 Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection if you want to.
 ```
-- Evennia requires [Python](https://www.python.org/downloads/) 3.10 or 3.11 (recommended). Any OS that supports Python should work.
+- Evennia requires [Python](https://www.python.org/downloads/) 3.10, 3.11 or 3.12 (recommended). Any OS that supports Python should work.
 	- _Windows_: In the installer, make sure to select `add python to path`. If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](./Installation-Troubleshooting.md).

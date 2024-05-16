@@ -31,7 +31,6 @@ for instructions on how to define this module.
 
 """
 
-
 import random
 import sys
 import time

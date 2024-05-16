@@ -16,6 +16,7 @@ The grid has three main functions:
 
 
 """
+
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger
 from evennia.utils.utils import variable_from_module

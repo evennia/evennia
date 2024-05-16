@@ -6,6 +6,7 @@ This implements a 'twitch' (aka DIKU or other traditional muds) style of MUD com
 ----
 
 """
+
 from evennia import AttributeProperty, CmdSet, default_cmds
 from evennia.commands.command import Command, InterruptCommand
 from evennia.utils.utils import (
@@ -560,6 +561,8 @@ class TwitchCombatCmdSet(CmdSet):
     Add to character, to be able to attack others in a twitch-style way.
     """
 
+    key = "twitch_combat_cmdset"
+
     def at_cmdset_creation(self):
         self.add(CmdAttack())
         self.add(CmdHold())
@@ -572,6 +575,8 @@ class TwitchLookCmdSet(CmdSet):
     """
     This will be added/removed dynamically when in combat.
     """
+
+    key = "twitch_look_cmdset"
 
     def at_cmdset_creation(self):
         self.add(CmdLook())

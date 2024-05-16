@@ -10,6 +10,7 @@ You could also pass extra data to this client for advanced functionality.
 
 See the docs for more information.
 """
+
 from evennia.contrib.base_systems.godotwebsocket.text2bbcode import (
     BBCODE_PARSER,
     parse_to_bbcode,

@@ -3,6 +3,7 @@ Godot Websocket - ChrisLR 2022
 
 This file contains the necessary code and data to convert text with color tags to bbcode (For godot)
 """
+
 from evennia.utils.ansi import *
 from evennia.utils.text2html import TextToHTMLparser
 

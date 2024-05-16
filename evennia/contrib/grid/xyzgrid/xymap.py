@@ -92,6 +92,7 @@ See `./example.py` for a full grid example.
 
 ----
 """
+
 import pickle
 from collections import defaultdict
 from os import mkdir
@@ -99,7 +100,7 @@ from os.path import isdir, isfile
 from os.path import join as pathjoin
 
 try:
-    from scipy import zeros
+    from numpy import zeros
     from scipy.sparse import csr_matrix
     from scipy.sparse.csgraph import dijkstra
 except ImportError as err:
@@ -173,6 +174,7 @@ class XYMap:
     but recommended for readability!
 
     """
+
     mapcorner_symbol = "+"
     max_pathfinding_length = 500
     empty_symbol = " "
@@ -476,10 +478,10 @@ class XYMap:
                     max_X, max_Y = max(max_X, iX), max(max_Y, iY)
                     node_index += 1
 
-                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[
-                        node_index
-                    ] = mapnode_or_link_class(
-                        x=ix, y=iy, Z=self.Z, node_index=node_index, symbol=char, xymap=self
+                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = (
+                        mapnode_or_link_class(
+                            x=ix, y=iy, Z=self.Z, node_index=node_index, symbol=char, xymap=self
+                        )
                     )
 
                 else:

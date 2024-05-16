@@ -1,11 +1,11 @@
 # Unit Testing
 
-*Unit testing* means testing components of a program in isolation from each other to make sure every part works on its own before using it with others. Extensive testing helps avoid new updates causing unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia article on unit testing can be found [here](https://en.wikipedia.org/wiki/Unit_test)). 
+*Unit testing* means testing components of a program in isolation from each other to make sure every part works on its own before using it with others. Extensive testing helps avoid new updates causing unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia article on unit testing can be found [here](https://en.wikipedia.org/wiki/Unit_test)).
 
 A typical unit test set calls some function or method with a given input, looks at the result and makes sure that this result looks as expected. Rather than having lots of stand-alone test programs, Evennia makes use of a central *test runner*. This is a program that gathers all available tests all over the Evennia source code (called *test suites*) and runs them all in one go. Errors and tracebacks are reported.
 
- By default Evennia only tests itself. But you can also add your own tests to your game code and have Evennia run those for you. 
- 
+ By default Evennia only tests itself. But you can also add your own tests to your game code and have Evennia run those for you.
+
 ## Running the Evennia test suite
 
 To run the full Evennia test suite, go to your game folder and issue the command
@@ -32,7 +32,7 @@ with
 The period (`.`) means to run all tests found in the current directory and all subdirectories. You
 could also specify, say, `typeclasses` or `world` if you wanted to just run tests in those subdirs.
 
-An important thing to note is that those tests will all be run using the _default Evennia settings_. 
+An important thing to note is that those tests will all be run using the _default Evennia settings_.
 To run the tests with your own settings file you must use the `--settings` option:
 
     evennia test --settings settings.py .
@@ -56,14 +56,14 @@ To make the test runner find the tests, they must be put in a module named `test
 idea to look at some of Evennia's `tests.py` modules to see how they look.
 
 Inside the module you need to put a class inheriting (at any distance) from `unittest.TestCase`. Each
-method on that class that starts with `test_` will be run separately as a unit test. There 
-are two special, optional methods `setUp` and `tearDown` that will (if you define them) run before 
+method on that class that starts with `test_` will be run separately as a unit test. There
+are two special, optional methods `setUp` and `tearDown` that will (if you define them) run before
 _every_ test. This can be useful for setting up and deleting things.
 
-To actually test things, you use special `assert...` methods on the class. Most common on is 
+To actually test things, you use special `assert...` methods on the class. Most common on is
 `assertEqual`, which makes sure a result is what you expect it to be.
 
-Here's an example of the principle. Let's assume you put this in `mygame/world/tests.py` 
+Here's an example of the principle. Let's assume you put this in `mygame/world/tests.py`
 and want to test a function in `mygame/world/myfunctions.py`
 
 ```python
@@ -74,18 +74,18 @@ and want to test a function in `mygame/world/myfunctions.py`
     # the function we want to test
     from .myfunctions import myfunc
 
-    
+
     class TestObj(unittest.TestCase):
        "This tests a function myfunc."
 
        def setUp(self):
            """done before every of the test_ * methods below"""
            self.obj = create_object("mytestobject")
-           
+
        def tearDown(self):
            """done after every test_* method below """
            self.obj.delete()
-       
+
        def test_return_value(self):
            """test method. Makes sure return value is as expected."""
            actual_return = myfunc(self.obj)
@@ -100,7 +100,7 @@ and want to test a function in `mygame/world/myfunctions.py`
            self.assertEqual(expected_return, actual_return)
 ```
 
-To test this, run 
+To test this, run
 
     evennia test --settings settings.py .
 
@@ -110,9 +110,9 @@ to run the entire test module
 
 or a specific class:
 
-    evennia test --settings settings.py world.tests.TestObj 
+    evennia test --settings settings.py world.tests.TestObj
 
-You can also run a specific test: 
+You can also run a specific test:
 
     evennia test --settings settings.py world.tests.TestObj.test_alternative_call
 
@@ -120,35 +120,36 @@ You might also want to read the [Python documentation for the unittest module](h
 
 ### Using the Evennia testing classes
 
-Evennia offers many custom testing classes that helps with testing Evennia features. 
-They are all found in [evennia.utils.test_resources](evennia.utils.test_resources). Note that 
-these classes implement the `setUp` and `tearDown` already, so if you want to add stuff in them 
+Evennia offers many custom testing classes that helps with testing Evennia features.
+They are all found in [evennia.utils.test_resources](evennia.utils.test_resources). Note that
+these classes implement the `setUp` and `tearDown` already, so if you want to add stuff in them
 yourself you should remember to use e.g. `super().setUp()` in your code.
 
 #### Classes for testing your game dir
 
 These all use whatever setting you pass to them and works well for testing code in your game dir.
 
-- `EvenniaTest` - this sets up a full object environment for your test. All the created entities 
+- `EvenniaTest` - this sets up a full object environment for your test. All the created entities
    can be accesses as properties on the class:
   - `.account` - A fake [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount".
-  - `.account2` - Another account named "TestAccount2"
-  - `char1` - A [Character](evennia.objects.objects.DefaultCharacter) linked to `.account`, named `Char`. 
+  - `.account2` - Another [Account](evennia.accounts.accounts.DefaultAccount) named "TestAccount2".
+  - `.char1` - A [Character](evennia.objects.objects.DefaultCharacter) linked to `.account`, named `Char`.
     This has 'Developer' permissions but is not a superuser.
-  - `.char2` - Another character linked to `account`, named `Char2`. This has base permissions (player).
-  - `.obj1` - A regular [Object](evennia.objects.objects.DefaultObject) named "Obj". 
-  - `.obj2` - Another object named "Obj2".
-  - `.room1` - A [Room](evennia.objects.objects.DefaultRoom) named "Room". Both characters and both 
+  - `.char2` - Another [Character](evennia.objects.objects.DefaultCharacter) linked to `account2`, named `Char2`.
+    This has base permissions (player).
+  - `.obj1` - A regular [Object](evennia.objects.objects.DefaultObject) named "Obj".
+  - `.obj2` - Another [Object](evennia.objects.objects.DefaultObject) named "Obj2".
+  - `.room1` - A [Room](evennia.objects.objects.DefaultRoom) named "Room". Both characters and both
     objects are located inside this room. It has a description of "room_desc".
-  - `.room2` - Another room named "Room2". It is empty and has no set description.
+  - `.room2` - Another [Room](evennia.objects.objects.DefaultRoom) named "Room2". It is empty and has no set description.
   - `.exit` - An exit named "out" that leads from `.room1` to `.room2`.
-  - `.script` - A [Script](evennia.scripts.scripts.DefaultScript) named "Script". It's an inert script 
+  - `.script` - A [Script](evennia.scripts.scripts.DefaultScript) named "Script". It's an inert script
     without a timing component.
-  - `.session` - A fake [Session](evennia.server.serversession.ServerSession) that mimics a player 
+  - `.session` - A fake [Session](evennia.server.serversession.ServerSession) that mimics a player
     connecting to the game. It is used by `.account1` and has a sessid of 1.
 - `EvenniaCommandTest` - has the same environment like `EvenniaTest` but also adds a special
-   [.call()](evennia.utils.test_resources.EvenniaCommandTestMixin.call) method specifically for 
-   testing Evennia [Commands](../Components/Commands.md). It allows you to compare what the command _actually_ 
+   [.call()](evennia.utils.test_resources.EvenniaCommandTestMixin.call) method specifically for
+   testing Evennia [Commands](../Components/Commands.md). It allows you to compare what the command _actually_
    returns to the player with what you expect. Read the `call` api doc for more info.
 - `EvenniaTestCase` - This is identical to the regular Python `TestCase` class, it's
   just there for naming symmetry with `BaseEvenniaTestCase` below.
@@ -165,7 +166,7 @@ class TestObject(EvenniaTest):
     def test_object_search_character(self):
         """Check that char1 can search for char2 by name"""
         self.assertEqual(self.char1.search(self.char2.key), self.char2)
-        
+
     def test_location_search(self):
         """Check so that char1 can find the current location by name"""
         self.assertEqual(self.char1.search(self.char1.location.key), self.char1.location)
@@ -193,14 +194,14 @@ class TestSet(EvenniaCommandTest):
 ```
 
 When using `.call`, you don't need to specify the entire string; you can just give the beginning
-of it and if it matches, that's enough. Use `\n` to denote line breaks and (this is a special for 
+of it and if it matches, that's enough. Use `\n` to denote line breaks and (this is a special for
 the `.call` helper), `||` to indicate multiple uses of `.msg()` in the Command. The `.call` helper
-has a lot of arguments for mimicing different ways of calling a Command, so make sure to 
+has a lot of arguments for mimicing different ways of calling a Command, so make sure to
 [read the API docs for .call()](evennia.utils.test_resources.EvenniaCommandTestMixin.call).
 
 #### Classes for testing Evennia core
 
-These are used for testing Evennia itself. They provide the same resources as the classes 
+These are used for testing Evennia itself. They provide the same resources as the classes
 above but enforce Evennias default settings found in `evennia/settings_default.py`, ignoring
 any settings changes in your game dir.
 
@@ -208,12 +209,12 @@ any settings changes in your game dir.
 - `BaseEvenniaCommandTest` - for testing Commands, but with enforced default settings
 - `BaseEvenniaTestCase` - no default objects, only enforced default settings
 
-There are also two special 'mixin' classes. These are uses in the classes above, but may also 
-be useful if you want to mix your own testing classes: 
+There are also two special 'mixin' classes. These are uses in the classes above, but may also
+be useful if you want to mix your own testing classes:
 
 - `EvenniaTestMixin` - A class mixin that creates all test environment objects.
 - `EvenniaCommandMixin` - A class mixin that adds the `.call()` Command-tester helper.
- 
+
 If you want to help out writing unittests for Evennia, take a look at Evennia's [coveralls.io
 page](https://coveralls.io/github/evennia/evennia). There you see which modules have any form of
 test coverage and which does not. All help is appreciated!

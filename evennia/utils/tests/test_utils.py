@@ -54,6 +54,43 @@ class TestDedent(TestCase):
         self.assertEqual(expected_string, utils.dedent(input_string))
 
 
+class TestCompressWhitespace(TestCase):
+    def test_compress_whitespace(self):
+        # No text, return no text
+        self.assertEqual("", utils.compress_whitespace(""))
+        # If no whitespace is exceeded, should return the same
+        self.assertEqual(
+            "One line\nTwo  spaces", utils.compress_whitespace("One line\nTwo  spaces")
+        )
+        # Extra newlines are removed
+        self.assertEqual(
+            "First line\nSecond line", utils.compress_whitespace("First line\n\nSecond line")
+        )
+        # Extra spaces are removed
+        self.assertEqual("Too  many  spaces", utils.compress_whitespace("Too   many      spaces"))
+        # "Invisible" extra lines with whitespace are removed
+        self.assertEqual(
+            "First line\nSecond line", utils.compress_whitespace("First line\n    \n \nSecond line")
+        )
+        # Max kwargs are respected
+        self.assertEqual(
+            "First line\n\nSecond line",
+            utils.compress_whitespace(
+                "First line\n\nSecond  line", max_spacing=1, max_linebreaks=2
+            ),
+        )
+
+    def test_preserve_indents(self):
+        """Ensure that indentation spacing is preserved."""
+        indented = """\
+Hanging Indents
+    they're great
+    let's keep them\
+"""
+        # since there is no doubled-up spacing besides indents, input should equal output
+        self.assertEqual(indented, utils.compress_whitespace(indented))
+
+
 class TestListToString(TestCase):
     """
     Default function header from time.py:
@@ -773,6 +810,54 @@ class TestJustify(TestCase):
         result = utils.justify(line, align="c", width=30)
 
         self.assertIn(ANSI_RED, str(result))
+
+
+class TestGroupObjectsByKeyAndDesc(TestCase):
+    """
+    Test the utils.group_objects_by_key_and_desc function.
+
+    """
+
+    class MockObject:
+        def __init__(self, key, desc):
+            self.key = key
+            self.desc = desc
+
+        def get_display_name(self, looker, **kwargs):
+            return self.key + f" (looker: {looker.key})"
+
+        def get_display_desc(self, looker, **kwargs):
+            return self.desc + f" (looker: {looker.key})"
+
+        def get_numbered_name(self, count, looker, **kwargs):
+            return f"{count} {self.key} (looker: {looker.key})"
+
+        def __repr__(self):
+            return f"MockObject({self.key}, {self.desc})"
+
+    def test_group_by_key_and_desc(self):
+        ma1 = self.MockObject("itemA", "descA")
+        ma2 = self.MockObject("itemA", "descA")
+        ma3 = self.MockObject("itemA", "descA")
+        ma4 = self.MockObject("itemA", "descA")
+
+        mb1 = self.MockObject("itemB", "descB")
+        mb2 = self.MockObject("itemB", "descB")
+        mb3 = self.MockObject("itemB", "descB")
+
+        me = self.MockObject("Looker", "DescLooker")
+
+        result = utils.group_objects_by_key_and_desc([ma1, ma2, ma3, ma4, mb1, mb2, mb3], caller=me)
+
+        self.assertEqual(
+            list(result),
+            [
+                ("4 itemA (looker: Looker)", "descA (looker: Looker)", [ma1, ma2, ma3, ma4]),
+                ("3 itemB (looker: Looker)", "descB (looker: Looker)", [mb1, mb2, mb3]),
+            ],
+        )
+
+    # Create a list of objects
 
 
 class TestMatchIP(TestCase):

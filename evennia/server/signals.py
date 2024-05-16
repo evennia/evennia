@@ -20,6 +20,7 @@ This is used on top of hooks to make certain features easier to add to contribs
 without necessitating a full takeover of hooks that may be in high demand.
 
 """
+
 from collections import defaultdict
 
 from django.dispatch import Signal

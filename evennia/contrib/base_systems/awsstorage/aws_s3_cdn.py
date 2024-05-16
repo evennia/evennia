@@ -221,7 +221,6 @@ def get_available_overwrite_name(name, max_length):
 
 @deconstructible
 class S3Boto3StorageFile(File):
-
     """
     The default file object used by the S3Boto3Storage backend.
     This file implements file streaming using boto's multipart

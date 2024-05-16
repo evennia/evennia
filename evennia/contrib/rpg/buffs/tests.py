@@ -1,6 +1,7 @@
 """
 Tests for the buff system contrib
 """
+
 from unittest.mock import Mock, call, patch
 
 from evennia import DefaultObject, create_object

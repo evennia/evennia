@@ -62,7 +62,7 @@ You can change up your strategy by performing other actions (like drinking a pot
 ## General principle
 
 ```{sidebar}
-An example of an implemented Twitch combat system can be found in [evennia/contrib/tutorials/evadventure/combat_twitch.py](evennia.contrib.tutorials.evadventure.combat_twitch).
+An example of an implemented Twitch combat system can be found in `evennia/contrib/tutorials`, in [evadventure/combat_twitch.py](evennia.contrib.tutorials.evadventure.combat_twitch).
 ```
 Here is the general design of the Twitch-based combat handler: 
 
@@ -874,7 +874,7 @@ Now that we have the Look command set, we can finish the Twitch combat handler.
 ## Unit Testing 
 
 ```{sidebar} 
-See [evennia/contrib/tutorials/evadventure/tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat) for an example of a full suite of combat tests.
+For examples of unit tests, see `evennia/contrib/tutorials`, in [evadventure/tests/test_combat.py](evennia.contrib.tutorials.evadventure.tests.test_combat) for an example of a full suite of combat tests.
 ```
 
 > Create `evadventure/tests/test_combat.py` (if you don't already have it).
@@ -920,7 +920,7 @@ Inside the test, we use the `self.call()` method to explicitly fire the Command 
 ## A small combat test
 
 ```{sidebar}
-You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev)
+You can find an example batch-command script at `evennia/contrib/tutorials/evadventure`, in [batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev)
 ```
 Showing that the individual pieces of code works (unit testing) is not enough to be sure that your combat system is actually working. We need to test all the pieces _together_. This is often called _functional testing_. While functional testing can also be automated, wouldn't it be fun to be able to actually see our code in action? 
 

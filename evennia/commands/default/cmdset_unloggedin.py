@@ -3,6 +3,7 @@ This module describes the unlogged state of the default game.
 The setting STATE_UNLOGGED should be set to the python path
 of the state instance in this module.
 """
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default import unloggedin
 

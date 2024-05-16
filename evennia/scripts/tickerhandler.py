@@ -65,6 +65,7 @@ a  custom handler one can make a custom `AT_STARTSTOP_MODULE` entry to
 call the handler's `save()` and `restore()` methods when the server reboots.
 
 """
+
 import inspect
 
 from django.core.exceptions import ObjectDoesNotExist

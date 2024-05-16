@@ -2,6 +2,7 @@
 Base typeclass for in-game Channels.
 
 """
+
 import re
 
 from django.contrib.contenttypes.models import ContentType

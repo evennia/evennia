@@ -1,5 +1,6 @@
 from evennia import create_object
-from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest  # noqa
+from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from .containers import CmdContainerGet, CmdContainerLook, CmdPut, ContribContainer
 
@@ -40,9 +41,17 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         # get normally
         self.call(CmdContainerGet(), "Obj", "You pick up an Obj.")
         # put in the container
-        self.call(CmdPut(), "obj in box", "You put an Obj in a Box.")
+        self.call(
+            CmdPut(),
+            "obj in box",
+            "You put an Obj in a Box.",
+        )
         # get from the container
-        self.call(CmdContainerGet(), "obj from box", "You get an Obj from a Box.")
+        self.call(
+            CmdContainerGet(),
+            "obj from box",
+            "You get an Obj from a Box.",
+        )
 
     def test_locked_get_put(self):
         # lock container

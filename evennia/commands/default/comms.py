@@ -8,6 +8,7 @@ Communication commands:
 """
 
 from django.conf import settings
+from django.db.models import Q
 
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
@@ -1338,8 +1339,24 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         # get the messages we've sent (not to channels)
         pages_we_sent = Msg.objects.get_messages_by_sender(caller).order_by("-db_date_created")
+        # get only messages tagged as pages or not tagged at all (legacy pages)
+        pages_we_sent = pages_we_sent.filter(
+            Q(db_tags__db_key__iexact="page", db_tags__db_category__iexact="comms")
+            | Q(db_tags__isnull=True)
+        )
+        # we need to default to True to allow for legacy pages
+        pages_we_sent = [msg for msg in pages_we_sent if msg.access(caller, "read", default=True)]
+
         # get last messages we've got
         pages_we_got = Msg.objects.get_messages_by_receiver(caller).order_by("-db_date_created")
+        pages_we_got = pages_we_got.filter(
+            Q(db_tags__db_key__iexact="page", db_tags__db_category__iexact="comms")
+            | Q(db_tags__isnull=True)
+        )
+        # we need to default to True to allow for legacy pages
+        pages_we_got = [msg for msg in pages_we_got if msg.access(caller, "read", default=True)]
+
+        # get only messages tagged as pages or not tagged at all (legacy pages)
         targets, message, number = [], None, None
 
         if "last" in self.switches:
@@ -1360,6 +1377,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     targets.append(target_obj)
                 message = self.rhs.strip()
             else:
+                # no = sign, handler this as well
                 target, *message = self.args.split(" ", 1)
                 if target and target.isnumeric():
                     # a number to specify a historic page
@@ -1395,7 +1413,17 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
-            create.create_message(caller, message, receivers=targets)
+            create.create_message(
+                caller,
+                message,
+                receivers=targets,
+                locks=(
+                    f"read:id({caller.id}) or perm(Admin);"
+                    f"delete:id({caller.id}) or perm(Admin);"
+                    f"edit:id({caller.id}) or perm(Admin)"
+                ),
+                tags=[("page", "comms")],
+            )
 
             # tell the accounts they got a message.
             received = []

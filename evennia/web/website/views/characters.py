@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils.encoding import iri_to_uri
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import ListView
 from django.views.generic.base import RedirectView
 
@@ -124,6 +126,15 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
 
         # Get the page the user came from
         next_page = self.request.GET.get("next", self.success_url)
+
+        # since next_page is untrusted input from the user, we need to check it's safe to
+        next_page = iri_to_uri(next_page)
+        if not url_has_allowed_host_and_scheme(
+            url=next_page,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            next_page = self.success_url
 
         if char:
             # If the account owns the char, store the ID of the char in the

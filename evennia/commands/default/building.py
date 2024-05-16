@@ -1,6 +1,7 @@
 """
 Building and world design commands
 """
+
 import re
 import typing
 
@@ -41,7 +42,8 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _FUNCPARSER = None
 _ATTRFUNCPARSER = None
 
-_KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+# _KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+_KEY_REGEX = re.compile(r"(?P<attr>[^\[]*)(?P<key>(\[[^\]]*\]\ *)+)?$")
 
 # limit symbol import for API
 __all__ = (
@@ -75,7 +77,7 @@ __all__ = (
 )
 
 # used by set
-from ast import literal_eval as _LITERAL_EVAL
+from ast import literal_eval as _LITERAL_EVAL  # noqa
 
 LIST_APPEND_CHAR = "+"
 
@@ -176,26 +178,30 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
 
     def get_object_typeclass(
         self, obj_type: str = "object", typeclass: str = None, method: str = "cmd_create", **kwargs
-    ) -> tuple[typing.Optional["Builder"], list[str]]:
+    ) -> tuple[typing.Optional["Typeclass"], list[str]]:
         """
-        This hook is called by build commands to determine which typeclass to use for a specific purpose. For instance,
-        when using dig, the system can use this to autodetect which kind of Room typeclass to use based on where the
-        builder is currently located.
-
-        Note: Although intended to be used with typeclasses, as long as this hook returns a class with a create method,
-            which accepts the same API as DefaultObject.create(), build commands and other places should take it.
+        This hook is called by build commands to determine which typeclass to use for a specific
+        purpose.
 
         Args:
-            obj_type (str, optional): The type of object that is being created. Defaults to "object". Evennia provides
-                "room", "exit", and "character" by default, but this can be extended.
-            typeclass (str, optional): The typeclass that was requested by the player. Defaults to None.
-                Can also be an actual class.
+            obj_type (str, optional): The type of object that is being created. Defaults to
+                "object". Evennia provides "room", "exit", and "character" by default, but this can be
+                extended.
+            typeclass (str, optional): The typeclass that was requested by the player. Defaults to
+                None.  Can also be an actual class.
             method (str, optional): The method that is calling this hook. Defaults to "cmd_create".
                 Others are "cmd_dig", "cmd_open", "cmd_tunnel", etc.
 
         Returns:
-            results_tuple (tuple[Optional[Builder], list[str]]): A tuple containing the typeclass to use and a list of
-                errors. (which might be empty.)
+            tuple: A tuple containing the typeclass to use and a list of errors. (which might be
+                empty.)
+
+        Notes:
+            Although intended to be used with typeclasses, as long as this hook returns a class with
+            a create method, which accepts the same API as DefaultObject.create(), build commands
+            and other places should take it. While not used by default, one could picture using this
+            for things like autodetecting which room to build next based on the current location.
+
         """
 
         found_typeclass = typeclass or self.default_typeclasses.get(obj_type, None)
@@ -225,10 +231,13 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
       alias <obj> [= [alias[,alias,alias,...]]]
       alias <obj> =
       alias/category <obj> = [alias[,alias,...]:<category>
+      alias/delete <obj> = <alias>
 
     Switches:
       category - requires ending input with :category, to store the
         given aliases with the given category.
+      delete - deletes all occurrences of the given alias, regardless
+        of category
 
     Assigns aliases to an object so it can be referenced by more
     than one name. Assign empty to remove all aliases from object. If
@@ -242,7 +251,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "setobjalias"
-    switch_options = ("category",)
+    switch_options = ("category", "delete")
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -259,12 +268,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         objname = self.lhs
 
-        # Find the object to receive aliases
+        # Find the object to receive/delete aliases
         obj = caller.search(objname)
         if not obj:
             return
-        if self.rhs is None:
-            # no =, so we just list aliases on object.
+        if self.rhs is None and "delete" not in self.switches:
+            # no =, and not deleting, so we just list aliases on object.
             aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
                 caller.msg(
@@ -287,7 +296,9 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.rhs:
-            # we have given an empty =, so delete aliases
+            # we have given an empty =, so delete aliases.
+            # as a side-effect, 'alias/delete obj' and 'alias/delete obj='
+            # will also be caught here, which is fine
             old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg(
@@ -297,6 +308,19 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 obj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
+            return
+
+        if "delete" in self.switches:
+            # delete all matching keys, regardless of category
+            existed = False
+            for key, category in obj.aliases.all(return_key_and_category=True):
+                if key == self.rhs:
+                    obj.aliases.remove(key=self.rhs, category=category)
+                    existed = True
+            if existed:
+                caller.msg("Alias '%s' deleted from %s." % (self.rhs, obj.get_display_name(caller)))
+            else:
+                caller.msg("%s has no alias '%s'." % (obj.get_display_name(caller), self.rhs))
             return
 
         category = None
@@ -1008,7 +1032,7 @@ class CmdDig(ObjManipCommand):
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
 
-        room_string = f"Created room {new_room}({new_room.dbref}){alias_string} of type {new_room}."
+        room_string = f"Created room {new_room}({new_room.dbref}){alias_string} of type {new_room.typeclass_path}."
 
         # create exit to room
 
@@ -1385,7 +1409,7 @@ class CmdSetHome(CmdLink):
             obj.home = new_home
             if old_home:
                 string = (
-                    f"Home location of {obj} was changed from {old_home}({old_home.dbref} to"
+                    f"Home location of {obj} was changed from {old_home}({old_home.dbref}) to"
                     f" {new_home}({new_home.dbref})."
                 )
             else:
@@ -2945,9 +2969,9 @@ class CmdExamine(ObjManipCommand):
         ):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
-            objdata[
-                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
-            ] = self.format_current_cmds(obj, current_cmdset)
+            objdata[f"Commands available to {obj.key} (result of Merged Cmdset(s))"] = (
+                self.format_current_cmds(obj, current_cmdset)
+            )
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
             objdata["Persistent"] = self.format_script_is_persistent(obj)
@@ -3262,9 +3286,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 string += f"\n   |RNo match found for '{searchstring}' in #dbref interval.|n"
             else:
                 result = result[0]
-                string += f"\n|g   {result.get_display_name(caller)} - {result.path}|n"
+                string += (
+                    f"\n|g   {result.get_display_name(caller)}"
+                    f"{result.get_extra_display_name_info(caller)} - {result.path}|n"
+                )
                 if "loc" in self.switches and not is_account and result.location:
-                    string += f" (|wlocation|n: |g{result.location.get_display_name(caller)}|n)"
+                    string += (
+                        f" (|wlocation|n: |g{result.location.get_display_name(caller)}"
+                        f"{result.get_extra_display_name_info(caller)}|n)"
+                    )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searches for key and aliases
@@ -3328,14 +3358,23 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 string = f"|w{header}|n(#{low}-#{high}{restrictions}):"
                 res = None
                 for res in results:
-                    string += f"\n   |g{res.get_display_name(caller)} - {res.path}|n"
+                    string += (
+                        "\n  "
+                        f" |g{res.get_display_name(caller)}"
+                        f"{res.get_extra_display_name_info(caller)} -"
+                        f" {res.path}|n"
+                    )
                 if (
                     "loc" in self.switches
                     and nresults == 1
                     and res
                     and getattr(res, "location", None)
                 ):
-                    string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
+                    string += (
+                        " (|wlocation|n:"
+                        f" |g{res.location.get_display_name(caller)}"
+                        f"{res.get_extra_display_name_info(caller)}|n)"
+                    )
             else:
                 string = f"|wNo Matches|n(#{low}-#{high}{restrictions}):"
                 string += f"\n   |RNo matches found for '{searchstring}'|n"
@@ -3395,9 +3434,11 @@ class ScriptEvMore(EvMore):
 
             table.add_row(
                 f"#{script.id}",
-                f"{script.obj.key}({script.obj.dbref})"
-                if (hasattr(script, "obj") and script.obj)
-                else "<Global>",
+                (
+                    f"{script.obj.key}({script.obj.dbref})"
+                    if (hasattr(script, "obj") and script.obj)
+                    else "<Global>"
+                ),
                 script.key,
                 script.interval if script.interval > 0 else "--",
                 nextrep,

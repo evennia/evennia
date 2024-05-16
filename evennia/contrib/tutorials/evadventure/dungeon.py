@@ -78,7 +78,7 @@ _EXIT_GRID_SHIFT = {
 
 
 # --------------------------------------------------
-# Dungeon orchestrator and room / exits
+# Dungeon branch and room / exits
 # --------------------------------------------------
 
 
@@ -92,16 +92,8 @@ class EvAdventureDungeonRoom(EvAdventureRoom):
     allow_death = AttributeProperty(True, autocreate=False)
 
     # dungeon generation attributes; set when room is created
-    back_exit = AttributeProperty(None, autocreate=False)
-    dungeon_orchestrator = AttributeProperty(None, autocreate=False)
+    dungeon_branch = AttributeProperty(None, autocreate=False)
     xy_coords = AttributeProperty(None, autocreate=False)
-
-    @property
-    def is_room_clear(self):
-        return not bool(self.tags.get("not_clear", category="dungeon_room"))
-
-    def clear_room(self):
-        self.tags.remove("not_clear", category="dungeon_room")
 
     def at_object_creation(self):
         """
@@ -113,6 +105,13 @@ class EvAdventureDungeonRoom(EvAdventureRoom):
 
         """
         self.tags.add("not_clear", category="dungeon_room")
+
+    def clear_room(self):
+        self.tags.remove("not_clear", category="dungeon_room")
+
+    @property
+    def is_room_clear(self):
+        return not bool(self.tags.get("not_clear", category="dungeon_room"))
 
     def get_display_footer(self, looker, **kwargs):
         """
@@ -140,17 +139,15 @@ class EvAdventureDungeonExit(DefaultExit):
 
     def at_traverse(self, traversing_object, target_location, **kwargs):
         """
-        Called when traversing. `target_location` will be None if the
-        target was not yet created. It checks the current location to get the
-        dungeon-orchestrator in use.
+        Called when traversing. `target_location` will be pointing back to ourselves if the target
+        was not yet created. It checks the current location to get the dungeon-branch in use.
 
         """
+        dungeon_branch = self.location.db.dungeon_branch
         if target_location == self.location:
-            self.destination = target_location = self.location.db.dungeon_orchestrator.new_room(
-                self
-            )
-            if self.id in self.location.dungeon_orchestrator.unvisited_exits:
-                self.location.dungeon_orchestrator.unvisited_exits.remove(self.id)
+            # destination points back to us - create a new room
+            self.destination = target_location = dungeon_branch.new_room(self)
+            dungeon_branch.register_exit_traversed(self)
 
         super().at_traverse(traversing_object, target_location, **kwargs)
 
@@ -162,14 +159,14 @@ class EvAdventureDungeonExit(DefaultExit):
         traversing_object.msg("You can't get through this way yet!")
 
 
-def room_generator(dungeon_orchestrator, depth, coords):
+def room_generator(dungeon_branch, depth, coords):
     """
     Plugin room generator
 
     This default one returns the same empty room.
 
     Args:
-        dungeon_orchestrator (EvAdventureDungeonOrchestrator): The current orchestrator.
+        dungeon_branch (EvAdventureDungeonBranch): The current dungeon branch.
         depth (int): The 'depth' of the dungeon (radial distance from start room) this
             new room will be placed at.
         coords (tuple): The `(x,y)` coords that the new room will be created at.
@@ -198,15 +195,15 @@ def room_generator(dungeon_orchestrator, depth, coords):
         attributes=(
             ("desc", desc),
             ("xy_coords", coords),
-            ("dungeon_orchestrator", dungeon_orchestrator),
+            ("dungeon_branch", dungeon_branch),
         ),
     )
     return new_room
 
 
-class EvAdventureDungeonOrchestrator(DefaultScript):
+class EvAdventureDungeonBranch(DefaultScript):
     """
-    One script is created per dungeon 'branch' created. The orchestrator is
+    One script is created per dungeon 'branch' created. The branch is
     responsible for determining what is created next when a character enters an
     exit within the dungeon.
 
@@ -218,15 +215,14 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
 
     rooms = AttributeProperty(list())
     unvisited_exits = AttributeProperty(list())
-    highest_depth = AttributeProperty(0)
 
     last_updated = AttributeProperty(datetime.utcnow())
 
     # the room-generator function; copied from the same-name value on the start-room when the
-    # orchestrator is first created
+    # branch is first created
     room_generator = AttributeProperty(None, autocreate=False)
 
-    # (x,y): room coordinates used up by orchestrator
+    # (x,y): room coordinates used up by branch
     xy_grid = AttributeProperty(dict())
     start_room = AttributeProperty(None, autocreate=False)
 
@@ -254,7 +250,7 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
 
     def delete(self):
         """
-        Clean up the entire dungeon along with the orchestrator.
+        Clean up the entire dungeon along with the branch.
 
         """
         # first secure all characters in this branch back to the start room
@@ -274,7 +270,7 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         rooms = search.search_object_by_tag(self.key, category="dungeon_room")
         for room in rooms:
             room.delete()
-        # finally delete the orchestrator itself
+        # finally delete the branch itself
         super().delete()
 
     def new_room(self, from_exit):
@@ -294,7 +290,7 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         new_x, new_y = (x + dx, y + dy)
 
         # the dungeon's depth acts as a measure of the current difficulty level. This is the radial
-        # distance from the (0, 0) (the entrance). The Orchestrator also tracks the highest
+        # distance from the (0, 0) (the entrance). The branch also tracks the highest
         # depth achieved.
         depth = int(sqrt(new_x**2 + new_y**2))
 
@@ -348,8 +344,6 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
                         self.xy_grid[target_coord] = None
                         break
 
-        self.highest_depth = max(self.highest_depth, depth)
-
         return new_room
 
 
@@ -378,25 +372,52 @@ class EvAdventureDungeonStartRoomExit(DefaultExit):
 
     def at_traverse(self, traversing_object, target_location, **kwargs):
         """
-        When traversing create a new orchestrator if one is not already assigned.
+        When traversing create a new branch if one is not already assigned.
 
         """
         if target_location == self.location:
-            # make a global orchestrator script for this dungeon branch
+            # make a global branch script for this dungeon branch
             self.location.room_generator
-            dungeon_orchestrator = create.create_script(
-                EvAdventureDungeonOrchestrator,
-                key=f"dungeon_orchestrator_{self.key}_{datetime.utcnow()}",
+            dungeon_branch = create.create_script(
+                EvAdventureDungeonBranch,
+                key=f"dungeon_branch_{self.key}_{datetime.utcnow()}",
                 attributes=(
                     ("start_room", self.location),
                     ("room_generator", self.location.room_generator),
                 ),
             )
-            self.destination = target_location = dungeon_orchestrator.new_room(self)
+            self.destination = target_location = dungeon_branch.new_room(self)
             # make sure to tag character when entering so we can find them again later
-            traversing_object.tags.add(dungeon_orchestrator.key, category="dungeon_character")
+            traversing_object.tags.add(dungeon_branch.key, category="dungeon_character")
 
         super().at_traverse(traversing_object, target_location, **kwargs)
+
+
+class EvAdventureDungeonBranchDeleter(DefaultScript):
+    """
+    Cleanup script. After some time a dungeon branch will 'collapse', forcing all players in it
+    back to the start room.
+
+    """
+
+    # set at creation time when the start room is created
+    branch_max_life = AttributeProperty(0, autocreate=False)
+
+    def at_script_creation(self):
+        self.key = "evadventure_dungeon_branch_deleter"
+
+    def at_repeat(self):
+        """
+        Go through all dungeon-branchs and find which ones are too old.
+
+        """
+        max_dt = timedelta(seconds=self.branch_max_life)
+        max_allowed_date = datetime.utcnow() - max_dt
+
+        for branch in EvAdventureDungeonBranch.objects.all():
+            if branch.last_updated < max_allowed_date:
+                # branch is too old; tell it to clean up and delete itself
+                branch.delete()
 
 
 class EvAdventureStartRoomResetter(DefaultScript):
@@ -417,33 +438,6 @@ class EvAdventureStartRoomResetter(DefaultScript):
         for exi in room.exits:
             if inherits_from(exi, EvAdventureDungeonStartRoomExit) and random() < 0.5:
                 exi.reset_exit()
-
-
-class EvAdventureDungeonBranchDeleter(DefaultScript):
-    """
-    Cleanup script. After some time a dungeon branch will 'collapse', forcing all players in it
-    back to the start room.
-
-    """
-
-    # set at creation time when the start room is created
-    branch_max_life = AttributeProperty(0, autocreate=False)
-
-    def at_script_creation(self):
-        self.key = "evadventure_dungeon_branch_deleter"
-
-    def at_repeat(self):
-        """
-        Go through all dungeon-orchestrators and find which ones are too old.
-
-        """
-        max_dt = timedelta(seconds=self.branch_max_life)
-        max_allowed_date = datetime.utcnow() - max_dt
-
-        for orchestrator in EvAdventureDungeonOrchestrator.objects.all():
-            if orchestrator.last_updated < max_allowed_date:
-                # orchestrator is too old; tell it to clean up and delete itself
-                orchestrator.delete()
 
 
 class EvAdventureDungeonStartRoom(EvAdventureDungeonRoom):

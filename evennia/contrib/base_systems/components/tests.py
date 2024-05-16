@@ -98,28 +98,28 @@ class TestComponents(EvenniaTest):
         self.assertIsInstance(self.char1.test_b, ComponentTestB)
 
     def test_character_assigns_default_value(self):
-        self.assertEquals(self.char1.test_a.my_int, 1)
-        self.assertEquals(self.char1.test_a.my_list, [])
+        self.assertEqual(self.char1.test_a.my_int, 1)
+        self.assertEqual(self.char1.test_a.my_list, [])
 
     def test_character_assigns_default_provided_values(self):
-        self.assertEquals(self.char1.test_b.my_int, 3)
-        self.assertEquals(self.char1.test_b.my_list, [1, 2, 3])
+        self.assertEqual(self.char1.test_b.my_int, 3)
+        self.assertEqual(self.char1.test_b.my_list, [1, 2, 3])
 
     def test_character_has_autocreated_values(self):
         att_name = "test_b::my_list"
-        self.assertEquals(self.char1.attributes.get(att_name), [1, 2, 3])
+        self.assertEqual(self.char1.attributes.get(att_name), [1, 2, 3])
 
     def test_component_inheritance_properly_overrides_slots(self):
-        self.assertEquals(self.char1.ic_a.name, "inherited_test_a")
+        self.assertEqual(self.char1.ic_a.name, "inherited_test_a")
         component_names = set(c[0] for c in self.char1._get_class_components())
         self.assertNotIn("shadowed_test_a", component_names)
 
     def test_component_inheritance_assigns_proper_values(self):
-        self.assertEquals(self.char1.ic_a.my_int, 1)
-        self.assertEquals(self.char1.ic_a.my_other_int, 4)
+        self.assertEqual(self.char1.ic_a.my_int, 1)
+        self.assertEqual(self.char1.ic_a.my_other_int, 4)
 
     def test_host_mixins_assigns_components(self):
-        self.assertEquals(self.char1.test_d.mixed_in, 8)
+        self.assertEqual(self.char1.test_d.mixed_in, 8)
 
     def test_character_can_register_runtime_component(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -127,15 +127,15 @@ class TestComponents(EvenniaTest):
         test_c = self.char1.components.get("test_c")
 
         self.assertTrue(test_c)
-        self.assertEquals(test_c.my_int, 6)
-        self.assertEquals(test_c.my_dict, {})
+        self.assertEqual(test_c.my_int, 6)
+        self.assertEqual(test_c.my_dict, {})
 
     def test_handler_can_add_default_component(self):
         self.char1.components.add_default("test_c")
         test_c = self.char1.components.get("test_c")
 
         self.assertTrue(test_c)
-        self.assertEquals(test_c.my_int, 6)
+        self.assertEqual(test_c.my_int, 6)
 
     def test_handler_has_returns_true_for_any_components(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -199,7 +199,7 @@ class TestComponents(EvenniaTest):
 
         self.assertTrue(self.char1.tags.has(key="test_c", category="components"))
         self.assertTrue(self.char1.tags.has(key="added_value", category="test_c::added_tag"))
-        self.assertEquals(test_c.added_tag, "added_value")
+        self.assertEqual(test_c.added_tag, "added_value")
 
     def test_host_has_added_default_component_tags(self):
         self.char1.components.add_default("test_c")
@@ -207,7 +207,7 @@ class TestComponents(EvenniaTest):
 
         self.assertTrue(self.char1.tags.has(key="test_c", category="components"))
         self.assertTrue(self.char1.tags.has(key="added_value", category="test_c::added_tag"))
-        self.assertEquals(test_c.added_tag, "added_value")
+        self.assertEqual(test_c.added_tag, "added_value")
 
     def test_host_remove_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -235,7 +235,7 @@ class TestComponents(EvenniaTest):
         test_b.single_tag = "second value"
 
         self.assertTrue(self.char1.tags.has(key="second value", category="test_b::single_tag"))
-        self.assertEquals(test_b.single_tag, "second value")
+        self.assertEqual(test_b.single_tag, "second value")
         self.assertFalse(self.char1.tags.has(key="first_value", category="test_b::single_tag"))
 
     def test_component_tags_default_value_is_overridden_when_enforce_single(self):
@@ -268,11 +268,11 @@ class TestComponents(EvenniaTest):
 
     def test_mutables_are_not_shared_when_autocreate(self):
         self.char1.test_a.my_list.append(1)
-        self.assertNotEquals(self.char1.test_a.my_list, self.char2.test_a.my_list)
+        self.assertIsNot(self.char1.test_a.my_list, self.char2.test_a.my_list)
 
     def test_replacing_class_component_slot_with_runtime_component(self):
         self.char1.components.add_default("replacement_inherited_test_a")
-        self.assertEquals(self.char1.ic_a.replacement_field, 6)
+        self.assertEqual(self.char1.ic_a.replacement_field, 6)
 
 
 class CharWithSignal(ComponentHolderMixin, DefaultCharacter):

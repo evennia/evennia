@@ -7,7 +7,6 @@ TEMPLATES["OPTIONS"]["context_processors"] list.
 
 """
 
-
 import os
 
 from django.conf import settings
@@ -130,7 +129,7 @@ def general_context(request):
         "telnet_ssl_enabled": TELNET_SSL_ENABLED,
         "telnet_ssl_ports": TELNET_SSL_PORTS,
         "ssh_enabled": SSH_ENABLED,
-        "ssh_ports": SSH_ENABLED,
+        "ssh_ports": SSH_PORTS,
         "webclient_enabled": WEBCLIENT_ENABLED,
         "websocket_enabled": WEBSOCKET_CLIENT_ENABLED,
         "websocket_port": WEBSOCKET_PORT,

@@ -167,6 +167,7 @@ made available in the script namespace.
     script = create.create_script()
 
 """
+
 import codecs
 import re
 import sys

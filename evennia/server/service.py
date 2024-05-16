@@ -2,6 +2,7 @@
 This module contains the main EvenniaService class, which is the very core of the
 Evennia server. It is instantiated by the evennia/server/server.py module.
 """
+
 import importlib
 import time
 import traceback
@@ -330,12 +331,13 @@ class EvenniaServerService(MultiService):
                 (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
             ):
                 # update the database
-                self.info_dict[
-                    "info"
-                ] = " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (
-                    settings_names[i],
-                    prev,
-                    curr,
+                self.info_dict["info"] = (
+                    " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..."
+                    % (
+                        settings_names[i],
+                        prev,
+                        curr,
+                    )
                 )
                 if i == 0:
                     evennia.ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(

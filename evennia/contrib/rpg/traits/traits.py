@@ -452,7 +452,6 @@ class Character(DefaultCharacter):
 
 """
 
-
 from functools import total_ordering
 from time import time
 
@@ -662,7 +661,12 @@ class TraitHandler:
         return trait
 
     def add(
-        self, trait_key, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties
+        self,
+        trait_key,
+        name=None,
+        trait_type=DEFAULT_TRAIT_TYPE,
+        force=True,
+        **trait_properties,
     ):
         """
         Create a new Trait and add it to the handler.
@@ -946,7 +950,12 @@ class Trait:
 
     def __getattr__(self, key):
         """Access extra parameters as attributes."""
-        if key in ("default_keys", "data_default", "trait_type", "allow_extra_properties"):
+        if key in (
+            "default_keys",
+            "data_default",
+            "trait_type",
+            "allow_extra_properties",
+        ):
             return _GA(self, key)
         try:
             return self._data[key]
@@ -1277,7 +1286,7 @@ class CounterTrait(Trait):
                 )
         # set up rate
         if trait_data["rate"] != 0:
-            trait_data["last_update"] = time()
+            trait_data["last_update"] = trait_data.get("last_update", time())
         else:
             trait_data["last_update"] = None
         return trait_data
@@ -1553,6 +1562,7 @@ class GaugeTrait(CounterTrait):
         rate = self.rate
         if rate != 0 and self._data["last_update"] is not None:
             now = time()
+
             tdiff = now - self._data["last_update"]
             current += rate * tdiff
             value = current

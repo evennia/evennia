@@ -4,6 +4,7 @@ Rerouting admin frontpage to evennia version.
 These patterns are all under the admin/* namespace.
 
 """
+
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path

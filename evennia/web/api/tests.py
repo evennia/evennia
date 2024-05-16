@@ -2,6 +2,7 @@
 Tests for the REST API.
 
 """
+
 from collections import namedtuple
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -181,9 +182,9 @@ class TestEvenniaRESTApi(BaseEvenniaTest):
                 attr_data = {"db_key": attr_name, "db_value": "test_value"}
                 response = self.client.post(view_url, data=attr_data)
                 self.assertEqual(response.status_code, 200, f"Response was: {response.data}")
-                self.assertEquals(view.obj.attributes.get(attr_name), "test_value")
+                self.assertEqual(view.obj.attributes.get(attr_name), "test_value")
                 # now test removing it
                 attr_data = {"db_key": attr_name}
                 response = self.client.post(view_url, data=attr_data)
                 self.assertEqual(response.status_code, 200, f"Response was: {response.data}")
-                self.assertEquals(view.obj.attributes.get(attr_name), None)
+                self.assertEqual(view.obj.attributes.get(attr_name), None)

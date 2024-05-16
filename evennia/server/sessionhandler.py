@@ -12,6 +12,7 @@ There are two similar but separate stores of sessions:
      handle network communication but holds no game info.
 
 """
+
 import time
 from codecs import decode as codecs_decode
 

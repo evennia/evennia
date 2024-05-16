@@ -60,9 +60,27 @@ You need a text editor application to edit Python source files. Most anything th
 Make sure to configure your text editor so that pressing the 'Tab' key inserts _4 spaces_ rather than a tab-character. Because Python is whitespace-aware, this simple practice will make your life much easier.
 ```
 
+### Running python commands outside game (optional)
+
+This tutorial will primarily assume you are experimenting with Python through your game client, using the in-game `py` command. But you can also explore Python instructions outside of the game. Run the following from your game dir folder:
+
+    $ evennia shell 
+
+```{sidebar}
+The `evennia shell` console is convenient for experimenting with Python. But note that if you manipulate database objects from `evennia shell`, those changes will not be visible from inside the game until you reload the server. Similarly changes in-game may not visible to the `evennia shell` console until restarting it. As a guideline, use `evennia shell` for testing things out. Don't use it to change the state of a running game. The beginner tutorial uses the in-game `py` command to avoid confusion.
+```
+This will open an Evennia/Django aware python shell. You should use this instead of just running vanilla `python` since the latter won't set up Django for you and you won't be able to import `evennia` without a lot of extra setup. For an even nicer experience, it's recommended you install the `ipython` program:
+
+     $ pip install ipython3
+
+The `evennia shell` command will use `ipython` automatically if installed. 
+
+---
+
 You should now be ready to move on to the [first part of the Beginner Tutorial](Part1/Beginner-Tutorial-Part1-Overview.md)! (In the future, use the `previous | next` buttons on the top/bottom of the page to progress.)
 
 <details>
+
 <summary>
 Click here to see the full index of all parts and lessons of the Beginner-Tutorial.
 </summary>

@@ -2,6 +2,7 @@
 EvAdventure character generation.
 
 """
+
 from django.conf import settings
 
 from evennia.objects.models import ObjectDB

@@ -34,7 +34,7 @@ with [EvEditor](./EvEditor.md), flipping pages in [EvMore](./EvMore.md) or using
 - [**@open**](CmdOpen) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _Building_)
 - [**@py** [@!]](CmdPy) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _System_)
 - [**@reload** [@restart]](CmdReload) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _System_)
-- [**@reset** [@reboot]](CmdReset) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _System_)
+- [**@reset**](CmdReset) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _System_)
 - [**@scripts** [@script]](CmdScripts) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _System_)
 - [**@server** [@serverload]](CmdServerLoad) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _System_)
 - [**@service** [@services]](CmdService) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _System_)

@@ -4,7 +4,7 @@
 # `value = number` and only specific names supported by the handler.
 
 PYTHON_MIN = 3.10
-PYTHON_MAX_TESTED = 3.11.100
+PYTHON_MAX_TESTED = 3.12.100
 TWISTED_MIN = 23.10
 DJANGO_MIN = 4.0.2
 DJANGO_MAX_TESTED = 4.2.100

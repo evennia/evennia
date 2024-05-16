@@ -4,6 +4,7 @@ available (i.e. IC commands). Note that some commands, such as
 communication-commands are instead put on the account level, in the
 Account cmdset. Account commands remain available also to Characters.
 """
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default import (
     admin,

@@ -80,14 +80,14 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
          """
          self.hp = self.hp_max
          self.tags.add("npcs", category="group")
-                                                                                   
-     def ai_next_action(self, **kwargs):                     
-         """                                                        
-		 The system should regularly poll this method to have 
-		 the NPC do their next AI action. 
-                                                                    
-         """                                                        
-         pass                           
+
+
+class EvAdventureMob(EvAdventureNPC): 
+    """
+    Mob(ile) NPC to be used for enemies.
+     
+    """
+
 ```
 
 - **Line 9**: By use of _multiple inheritance_ we use the `LinvingMixin` we created in the [Character lesson](./Beginner-Tutorial-Characters.md). This includes a lot of useful methods, such as showing our 'hurt level', methods to use to heal, hooks to call when getting attacked, hurt and so on. We can re-use all of those in upcoming NPC subclasses.
@@ -96,8 +96,8 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
 - **Lines 17, 18**: The `morale` and `allegiance` are _Knave_ properties determining how likely the NPC is to flee in a combat situation and if they are hostile or friendly.
 - **Line 19**: The `is_idle` Attribute is a useful property. It should be available on all NPCs and will be used to disable AI entirely. 
 - **Line 59**: We make sure to tag NPCs. We may want to group different NPCs together later, for example to have all NPCs with the same tag respond if one of them is attacked.
-- **Line 61**: The `ai_next_action` is a method we prepare for the system to be able to ask the NPC 'what do you want to do next?'. In it we will add all logic related to the artificial intelligence of the NPC - such as walking around, attacking and performing other actions.
 
+We make an empty subclass `EvAdventureMob`. A 'mob' (short for 'mobile') is a common MUD term for NPCs that can move around on their own. We will in the future use this class to represent enemies in the game. We will get back to this class [in the lesson about adding AI][Beginner-Tutoroal-AI]. 
 
 ## Testing 
 

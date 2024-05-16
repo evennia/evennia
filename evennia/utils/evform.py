@@ -203,7 +203,10 @@ class EvForm:
                 also works, to stay compatible with the in-file names). While "form/FORM"
                 is required, if FORMCHAR/TABLECHAR are not given, they will default to
                 'x' and 'c' respectively.
-            cells (dict): A dictionary mapping  `{id: str}`
+            cells (dict): A dictionary mapping  `{id: str}` or `{id: evennia.utils.evtable.EvCell}`.
+                By pre-creating the `EvCell` like `EvCell("text", align="c", valign="t")` you can
+                control the cell contents' alignment. Note that cell width/height will be enforced
+                by the form so will be overridden even if specified.
             tables (dict): A dictionary mapping  `{id: EvTable}`.
             literals (dict): A dictionary mapping `{id: str}`. Will be replaced
                 after width of form is calculated, but before cells/tables are mapped.

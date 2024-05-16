@@ -565,24 +565,28 @@ let goldenlayout = (function () {
         uploadLayouts();
     }
 
-
-    //
+    // 
     // This is a helper function for when adding items from the OptionsUI's layout listing
     var addLayoutUI = function (layoutDiv, name) {
-        var div = $("<div id='"+name+"' >");
+        // Create a div and set its id property
+        var div = $("<div>").attr("id", name);
 
-        var option = $("<input type='button' class='goldenlayout' value='"+name+"'>");
+        // Create an option button and add click event listener
+        var option = $("<input>", { type: "button", class: "goldenlayout", value: name });
         option.on("click", onSwitchLayout);
         div.append(option);
 
-        if( name !== "default" && name !== activeLayoutName ) {
-            var remove = $("<input type='button' class='removelayout' value='X'>");
+        // Conditionally add a remove button
+        if (name !== "default" && name !== activeLayoutName) {
+            var remove = $("<input>", { type: "button", class: "removelayout", value: "X" });
             remove.on("click", onRemoveLayout);
             div.append(remove);
         }
 
+        // Append the created div to the layoutDiv
         layoutDiv.append(div);
     }
+
 
     // Listener for realtime changes to the layout name input field.
     // If the layout name is "default", the save button is disabled

@@ -473,6 +473,32 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
 list_to_string = iter_to_str
 iter_to_string = iter_to_str
 
+re_empty = re.compile("\n\s*\n")
+
+
+def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
+    """
+    Removes extra sequential whitespace in a block of text. This will also remove any trailing
+    whitespace at the end.
+
+    Args:
+        text (str):   A string which may contain excess internal whitespace.
+
+    Keyword args:
+        max_linebreaks (int):  How many linebreak characters are allowed to occur in a row.
+        max_spacing (int):     How many spaces are allowed to occur in a row.
+
+    """
+    text = text.rstrip()
+    # replaces any non-visible lines that are just whitespace characters with actual empty lines
+    # this allows the blank-line compression to eliminate them if needed
+    text = re_empty.sub("\n\n", text)
+    # replace groups of extra spaces with the maximum number of spaces
+    text = re.sub(f"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
+    # replace groups of extra newlines with the maximum number of newlines
+    text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
+    return text
+
 
 def wildcard_to_regexp(instring):
     """
@@ -1767,6 +1793,41 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     return []
 
 
+def group_objects_by_key_and_desc(objects, caller=None, **kwargs):
+    """
+    Groups a list of objects by their key and description. This is used to group
+    visibly identical objects together, for example for inventory listings.
+
+    Args:
+        objects (list): A list of objects to group. These must be DefaultObject.
+
+        caller (Object, optional): The object looking at the objects, used to get the
+            description and key of each object.
+        **kwargs: Passed into each object's `get_display_name/desc` methods.
+
+    Returns:
+        iterable: An iterable of tuples, where each tuple is on the form
+            `(numbered_name, description, [objects])`.
+
+    """
+    key_descs = defaultdict(list)
+    return_string = kwargs.pop("return_string", True)
+
+    for obj in objects:
+        key_descs[
+            (obj.get_display_name(caller, **kwargs), obj.get_display_desc(caller, **kwargs))
+        ].append(obj)
+
+    return (
+        (
+            objs[0].get_numbered_name(len(objs), caller, return_string=return_string, **kwargs),
+            desc,
+            objs,
+        )
+        for (key, desc), objs in sorted(key_descs.items(), key=lambda tup: tup[0][0])
+    )
+
+
 def format_table(table, extra_space=1):
     """
     Format a 2D array of strings into a multi-column table.
@@ -2011,7 +2072,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
                     else:
                         row += " " * max(0, width - lrow)
                     rows.append(row)
-                    row = ""
+                    row = element
                     ic = 0
                 else:
                     # add a new slot
@@ -2343,21 +2404,19 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 # result is a typeclassed entity where `.aliases` is an AliasHandler.
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
-                aliases = [
-                    alias
-                    for alias in aliases
-                    if hasattr(alias, "category") and alias.category not in ("plural_key",)
-                ]
+                aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
                 aliases = result.aliases
 
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
-                name=result.get_display_name(caller)
-                if hasattr(result, "get_display_name")
-                else query,
-                aliases=" [{alias}]".format(alias=";".join(aliases) if aliases else ""),
+                name=(
+                    result.get_display_name(caller)
+                    if hasattr(result, "get_display_name")
+                    else query
+                ),
+                aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                 info=result.get_extra_info(caller),
             )
         matches = None
@@ -2826,7 +2885,7 @@ def int2str(number, adjective=False):
 
     Args:
         number (int): The number to convert. Floats will be converted to ints.
-        adjective (int): If set, map 1->1st, 2->2nd etc. If unset, map 1->one, 2->two etc.
+        adjective (bool): If True, map 1->1st, 2->2nd etc. If unset or False, map 1->one, 2->two etc.
             up to twelve.
     Return:
         str: The number expressed as a string.
@@ -3018,3 +3077,21 @@ def ip_from_request(request, exclude=None) -> str:
 
     logger.log_warn("ip_from_request: No valid IP address found in request. Using remote_addr.")
     return remote_addr
+
+
+def value_is_integer(value):
+    """
+    Determines if a value can be type-cast to an integer.
+
+    Args:
+        value (any): The value to check.
+
+    Returns:
+        result (bool): Whether it can be type-cast to an integer or not.
+    """
+    try:
+        int(value)
+    except ValueError:
+        return False
+
+    return True

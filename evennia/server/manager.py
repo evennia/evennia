@@ -1,6 +1,7 @@
 """
 Custom manager for ServerConfig objects.
 """
+
 from django.db import models
 
 

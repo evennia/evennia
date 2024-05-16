@@ -436,6 +436,11 @@ class TestDefaultCallables(TestCase):
             ("$You() $conj(smile) at $You(char1).", "You smile at You.", "Char1 smiles at Char1."),
             ("$You() $conj(smile) at $You(char2).", "You smile at Char2.", "Char1 smiles at You."),
             (
+                "$You() $conj(smile) while $You(char2) $conj(waves, char2).",
+                "You smile while Char2 waves.",
+                "Char1 smiles while You wave.",
+            ),
+            (
                 "$You(char2) $conj(smile) at $you(char1).",
                 "Char2 smile at you.",
                 "You smiles at Char1.",
@@ -510,6 +515,20 @@ class TestDefaultCallables(TestCase):
 
         self.obj1.gender = lambda: gender
         ret = self.parser.parse(string, caller=self.obj1, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_pronoun_mapping(self):
+        self.obj1.gender = "female"
+        self.obj2.gender = "male"
+
+        string = "Char1 raises $pron(your, char1) fist as Char2 raises $pron(yours, char2)"
+        expected = "Char1 raises her fist as Char2 raises his"
+        ret = self.parser.parse(
+            string,
+            caller=self.obj1,
+            mapping={"char1": self.obj1, "char2": self.obj2},
+            raise_errors=True,
+        )
         self.assertEqual(expected, ret)
 
     def test_pronoun_viewpoint(self):

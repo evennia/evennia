@@ -9,6 +9,7 @@ NAWS allows telnet clients to report their current window size to the
 client and update it when the size changes
 
 """
+
 from codecs import encode as codecs_encode
 
 from django.conf import settings
@@ -57,6 +58,7 @@ class Naws:
             option (Option): Not used.
 
         """
+        self.protocol.protocol_flags["AUTORESIZE"] = False
         self.protocol.handshake_done()
 
     def do_naws(self, option):
@@ -67,6 +69,7 @@ class Naws:
             option (Option): Not used.
 
         """
+        self.protocol.protocol_flags["AUTORESIZE"] = True
         self.protocol.handshake_done()
 
     def negotiate_sizes(self, options):

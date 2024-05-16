@@ -4,6 +4,7 @@ abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects).
 
 """
+
 import shlex
 
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Q

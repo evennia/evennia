@@ -148,6 +148,7 @@ Extra Installation Instructions:
        `type/reset/force me = typeclasses.characters.Character`
 
 """
+
 import re
 from collections import defaultdict
 from string import punctuation
@@ -223,7 +224,7 @@ _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
-_RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
+_RE_LANGUAGE = re.compile(r'(\w+)?(".*?")')
 
 
 # the emote parser works in two steps:
@@ -446,7 +447,7 @@ def parse_sdescs_and_recogs(
             word_list = []
             bestmatches = []
             # preserve punctuation when splitting
-            tail = re.split("(\W)", tail)
+            tail = re.split(r"(\W)", tail)
             iend = 0
             for i, item in enumerate(tail):
                 # don't add non-word characters to the search query
@@ -1282,6 +1283,8 @@ class RPSystemCmdSet(CmdSet):
     Mix-in for adding rp-commands to default cmdset.
     """
 
+    key = "rpsystem_cmdset"
+
     def at_cmdset_creation(self):
         self.add(CmdEmote())
         self.add(CmdSay())
@@ -1320,12 +1323,7 @@ class ContribRPObject(DefaultObject):
     def get_search_result(
         self,
         searchdata,
-        attribute_name=None,
-        typeclass=None,
         candidates=None,
-        exact=False,
-        use_dbref=None,
-        tags=None,
         **kwargs,
     ):
         """
@@ -1348,16 +1346,18 @@ class ContribRPObject(DefaultObject):
                 # in eventual error reporting later (not their keys). Doing
                 # it like this e.g. allows for use of the typeclass kwarg
                 # limiter.
-                results.extend([obj for obj in search_obj(candidate.key) if obj not in results])
+                results.extend(
+                    [obj for obj in search_obj(candidate.key, **kwargs) if obj not in results]
+                )
 
             if not results and is_builder:
-                # builders get a chance to search only by key+alias
-                results = search_obj(searchdata)
+                # builders get to do a global search by key+alias
+                results = search_obj(searchdata, **kwargs)
         else:
-            # global searches / #drefs end up here. Global searches are
+            # global searches with #drefs end up here. Global searches are
             # only done in code, so is controlled, #dbrefs are turned off
             # for non-Builders.
-            results = search_obj(searchdata)
+            results = search_obj(searchdata, **kwargs)
         return results
 
     def get_posed_sdesc(self, sdesc, **kwargs):
@@ -1413,10 +1413,6 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-
-        # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
-            sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
@@ -1549,10 +1545,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-
-        # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
-            sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
