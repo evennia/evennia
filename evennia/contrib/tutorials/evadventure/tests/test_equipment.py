@@ -89,7 +89,7 @@ class TestEquipment(EvAdventureMixin, BaseEvenniaTest):
         obj = MagicMock()
         obj.size = size
 
-        with patch("evennia.contrib.tutorials.evadventure.equipment.inherits_from") as mock_inherit:
+        with patch("evadventure.equipment.inherits_from") as mock_inherit:
             mock_inherit.return_value = True
             if is_ok:
                 self.assertTrue(self.character.equipment.validate_slot_usage(obj))
