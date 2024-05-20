@@ -350,7 +350,7 @@ def get_and_merge_cmdsets(
             """
             # Gather cmdsets from location, objects in location or carried
             try:
-                local_obj_cmdsets = [None]
+                local_obj_cmdsets = []
                 try:
                     location = obj.location
                 except Exception:
