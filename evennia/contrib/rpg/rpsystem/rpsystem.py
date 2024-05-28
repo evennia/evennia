@@ -1352,7 +1352,9 @@ class ContribRPObject(DefaultObject):
                     results.extend(
                         [
                             obj
-                            for obj in search_obj(searched_obj.key, candidates=[searched_obj], **kwargs)
+                            for obj in search_obj(
+                                searched_obj.key, candidates=[searched_obj], **kwargs
+                            )
                             if obj not in results
                         ]
                     )
