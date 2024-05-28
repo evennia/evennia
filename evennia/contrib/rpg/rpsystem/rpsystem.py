@@ -422,7 +422,10 @@ def parse_sdescs_and_recogs(
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
+        # get the beginning of the actual text, minus the numeric identifier
         match_index = marker_match.start()
+        if num_identifier:
+            match_index += len(num_identifier) + 1
         # split the emote string at the reference marker, to process everything after it
         head = string[:match_index]
         tail = string[match_index + 1 :]
