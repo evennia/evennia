@@ -356,6 +356,10 @@ class TestRPSystem(BaseEvenniaTest):
         result = self.speaker.get_search_result("something", candidates)
         self.assertIn(self.obj1, result)
         self.assertIn(self.obj2, result)
+        # search by sdesc with 2-disambiguator: only second object should be found
+        result = self.speaker.get_search_result("2-something", candidates)
+        self.assertNotIn(self.obj1, result)
+        self.assertIn(self.obj2, result)
         # search empty candidates: no objects should be found
         result = self.speaker.get_search_result("something", candidates=[])
         self.assertNotIn(self.obj1, result)
