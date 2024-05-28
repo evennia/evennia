@@ -346,6 +346,34 @@ class TestRPSystem(BaseEvenniaTest):
         self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
         self.assertEqual(self.speaker.search("colliding"), self.receiver2)
 
+    def test_get_search_result(self):
+        self.obj1 = create_object(rpsystem.ContribRPObject, key="Obj1", location=self.room)
+        self.obj1.sdesc.add("something")
+        self.obj2 = create_object(rpsystem.ContribRPCharacter, key="Obj2", location=self.room)
+        self.obj2.sdesc.add("something")
+        candidates = [self.obj1, self.obj2]
+        # search candidates by sdesc: both objects should be found
+        result = self.speaker.get_search_result("something", candidates)
+        self.assertIn(self.obj1, result)
+        self.assertIn(self.obj2, result)
+        # search empty candidates: no objects should be found
+        result = self.speaker.get_search_result("something", candidates=[])
+        self.assertNotIn(self.obj1, result)
+        self.assertNotIn(self.obj2, result)
+        # typeclass was given: only matching object should be found
+        result = self.speaker.get_search_result(
+            "something", candidates=candidates, typeclass=rpsystem.ContribRPCharacter
+        )
+        self.assertNotIn(self.obj1, result)
+        self.assertIn(self.obj2, result)
+        # search by key with player permissions: no objects should be found
+        result = self.speaker.get_search_result("obj1", candidates)
+        self.assertNotIn(self.obj1, result)
+        # search by key with builder permissions: object should be found
+        self.speaker.permissions.add("builder")
+        result = self.speaker.get_search_result("obj1", candidates)
+        self.assertIn(self.obj1, result)
+
 
 class TestRPSystemCommands(BaseEvenniaCommandTest):
     def setUp(self):

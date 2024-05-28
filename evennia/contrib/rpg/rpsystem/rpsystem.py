@@ -392,7 +392,7 @@ def parse_sdescs_and_recogs(
         # if no sdesc, include key plus aliases instead
         else:
             candidate_map.append((obj, obj.key))
-        candidate_map.extend([(obj, alias) for alias in obj.aliases.all()])
+            candidate_map.extend([(obj, alias) for alias in obj.aliases.all()])
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -439,7 +439,7 @@ def parse_sdescs_and_recogs(
                 (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
             )
             # filter out any non-matching candidates
-            bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
+            bestmatches = [(obj, m.group()) for m, obj, text in matches if m]
 
         else:
             # to find the longest match, we start from the marker and lengthen the
@@ -1333,30 +1333,28 @@ class ContribRPObject(DefaultObject):
         """
         # we also want to use the default search method
         search_obj = super().get_search_result
-        is_builder = self.locks.check_lockstring(self, "perm(Builder)")
+        is_builder = self.permissions.check("Builder")
+        results = []
 
-        if candidates:
-            candidates = parse_sdescs_and_recogs(
+        if candidates is not None:
+            searched_results = parse_sdescs_and_recogs(
                 self, candidates, _PREFIX + searchdata, search_mode=True
             )
-            results = []
-            for candidate in candidates:
-                # we search by candidate keys here; this allows full error
-                # management and use of all kwargs - we will use searchdata
-                # in eventual error reporting later (not their keys). Doing
-                # it like this e.g. allows for use of the typeclass kwarg
-                # limiter.
-                results.extend(
-                    [obj for obj in search_obj(candidate.key, **kwargs) if obj not in results]
-                )
-
-            if not results and is_builder:
-                # builders get to do a global search by key+alias
-                results = search_obj(searchdata, **kwargs)
+            if not searched_results and is_builder:
+                # builders get to do a search by key
+                results = search_obj(searchdata, candidates=candidates, **kwargs)
+            else:
+                # we do a default search on each result by key, here, to apply extra filtering kwargs
+                for searched_obj in searched_results:
+                    results.extend(
+                        [
+                            obj
+                            for obj in search_obj(searched_obj.key, candidates=candidates, **kwargs)
+                            if obj not in results
+                        ]
+                    )
         else:
-            # global searches with #drefs end up here. Global searches are
-            # only done in code, so is controlled, #dbrefs are turned off
-            # for non-Builders.
+            # no candidates means it's a global search, so we pass it back to the default
             results = search_obj(searchdata, **kwargs)
         return results
 
