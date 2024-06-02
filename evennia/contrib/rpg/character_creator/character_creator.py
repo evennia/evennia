@@ -87,11 +87,11 @@ class ContribCmdCharCreate(MuxAccountCommand):
             char = session.new_char
             if char.db.chargen_step:
                 # this means the character creation process was exited in the middle
-                account.execute_cmd("look")
+                account.execute_cmd("look", session=session)
             else:
                 # this means character creation was completed - start playing!
                 # execute the ic command to start puppeting the character
-                account.execute_cmd("ic {}".format(char.key))
+                account.execute_cmd("ic {}".format(char.key), session=session)
 
         EvMenu(session, _CHARGEN_MENU, startnode=startnode, cmd_on_exit=finish_char_callback)
 
