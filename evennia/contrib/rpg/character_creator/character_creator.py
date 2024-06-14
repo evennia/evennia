@@ -23,9 +23,11 @@ from django.conf import settings
 
 from evennia import DefaultAccount
 from evennia.commands.default.muxcommand import MuxAccountCommand
+from evennia.commands.default.account import CmdIC
+from evennia.commands.cmdset import CmdSet
 from evennia.objects.models import ObjectDB
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import is_iter
+from evennia.utils.utils import is_iter, string_partial_matching
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 
@@ -33,6 +35,17 @@ try:
     _CHARGEN_MENU = settings.CHARGEN_MENU
 except AttributeError:
     _CHARGEN_MENU = "evennia.contrib.rpg.character_creator.example_menu"
+
+
+class ContribCmdIC(CmdIC):
+    def func(self):
+        if self.args:
+            # check if the args match an in-progress character
+            wips = [chara for chara in self.account.characters if chara.db.chargen_step]
+            if matches := string_partial_matching([c.key for c in wips], self.args):
+                # the character is in progress, resume creation
+                return self.execute_cmd("charcreate")
+        super().func()
 
 
 class ContribCmdCharCreate(MuxAccountCommand):
@@ -87,13 +100,22 @@ class ContribCmdCharCreate(MuxAccountCommand):
             char = session.new_char
             if char.db.chargen_step:
                 # this means the character creation process was exited in the middle
-                account.execute_cmd("look")
+                account.execute_cmd("look", session=session)
             else:
                 # this means character creation was completed - start playing!
                 # execute the ic command to start puppeting the character
-                account.execute_cmd("ic {}".format(char.key))
+                account.execute_cmd("ic {}".format(char.key), session=session)
 
         EvMenu(session, _CHARGEN_MENU, startnode=startnode, cmd_on_exit=finish_char_callback)
+
+
+class ContribChargenCmdSet(CmdSet):
+    key = "Contrib Chargen CmdSet"
+
+    def at_cmdset_creation(self):
+        super().at_cmdset_creation()
+        self.add(ContribCmdIC)
+        self.add(ContribCmdCharCreate)
 
 
 class ContribChargenAccount(DefaultAccount):
