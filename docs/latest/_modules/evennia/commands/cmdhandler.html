@@ -442,7 +442,7 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="c1"># Gather cmdsets from location, objects in location or carried</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+                <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">location</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -530,11 +530,12 @@
             <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">object_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
         <span class="p">]</span>
         <span class="c1"># report cmdset errors to user (these should already have been logged)</span>
-        <span class="k">yield</span> <span class="p">[</span>
-            <span class="n">report_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">errmessage</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span>
-            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
-        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">report_to</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">[</span>
+                <span class="n">report_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">errmessage</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+            <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">cmdsets</span><span class="p">:</span>
             <span class="c1"># faster to do tuple on list than to build tuple directly</span>
