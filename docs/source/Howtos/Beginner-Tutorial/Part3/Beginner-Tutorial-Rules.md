@@ -586,7 +586,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
 
 As before, run the specific test with 
 
-    evennia test --settings settings.py .evadventure.tests.test_rules
+    evennia test --settings settings.py evadventure.tests.test_rules
 
 ### Mocking and patching
 
