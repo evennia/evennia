@@ -80,7 +80,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#charcreate-command"><code class="docutils literal notranslate"><span class="pre">charcreate</span></code> command</a></li>
-<li><a class="reference internal" href="#changes-to-account-at-look">Changes to <code class="docutils literal notranslate"><span class="pre">Account.at_look</span></code></a></li>
+<li><a class="reference internal" href="#changes-to-account">Changes to <code class="docutils literal notranslate"><span class="pre">Account</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -222,13 +222,16 @@ character creator menu, as well as supporting exiting/resuming the process. In
 addition, unlike the core command, it’s designed for the character name to be
 chosen later on via the menu, so it won’t parse any arguments passed to it.</p>
 </section>
-<section id="changes-to-account-at-look">
-<h3>Changes to <code class="docutils literal notranslate"><span class="pre">Account.at_look</span></code><a class="headerlink" href="#changes-to-account-at-look" title="Permalink to this headline">¶</a></h3>
-<p>The contrib version works mostly the same as core evennia, but adds an
-additional check to recognize an in-progress character. If you’ve modified your
-own <code class="docutils literal notranslate"><span class="pre">at_look</span></code> hook, it’s an easy addition to make: just add this section to the
+<section id="changes-to-account">
+<h3>Changes to <code class="docutils literal notranslate"><span class="pre">Account</span></code><a class="headerlink" href="#changes-to-account" title="Permalink to this headline">¶</a></h3>
+<p>The contrib version works mostly the same as core evennia, but modifies <code class="docutils literal notranslate"><span class="pre">ooc_appearance_template</span></code>
+to match the contrib’s command syntax, and the <code class="docutils literal notranslate"><span class="pre">at_look</span></code> method to recognize an in-progress
+character.</p>
+<p>If you’ve modified your own <code class="docutils literal notranslate"><span class="pre">at_look</span></code> hook, it’s an easy change to add: just add this section to the
 playable character list loop.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># the beginning of the loop starts here</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+        <span class="c1"># ...</span>
         <span class="c1"># contrib code starts here</span>
         <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">:</span>
             <span class="c1"># currently in-progress character; don&#39;t display placeholder names</span>
