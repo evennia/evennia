@@ -13,10 +13,14 @@ from html import escape as html_escape
 
 from .ansi import *
 
+from .hex_colors import HexColors
+
 # All xterm256 RGB equivalents
 
 XTERM256_FG = "\033[38;5;{}m"
 XTERM256_BG = "\033[48;5;{}m"
+
+hex_colors = HexColors()
 
 
 class TextToHTMLparser(object):
@@ -67,12 +71,12 @@ class TextToHTMLparser(object):
     ]
 
     xterm_bg_codes = [XTERM256_BG.format(i + 16) for i in range(240)]
-
     re_style = re.compile(
-        r"({})".format(
+        r"({}|{})".format(
             "|".join(
                 style_codes + ansi_color_codes + xterm_fg_codes + ansi_bg_codes + xterm_bg_codes
-            ).replace("[", r"\[")
+            ).replace("[", r"\["),
+            "|".join([HexColors.TRUECOLOR_FG, HexColors.TRUECOLOR_BG]),
         )
     )
 
@@ -244,6 +248,7 @@ class TextToHTMLparser(object):
 
         # split out the ANSI codes and clean out any empty items
         str_list = [substr for substr in self.re_style.split(text) if substr]
+
         # initialize all the flags and classes
         classes = []
         clean = True
@@ -253,6 +258,8 @@ class TextToHTMLparser(object):
         fg = ANSI_WHITE
         # default bg is black
         bg = ANSI_BACK_BLACK
+        truecolor_fg = ""
+        truecolor_bg = ""
 
         for i, substr in enumerate(str_list):
             # reset all current styling
@@ -266,6 +273,8 @@ class TextToHTMLparser(object):
                 hilight = ANSI_UNHILITE
                 fg = ANSI_WHITE
                 bg = ANSI_BACK_BLACK
+                truecolor_fg = ""
+                truecolor_bg = ""
 
             # change color
             elif substr in self.ansi_color_codes + self.xterm_fg_codes:
@@ -280,6 +289,14 @@ class TextToHTMLparser(object):
                 str_list[i] = ""
                 # set new bg
                 bg = substr
+
+            elif re.match(hex_colors.TRUECOLOR_FG, substr):
+                str_list[i] = ""
+                truecolor_fg = substr
+
+            elif re.match(hex_colors.TRUECOLOR_BG, substr):
+                str_list[i] = ""
+                truecolor_bg = substr
 
             # non-color codes
             elif substr in self.style_codes:
@@ -319,9 +336,23 @@ class TextToHTMLparser(object):
                         color_index = self.colorlist.index(fg)
 
                     if inverse:
-                        # inverse means swap fg and bg indices
-                        bg_class = "bgcolor-{}".format(str(color_index).rjust(3, "0"))
-                        color_class = "color-{}".format(str(bg_index).rjust(3, "0"))
+                        if truecolor_fg != "" and truecolor_bg != "":
+                            # True startcolor only
+                            truecolor_fg, truecolor_bg = truecolor_bg, truecolor_fg
+                        elif truecolor_fg != "" and truecolor_bg == "":
+                            # Truecolor fg, class based bg
+                            truecolor_bg = truecolor_fg
+                            truecolor_fg = ""
+                            color_class = "color-{}".format(str(bg_index).rjust(3, "0"))
+                        elif truecolor_fg == "" and truecolor_bg != "":
+                            # Truecolor bg, class based fg
+                            truecolor_fg = truecolor_bg
+                            truecolor_bg = ""
+                            bg_class = "bgcolor-{}".format(str(color_index).rjust(3, "0"))
+                        else:
+                            # inverse means swap fg and bg indices
+                            bg_class = "bgcolor-{}".format(str(color_index).rjust(3, "0"))
+                            color_class = "color-{}".format(str(bg_index).rjust(3, "0"))
                     else:
                         # use fg and bg indices for classes
                         bg_class = "bgcolor-{}".format(str(bg_index).rjust(3, "0"))
@@ -333,8 +364,18 @@ class TextToHTMLparser(object):
                     # light grey text is the default, don't explicitly style
                     if color_class != "color-007":
                         classes.append(color_class)
+
                     # define the new style span
-                    prefix = '<span class="{}">'.format(" ".join(classes))
+                    if truecolor_fg == "" and truecolor_bg == "":
+                        prefix = f'<span class="{" ".join(classes)}">'
+                    else:
+                        # Classes can't be used for truecolor--but they can be extras such as 'blink'
+                        prefix = (
+                            f"<span "
+                            f'class="{" ".join(classes)}" '
+                            f"{hex_colors.xterm_truecolor_to_html_style(fg=truecolor_fg, bg=truecolor_bg)}>"
+                        )
+
                     # close any prior span
                     if not clean:
                         prefix = "</span>" + prefix
@@ -366,7 +407,7 @@ class TextToHTMLparser(object):
 
         """
         # parse everything to ansi first
-        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
+        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True, truecolor=True)
         # convert all ansi to html
         result = re.sub(self.re_string, self.sub_text, text)
         result = re.sub(self.re_mxplink, self.sub_mxp_links, result)

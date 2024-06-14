@@ -46,6 +46,14 @@ class TestText2Html(TestCase):
             parser.format_styles("a " + ansi.ANSI_INVERSE + "red" + ansi.ANSI_NORMAL + "foo"),
         )
 
+        # True Color
+        self.assertEqual(
+            '<span class="" style="color: #ff0000;">red</span>foo',
+            parser.format_styles(
+                f'\x1b[38;2;255;0;0m' + "red" + ansi.ANSI_NORMAL + "foo"
+            ),
+        )
+
     def test_remove_bells(self):
         parser = text2html.HTML_PARSER
         self.assertEqual("foo", parser.remove_bells("foo"))

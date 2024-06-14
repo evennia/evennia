@@ -44,7 +44,7 @@ class Ttype:
     def __init__(self, protocol):
         """
         Initialize ttype by storing protocol on ourselves and calling
-        the client to see if it supporst ttype.
+        the client to see if it supports ttype.
 
         Args:
             protocol (Protocol): The protocol instance.
@@ -130,10 +130,10 @@ class Ttype:
                     self.protocol.protocol_flags["NOPROMPTGOAHEAD"] = False
 
             if (
-                clientname.startswith("XTERM")
-                or clientname.endswith("-256COLOR")
-                or clientname
-                in (
+                    clientname.startswith("XTERM")
+                    or clientname.endswith("-256COLOR")
+                    or clientname
+                    in (
                     "ATLANTIS",  # > 0.9.9.0 (aug 2009)
                     "CMUD",  # > 3.04 (mar 2009)
                     "KILDCLIENT",  # > 2.2.0 (sep 2005)
@@ -143,13 +143,23 @@ class Ttype:
                     "BEIP",  # > 2.00.206 (late 2009) (BeipMu)
                     "POTATO",  # > 2.00 (maybe earlier)
                     "TINYFUGUE",  # > 4.x (maybe earlier)
-                )
+            )
             ):
                 xterm256 = True
+
+            # use name to identify support for xterm truecolor
+            truecolor = False
+            if (clientname.endswith("-TRUECOLOR") or
+                    clientname in (
+                            "AXMUD",
+                            "TINTIN"
+                    )):
+                truecolor = True
 
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags["ANSI"] = True
             self.protocol.protocol_flags["XTERM256"] = xterm256
+            self.protocol.protocol_flags["TRUECOLOR"] = truecolor
             self.protocol.protocol_flags["CLIENTNAME"] = clientname
             self.protocol.requestNegotiation(TTYPE, SEND)
 
@@ -159,9 +169,9 @@ class Ttype:
             tupper = term.upper()
             # identify xterm256 based on flag
             xterm256 = (
-                tupper.endswith("-256COLOR")
-                or tupper.endswith("XTERM")  # Apple Terminal, old Tintin
-                and not tupper.endswith("-COLOR")  # old Tintin, Putty
+                    tupper.endswith("-256COLOR")
+                    or tupper.endswith("XTERM")  # Apple Terminal, old Tintin
+                    and not tupper.endswith("-COLOR")  # old Tintin, Putty
             )
             if xterm256:
                 self.protocol.protocol_flags["ANSI"] = True
