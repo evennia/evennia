@@ -147,7 +147,7 @@ method. Otherwise all text will be returned to all connected sessions.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdOOCLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -178,7 +178,7 @@ method. Otherwise all text will be returned to all connected sessions.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdOOCLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'no_prefix': ' l ls', 'tags': '', 'text': '\n    look while out-of-character\n\n    Usage:\n      look\n\n    Look in the ooc state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'no_prefix': ' ls l', 'tags': '', 'text': '\n    look while out-of-character\n\n    Usage:\n      look\n\n    Look in the ooc state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -643,13 +643,13 @@ also for those with all permissions.</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>testing which colors your client support</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>color ansi | xterm256</p>
+<dt>Usage:</dt><dd><p>color ansi | xterm256 | truecolor</p>
 </dd>
 </dl>
 <p>Prints a color map along with in-mud color codes to use to produce
 them.  It also tests what is supported in your client. Choices are
-16-color ansi (supported in most muds) or the 256-color xterm256
-standard. No checking is done to determine your client supports
+16-color ansi (supported in most muds), the 256-color xterm256
+standard, or truecolor. No checking is done to determine your client supports
 color - if not you will see rubbish appear.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdColorTest.key">
@@ -699,6 +699,11 @@ Takes a table of columns [[val,val,…],[val,val,…],…]</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.commands.default.account.CmdColorTest.make_hex_color_from_column">
+<code class="sig-name descname">make_hex_color_from_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">column_number</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/account.html#CmdColorTest.make_hex_color_from_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.make_hex_color_from_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.commands.default.account.CmdColorTest.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/account.html#CmdColorTest.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show color tables</p>
@@ -716,7 +721,7 @@ Takes a table of columns [[val,val,…],[val,val,…],…]</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdColorTest.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'color', 'no_prefix': ' ', 'tags': '', 'text': '\n    testing which colors your client support\n\n    Usage:\n      color ansi | xterm256\n\n    Prints a color map along with in-mud color codes to use to produce\n    them.  It also tests what is supported in your client. Choices are\n    16-color ansi (supported in most muds) or the 256-color xterm256\n    standard. No checking is done to determine your client supports\n    color - if not you will see rubbish appear.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'color', 'no_prefix': ' ', 'tags': '', 'text': '\n    testing which colors your client support\n\n    Usage:\n      color ansi | xterm256 | truecolor\n\n    Prints a color map along with in-mud color codes to use to produce\n    them.  It also tests what is supported in your client. Choices are\n    16-color ansi (supported in most muds), the 256-color xterm256\n    standard, or truecolor. No checking is done to determine your client supports\n    color - if not you will see rubbish appear.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

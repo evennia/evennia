@@ -162,6 +162,10 @@
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.hex_colors</span> <span class="kn">import</span> <span class="n">HexColors</span>
+
+<span class="n">hex2truecolor</span> <span class="o">=</span> <span class="n">HexColors</span><span class="p">()</span>
+<span class="n">hex_sub</span> <span class="o">=</span> <span class="n">HexColors</span><span class="o">.</span><span class="n">hex_sub</span>
 
 <span class="n">MXP_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MXP_ENABLED</span>
 
@@ -524,7 +528,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unsafe_tokens</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses a string, subbing color codes according to the stored</span>
 <span class="sd">        mapping.</span>
@@ -551,12 +555,16 @@
 
         <span class="c1"># check cached parsings</span>
         <span class="k">global</span> <span class="n">_PARSE_CACHE</span>
-        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="p">)</span>
+        <span class="n">cachekey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">strip_ansi</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">xterm256</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mxp</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">truecolor</span><span class="si">}</span><span class="s2">&quot;</span>
+
         <span class="k">if</span> <span class="n">cachekey</span> <span class="ow">in</span> <span class="n">_PARSE_CACHE</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_PARSE_CACHE</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span>
 
         <span class="c1"># pre-convert bright colors to xterm256 color tags</span>
         <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">brightbg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_brightbg</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_truecolor</span><span class="p">(</span><span class="n">part</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="n">truecolor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">hex2truecolor</span><span class="o">.</span><span class="n">sub_truecolor</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">truecolor</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">do_xterm256_fg</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_xterm256</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="s2">&quot;fg&quot;</span><span class="p">)</span>
@@ -576,7 +584,8 @@
         <span class="n">parsed_string</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_escapes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_string</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">sep</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
-            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_fg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_fg</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="n">hex_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_truecolor</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_fg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_fg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
             <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_bg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_bg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
             <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_gfg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_gfg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
             <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_gbg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_gbg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
@@ -608,7 +617,9 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.parse_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.parse_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a string, subbing color codes as needed.</span>
 
@@ -618,13 +629,16 @@
 <span class="sd">        parser (ansi.AnsiParser, optional): A parser instance to use.</span>
 <span class="sd">        xterm256 (bool, optional): Support xterm256 or not.</span>
 <span class="sd">        mxp (bool, optional): Support MXP markup or not.</span>
+<span class="sd">        truecolor (bool, optional): Support for truecolor or not.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        string (str): The parsed string.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">mxp</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span>
+        <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">mxp</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="n">truecolor</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="strip_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>

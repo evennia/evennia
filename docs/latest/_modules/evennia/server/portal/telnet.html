@@ -521,6 +521,7 @@
 <span class="sd">               - xterm256: Enforce xterm256 colors, regardless of TTYPE.</span>
 <span class="sd">               - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.</span>
 <span class="sd">               - nocolor: Strip all Color, regardless of ansi/xterm256 setting.</span>
+<span class="sd">               - truecolor: Enforce truecolor, regardless of TTYPE.</span>
 <span class="sd">               - raw: Pass string through without any ansi processing</span>
 <span class="sd">                    (i.e. include Evennia ansi markers but do not</span>
 <span class="sd">                    convert them into ansi tokens)</span>
@@ -538,6 +539,9 @@
         <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span>
         <span class="n">xterm256</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;xterm256&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;XTERM256&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TTYPE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">truecolor</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;truecolor&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRUECOLOR&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TTYPE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span>
         <span class="p">)</span>
         <span class="n">useansi</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;ansi&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ANSI&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TTYPE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span>
@@ -562,6 +566,7 @@
                     <span class="n">_RE_N</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;||n&quot;</span> <span class="k">if</span> <span class="n">prompt</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;|n&quot;</span><span class="p">),</span>
                     <span class="n">strip_ansi</span><span class="o">=</span><span class="n">nocolor</span><span class="p">,</span>
                     <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span>
+                    <span class="n">truecolor</span><span class="o">=</span><span class="n">truecolor</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">mxp</span><span class="p">:</span>
                     <span class="n">prompt</span> <span class="o">=</span> <span class="n">mxp_parse</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
@@ -598,6 +603,7 @@
                     <span class="n">strip_ansi</span><span class="o">=</span><span class="n">nocolor</span><span class="p">,</span>
                     <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span>
                     <span class="n">mxp</span><span class="o">=</span><span class="n">mxp</span><span class="p">,</span>
+                    <span class="n">truecolor</span><span class="o">=</span><span class="n">truecolor</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">mxp</span><span class="p">:</span>
                     <span class="n">linetosend</span> <span class="o">=</span> <span class="n">mxp_parse</span><span class="p">(</span><span class="n">linetosend</span><span class="p">)</span>

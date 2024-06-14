@@ -763,6 +763,7 @@
             <span class="s2">&quot;INPUTDEBUG&quot;</span><span class="p">:</span> <span class="n">validate_bool</span><span class="p">,</span>
             <span class="s2">&quot;FORCEDENDLINE&quot;</span><span class="p">:</span> <span class="n">validate_bool</span><span class="p">,</span>
             <span class="s2">&quot;LOCALECHO&quot;</span><span class="p">:</span> <span class="n">validate_bool</span><span class="p">,</span>
+            <span class="s2">&quot;TRUECOLOR&quot;</span><span class="p">:</span> <span class="n">validate_bool</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
@@ -886,12 +887,12 @@
 <span class="sd">    testing which colors your client support</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      color ansi | xterm256</span>
+<span class="sd">      color ansi | xterm256 | truecolor</span>
 
 <span class="sd">    Prints a color map along with in-mud color codes to use to produce</span>
 <span class="sd">    them.  It also tests what is supported in your client. Choices are</span>
-<span class="sd">    16-color ansi (supported in most muds) or the 256-color xterm256</span>
-<span class="sd">    standard. No checking is done to determine your client supports</span>
+<span class="sd">    16-color ansi (supported in most muds), the 256-color xterm256</span>
+<span class="sd">    standard, or truecolor. No checking is done to determine your client supports</span>
 <span class="sd">    color - if not you will see rubbish appear.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -929,6 +930,18 @@
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">ftable</span></div>
+
+<div class="viewcode-block" id="CmdColorTest.make_hex_color_from_column"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.make_hex_color_from_column">[docs]</a>    <span class="k">def</span> <span class="nf">make_hex_color_from_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_number</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">76</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">510</span> <span class="o">/</span> <span class="mi">76</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">76</span>
+
+        <span class="k">if</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="mi">510</span> <span class="o">-</span> <span class="n">g</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">r</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">g</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">b</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdColorTest.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Show color tables&quot;&quot;&quot;</span>
@@ -1008,9 +1021,24 @@
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_format</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">):</span>
+            <span class="c1"># show abbreviated truecolor sample (16.7 million colors in truecolor)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">76</span><span class="p">):</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;|[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">make_hex_color_from_column</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2"> |n&quot;</span>
+
+            <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;some of the truecolor colors (if not all hues show, your client might not report that it can&quot;</span>
+                <span class="s2">&quot; handle trucolor.):&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># malformed input</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: color ansi||xterm256&quot;</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: color ansi || xterm256 || truecolor&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdQuell"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdQuell">[docs]</a><span class="k">class</span> <span class="nc">CmdQuell</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>

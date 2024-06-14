@@ -380,7 +380,7 @@ to standard ANSI should be done or not.</p>
 
 <dl class="py method">
 <dt id="evennia.utils.ansi.ANSIParser.parse_ansi">
-<code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip_ansi</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mxp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.parse_ansi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip_ansi</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mxp</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">truecolor</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.parse_ansi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a string, subbing color codes according to the stored
 mapping.</p>
 <dl class="field-list simple">
@@ -403,7 +403,7 @@ these values should be converted to 16-color ANSI.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.ansi.parse_ansi">
-<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">strip_ansi=False</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em>, <em class="sig-param">xterm256=False</em>, <em class="sig-param">mxp=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.parse_ansi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">strip_ansi=False</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em>, <em class="sig-param">xterm256=False</em>, <em class="sig-param">mxp=False</em>, <em class="sig-param">truecolor=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.parse_ansi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a string, subbing color codes as needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -413,6 +413,7 @@ these values should be converted to 16-color ANSI.</p></li>
 <li><p><strong>parser</strong> (<em>ansi.AnsiParser</em><em>, </em><em>optional</em>) – A parser instance to use.</p></li>
 <li><p><strong>xterm256</strong> (<em>bool</em><em>, </em><em>optional</em>) – Support xterm256 or not.</p></li>
 <li><p><strong>mxp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Support MXP markup or not.</p></li>
+<li><p><strong>truecolor</strong> (<em>bool</em><em>, </em><em>optional</em>) – Support for truecolor or not.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

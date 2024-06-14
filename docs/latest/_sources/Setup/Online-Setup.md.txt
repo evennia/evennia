@@ -332,7 +332,7 @@ Evennia users:
 | [Heficed][5] | VPS & Cloud | $5/month | Multiple regions.  Cheapest for 1GB ram server is $5/month. |
 | [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
 | [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
-| [Akami (formerly Linode)][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
+| [Akami (formerly Linode)][11] | VPS | $5/month / on-demand | Multiple regions. Smallest option ($5/mo) provides 1GB RAM. Also offers cloud services. |
 | [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. May run very old Python versions. Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. While it's sometimes mentioned in a MUD context, this host is *not* recommended for Evennia.|
 
 *Please help us expand this list.*

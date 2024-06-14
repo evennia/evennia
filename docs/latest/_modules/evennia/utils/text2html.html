@@ -105,10 +105,14 @@
 
 <span class="kn">from</span> <span class="nn">.ansi</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="kn">from</span> <span class="nn">.hex_colors</span> <span class="kn">import</span> <span class="n">HexColors</span>
+
 <span class="c1"># All xterm256 RGB equivalents</span>
 
 <span class="n">XTERM256_FG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[38;5;</span><span class="si">{}</span><span class="s2">m&quot;</span>
 <span class="n">XTERM256_BG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[48;5;</span><span class="si">{}</span><span class="s2">m&quot;</span>
+
+<span class="n">hex_colors</span> <span class="o">=</span> <span class="n">HexColors</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="TextToHTMLparser"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser">[docs]</a><span class="k">class</span> <span class="nc">TextToHTMLparser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -159,12 +163,12 @@
     <span class="p">]</span>
 
     <span class="n">xterm_bg_codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">XTERM256_BG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">240</span><span class="p">)]</span>
-
     <span class="n">re_style</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">|</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">style_codes</span> <span class="o">+</span> <span class="n">ansi_color_codes</span> <span class="o">+</span> <span class="n">xterm_fg_codes</span> <span class="o">+</span> <span class="n">ansi_bg_codes</span> <span class="o">+</span> <span class="n">xterm_bg_codes</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\[&quot;</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\[&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">HexColors</span><span class="o">.</span><span class="n">TRUECOLOR_FG</span><span class="p">,</span> <span class="n">HexColors</span><span class="o">.</span><span class="n">TRUECOLOR_BG</span><span class="p">]),</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
@@ -336,6 +340,7 @@
 
         <span class="c1"># split out the ANSI codes and clean out any empty items</span>
         <span class="n">str_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">substr</span> <span class="k">for</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_style</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">substr</span><span class="p">]</span>
+
         <span class="c1"># initialize all the flags and classes</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">clean</span> <span class="o">=</span> <span class="kc">True</span>
@@ -345,6 +350,8 @@
         <span class="n">fg</span> <span class="o">=</span> <span class="n">ANSI_WHITE</span>
         <span class="c1"># default bg is black</span>
         <span class="n">bg</span> <span class="o">=</span> <span class="n">ANSI_BACK_BLACK</span>
+        <span class="n">truecolor_fg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">substr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str_list</span><span class="p">):</span>
             <span class="c1"># reset all current styling</span>
@@ -358,6 +365,8 @@
                 <span class="n">hilight</span> <span class="o">=</span> <span class="n">ANSI_UNHILITE</span>
                 <span class="n">fg</span> <span class="o">=</span> <span class="n">ANSI_WHITE</span>
                 <span class="n">bg</span> <span class="o">=</span> <span class="n">ANSI_BACK_BLACK</span>
+                <span class="n">truecolor_fg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
             <span class="c1"># change color</span>
             <span class="k">elif</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_color_codes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm_fg_codes</span><span class="p">:</span>
@@ -372,6 +381,14 @@
                 <span class="n">str_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="c1"># set new bg</span>
                 <span class="n">bg</span> <span class="o">=</span> <span class="n">substr</span>
+
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">hex_colors</span><span class="o">.</span><span class="n">TRUECOLOR_FG</span><span class="p">,</span> <span class="n">substr</span><span class="p">):</span>
+                <span class="n">str_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">truecolor_fg</span> <span class="o">=</span> <span class="n">substr</span>
+
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">hex_colors</span><span class="o">.</span><span class="n">TRUECOLOR_BG</span><span class="p">,</span> <span class="n">substr</span><span class="p">):</span>
+                <span class="n">str_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="n">substr</span>
 
             <span class="c1"># non-color codes</span>
             <span class="k">elif</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_codes</span><span class="p">:</span>
@@ -411,9 +428,23 @@
                         <span class="n">color_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorlist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fg</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">inverse</span><span class="p">:</span>
-                        <span class="c1"># inverse means swap fg and bg indices</span>
-                        <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">color_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
-                        <span class="n">color_class</span> <span class="o">=</span> <span class="s2">&quot;color-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">truecolor_fg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">truecolor_bg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                            <span class="c1"># True startcolor only</span>
+                            <span class="n">truecolor_fg</span><span class="p">,</span> <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="n">truecolor_bg</span><span class="p">,</span> <span class="n">truecolor_fg</span>
+                        <span class="k">elif</span> <span class="n">truecolor_fg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">truecolor_bg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                            <span class="c1"># Truecolor fg, class based bg</span>
+                            <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="n">truecolor_fg</span>
+                            <span class="n">truecolor_fg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                            <span class="n">color_class</span> <span class="o">=</span> <span class="s2">&quot;color-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                        <span class="k">elif</span> <span class="n">truecolor_fg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">truecolor_bg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                            <span class="c1"># Truecolor bg, class based fg</span>
+                            <span class="n">truecolor_fg</span> <span class="o">=</span> <span class="n">truecolor_bg</span>
+                            <span class="n">truecolor_bg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                            <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">color_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># inverse means swap fg and bg indices</span>
+                            <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">color_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                            <span class="n">color_class</span> <span class="o">=</span> <span class="s2">&quot;color-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># use fg and bg indices for classes</span>
                         <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
@@ -425,8 +456,18 @@
                     <span class="c1"># light grey text is the default, don&#39;t explicitly style</span>
                     <span class="k">if</span> <span class="n">color_class</span> <span class="o">!=</span> <span class="s2">&quot;color-007&quot;</span><span class="p">:</span>
                         <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color_class</span><span class="p">)</span>
+
                     <span class="c1"># define the new style span</span>
-                    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&lt;span class=&quot;</span><span class="si">{}</span><span class="s1">&quot;&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">truecolor_fg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">truecolor_bg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;</span><span class="si">{</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Classes can&#39;t be used for truecolor--but they can be extras such as &#39;blink&#39;</span>
+                        <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;&lt;span &quot;</span>
+                            <span class="sa">f</span><span class="s1">&#39;class=&quot;</span><span class="si">{</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hex_colors</span><span class="o">.</span><span class="n">xterm_truecolor_to_html_style</span><span class="p">(</span><span class="n">fg</span><span class="o">=</span><span class="n">truecolor_fg</span><span class="p">,</span><span class="w"> </span><span class="n">bg</span><span class="o">=</span><span class="n">truecolor_bg</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                        <span class="p">)</span>
+
                     <span class="c1"># close any prior span</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">clean</span><span class="p">:</span>
                         <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span> <span class="o">+</span> <span class="n">prefix</span>
@@ -458,7 +499,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># parse everything to ansi first</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># convert all ansi to html</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_text</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_mxplink</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_mxp_links</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
