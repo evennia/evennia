@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Achievements &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Barter system" href="Contrib-Barter.html" />
+    <link rel="prev" title="EvscapeRoom" href="Contrib-Evscaperoom.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Barter.html" title="Barter system"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Evscaperoom.html" title="EvscapeRoom"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Achievements</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Achievements</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#creating-achievements">Creating achievements</a><ul>
+<li><a class="reference internal" href="#required-keys">Required keys</a></li>
+<li><a class="reference internal" href="#optional-keys">Optional keys</a></li>
+<li><a class="reference internal" href="#example-achievements">Example achievements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#tracking-achievements">Tracking achievements</a><ul>
+<li><a class="reference internal" href="#track-achievements"><code class="docutils literal notranslate"><span class="pre">track_achievements</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-achievements">Getting achievements</a><ul>
+<li><a class="reference internal" href="#get-achievement"><code class="docutils literal notranslate"><span class="pre">get_achievement</span></code></a></li>
+<li><a class="reference internal" href="#example">Example:</a></li>
+<li><a class="reference internal" href="#search-achievement"><code class="docutils literal notranslate"><span class="pre">search_achievement</span></code></a></li>
+<li><a class="reference internal" href="#id1">Example:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-achievements-command">The <code class="docutils literal notranslate"><span class="pre">achievements</span></code> command</a><ul>
+<li><a class="reference internal" href="#example-output">Example output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Evscaperoom.html"
+                        title="previous chapter">EvscapeRoom</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Barter.html"
+                        title="next chapter">Barter system</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Achievements.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Contrib-Achievements.html">latest (main branch)</a></li>
+
+    <li><a href="../4.x/index.html">v4.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../3.x/index.html">v3.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../2.x/index.html">v2.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../1.x/index.html">v1.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../0.x/index.html">v0.9.5 branch (outdated)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="achievements">
+<h1>Achievements<a class="headerlink" href="#achievements" title="Permalink to this headline">¶</a></h1>
+<p>A simple, but reasonably comprehensive, system for tracking achievements. Achievements are defined using ordinary Python dicts, reminiscent of the core prototypes system, and while it’s expected you’ll use it only on Characters or Accounts, they can be tracked for any typeclassed object.</p>
+<p>The contrib provides several functions for tracking and accessing achievements, as well as a basic in-game command for viewing achievement status.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>This contrib requires creation one or more module files containing your achievement data, which you then add to your settings file to make them available.</p>
+<blockquote>
+<div><p>See the section below on “Creating Achievements” for what to put in this module.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in server/conf/settings.py</span>
+
+<span class="n">ACHIEVEMENT_CONTRIB_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;world.achievements&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>To allow players to check their achievements, you’ll also want to add the <code class="docutils literal notranslate"><span class="pre">achievements</span></code> command to your default Character and/or Account command sets.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in commands/default_cmdsets.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements.achievements</span> <span class="kn">import</span> <span class="n">CmdAchieve</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAchieve</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Optional</strong> - The achievements contrib stores individual progress data on the <code class="docutils literal notranslate"><span class="pre">achievements</span></code> attribute by default, visible via <code class="docutils literal notranslate"><span class="pre">obj.db.attributes</span></code>. You can change this by assigning an attribute (key, category) tuple to the setting <code class="docutils literal notranslate"><span class="pre">ACHIEVEMENT_CONTRIB_ATTRIBUTE</span></code></p>
+<p>Example:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># in settings.py</span>
+
+<span class="n">ACHIEVEMENT_CONTRIB_ATTRIBUTE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;progress_data&quot;</span><span class="p">,</span> <span class="s2">&quot;achievements&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-achievements">
+<h2>Creating achievements<a class="headerlink" href="#creating-achievements" title="Permalink to this headline">¶</a></h2>
+<p>An achievement is represented by a simple python dictionary defined at the module level in your achievements module(s).</p>
+<p>Each achievement requires certain specific keys to be defined to work properly, along with several optional keys that you can use to override defaults.</p>
+<blockquote>
+<div><p>Note: Any additional keys not described here are included in the achievement data when you access those acheivements through the contrib, so you can easily add your own extended features.</p>
+</div></blockquote>
+<section id="required-keys">
+<h3>Required keys<a class="headerlink" href="#required-keys" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>name</strong> (str): The searchable name for the achievement. Doesn’t need to be unique.</p></li>
+<li><p><strong>category</strong> (str): The category, or general type, of condition which can progress this achievement. Usually this will be a player action or result. e.g. you would use a category of “defeat” on an achievement for killing 10 rats.</p></li>
+<li><p><strong>tracking</strong> (str or list): The specific subset of condition which can progress this achievement. e.g. you would use a tracking value of “rat” on an achievement for killing 10 rats. An achievement can also track multiple things, for example killing 10 rats or snakes. For that situation, assign a list of all the values to check against, e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;rat&quot;,</span> <span class="pre">&quot;snake&quot;]</span></code></p></li>
+</ul>
+</section>
+<section id="optional-keys">
+<h3>Optional keys<a class="headerlink" href="#optional-keys" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>key</strong> (str): <em>Default value if unset: the variable name.</em> The unique, case-insensitive key identifying this achievement.</p></li>
+</ul>
+<blockquote>
+<div><p>Note: If any achievements have the same unique key, only <em>one</em> will be loaded. It is case-insensitive, but punctuation is respected - “ten_rats”, “Ten_Rats” and “TEN_RATS” will conflict, but “ten_rats” and “ten rats” will not.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>desc</strong> (str): A longer description of the achievement. Common uses for this would be flavor text or hints on how to complete it.</p></li>
+<li><p><strong>count</strong> (int): <em>Default value if unset: 1</em> The number of tallies this achievement’s requirements need to build up in order to complete the achievement. e.g. killing 10 rats would have a <code class="docutils literal notranslate"><span class="pre">&quot;count&quot;</span></code> value of <code class="docutils literal notranslate"><span class="pre">10</span></code>. For achievements using the “separate” tracking type, <em>each</em> item being tracked must tally up to this number to be completed.</p></li>
+<li><p><strong>tracking_type</strong> (str): <em>Default value if unset: <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code></em> There are two valid tracking types: “sum” (which is the default) and “separate”. <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> will increment a single counter every time any of the tracked items match. <code class="docutils literal notranslate"><span class="pre">&quot;separate&quot;</span></code> will have a counter for each individual item in the tracked items. (“See the Example Achievements” section for a demonstration of the difference.)</p></li>
+<li><p><strong>prereqs</strong> (str or list): The <em>keys</em> of any achievements which must be completed before this achievement can start tracking progress.</p></li>
+</ul>
+</section>
+<section id="example-achievements">
+<h3>Example achievements<a class="headerlink" href="#example-achievements" title="Permalink to this headline">¶</a></h3>
+<p>A simple achievement which you can get just for logging in the first time. This achievement has no prerequisites and it only needs to be fulfilled once to complete.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This achievement has the unique key of &quot;first_login_achieve&quot;</span>
+<span class="n">FIRST_LOGIN_ACHIEVE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Welcome!&quot;</span><span class="p">,</span> <span class="c1"># the searchable, player-friendly display name</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;We&#39;re glad to have you here.&quot;</span><span class="p">,</span> <span class="c1"># the longer description</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;login&quot;</span><span class="p">,</span> <span class="c1"># the type of action this tracks</span>
+    <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="c1"># the specific login action</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An achievement for killing a total of 10 rats, and another for killing 10 <em>dire</em> rats which requires the “kill 10 rats” achievement to be completed first. The dire rats achievement won’t begin tracking <em>any</em> progress until the first achievement is completed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This achievement has the unique key of &quot;ten_rats&quot; instead of &quot;achieve_ten_rats&quot;</span>
+<span class="n">ACHIEVE_TEN_RATS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;ten_rats&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;The Usual&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Why do all these inns have rat problems?&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;defeat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="s2">&quot;rat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">ACHIEVE_DIRE_RATS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Once More, But Bigger&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Somehow, normal rats just aren&#39;t enough any more.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;defeat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="s2">&quot;dire rat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;prereqs&quot;</span><span class="p">:</span> <span class="s2">&quot;ACHIEVE_TEN_RATS&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An achievement for buying a total of 5 of apples, oranges, <em>or</em> pears. The “sum” tracking types means that all items are tallied together - so it can be completed by buying 5 apples, or 5 pears, or 3 apples, 1 orange and 1 pear, or any other combination of those three fruits that totals to 5.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FRUIT_FAN_ACHIEVEMENT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;A Fan of Fruit&quot;</span><span class="p">,</span> <span class="c1"># note, there is no desc here - that&#39;s allowed!</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;buy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;pear&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;tracking_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="c1"># this is the default, but it&#39;s included here for clarity</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An achievement for buying 5 <em>each</em> of apples, oranges, and pears. The “separate” tracking type means that each of the tracked items is tallied independently of the other items - so you will need 5 apples, 5 oranges, and 5 pears.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FRUIT_BASKET_ACHIEVEMENT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Fruit Basket&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;One kind of fruit just isn&#39;t enough.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;buy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;pear&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;tracking_type&quot;</span><span class="p">:</span> <span class="s2">&quot;separate&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The two main things you’ll need to do in order to use the achievements contrib in your game are <strong>tracking achievements</strong> and <strong>getting achievement information</strong>. The first is done with the function <code class="docutils literal notranslate"><span class="pre">track_achievements</span></code>; the second can be done with <code class="docutils literal notranslate"><span class="pre">search_achievement</span></code> or <code class="docutils literal notranslate"><span class="pre">get_achievement</span></code>.</p>
+<section id="tracking-achievements">
+<h3>Tracking achievements<a class="headerlink" href="#tracking-achievements" title="Permalink to this headline">¶</a></h3>
+<section id="track-achievements">
+<h4><code class="docutils literal notranslate"><span class="pre">track_achievements</span></code><a class="headerlink" href="#track-achievements" title="Permalink to this headline">¶</a></h4>
+<p>In any actions or functions in your game’s mechanics which you might want to track in an achievement, add a call to <code class="docutils literal notranslate"><span class="pre">track_achievements</span></code> to update that player’s achievement progress.</p>
+<p>Using the “kill 10 rats” example achievement from earlier, you might have some code that triggers when a character is defeated: for the sake of example, we’ll pretend we have an <code class="docutils literal notranslate"><span class="pre">at_defeated</span></code> method on the base Object class that gets called when the Object is defeated.</p>
+<p>Adding achievement tracking to it could then look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in typeclasses/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">track_achievements</span>
+
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="c1"># ....</span>
+
+    <span class="k">def</span> <span class="nf">at_defeated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">victor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;called when this object is defeated in combat&quot;&quot;&quot;</span>
+        <span class="c1"># we&#39;ll use the &quot;mob_type&quot; tag-category as the tracked info</span>
+        <span class="c1"># this way we can have rats named &quot;black rat&quot; and &quot;brown rat&quot; that are both rats</span>
+        <span class="n">mob_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;mob_type&quot;</span><span class="p">)</span>
+        <span class="c1"># only one mob was defeated, so we include a count of 1</span>
+        <span class="n">track_achievements</span><span class="p">(</span><span class="n">victor</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;defeated&quot;</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="n">mob_type</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If a player defeats something tagged <code class="docutils literal notranslate"><span class="pre">rat</span></code> with a tag category of <code class="docutils literal notranslate"><span class="pre">mob_type</span></code>, it’d now count towards the rat-killing achievement.</p>
+<p>You can also have the tracking information hard-coded into your game, for special or unique situations. The achievement described earlier, <code class="docutils literal notranslate"><span class="pre">FIRST_LOGIN_ACHIEVE</span></code>, for example, would be tracked like this:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># in typeclasses/accounts.py</span>
+<span class="kn">from</span> <span class="nn">contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">track_achievements</span>
+
+<span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+    <span class="k">def</span> <span class="nf">at_first_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># this function is only called on the first time the account logs in</span>
+        <span class="c1"># so we already know and can just tell the tracker that this is the first</span>
+        <span class="n">track_achievements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;login&quot;</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">track_achievements</span></code> function does also return a value: an iterable of keys for any achievements which were newly completed by that update. You can ignore this value, or you can use it to e.g. send a message to the player with their latest achievements.</p>
+</section>
+</section>
+<section id="getting-achievements">
+<h3>Getting achievements<a class="headerlink" href="#getting-achievements" title="Permalink to this headline">¶</a></h3>
+<p>The main method for getting a specific achievement’s information is <code class="docutils literal notranslate"><span class="pre">get_achievement</span></code>, which takes an already-known achievement key and returns the data for that one achievement.</p>
+<p>For handling more variable and player-friendly input, however, there is also <code class="docutils literal notranslate"><span class="pre">search_achievement</span></code>, which does partial matching on not just the keys, but also the display names and descriptions for the achievements.</p>
+<section id="get-achievement">
+<h4><code class="docutils literal notranslate"><span class="pre">get_achievement</span></code><a class="headerlink" href="#get-achievement" title="Permalink to this headline">¶</a></h4>
+<p>A utility function for retrieving a specific achievement’s data from the achievement’s unique key. It cannot be used for searching, but if you already have an achievement’s key - for example, from the results of <code class="docutils literal notranslate"><span class="pre">track_achievements</span></code> - you can retrieve its data this way.</p>
+</section>
+<section id="example">
+<h4>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">get_achievement</span>
+
+<span class="k">def</span> <span class="nf">toast</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">completed_list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">completed_list</span><span class="p">:</span>
+        <span class="c1"># `completed_data` will be a list of dictionaries - unrecognized keys return empty dictionaries</span>
+        <span class="n">completed_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_achievement</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">completed</span><span class="p">]</span>
+        <span class="n">achiever</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|wAchievement Get!|n </span><span class="si">{</span><span class="n">iter_to_str</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="search-achievement">
+<h4><code class="docutils literal notranslate"><span class="pre">search_achievement</span></code><a class="headerlink" href="#search-achievement" title="Permalink to this headline">¶</a></h4>
+<p>A utility function for searching achievements by name or description. It handles partial matching and returns a dictionary of matching achievements. The provided <code class="docutils literal notranslate"><span class="pre">achievement</span></code> command for in-game uses this function to find matching achievements from user inputs.</p>
+</section>
+<section id="id1">
+<h4>Example:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>The first example does a search for “fruit”, which returns the fruit medley achievement as it contains “fruit” in the key and name.</p>
+<p>The second example searches for “usual”, which returns the ten rats achievement due to its display name.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">search_achievement</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">search_achievement</span><span class="p">(</span><span class="s2">&quot;fruit&quot;</span><span class="p">)</span>
+<span class="go">{&#39;fruit_basket_achievement&#39;: {&#39;name&#39;: &#39;Fruit Basket&#39;, &#39;desc&#39;: &quot;One kind of fruit just isn&#39;t enough.&quot;, &#39;category&#39;: &#39;buy&#39;, &#39;tracking&#39;: (&#39;apple&#39;, &#39;orange&#39;, &#39;pear&#39;), &#39;count&#39;: 5, &#39;tracking_type&#39;: &#39;separate&#39;}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">search_achievement</span><span class="p">(</span><span class="s2">&quot;usual&quot;</span><span class="p">)</span>
+<span class="go">{&#39;ten_rats&#39;: {&#39;key&#39;: &#39;ten_rats&#39;, &#39;name&#39;: &#39;The Usual&#39;, &#39;desc&#39;: &#39;Why do all these inns have rat problems?&#39;, &#39;category&#39;: &#39;defeat&#39;, &#39;tracking&#39;: &#39;rat&#39;, &#39;count&#39;: 10}}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-achievements-command">
+<h3>The <code class="docutils literal notranslate"><span class="pre">achievements</span></code> command<a class="headerlink" href="#the-achievements-command" title="Permalink to this headline">¶</a></h3>
+<p>The contrib’s provided command, <code class="docutils literal notranslate"><span class="pre">CmdAchieve</span></code>, aims to be usable as-is, with multiple switches to filter achievements by various progress statuses and the ability to search by achievement names.</p>
+<p>To make it easier to customize for your own game (e.g. displaying some of that extra achievement data you might have added), the format and style code is split out from the command logic into the <code class="docutils literal notranslate"><span class="pre">format_achievement</span></code> method and the <code class="docutils literal notranslate"><span class="pre">template</span></code> attribute, both on <code class="docutils literal notranslate"><span class="pre">CmdAchieve</span></code></p>
+<section id="example-output">
+<h4>Example output<a class="headerlink" href="#example-output" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; achievements
+The Usual
+Why do all these inns have rat problems?
+70% complete
+A Fan of Fruit
+
+Not Started
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; achievements/progress
+The Usual
+Why do all these inns have rat problems?
+70% complete
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">achievements</span><span class="o">/</span><span class="n">done</span>
+<span class="n">There</span> <span class="n">are</span> <span class="n">no</span> <span class="n">matching</span> <span class="n">achievements</span><span class="o">.</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/achievements/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Barter.html" title="Barter system"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Evscaperoom.html" title="EvscapeRoom"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Achievements</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
