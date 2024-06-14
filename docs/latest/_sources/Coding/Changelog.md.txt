@@ -13,6 +13,14 @@
   (pronoun conjugation) for actor stance (InspectorCaracal)
 - [Feature][pull3521]: Allow `WORD` (fully capitalized) in GMCP command names
   instead of only `Word` (titled) to support specific clients better (InspectorCaracal)
+- [Feature][pull3447]: New Contrib: Achievements (InspectorCaracal)
+- [Feature][pull3494]: Xterm truecolor hex support `|#0f0` style. Expanded
+  `color true` to test (michaelFaith84)
+- [Feature][pull3497]: Add optional width to EvEditor flood-fill commands using
+  new `=` argument, for example `:f=40` or `:j 1:2 l = 60` (chiizujin)
+- [Feature][pull3549]: Run the `collectstatic` command when reloading server to
+  keep game assets in sync automatically (InspectorCaracal)
+- [Language][pull3523]: Updated Polish translation (Moonchasered)
 - [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
 - [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
 - [Fix][pull3489]: Superuser could break wilderness contrib exits (t34lbytes)
@@ -30,7 +38,15 @@
   defaults to be used instead of finding nothing (InspectorCaracal)
 - [Fix][pull3518]: `GlobalScriptsContainer.all()` raised a traceback (InspectorCaracal)
 - [Fix][pull3520]: Exits not included in exit sort order were not listed correctly (chiizujin)
-- [Docs]: Doc fixes (Griatch, chiizujin)
+- [Fix][pull3529]: Fix page/list command not showing received pages correctly (chiizujin)
+- [Fix][pull3530]: EvEditor cmdset priority increased so it doesn't respond to
+  movement commands while in editor (chiizujin)
+- [Fix][pull3537]: Bug setting `_fields` in Components contrib (ChrisLR)
+- [Fix][pull3542]: Update `character_creator` contrib to use the Account's look
+  template properly (InspectorCaracal)
+- [Fix][pull3545]: Fix fallback issue in cmdhandler for local-object cmdsets (InspectorCaracal)
+- [Fix][pull3554]: Fix/readd custom `ic` command to the `character_creator` contrib (InspectorCaracal)
+- [Docs]: Doc fixes (Griatch, chiizujin, InspectorCaracal, iLPDev)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
 [pull3495]: https://github.com/evennia/evennia/pull/3495
@@ -50,6 +66,17 @@
 [pull3518]: https://github.com/evennia/evennia/pull/3518
 [pull3520]: https://github.com/evennia/evennia/pull/3520
 [pull3521]: https://github.com/evennia/evennia/pull/3521
+[pull3447]: https://github.com/evennia/evennia/pull/3447
+[pull3494]: https://github.com/evennia/evennia/pull/3494
+[pull3497]: https://github.com/evennia/evennia/pull/3497
+[pull3529]: https://github.com/evennia/evennia/pull/3529
+[pull3530]: https://github.com/evennia/evennia/pull/3530
+[pull3537]: https://github.com/evennia/evennia/pull/3537
+[pull3542]: https://github.com/evennia/evennia/pull/3542
+[pull3545]: https://github.com/evennia/evennia/pull/3545
+[pull3549]: https://github.com/evennia/evennia/pull/3549
+[pull3554]: https://github.com/evennia/evennia/pull/3554
+[pull3523]: https://github.com/evennia/evennia/pull/3523
 
 
 ## Evennia 4.1.1

@@ -160,8 +160,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">load_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;current_step&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.add_data"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
