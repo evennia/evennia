@@ -356,7 +356,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':wq', ':q!', ':I', ':dw', ':echo', ':x', ':dd', ':w', ':', ':r', ':fi', ':j', ':p', '::', ':=', ':uu', ':y', ':u', ':&lt;', ':q', ':h', ':::', ':UU', ':S', ':i', ':f', ':DD', ':A', ':fd', ':&gt;', ':!', ':s']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':uu', ':fd', ':q!', ':y', ':h', ':', ':fi', ':A', ':f', ':wq', ':=', ':x', ':&gt;', ':::', ':u', ':p', ':I', ':s', ':r', ':!', ':&lt;', ':j', ':w', ':echo', ':dd', ':S', '::', ':dw', ':q', ':UU', ':DD', ':i']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -384,7 +384,7 @@ efficient presentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':wq :q! :I :dw :echo :x :dd :w : :r :fi :j :p :: := :uu :y :u :&lt; :q :h ::: :UU :S :i :f :DD :A :fd :&gt; :! :s', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' :wq :q! :I :dw :echo :x :dd :w : :r :fi :j :p :: := :uu :y :u :&lt; :q :h ::: :UU :S :i :f :DD :A :fd :&gt; :! :s', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':uu :fd :q! :y :h : :fi :A :f :wq := :x :&gt; ::: :u :p :I :s :r :! :&lt; :j :w :echo :dd :S :: :dw :q :UU :DD :i', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' :uu :fd :q! :y :h : :fi :A :f :wq := :x :&gt; ::: :u :p :I :s :r :! :&lt; :j :w :echo :dd :S :: :dw :q :UU :DD :i', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -397,6 +397,11 @@ efficient presentation.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.EvEditorCmdSet.key">
 <code class="sig-name descname">key</code><em class="property"> = 'editorcmdset'</em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.eveditor.EvEditorCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 150</em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.priority" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
