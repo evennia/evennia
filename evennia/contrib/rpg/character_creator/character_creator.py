@@ -98,9 +98,26 @@ class ContribCmdCharCreate(MuxAccountCommand):
 
 class ContribChargenAccount(DefaultAccount):
     """
-    A modified Account class that makes minor changes to the OOC look
-    output to incorporate in-progress characters.
+    A modified Account class that changes the OOC look output to better match the contrib and
+    incorporate in-progress characters.
     """
+
+    ooc_appearance_template = """
+--------------------------------------------------------------------
+{header}
+
+{sessions}
+
+  |whelp|n - more commands
+  |wcharcreate|n - create new character
+  |wchardelete <name>|n - delete a character
+  |wic <name>|n - enter the game as character (|wooc|n to get back here)
+  |wic|n - enter the game as latest character controlled.
+
+{characters}
+{footer}
+--------------------------------------------------------------------
+""".strip()
 
     def at_look(self, target=None, session=None, **kwargs):
         """
@@ -156,7 +173,7 @@ class ContribChargenAccount(DefaultAccount):
         txt_sessions = "|wConnected session(s):|n\n" + "\n".join(sess_strings)
 
         if not characters:
-            txt_characters = "You don't have a character yet. Use |wcharcreate|n."
+            txt_characters = "You don't have a character yet."
         else:
             max_chars = (
                 "unlimited"
