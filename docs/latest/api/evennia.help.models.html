@@ -208,6 +208,12 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.help.models.HelpEntry.date_created">
+<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.help.models.HelpEntry.date_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the field in localized time based on settings.TIME_ZONE.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.access">
 <code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if another object has permission to access this help entry.</p>
@@ -383,12 +389,6 @@ responsibility.</p>
 <dt id="evennia.help.models.HelpEntry.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.help.models.HelpEntry.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.models.HelpEntry.date_created">
-<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.help.models.HelpEntry.date_created" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for getting database field <strong>db_date_created</strong>.</p>
 </dd></dl>
 
 <dl class="py method">

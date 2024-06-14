@@ -114,7 +114,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
-
 <span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="kn">import</span> <span class="n">managers</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
@@ -243,7 +242,7 @@
     <span class="n">db_header</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="s2">&quot;header&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># the message body itself</span>
     <span class="n">db_message</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
-    <span class="c1"># send date</span>
+    <span class="c1"># send date (note - this is in UTC.  Use the .date_created property to get it in local time)</span>
     <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
         <span class="s2">&quot;date sent&quot;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -285,6 +284,11 @@
 <div class="viewcode-block" id="Msg.tags"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.Msg.tags">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TagHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">date_created</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the field in localized time based on settings.TIME_ZONE.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_date_created</span><span class="p">)</span>
 
     <span class="c1"># Wrapper properties to easily set database fields. These are</span>
     <span class="c1"># @property decorators that allows to access these fields using</span>
