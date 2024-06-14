@@ -11,6 +11,7 @@ evennia.contrib.game\_systems
 .. toctree::
    :maxdepth: 6
 
+   evennia.contrib.game_systems.achievements
    evennia.contrib.game_systems.barter
    evennia.contrib.game_systems.clothing
    evennia.contrib.game_systems.containers
