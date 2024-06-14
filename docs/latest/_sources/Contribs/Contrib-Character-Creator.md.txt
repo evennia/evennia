@@ -7,17 +7,17 @@ Commands for managing and initiating an in-game character-creation menu.
 ## Installation
 
 In your game folder `commands/default_cmdsets.py`, import and add
-`ContribCmdCharCreate` to your `AccountCmdSet`.
+`ContribChargenCmdSet` to your `AccountCmdSet`.
 
 Example:
 ```python
-from evennia.contrib.rpg.character_creator.character_creator import ContribCmdCharCreate
+from evennia.contrib.rpg.character_creator.character_creator import ContribChargenCmdSet
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
 
     def at_cmdset_creation(self):
         super().at_cmdset_creation()
-        self.add(ContribCmdCharCreate)
+        self.add(ContribChargenCmdSet)
 ```
 
 In your game folder `typeclasses/accounts.py`, import and inherit from `ContribChargenAccount`

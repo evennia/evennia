@@ -141,15 +141,15 @@
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>In your game folder <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>, import and add
-<code class="docutils literal notranslate"><span class="pre">ContribCmdCharCreate</span></code> to your <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">ContribChargenCmdSet</span></code> to your <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribCmdCharCreate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribChargenCmdSet</span>
 
 <span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribCmdCharCreate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribChargenCmdSet</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In your game folder <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>, import and inherit from <code class="docutils literal notranslate"><span class="pre">ContribChargenAccount</span></code>
