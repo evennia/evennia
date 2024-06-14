@@ -20,6 +20,8 @@
   new `=` argument, for example `:f=40` or `:j 1:2 l = 60` (chiizujin)
 - [Feature][pull3549]: Run the `collectstatic` command when reloading server to
   keep game assets in sync automatically (InspectorCaracal)
+- [Feature][issue3522]: (also a fix) Make `.created_date` property on all models property return
+  a time adjusted based on `settings.TIME_ZONE` (Griatch)
 - [Language][pull3523]: Updated Polish translation (Moonchasered)
 - [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
 - [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
@@ -77,6 +79,7 @@
 [pull3549]: https://github.com/evennia/evennia/pull/3549
 [pull3554]: https://github.com/evennia/evennia/pull/3554
 [pull3523]: https://github.com/evennia/evennia/pull/3523
+[issue3522]: https://github.com/evennia/evennia/issue/3522
 
 
 ## Evennia 4.1.1

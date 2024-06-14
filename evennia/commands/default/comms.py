@@ -9,7 +9,6 @@ Communication commands:
 
 from django.conf import settings
 from django.db.models import Q
-
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
@@ -1414,14 +1413,14 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
             # create the persistent message object
             target_perms = " or ".join(
-                [f"id({target.id})" for target in targets if target != caller]
+                [f"id({target.id})" for target in targets + [caller]]
             )
             create.create_message(
                 caller,
                 message,
                 receivers=targets,
                 locks=(
-                    f"read:id({caller.id}) or {target_perms} or perm(Admin);"
+                    f"read:{target_perms} or perm(Admin);"
                     f"delete:id({caller.id}) or perm(Admin);"
                     f"edit:id({caller.id}) or perm(Admin)"
                 ),
