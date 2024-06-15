@@ -2,9 +2,8 @@
 
 
 import django.core.validators
-from django.db import migrations, models
-
 import evennia.accounts.manager
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -47,7 +46,7 @@ class Migration(migrations.Migration):
                 max_length=30,
                 validators=[
                     django.core.validators.RegexValidator(
-                        "^[\\w.@+-]+$",
+                        r"^[\w.@+-]+$",
                         "Enter a valid username. This value may contain only letters, numbers and @/./+/-/_ characters.",
                         "invalid",
                     )

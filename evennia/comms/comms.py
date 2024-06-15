@@ -5,11 +5,10 @@ Base typeclass for in-game Channels.
 
 import re
 
+import evennia
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
-
-import evennia
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase
@@ -18,7 +17,7 @@ from evennia.utils.utils import inherits_from, make_iter
 
 
 class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
-    """
+    r"""
     This is the base class for all Channel Comms. Inherit from this to
     create different types of communication channels.
 
@@ -35,7 +34,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
       in front of every channel message; use `{channelmessage}` token to insert the
       name of the current channel. Set to `None` if you want no prefix (or want to
       handle it in a hook during message generation instead.
-    - `channel_msg_nick_pattern`(str, default `"{alias}\\s*?|{alias}\\s+?(?P<arg1>.+?)") -
+    - `channel_msg_nick_pattern`(str, default `"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)") -
       this is what used when a channel subscriber gets a channel nick assigned to this
       channel. The nickhandler uses the pattern to pick out this channel's name from user
       input. The `{alias}` token will get both the channel's key and any set/custom aliases
