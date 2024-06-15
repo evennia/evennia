@@ -157,7 +157,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the _clean_name when the path has a trailing slash</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="s2">&quot;path</span><span class="se">\\</span><span class="s2">to</span><span class="se">\\</span><span class="s2">somewhere&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;path\to\somewhere&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;path/to/somewhere&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_pickle_with_bucket"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_pickle_with_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">test_pickle_with_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

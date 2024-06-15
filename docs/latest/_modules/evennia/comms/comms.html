@@ -97,11 +97,10 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
@@ -110,7 +109,7 @@
 
 
 <div class="viewcode-block" id="DefaultChannel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel">[docs]</a><span class="k">class</span> <span class="nc">DefaultChannel</span><span class="p">(</span><span class="n">ChannelDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for all Channel Comms. Inherit from this to</span>
 <span class="sd">    create different types of communication channels.</span>
 
@@ -127,7 +126,7 @@
 <span class="sd">      in front of every channel message; use `{channelmessage}` token to insert the</span>
 <span class="sd">      name of the current channel. Set to `None` if you want no prefix (or want to</span>
 <span class="sd">      handle it in a hook during message generation instead.</span>
-<span class="sd">    - `channel_msg_nick_pattern`(str, default `&quot;{alias}\\s*?|{alias}\\s+?(?P&lt;arg1&gt;.+?)&quot;) -</span>
+<span class="sd">    - `channel_msg_nick_pattern`(str, default `&quot;{alias}\s*?|{alias}\s+?(?P&lt;arg1&gt;.+?)&quot;) -</span>
 <span class="sd">      this is what used when a channel subscriber gets a channel nick assigned to this</span>
 <span class="sd">      channel. The nickhandler uses the pattern to pick out this channel&#39;s name from user</span>
 <span class="sd">      input. The `{alias}` token will get both the channel&#39;s key and any set/custom aliases</span>
