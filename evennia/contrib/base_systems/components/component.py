@@ -15,15 +15,22 @@ class BaseComponent(type):
     This is the metaclass for components,
     responsible for registering components to the listing.
     """
-
-    @classmethod
-    def __new__(cls, *args):
+    def __new__(cls, name, parents, attrs):
         """
         Every class that uses this metaclass will be registered
         as a component in the Component Listing using its name.
         All of them require a unique name.
         """
-        new_type = super().__new__(*args)
+        attrs_name = attrs.get('name')
+        if attrs_name and not COMPONENT_LISTING.get(attrs_name):
+            new_fields = {}
+            attrs['_fields'] = new_fields
+            for parent in parents:
+                _parent_fields = getattr(parent, "_fields")
+                if _parent_fields:
+                    new_fields.update(_parent_fields)
+
+        new_type = super().__new__(cls, name, parents, attrs)
         if new_type.__base__ == object:
             return new_type
 
@@ -53,7 +60,7 @@ class Component(metaclass=BaseComponent):
     name = ""
     slot = None
 
-    _fields = {}
+    _fields: dict | None = None
 
     def __init__(self, host=None):
         assert self.name, "All Components must have a name"

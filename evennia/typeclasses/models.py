@@ -26,6 +26,7 @@ these to create custom managers.
 
 """
 
+import evennia
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -33,32 +34,24 @@ from django.db import models
 from django.db.models import signals
 from django.db.models.base import ModelBase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
-
-import evennia
 from evennia.locks.lockhandler import LockHandler
 from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
 from evennia.typeclasses import managers
-from evennia.typeclasses.attributes import (
-    Attribute,
-    AttributeHandler,
-    AttributeProperty,
-    DbHolder,
-    InMemoryAttributeBackend,
-    ModelAttributeBackend,
-)
-from evennia.typeclasses.tags import (
-    AliasHandler,
-    PermissionHandler,
-    Tag,
-    TagCategoryProperty,
-    TagHandler,
-    TagProperty,
-)
-from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
+from evennia.typeclasses.attributes import (Attribute, AttributeHandler,
+                                            AttributeProperty, DbHolder,
+                                            InMemoryAttributeBackend,
+                                            ModelAttributeBackend)
+from evennia.typeclasses.tags import (AliasHandler, PermissionHandler, Tag,
+                                      TagCategoryProperty, TagHandler,
+                                      TagProperty)
+from evennia.utils.idmapper.models import (SharedMemoryModel,
+                                           SharedMemoryModelBase)
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import class_from_module, inherits_from, is_iter, lazy_property
+from evennia.utils.utils import (class_from_module, inherits_from, is_iter,
+                                 lazy_property)
 
 __all__ = ("TypedObject",)
 
@@ -225,7 +218,8 @@ class TypedObject(SharedMemoryModel):
         ),
         db_index=True,
     )
-    # Creation date. This is not changed once the object is created.
+    # Creation date. This is not changed once the object is created. Note that this is UTC,
+    # use the .date_created property to get a localized version.
     db_date_created = models.DateTimeField("creation date", editable=False, auto_now_add=True)
     # Lock storage
     db_lock_storage = models.TextField(
@@ -419,6 +413,11 @@ class TypedObject(SharedMemoryModel):
         self.save(update_fields=["db_key"])
         self.at_rename(oldname, value)
         SIGNAL_TYPED_OBJECT_POST_RENAME.send(sender=self, old_key=oldname, new_key=value)
+
+    @property
+    def date_created(self):
+        """Get the localized date created, based on settings.TIME_ZONE."""
+        return timezone.localtime(self.db_date_created)
 
     #
     #

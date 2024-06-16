@@ -31,6 +31,7 @@ from twisted.internet.task import LoopingCall
 from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
 from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
 from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.server.portal.naws import NAWS
 from evennia.utils import ansi
 from evennia.utils.utils import class_from_module, to_bytes
 
@@ -91,8 +92,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         of incoming data.
 
         """
-        # print(f"telnet dataReceived: {data}")
         try:
+            # Do we have a NAWS update?
+            if (
+                NAWS in data
+                and len([data[i : i + 1] for i in range(0, len(data))]) == 9
+                and
+                # Is auto resizing on?
+                self.protocol_flags.get("AUTORESIZE")
+            ):
+                self.sessionhandler.sync(self.sessionhandler.get(self.sessid))
+
             super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
@@ -419,6 +429,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                - xterm256: Enforce xterm256 colors, regardless of TTYPE.
                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
+               - truecolor: Enforce truecolor, regardless of TTYPE.
                - raw: Pass string through without any ansi processing
                     (i.e. include Evennia ansi markers but do not
                     convert them into ansi tokens)
@@ -436,6 +447,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         flags = self.protocol_flags
         xterm256 = options.get(
             "xterm256", flags.get("XTERM256", False) if flags.get("TTYPE", False) else True
+        )
+        truecolor = options.get(
+            "truecolor", flags.get("TRUECOLOR", False) if flags.get("TTYPE", False) else True
         )
         useansi = options.get(
             "ansi", flags.get("ANSI", False) if flags.get("TTYPE", False) else True
@@ -460,6 +474,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     _RE_N.sub("", prompt) + ("||n" if prompt.endswith("|") else "|n"),
                     strip_ansi=nocolor,
                     xterm256=xterm256,
+                    truecolor=truecolor
                 )
                 if mxp:
                     prompt = mxp_parse(prompt)
@@ -496,6 +511,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     strip_ansi=nocolor,
                     xterm256=xterm256,
                     mxp=mxp,
+                    truecolor=truecolor
                 )
                 if mxp:
                     linetosend = mxp_parse(linetosend)

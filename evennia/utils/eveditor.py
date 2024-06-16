@@ -67,7 +67,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 # -------------------------------------------------------------
 
 _HELP_TEXT = _(
-    """
+    f"""
  <txt>  - any non-command is appended to the end of the buffer.
  :  <l> - view buffer or only line(s) <l>
  :: <l> - raw-view buffer or only line(s) <l>
@@ -97,8 +97,11 @@ _HELP_TEXT = _(
 
  :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
 
- :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f (full)
- :f <l>     - flood-fill entire buffer or line <l>. Equivalent to :j <l> l
+ :j <l> <a> = <w> - justify buffer or line <l>. <a> is f, c, l or r. <w> is
+                    width. <a> and <w> are optional and default to l (left)
+                    and {_DEFAULT_WIDTH} respectively
+ :f <l> = <w>     - flood-fill entire buffer or line <l> to width <w>.
+                    Equivalent to :j <l> l. <w> is optional, as for :j
  :fi <l>    - indent entire buffer or line <l>
  :fd <l>    - de-indent entire buffer or line <l>
 
@@ -673,20 +676,27 @@ class CmdEditorGroup(CmdEditorBase):
                     if not self.linerange:
                         caller.msg(
                             _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
-                                arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend
+                                arg1=raw(self.arg1), arg2=raw(self.arg2), l1=lstart + 1, l2=lend
                             )
                         )
                     else:
                         caller.msg(
                             _("Search-replaced {arg1} -> {arg2} for {line}.").format(
-                                arg1=self.arg1, arg2=self.arg2, line=self.lstr
+                                arg1=raw(self.arg1), arg2=raw(self.arg2), line=self.lstr
                             )
                         )
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":f":
             # :f <l> flood-fill buffer or <l> lines of buffer.
+            # :f <l> =<w> flood-fill buffer or <l> lines of buffer to width <w>.
             width = _DEFAULT_WIDTH
+            if self.arg1:
+                value = self.arg1.lstrip("=")
+                if not value.isdigit():
+                    self.caller.msg("Width must be a number.")
+                    return
+                width = int(value)
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
@@ -698,7 +708,7 @@ class CmdEditorGroup(CmdEditorBase):
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
             editor.update_buffer(buf)
         elif cmd == ":j":
-            # :f <l> <w>  justify buffer of <l> with <w> as align (one of
+            # :j <l> <a> =<w> justify buffer of <l> to width <w> with <a> as align (one of
             # f(ull), c(enter), r(ight) or l(left). Default is full.
             align_map = {
                 "full": "f",
@@ -711,7 +721,10 @@ class CmdEditorGroup(CmdEditorBase):
                 "l": "l",
             }
             align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
-            width = _DEFAULT_WIDTH
+            # shift width arg right if no alignment specified
+            if self.arg1.startswith('='):
+                self.arg2 = self.arg1
+                self.arg1 = None
             if self.arg1 and self.arg1.lower() not in align_map:
                 self.caller.msg(
                     _("Valid justifications are")
@@ -719,6 +732,13 @@ class CmdEditorGroup(CmdEditorBase):
                 )
                 return
             align = align_map[self.arg1.lower()] if self.arg1 else "f"
+            width = _DEFAULT_WIDTH
+            if self.arg2:
+                value = self.arg2.lstrip("=")
+                if not value.isdigit():
+                    self.caller.msg("Width must be a number.")
+                    return
+                width = int(value)
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
@@ -822,6 +842,7 @@ class EvEditorCmdSet(CmdSet):
     """CmdSet for the editor commands"""
 
     key = "editorcmdset"
+    priority = 150  # override other cmdsets.
     mergetype = "Replace"
 
     def at_cmdset_creation(self):

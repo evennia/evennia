@@ -636,6 +636,11 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
+
+                    # If we're manually assign a display size, turn off auto-resizing
+                    if new_name in ["SCREENWIDTH", "SCREENHEIGHT"]:
+                        flags["AUTORESIZE"] = False
+
                     self.msg(
                         f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"
                         f" '|w{new_val}|n'."
@@ -658,6 +663,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "RAW": validate_bool,
             "SCREENHEIGHT": validate_size,
             "SCREENWIDTH": validate_size,
+            "AUTORESIZE": validate_bool,
             "SCREENREADER": validate_bool,
             "TERM": utils.to_str,
             "UTF-8": validate_bool,
@@ -665,6 +671,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "INPUTDEBUG": validate_bool,
             "FORCEDENDLINE": validate_bool,
             "LOCALECHO": validate_bool,
+            "TRUECOLOR": validate_bool,
         }
 
         name = self.lhs.upper()
@@ -788,12 +795,12 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     testing which colors your client support
 
     Usage:
-      color ansi | xterm256
+      color ansi | xterm256 | truecolor
 
     Prints a color map along with in-mud color codes to use to produce
     them.  It also tests what is supported in your client. Choices are
-    16-color ansi (supported in most muds) or the 256-color xterm256
-    standard. No checking is done to determine your client supports
+    16-color ansi (supported in most muds), the 256-color xterm256
+    standard, or truecolor. No checking is done to determine your client supports
     color - if not you will see rubbish appear.
     """
 
@@ -831,6 +838,18 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                 ]
             )
         return ftable
+
+    def make_hex_color_from_column(self, column_number):
+        r = 255 - column_number * 255 / 76
+        g = column_number * 510 / 76
+        b = column_number * 255 / 76
+
+        if g > 255:
+            g = 510 - g
+
+        return (
+            f"#{hex(round(r))[2:].zfill(2)}{hex(round(g))[2:].zfill(2)}{hex(round(b))[2:].zfill(2)}"
+        )
 
     def func(self):
         """Show color tables"""
@@ -910,9 +929,24 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             table = self.table_format(table)
             string += "\n" + "\n".join("".join(row) for row in table)
             self.msg(string)
+
+        elif self.args.startswith("t"):
+            # show abbreviated truecolor sample (16.7 million colors in truecolor)
+            string = ""
+            for i in range(76):
+                string += f"|[{self.make_hex_color_from_column(i)} |n"
+
+            string += (
+                "\n"
+                + "some of the truecolor colors (if not all hues show, your client might not report that it can"
+                " handle trucolor.):"
+            )
+
+            self.msg(string)
+
         else:
             # malformed input
-            self.msg("Usage: color ansi||xterm256")
+            self.msg("Usage: color ansi || xterm256 || truecolor")
 
 
 class CmdQuell(COMMAND_DEFAULT_CLASS):

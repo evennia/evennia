@@ -3,18 +3,14 @@
 from random import randint
 from unittest import TestCase
 
-from django.test import override_settings
-from mock import MagicMock, Mock, patch
-
 import evennia
-from evennia.accounts.accounts import (
-    AccountSessionHandler,
-    DefaultAccount,
-    DefaultGuest,
-)
+from django.test import override_settings
+from evennia.accounts.accounts import (AccountSessionHandler, DefaultAccount,
+                                       DefaultGuest)
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.utils import uses_database
+from mock import MagicMock, Mock, patch
 
 
 class TestAccountSessionHandler(TestCase):
@@ -172,7 +168,7 @@ class TestDefaultAccountAuth(BaseEvenniaTest):
         if not uses_database("mysql"):
             # TODO As of Mar 2019, mysql does not pass this test due to collation problems
             # that has not been possible to resolve
-            result, error = DefaultAccount.validate_username("¯\_(ツ)_/¯")
+            result, error = DefaultAccount.validate_username(r"¯\_(ツ)_/¯")
             self.assertFalse(result, "Validator allowed kanji in username.")
 
         # Should not allow duplicate username

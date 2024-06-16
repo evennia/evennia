@@ -257,11 +257,10 @@ class TelnetOOB:
         if cmdname in EVENNIA_TO_GMCP:
             gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
         elif "_" in cmdname:
-            if cmdname.istitle():
-                # leave without capitalization
-                gmcp_cmdname = ".".join(word for word in cmdname.split("_"))
-            else:
-                gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
+            # enforce initial capitalization of each command part, leaving fully-capitalized sections intact
+            gmcp_cmdname = ".".join(
+                word.capitalize() if not word.isupper() else word for word in cmdname.split("_")
+            )
         else:
             gmcp_cmdname = "Core.%s" % (cmdname if cmdname.istitle() else cmdname.capitalize())
 

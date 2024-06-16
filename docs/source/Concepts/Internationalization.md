@@ -27,7 +27,7 @@ updated after Sept 2022 will be missing some translations.
 +---------------+----------------------+--------------+
 | la            | Latin                | Feb 2021     |
 +---------------+----------------------+--------------+
-| pl            | Polish               | Feb 2019     |
+| pl            | Polish               | Apr 2024     |
 +---------------+----------------------+--------------+
 | pt            | Portugese            | Oct 2022     |
 +---------------+----------------------+--------------+
@@ -67,6 +67,7 @@ translate *hard-coded strings that the end player may see* - things you
 can't easily change from your mygame/ folder. Outputs from Commands and
 Typeclasses are generally *not* translated, nor are console/log outputs.
 
+To cut down on work, you may consider only translating the player-facing commands (look, get etc) and leave the default admin commands in English. To change the language of some commands (such as `look`) you need to override the relevant hook-methods on your Typeclasses (check out the code for the default command to see what it calls).
 ```
 
 ```{sidebar} Windows users

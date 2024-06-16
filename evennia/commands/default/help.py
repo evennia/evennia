@@ -17,6 +17,7 @@ from django.conf import settings
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
+from evennia.locks.lockhandler import LockException
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
@@ -781,13 +782,14 @@ class CmdSetHelp(CmdHelp):
 
     Usage:
       sethelp[/switches] <topic>[[;alias;alias][,category[,locks]]
-                [= <text or new category>]
+                [= <text or new value>]
     Switches:
       edit - open a line editor to edit the topic's help text.
       replace - overwrite existing help topic.
       append - add text to the end of existing topic with a newline between.
       extend - as append, but don't add a newline.
       category - change category of existing help topic.
+      locks - change locks of existing help topic.
       delete - remove help topic.
 
     Examples:
@@ -795,6 +797,7 @@ class CmdSetHelp(CmdHelp):
       sethelp/append pickpocketing,Thievery = This steals ...
       sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
       sethelp/edit thievery
+      sethelp/locks thievery = read:all()
       sethelp/category thievery = classes
 
     If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category
@@ -842,7 +845,7 @@ class CmdSetHelp(CmdHelp):
 
     key = "sethelp"
     aliases = []
-    switch_options = ("edit", "replace", "append", "extend", "category", "delete")
+    switch_options = ("edit", "replace", "append", "extend", "category", "locks", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
     arg_regex = None
@@ -856,6 +859,7 @@ class CmdSetHelp(CmdHelp):
 
         switches = self.switches
         lhslist = self.lhslist
+        rhslist = self.rhslist
 
         if not self.args:
             self.msg(
@@ -932,7 +936,17 @@ class CmdSetHelp(CmdHelp):
                     # types of entries.
                     self.msg(f"|rWarning:\n|r{warning}|n")
                     repl = yield ("|wDo you still want to continue? Y/[N]?|n")
-                    if repl.lower() not in ("y", "yes"):
+                    if repl.lower() in ("y", "yes"):
+                        # find a db-based help entry if one already exists
+                        db_topics = {**db_help_topics}
+                        db_categories = list(
+                            set(HelpCategory(topic.help_category) for topic in db_topics.values())
+                        )
+                        entries = list(db_topics.values()) + db_categories
+                        match, _ = self.do_search(querystr, entries)
+                        if match:
+                            old_entry = match
+                    else:
                         self.msg("Aborted.")
                         return
                 else:
@@ -999,6 +1013,35 @@ class CmdSetHelp(CmdHelp):
             category = self.rhs.lower()
             old_entry.help_category = category
             self.msg(f"Category for entry '{topicstr}'{aliastxt} changed to '{category}'.")
+            return
+
+        if "locks" in switches:
+            # set the locks
+            if not old_entry:
+                self.msg(f"Could not find topic '{topicstr}'{aliastxt}.")
+                return
+            show_locks = not rhslist
+            clear_locks = rhslist and not rhslist[0]
+            if show_locks:
+                self.msg(f"Current locks for entry '{topicstr}'{aliastxt} are: {old_entry.locks}")
+                return
+            if clear_locks:
+                old_entry.locks.clear()
+                old_entry.locks.add("read:all()")
+                self.msg(f"Locks for entry '{topicstr}'{aliastxt} reset to: read:all()")
+                return
+            lockstring = ",".join(rhslist)
+            # locks.validate() does not throw an exception for things like "read:id(1),read:id(6)"
+            # but locks.add() does
+            existing_locks = old_entry.locks.all()
+            old_entry.locks.clear()
+            try:
+                old_entry.locks.add(lockstring)
+            except LockException as e:
+                old_entry.locks.add(existing_locks)
+                self.msg(str(e) + " Locks not changed.")
+            else:
+                self.msg(f"Locks for entry '{topicstr}'{aliastxt} changed to: {lockstring}")
             return
 
         if "delete" in switches or "del" in switches:

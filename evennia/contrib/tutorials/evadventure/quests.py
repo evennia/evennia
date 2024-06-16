@@ -68,8 +68,8 @@ class EvAdventureQuest:
         self.data = self.questhandler.load_quest_data(self.key)
         self._current_step = self.get_data("current_step")
 
-        if not self.current_step:
-            self.current_step = self.start_step
+        if not self._current_step:
+            self._current_step = self.start_step
 
     def add_data(self, key, value):
         """

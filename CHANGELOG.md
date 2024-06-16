@@ -5,13 +5,81 @@
 - [Feature][pull3470]: New `exit_order` kwarg to
   `DefaultObject.get_display_exits` to easier customize the order in which
   standard exits are displayed in a room (chiizujin)
+- [Feature][pull3498]: Properly update Evennia's screen width when client
+  changes width (assuming client supports NAWS properly) (michaelfaith84)
+- [Feature][pull3502]: New `sethelp/locks` allows for editing help entry
+  locks after they were first created (chiizujin)
+- [Feature][pull3514]: Support `$pron(pronoun, key)` and new `$pconj(verb, key)`
+  (pronoun conjugation) for actor stance (InspectorCaracal)
+- [Feature][pull3521]: Allow `WORD` (fully capitalized) in GMCP command names
+  instead of only `Word` (titled) to support specific clients better (InspectorCaracal)
+- [Feature][pull3447]: New Contrib: Achievements (InspectorCaracal)
+- [Feature][pull3494]: Xterm truecolor hex support `|#0f0` style. Expanded
+  `color true` to test (michaelFaith84)
+- [Feature][pull3497]: Add optional width to EvEditor flood-fill commands using
+  new `=` argument, for example `:f=40` or `:j 1:2 l = 60` (chiizujin)
+- [Feature][pull3549]: Run the `collectstatic` command when reloading server to
+  keep game assets in sync automatically (InspectorCaracal)
+- [Feature][issue3522]: (also a fix) Make `.created_date` property on all models property return
+  a time adjusted based on `settings.TIME_ZONE` (Griatch)
+- [Language][pull3523]: Updated Polish translation (Moonchasered)
 - [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
 - [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
-- [Docs]: Doc fixes (Griatch, chiizujin)
+- [Fix][pull3489]: Superuser could break wilderness contrib exits (t34lbytes)
+- [Fix][pull3496]: EvEditor would not correctly show search&replace feedback
+  when replacing colors (Chiizujin)
+- [Fix][pull3499]: Dig/tunnel commands didn't echo the typeclass of the newly
+  created room properly (chiizujin)
+- [Fix][pull3501]: Using `sethelp` to create a help entry colliding with a
+  command-name made the entry impossible to edit/delete later (chiizujin)
+- [Fix][pull3506]: Fix Traceback when setting prototype parent in the in-game OLC wizard (chiizujin)
+- [Fix][pull3507]: Prototype wizard would not save changes if aborting the
+  updating of existing spawned instances (chiizujun)
+- [Fix][pull3516]: Quitting the chargen contrib menu will now trigger auto-look (InspectorCaracal)
+- [Fix][pull3517]: Supply `Object.search` with an empty `candidates` list caused
+  defaults to be used instead of finding nothing (InspectorCaracal)
+- [Fix][pull3518]: `GlobalScriptsContainer.all()` raised a traceback (InspectorCaracal)
+- [Fix][pull3520]: Exits not included in exit sort order were not listed correctly (chiizujin)
+- [Fix][pull3529]: Fix page/list command not showing received pages correctly (chiizujin)
+- [Fix][pull3530]: EvEditor cmdset priority increased so it doesn't respond to
+  movement commands while in editor (chiizujin)
+- [Fix][pull3537]: Bug setting `_fields` in Components contrib (ChrisLR)
+- [Fix][pull3542]: Update `character_creator` contrib to use the Account's look
+  template properly (InspectorCaracal)
+- [Fix][pull3545]: Fix fallback issue in cmdhandler for local-object cmdsets (InspectorCaracal)
+- [Fix][pull3554]: Fix/readd custom `ic` command to the `character_creator` contrib (InspectorCaracal)
+- [Docs]: Doc fixes (Griatch, chiizujin, InspectorCaracal, iLPDev)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
 [pull3495]: https://github.com/evennia/evennia/pull/3495
 [pull3491]: https://github.com/evennia/evennia/pull/3491
+[pull3489]: https://github.com/evennia/evennia/pull/3489
+[pull3496]: https://github.com/evennia/evennia/pull/3496
+[pull3498]: https://github.com/evennia/evennia/pull/3498
+[pull3499]: https://github.com/evennia/evennia/pull/3499
+[pull3501]: https://github.com/evennia/evennia/pull/3501
+[pull3502]: https://github.com/evennia/evennia/pull/3502
+[pull3503]: https://github.com/evennia/evennia/pull/3503
+[pull3506]: https://github.com/evennia/evennia/pull/3506
+[pull3507]: https://github.com/evennia/evennia/pull/3507
+[pull3514]: https://github.com/evennia/evennia/pull/3514
+[pull3516]: https://github.com/evennia/evennia/pull/3516
+[pull3517]: https://github.com/evennia/evennia/pull/3517
+[pull3518]: https://github.com/evennia/evennia/pull/3518
+[pull3520]: https://github.com/evennia/evennia/pull/3520
+[pull3521]: https://github.com/evennia/evennia/pull/3521
+[pull3447]: https://github.com/evennia/evennia/pull/3447
+[pull3494]: https://github.com/evennia/evennia/pull/3494
+[pull3497]: https://github.com/evennia/evennia/pull/3497
+[pull3529]: https://github.com/evennia/evennia/pull/3529
+[pull3530]: https://github.com/evennia/evennia/pull/3530
+[pull3537]: https://github.com/evennia/evennia/pull/3537
+[pull3542]: https://github.com/evennia/evennia/pull/3542
+[pull3545]: https://github.com/evennia/evennia/pull/3545
+[pull3549]: https://github.com/evennia/evennia/pull/3549
+[pull3554]: https://github.com/evennia/evennia/pull/3554
+[pull3523]: https://github.com/evennia/evennia/pull/3523
+[issue3522]: https://github.com/evennia/evennia/issue/3522
 
 
 ## Evennia 4.1.1

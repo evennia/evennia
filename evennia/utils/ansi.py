@@ -70,6 +70,10 @@ from django.conf import settings
 
 from evennia.utils import logger, utils
 from evennia.utils.utils import to_str
+from evennia.utils.hex_colors import HexColors
+
+hex2truecolor = HexColors()
+hex_sub = HexColors.hex_sub
 
 MXP_ENABLED = settings.MXP_ENABLED
 
@@ -432,7 +436,7 @@ class ANSIParser(object):
         """
         return self.unsafe_tokens.sub("", string)
 
-    def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
+    def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False, truecolor=False):
         """
         Parses a string, subbing color codes according to the stored
         mapping.
@@ -459,12 +463,16 @@ class ANSIParser(object):
 
         # check cached parsings
         global _PARSE_CACHE
-        cachekey = "%s-%s-%s-%s" % (string, strip_ansi, xterm256, mxp)
+        cachekey = f"{string}-{strip_ansi}-{xterm256}-{mxp}-{truecolor}"
+
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
         # pre-convert bright colors to xterm256 color tags
         string = self.brightbg_sub.sub(self.sub_brightbg, string)
+
+        def do_truecolor(part: re.Match, truecolor=truecolor):
+            return hex2truecolor.sub_truecolor(part, truecolor)
 
         def do_xterm256_fg(part):
             return self.sub_xterm256(part, xterm256, "fg")
@@ -484,7 +492,8 @@ class ANSIParser(object):
         parsed_string = []
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
-            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, part)
+            pstring = hex_sub.sub(do_truecolor, part)
+            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, pstring)
             pstring = self.xterm256_bg_sub.sub(do_xterm256_bg, pstring)
             pstring = self.xterm256_gfg_sub.sub(do_xterm256_gfg, pstring)
             pstring = self.xterm256_gbg_sub.sub(do_xterm256_gbg, pstring)
@@ -516,7 +525,9 @@ ANSI_PARSER = ANSIParser()
 #
 
 
-def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False):
+def parse_ansi(
+    string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False, truecolor=False
+):
     """
     Parses a string, subbing color codes as needed.
 
@@ -526,13 +537,16 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp
         parser (ansi.AnsiParser, optional): A parser instance to use.
         xterm256 (bool, optional): Support xterm256 or not.
         mxp (bool, optional): Support MXP markup or not.
+        truecolor (bool, optional): Support for truecolor or not.
 
     Returns:
         string (str): The parsed string.
 
     """
     string = string or ""
-    return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
+    return parser.parse_ansi(
+        string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp, truecolor=truecolor
+    )
 
 
 def strip_ansi(string, parser=ANSI_PARSER):

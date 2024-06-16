@@ -397,7 +397,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # if candidates were already given, use them
         candidates = kwargs.get("candidates")
-        if candidates:
+        if candidates is not None:
             return candidates
 
         # find candidates based on location
@@ -1595,7 +1595,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 return names
             sort_index = {name: key for key, name in enumerate(exit_order)}
             names = sorted(names)
-            end_pos = len(names) + 1
+            end_pos = len(sort_index)
             names.sort(key=lambda name: sort_index.get(name, end_pos))
             return names
 
