@@ -1,0 +1,2165 @@
+# The Traditional Chinese translation for the Evennia Server.
+# Copyright (C) 2024 Henry Hsiao
+# This file is distributed under the same license as the Evennia package.
+# FIRST AUTHOR Henry Hsiao <longhorntexas@gmail.com>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-26 21:32+0800\n"
+"PO-Revision-Date: 2024-06-25 19:46+0800\n"
+"Last-Translator: Henry Hsiao <longhorntexas@gmail.com>\n"
+"Language-Team: Henry Hsiao <longhorntexas@gmail.com>\n"
+"Language: Traditional Chinese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\accounts\accounts.py:467
+#, python-brace-format
+msgid "|c{key}|R is already puppeted by another Account."
+msgstr "|c{key}|R 已經被另一個靈魂控制。"
+
+#: .\accounts\accounts.py:487
+#, python-brace-format
+msgid ""
+"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
+msgstr "你不能再控制更多的角色（最多 {_MAX_NR_SIMULTANEOUS_PUPPETS} 個角色）"
+
+#: .\accounts\accounts.py:680
+msgid "Too many login failures; please try again in a few minutes."
+msgstr "登入失敗次數過多，請幾分鐘後再試。"
+
+#: .\accounts\accounts.py:693 .\accounts\accounts.py:1017
+msgid ""
+"|rYou have been banned and cannot continue from here.\n"
+"If you feel this ban is in error, please email an admin.|x"
+msgstr ""
+"|r你已被禁止登入。\n"
+"如果你認為此禁令有誤，請電郵管理員。|x"
+
+#: .\accounts\accounts.py:705
+msgid "Username and/or password is incorrect."
+msgstr "用戶名或密碼不正確。"
+
+#: .\accounts\accounts.py:712
+msgid "Too many authentication failures."
+msgstr "身份驗證失敗次數過多。"
+
+#: .\accounts\accounts.py:988
+msgid ""
+"You are creating too many accounts. Please log into an existing account."
+msgstr "您創建了過多帳號。請登錄現有帳號。"
+
+#: .\accounts\accounts.py:1034
+msgid ""
+"There was an error creating the Account. If this problem persists, contact "
+"an admin."
+msgstr "創建帳號時出錯。如果此問題持續存在，請聯繫管理員。"
+
+#: .\accounts\accounts.py:1078 .\accounts\accounts.py:2003
+msgid "An error occurred. Please e-mail an admin if the problem persists."
+msgstr "發生錯誤。如果問題持續存在，請發電子郵件給管理員。"
+
+#: .\accounts\accounts.py:1111
+msgid "Account being deleted."
+msgstr "帳號正在被刪除。"
+
+#: .\accounts\accounts.py:1682 .\accounts\accounts.py:2021
+#, python-brace-format
+msgid "|G{key} connected|n"
+msgstr "|G{key} 已連接|n"
+
+#: .\accounts\accounts.py:1688
+msgid "The Character does not exist."
+msgstr "角色不存在。"
+
+#: .\accounts\accounts.py:1722
+#, python-brace-format
+msgid "|R{key} disconnected{reason}|n"
+msgstr "|R{key} 已斷開{reason}|n"
+
+#: .\accounts\accounts.py:1956
+msgid "Guest accounts are not enabled on this server."
+msgstr "此服務器上未啟用訪客帳號。"
+
+#: .\accounts\accounts.py:1966
+msgid "All guest accounts are in use. Please try again later."
+msgstr "所有訪客帳號均已被使用。請稍後再試。"
+
+#: .\commands\cmdhandler.py:86
+msgid ""
+"\n"
+"An untrapped error occurred.\n"
+msgstr ""
+"\n"
+"發生了未捕獲的錯誤。\n"
+
+#: .\commands\cmdhandler.py:91
+msgid ""
+"\n"
+"An untrapped error occurred. Please file a bug report detailing the steps to "
+"reproduce.\n"
+msgstr ""
+"\n"
+"發生了未捕獲的錯誤。請提交錯誤報告，詳細說明重現步驟。\n"
+
+#: .\commands\cmdhandler.py:99
+msgid ""
+"\n"
+"A cmdset merger-error occurred. This is often due to a syntax\n"
+"error in one of the cmdsets to merge.\n"
+msgstr ""
+"\n"
+"發生了命令集合併錯誤。這通常是由於要合併的命令集中的語法錯誤引起的。\n"
+
+#: .\commands\cmdhandler.py:105
+msgid ""
+"\n"
+"A cmdset merger-error occurred. Please file a bug report detailing the\n"
+"steps to reproduce.\n"
+msgstr ""
+"\n"
+"發生了命令集合併錯誤。請提交錯誤報告，詳細說明重現步驟。\n"
+
+#: .\commands\cmdhandler.py:114
+msgid ""
+"\n"
+"No command sets found! This is a critical bug that can have\n"
+"multiple causes.\n"
+msgstr ""
+"\n"
+"未找到命令集！這是一個嚴重的錯誤，可能有多種原因。\n"
+
+#: .\commands\cmdhandler.py:120
+msgid ""
+"\n"
+"No command sets found! This is a sign of a critical bug.  If\n"
+"disconnecting/reconnecting doesn't\" solve the problem, try to contact\n"
+"the server admin through\" some other means for assistance.\n"
+msgstr ""
+"\n"
+"未找到命令集！這是一個嚴重錯誤的標誌。如果斷開/重新連接無法解決問題，\n"
+"請嘗試通過其他方式聯繫服務器管理員尋求幫助。\n"
+
+#: .\commands\cmdhandler.py:130
+msgid ""
+"\n"
+"A command handler bug occurred. If this is not due to a local change,\n"
+"please file a bug report with the Evennia project, including the\n"
+"traceback and steps to reproduce.\n"
+msgstr ""
+"\n"
+"發生了命令處理程序錯誤。如果這不是由於本地變更引起的，請向Evennia項目提交錯"
+"誤\n"
+"報告，包括回溯和重現步驟。\n"
+
+#: .\commands\cmdhandler.py:137
+msgid ""
+"\n"
+"A command handler bug occurred. Please notify staff - they should\n"
+"likely file a bug report with the Evennia project.\n"
+msgstr ""
+"\n"
+"發生了命令處理程序錯誤。請通知工作人員 - 他們應該向Evennia項目提交錯誤報"
+"告。\n"
+
+#: .\commands\cmdhandler.py:145
+#, python-brace-format
+msgid ""
+"Command recursion limit ({recursion_limit}) reached for "
+"'{raw_cmdname}' ({cmdclass})."
+msgstr "命令遞歸限制 ({recursion_limit}) 已達到 '{raw_cmdname}' ({cmdclass})。"
+
+#: .\commands\cmdhandler.py:171
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"{errmsg}\n"
+"(Traceback was logged {timestamp})."
+msgstr ""
+"{traceback}\n"
+"{errmsg}\n"
+"（回溯記錄於 {timestamp}）。"
+
+#: .\commands\cmdhandler.py:712
+msgid "There were multiple matches."
+msgstr "有多個匹配項。"
+
+#: .\commands\cmdhandler.py:737
+#, python-brace-format
+msgid "Command '{command}' is not available."
+msgstr "命令 '{command}' 不可用。"
+
+#: .\commands\cmdhandler.py:747
+#, python-brace-format
+msgid " Maybe you meant {command}?"
+msgstr "也許您是指 {command}？"
+
+#: .\commands\cmdhandler.py:749
+msgid "or"
+msgstr "或"
+
+#: .\commands\cmdhandler.py:753
+msgid " Type \"help\" for help."
+msgstr " 輸入 \"help\" 以獲取幫助。"
+
+#: .\commands\cmdsethandler.py:91
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"加載命令集 '{path}' 時出錯\n"
+"（回溯記錄於 {timestamp}）"
+
+#: .\commands\cmdsethandler.py:97
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"加載命令集出錯：在 '{path}' 中沒有命令集類 '{classname}'。\n"
+"（回溯記錄於 {timestamp}）"
+
+#: .\commands\cmdsethandler.py:102
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"加載命令集 '{path}' 時遇到語法錯誤。\n"
+"（回溯記錄於 {timestamp}）"
+
+#: .\commands\cmdsethandler.py:108
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"加載命令集 '{path}' 時發生編譯/運行錯誤。\n"
+"（回溯記錄於 {timestamp}）"
+
+#: .\commands\cmdsethandler.py:114
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"在路徑 '{path}' 中遇到命令集錯誤。\n"
+"用回退 '{fallback_path}' 替換。\n"
+
+#: .\commands\cmdsethandler.py:120
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "回退路徑 '{fallback_path}' 未能生成命令集。"
+
+#: .\commands\cmdsethandler.py:189 .\commands\cmdsethandler.py:201
+#, python-brace-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '{path}')."
+msgstr ""
+"\n"
+"（嘗試 '{path}' 失敗）。"
+
+#: .\commands\cmdsethandler.py:332
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "命令集 '{cmdset}' 上的自定義 {mergetype}"
+
+#: .\commands\cmdsethandler.py:458
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "只能將 CmdSets 添加到 cmdsethandler！"
+
+#: .\commands\default\comms.py:286
+#, python-brace-format
+msgid ""
+"No channel found matching '{channelname}' (could also be due to missing "
+"access)."
+msgstr "沒有找到匹配 '{channelname}' 的頻道（也可能是由於缺少訪問權限）。"
+
+#: .\commands\default\comms.py:291
+#, python-brace-format
+msgid "Multiple possible channel matches/alias for '{channelname}':\n"
+msgstr "有多個可能的頻道匹配/別名 '{channelname}'：\n"
+
+#: .\commands\default\comms.py:316
+#, python-brace-format
+msgid "You are not allowed to send messages to channel {channel}"
+msgstr "你不允許向頻道 {channel} 發送消息"
+
+#: .\commands\default\comms.py:362
+#, python-brace-format
+msgid "Already listening to channel {channel.key}."
+msgstr "已經在收聽頻道 {channel.key}。"
+
+#: .\commands\default\comms.py:367
+#, python-brace-format
+msgid "Were not allowed to subscribe to channel {channel.key}"
+msgstr "不允許訂閱頻道 {channel.key}"
+
+#: .\commands\default\comms.py:386
+#, python-brace-format
+msgid "Not listening to channel {channel.key}."
+msgstr "沒有收聽頻道 {channel.key}。"
+
+#: .\commands\default\comms.py:391
+#, python-brace-format
+msgid "Could not unsubscribe from channel {channel.key}"
+msgstr "無法取消訂閱頻道 {channel.key}"
+
+#: .\commands\default\comms.py:440
+msgid "No such alias was defined."
+msgstr "沒有定義這樣的別名。"
+
+#: .\commands\default\comms.py:473
+#, python-brace-format
+msgid "Channel {channel.key} was already muted."
+msgstr "頻道 {channel.key} 已經被靜音。"
+
+#: .\commands\default\comms.py:489
+#, python-brace-format
+msgid "Channel {channel.key} was already unmuted."
+msgstr "頻道 {channel.key} 已經解除靜音。"
+
+#: .\commands\default\comms.py:515
+#, python-brace-format
+msgid "Channel {name} already exists."
+msgstr "頻道 {name} 已經存在。"
+
+#: .\commands\default\comms.py:546
+#, python-brace-format
+msgid ""
+"|rChannel {channel_key} is being destroyed. Make sure to clean any channel "
+"aliases.|n"
+msgstr "|r頻道 {channel_key} 正在被銷毀。請確保清理所有頻道別名。|n"
+
+#: .\commands\default\comms.py:551
+#, python-brace-format
+msgid "Channel {channel_key} was deleted by {caller}"
+msgstr "頻道 {channel_key} 被 {caller} 刪除了"
+
+#: .\commands\default\comms.py:626
+#, python-brace-format
+msgid "{target} is not connected to channel {channel.key}."
+msgstr "{target} 未連接到頻道 {channel.key}。"
+
+#: .\commands\default\comms.py:635
+#, python-brace-format
+msgid " Reason: {reason}"
+msgstr " 原因：{reason}"
+
+#: .\commands\default\comms.py:636
+#, python-brace-format
+msgid ""
+"You were booted from channel {channel.key} by {self.caller.key}.{reason}"
+msgstr "你被 {self.caller.key} 從頻道 {channel.key} 踢出了。{reason}"
+
+#: .\commands\default\comms.py:638
+#, python-brace-format
+msgid "{target.key} was booted from channel by {self.caller.key}.{reason}"
+msgstr "{target.key} 被 {self.caller.key} 從頻道踢出了。{reason}"
+
+#: .\commands\default\comms.py:641
+msgid ""
+"Channel Boot: {target} (Channel: {channel}, Reason: {reason.strip()}, "
+"Caller: {self.caller}"
+msgstr ""
+"頻道踢出：{target}（頻道：{channel}，原因：{reason.strip()}，"
+"召集人：{self.caller}"
+
+#: .\commands\default\comms.py:664
+#, python-brace-format
+msgid "{target} is already banned from this channel."
+msgstr "{target} 已經被禁止進入這個頻道。"
+
+#: .\commands\default\comms.py:683
+#, python-brace-format
+msgid "{target} was not previously banned from this channel."
+msgstr "{target} 之前並未被禁止進入這個頻道。"
+
+#: .\commands\default\comms.py:861
+#, python-brace-format
+msgid ""
+"\n"
+"|wAvailable channels|n (use no argument to only show your subscriptions)\n"
+"{table}"
+msgstr ""
+"\n"
+"|w可用頻道|n（不使用參數僅顯示您的訂閱）\n"
+"{table}"
+
+# .\commands\default\comms.py:824
+msgctxt "channel_subscribed"
+msgid "|rNo|n"
+msgstr "|r否|n"
+
+# .\commands\default\comms.py:826
+msgctxt "channel_subscribed"
+msgid "|rMuting|n"
+msgstr "|r靜音|n"
+
+# .\commands\default\comms.py:828
+msgctxt "channel_subscribed"
+msgid "|gYes|n"
+msgstr "|g是|n"
+
+#: .\commands\default\comms.py:870
+#, python-brace-format
+msgid ""
+"\n"
+"|wChannel subscriptions|n (use |w/all|n to see all available):\n"
+"{table}"
+msgstr ""
+"\n"
+"|w頻道訂閱|n（使用 |w/all|n 查看所有可用頻道）：\n"
+"{table}"
+
+#: .\commands\default\comms.py:874
+msgid "Usage[/switches]: channel [= message]"
+msgstr "用法[/switches]：channel [= message]"
+
+#: .\commands\default\comms.py:880
+msgid "You don't have access to use channel/create."
+msgstr "你沒有權限使用 channel/create。"
+
+#: .\commands\default\comms.py:885
+msgid "To create: channel/create name[;aliases][:typeclass] [= description]"
+msgstr "創建：channel/create name[;aliases][:typeclass] [= description]"
+
+#: .\commands\default\comms.py:893
+#, python-brace-format
+msgid "Created (and joined) new channel '{chan.key}'."
+msgstr "創建（並加入）新頻道 '{chan.key}'。"
+
+#: .\commands\default\comms.py:902
+msgid "Specify the alias to remove as channel/unalias <alias>"
+msgstr "指定要移除的別名為 channel/unalias <alias>"
+
+#: .\commands\default\comms.py:906
+#, python-brace-format
+msgid "Removed your channel alias '{alias}'."
+msgstr "移除了您的頻道別名 '{alias}'。"
+
+#: .\commands\default\comms.py:930
+#, python-brace-format
+msgid ""
+"No channel found matching '{channel_name}' (could also be due to missing "
+"access)."
+msgstr "沒有找到匹配 '{channel_name}' 的頻道（也可能是由於缺少訪問權限）。"
+
+#: .\commands\default\comms.py:934
+#, python-brace-format
+msgid "Multiple possible channel matches/alias for '{channel_name}':\n"
+msgstr "有多個可能的頻道匹配/別名 '{channel_name}'：\n"
+
+#: .\commands\default\comms.py:959
+#, python-brace-format
+msgid "Channel |w{channel.key}|n"
+msgstr "頻道 |w{channel.key}|n"
+
+#: .\commands\default\comms.py:961
+#, python-brace-format
+msgid ""
+"{header}\n"
+"(use |w{channel.key} <msg>|n (or a channel-alias) to chat and the 'channel' "
+"command to customize)\n"
+"{table}"
+msgstr ""
+"{header}\n"
+"（使用 |w{channel.key} <msg>|n（或頻道別名）來聊天，使用 'channel' "
+"命令來自定義）\n"
+"{table}"
+
+#: .\commands\default\comms.py:966
+#, python-brace-format
+msgid ""
+"\n"
+"|wNot subscribed to this channel|n (use /list to show all subscriptions)\n"
+"{table}"
+msgstr ""
+"\n"
+"|w未訂閱此頻道|n（使用 /list 顯示所有訂閱）\n"
+"{table}"
+
+#: .\commands\default\comms.py:978
+msgid ""
+"The history index (describing how many lines to go back) must be an integer "
+">= 0."
+msgstr "歷史索引（描述要回溯的行數）必須是一個整數 >= 0。"
+
+#: .\commands\default\comms.py:994
+#, python-brace-format
+msgid " using alias(es) {alias_txt}"
+msgstr " 使用別名 {alias_txt}"
+
+#: .\commands\default\comms.py:996
+#, python-brace-format
+msgid ""
+"You are now subscribed to the channel {channel.key}{alias_txt}. Use /alias "
+"to add additional aliases for referring to the channel."
+msgstr "你現在訂閱了頻道 {channel.key}{alias_txt}。使用 /alias 添加其他別名來引用該頻道。"
+
+#: .\commands\default\comms.py:1006
+#, python-brace-format
+msgid "You un-subscribed from channel {channel.key}. All aliases were cleared."
+msgstr "你取消訂閱了頻道 {channel.key}。所有別名已清除。"
+
+#: .\commands\default\comms.py:1015
+msgid "Specify the alias as channel/alias channelname = alias"
+msgstr "將別名指定為 channel/alias channelname = alias"
+
+#: .\commands\default\comms.py:1018
+#, python-brace-format
+msgid "Added/updated your alias '{alias}' for channel {channel.key}."
+msgstr "為頻道 {channel.key} 添加/更新了你的別名 '{alias}'。"
+
+#: .\commands\default\comms.py:1025
+#, python-brace-format
+msgid "Muted channel {channel.key}."
+msgstr "靜音頻道 {channel.key}。"
+
+#: .\commands\default\comms.py:1034
+#, python-brace-format
+msgid "Un-muted channel {channel.key}."
+msgstr "取消靜音頻道 {channel.key}。"
+
+#: .\commands\default\comms.py:1043
+msgid "You don't have access to use channel/destroy."
+msgstr "你沒有權限使用 channel/destroy。"
+
+#: .\commands\default\comms.py:1047
+msgid "You can only delete channels you control."
+msgstr "你只能刪除你控制的頻道。"
+
+#: .\commands\default\comms.py:1054
+#, python-brace-format
+msgid "Channel {channel.key} was successfully deleted."
+msgstr "頻道 {channel.key} 已成功刪除。"
+
+#: .\commands\default\comms.py:1058
+#, python-brace-format
+msgid ""
+"Are you sure you want to delete channel '{channel.key}' (make sure name is "
+"correct!)?\n"
+"This will disconnect and remove all users' aliases. {{options}}?"
+msgstr ""
+"你確定要刪除頻道 '{channel.key}'（請確保名稱正確！）？\n"
+"這將斷開並移除所有用戶的別名。{{options}}？"
+
+# .\commands\default\comms.py:1060
+msgctxt "channel_operation"
+msgid "Aborted"
+msgstr "已中止"
+
+#: .\commands\default\comms.py:1068
+msgid "You don't have access to use channel/desc."
+msgstr "你沒有權限使用 channel/desc。"
+
+#: .\commands\default\comms.py:1072
+msgid "You can only change description of channels you control."
+msgstr "你只能更改你控制的頻道的描述。"
+
+#: .\commands\default\comms.py:1078
+msgid "Usage: /desc channel = description"
+msgstr "用法：/desc channel = description"
+
+#: .\commands\default\comms.py:1082
+msgid "Updated channel description."
+msgstr "頻道描述已更新。"
+
+#: .\commands\default\comms.py:1088
+msgid "You don't have access to use channel/lock."
+msgstr "你沒有權限使用 channel/lock。"
+
+#: .\commands\default\comms.py:1092 .\commands\default\comms.py:1116
+msgid "You need 'control'-access to change locks on this channel."
+msgstr "你需要“控制”權限才能更改此頻道的鎖定。"
+
+#: .\commands\default\comms.py:1098
+msgid "Usage: channel/lock channelname = lockstring"
+msgstr "用法：channel/lock channelname = lockstring"
+
+#: .\commands\default\comms.py:1103
+msgid "Added/updated lock on channel."
+msgstr "頻道鎖已添加/更新。"
+
+#: .\commands\default\comms.py:1105
+#, python-brace-format
+msgid "Could not add/update lock: {err}"
+msgstr "無法添加/更新鎖定：{err}"
+
+#: .\commands\default\comms.py:1112
+msgid "You don't have access to use channel/unlock."
+msgstr "你沒有權限使用 channel/unlock。"
+
+#: .\commands\default\comms.py:1122
+msgid "Usage: channel/unlock channelname = lockstring"
+msgstr "用法：channel/unlock channelname = lockstring"
+
+#: .\commands\default\comms.py:1127
+msgid "Removed lock from channel."
+msgstr "頻道鎖已移除。"
+
+#: .\commands\default\comms.py:1129
+#, python-brace-format
+msgid "Could not remove lock: {err}"
+msgstr "無法移除鎖定：{err}"
+
+#: .\commands\default\comms.py:1136
+msgid "You don't have access to use channel/boot."
+msgstr "你沒有權限使用 channel/boot。"
+
+#: .\commands\default\comms.py:1140
+msgid "Usage: channel/boot channel[,channel,...] = username [:reason]"
+msgstr "用法：channel/boot channel[,channel,...] = username [:reason]"
+
+#: .\commands\default\comms.py:1148
+#, python-brace-format
+msgid "You need 'control'-access to boot a user from {chan.key}."
+msgstr "你需要“控制”權限才能將用戶從 {chan.key} 踢出。"
+
+#: .\commands\default\comms.py:1154
+#, python-brace-format
+msgid "Cannot boot '{target_str}' - not in channel {chan.key}."
+msgstr "無法踢出 '{target_str}' - 不在頻道 {chan.key} 中。"
+
+#: .\commands\default\comms.py:1161
+#, python-brace-format
+msgid "Booted {target.key} from channel {chan.key}."
+msgstr "已將 {target.key} 踢出頻道 {chan.key}。"
+
+#: .\commands\default\comms.py:1163 .\commands\default\comms.py:1219
+#, python-brace-format
+msgid "Cannot boot {target.key} from channel {chan.key}: {err}"
+msgstr "無法將 {target.key} 踢出頻道 {chan.key}：{err}"
+
+#: .\commands\default\comms.py:1166 .\commands\default\comms.py:1222
+msgid ". Also note that your reason will be echoed to the channel"
+msgstr "。另請注意，您的原因將顯示到頻道"
+
+#: .\commands\default\comms.py:1170
+#, python-brace-format
+msgid ""
+"Are you sure you want to boot user {target.key} from channel(s) {channames} "
+"(make sure name/channels are correct{reasonwarn}). {{options}}?"
+msgstr ""
+"你確定要將用戶 {target.key} 從頻道 {channames} 中踢出嗎（請確保名稱/頻道正確{reasonwarn}）？{{options}}？"
+
+#: .\commands\default\comms.py:1181
+msgid "You don't have access to use channel/ban."
+msgstr "你沒有權限使用 channel/ban。"
+
+#: .\commands\default\comms.py:1188
+#, python-brace-format
+msgid "You need 'control'-access to view bans on channel {channel.key}"
+msgstr "你需要“控制”權限才能查看頻道 {channel.key} 上的禁令"
+
+#: .\commands\default\comms.py:1192
+msgid ""
+"Channel bans (to ban, use channel/ban channel[,channel,...] = username [:"
+"reason]"
+msgstr ""
+"頻道禁令（要禁令，使用 channel/ban channel[,channel,...] = username [:"
+"reason]"
+
+#: .\commands\default\comms.py:1204
+#, python-brace-format
+msgid "You don't have access to ban users on channel {chan.key}"
+msgstr "你沒有權限禁止頻道 {chan.key} 上的用戶"
+
+#: .\commands\default\comms.py:1210
+#, python-brace-format
+msgid "Cannot ban '{target_str}' - not in channel {chan.key}."
+msgstr "無法禁止 '{target_str}' - 不在頻道 {chan.key} 中。"
+
+#: .\commands\default\comms.py:1217
+#, python-brace-format
+msgid "Banned {target.key} from channel {chan.key}."
+msgstr "已將 {target.key} 禁止進入頻道 {chan.key}。"
+
+#: .\commands\default\comms.py:1226
+#, python-brace-format
+msgid ""
+"Are you sure you want to ban user {target.key} from channel(s) {channames} "
+"(make sure name/channels are correct{reasonwarn}) {{options}}?"
+msgstr ""
+"你確定要將用戶 {target.key} 從頻道 {channames} 中禁止嗎（請確保名稱/頻道正確{reasonwarn}）？{{options}}？"
+
+#: .\commands\default\comms.py:1236
+msgid "You don't have access to use channel/unban."
+msgstr "你沒有權限使用 channel/unban。"
+
+#: .\commands\default\comms.py:1242
+msgid "Usage: channel[,channel,...] = user"
+msgstr "用法：channel[,channel,...] = user"
+
+#: .\commands\default\comms.py:1249
+#, python-brace-format
+msgid "You don't have access to unban users on channel {chan.key}"
+msgstr "你沒有權限解除頻道 {chan.key} 上的用戶禁令"
+
+#: .\commands\default\comms.py:1255
+#, python-brace-format
+msgid "Could not find a banned user '{target_str}' in given channel(s)."
+msgstr "在指定的頻道中找不到被禁止的用戶 '{target_str}'。"
+
+#: .\commands\default\comms.py:1261
+#, python-brace-format
+msgid "Un-banned {target_str} from channel {chan.key}"
+msgstr "已解除 {target_str} 在頻道 {chan.key} 的禁令"
+
+#: .\commands\default\comms.py:1269
+#, python-brace-format
+msgid "Subscribed to {channel.key}:"
+msgstr "已訂閱 {channel.key}："
+
+#: .\commands\default\comms.py:1340
+#, python-brace-format
+msgid "You last paged |c{recv}|n:{pages_we_sent[0].message}"
+msgstr "你最後發送的呼叫 |c{recv}|n：{pages_we_sent[0].message}"
+
+#: .\commands\default\comms.py:1343 .\commands\default\comms.py:1476
+msgid "You haven't paged anyone yet."
+msgstr "你還沒有給任何人發送呼叫。"
+
+#: .\commands\default\comms.py:1383
+msgid "Who do you want page?"
+msgstr "你想給誰發呼叫？"
+
+#: .\commands\default\comms.py:1386
+#, python-brace-format
+msgid "|wAccount|n |c{caller.key}|n |wpages:|n"
+msgstr "|w賬戶|n |c{caller.key}|n |w呼叫：|n"
+
+#: .\commands\default\comms.py:1408
+#, python-brace-format
+msgid "You are not allowed to page {target}."
+msgstr "你不允許發呼叫給 {target}。"
+
+#: .\commands\default\comms.py:1414
+msgid ""
+"{received[-1]} is offline. They will see your message if they list their "
+"pages later."
+msgstr "{received[-1]} 不在線。如果他們稍後列出他們的呼叫，他們會看到你的消息。"
+
+#: .\commands\default\comms.py:1421
+#, python-format
+msgid "You paged %s with: '%s'."
+msgstr "你給 %s 發了呼叫：'%s'。"
+
+#: .\commands\default\comms.py:1430
+#, python-brace-format
+msgid "|w{date}{clr} {sender}|nto{clr}{receiver}|n:> {message}"
+msgstr "|w{date}{clr} {sender}|n給{clr}{receiver}|n:> {message}"
+
+#: .\commands\default\comms.py:1431
+#, python-brace-format
+msgid "|w{date}{clr} {receiver}|nfrom{clr}{sender}|n:< {message}"
+msgstr "|w{date}{clr} {receiver}|n從{clr}{sender}|n:< {message}"
+
+#: .\commands\default\comms.py:1474
+#, python-brace-format
+msgid ""
+"Your latest pages:\n"
+" {lastpages}"
+msgstr ""
+"你的最新頁面：\n"
+" {lastpages}"
+
+#: .\commands\default\comms.py:1518
+msgid "No irc bots found."
+msgstr "沒有找到 irc 機器人。"
+
+#: .\commands\default\comms.py:1561
+msgid "IRC is not enabled. You need to activate it in game/settings.py."
+msgstr "未啟用 IRC。你需要在 game/settings.py 中激活它。"
+
+#: .\commands\default\comms.py:1579
+msgid "IRC connection destroyed."
+msgstr "IRC 連接已銷毀。"
+
+#: .\commands\default\comms.py:1581
+msgid "IRC connection/bot could not be removed, does it exist?"
+msgstr "無法移除 IRC 連接/機器人，它是否存在？"
+
+#: .\commands\default\comms.py:1586
+msgid ""
+"Usage: irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> "
+"<#irchannel> <botname>[:typeclass]"
+msgstr ""
+"用法：irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> "
+"<#irchannel> <botname>[:typeclass]"
+
+#: .\commands\default\comms.py:1600
+#, python-format
+msgid "IRC bot definition '%s' is not valid."
+msgstr "IRC 機器人定義 '%s' 無效。"
+
+#: .\commands\default\comms.py:1618 .\commands\default\comms.py:1808
+#: .\commands\default\comms.py:1903
+#, python-brace-format
+msgid "Account '{botname}' already exists and is not a bot."
+msgstr "賬戶 '{botname}' 已存在且不是機器人。"
+
+#: .\commands\default\comms.py:1624
+#, python-brace-format
+msgid "|rError, could not create the bot:|n '{err}'."
+msgstr "|r錯誤，無法創建機器人：|n '{err}'。"
+
+#: .\commands\default\comms.py:1634
+msgid "Connection created. Starting IRC bot."
+msgstr "連接已創建。啟動 IRC 機器人。"
+
+#: .\commands\default\comms.py:1669
+msgid "Usage: ircstatus [#dbref ping||nicklist||reconnect]"
+msgstr "用法：ircstatus [#dbref ping||nicklist||reconnect]"
+
+#: .\commands\default\comms.py:1673
+msgid "Not a valid option."
+msgstr "不是有效的選項。"
+
+#: .\commands\default\comms.py:1680
+msgid ""
+"No matching IRC-bot found. Use ircstatus without arguments to list active "
+"bots."
+msgstr "未找到匹配的 IRC 機器人。使用 ircstatus 無參數列出啟用的機器人。"
+
+#: .\commands\default\comms.py:1687
+#, python-brace-format
+msgid ""
+"IRC bot '{ircbot.db.irc_botname}' on channel {channel} ({network}:{port})"
+msgstr ""
+"IRC 機器人 '{ircbot.db.irc_botname}' 在頻道 {channel} 上 "
+"（{network}:{port}）"
+
+#: .\commands\default\comms.py:1690
+#, python-brace-format
+msgid "Pinging through {chtext}."
+msgstr "通過 {chtext} 發送 ping。"
+
+#: .\commands\default\comms.py:1695
+#, python-brace-format
+msgid "Requesting nicklist from {channel} ({network}:{port})."
+msgstr "從 {channel} 請求 nicklist（{network}:{port}）。"
+
+#: .\commands\default\comms.py:1701
+#, python-brace-format
+msgid "Forcing a disconnect + reconnect of {chtext}."
+msgstr "強制斷開+重新連接 {chtext}。"
+
+#: .\commands\default\comms.py:1704
+msgid "You don't have permission to force-reload the IRC bot."
+msgstr "你沒有權限強制重新加載 IRC 機器人。"
+
+#: .\commands\default\comms.py:1752
+msgid ""
+"RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser). "
+"Install before continuing."
+msgstr ""
+"RSS 需要 python-feedparser（https://pypi.python.org/pypi/feedparser）。"
+"請安裝後繼續。"
+
+#: .\commands\default\comms.py:1779
+msgid "No rss bots found."
+msgstr "沒有找到 rss 機器人。"
+
+#: .\commands\default\comms.py:1790
+msgid "RSS connection destroyed."
+msgstr "RSS 連接已銷毀。"
+
+#: .\commands\default\comms.py:1792
+msgid "RSS connection/bot could not be removed, does it exist?"
+msgstr "無法移除 RSS 連接/機器人，它是否存在？"
+
+#: .\commands\default\comms.py:1796
+msgid "Usage: rss2chan[/switches] <evennia_channel> = <rss url>"
+msgstr "用法：rss2chan[/switches] <evennia_channel> = <rss url>"
+
+#: .\commands\default\comms.py:1814
+msgid "RSS reporter created. Fetching RSS."
+msgstr "RSS 報告器已創建。正在獲取 RSS。"
+
+#: .\commands\default\comms.py:1849
+msgid "Set GRAPEVINE_ENABLED=True in settings to enable."
+msgstr "在設置中設置 GRAPEVINE_ENABLED=True 以啟用。"
+
+#: .\commands\default\comms.py:1872
+msgid "No grapevine bots found."
+msgstr "沒有找到 grapevine 機器人。"
+
+#: .\commands\default\comms.py:1884
+msgid "Grapevine connection destroyed."
+msgstr "Grapevine 連接已銷毀。"
+
+#: .\commands\default\comms.py:1886
+msgid "Grapevine connection/bot could not be removed, does it exist?"
+msgstr "無法移除 Grapevine 連接/機器人，它是否存在？"
+
+#: .\commands\default\comms.py:1890
+msgid ""
+"Usage: grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>"
+msgstr ""
+"用法：grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>"
+
+#: .\commands\default\comms.py:1906
+#, python-brace-format
+msgid "Reusing bot '{botname}' ({bot.dbref})"
+msgstr "重用機器人 '{botname}'（{bot.dbref}）"
+
+#: .\commands\default\comms.py:1912
+#, python-brace-format
+msgid "Grapevine connection created {channel} <-> {grapevine_channel}."
+msgstr "Grapevine 連接已創建 {channel} <-> {grapevine_channel}。"
+
+#: .\commands\default\comms.py:1958
+msgid ""
+"You must add your Discord bot application token to settings as "
+"DISCORD_BOT_TOKEN"
+msgstr "你必須將你的 Discord 機器人應用程序令牌添加到設置中，作為 DISCORD_BOT_TOKEN"
+
+#: .\commands\default\comms.py:1970
+msgid "Created and initialized a new Discord relay bot."
+msgstr "創建並初始化了一個新的 Discord 中繼機器人。"
+
+#: .\commands\default\comms.py:1976
+#, python-brace-format
+msgid ""
+"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This "
+"does not match {settings.DISCORD_BOT_CLASS} in settings!"
+msgstr ""
+"警告：Discord 機器人的 typeclass 是 '{discord_bot.typeclass_path}'。"
+"這與設置中的 {settings.DISCORD_BOT_CLASS} 不匹配！"
+
+#: .\commands\default\comms.py:1982
+msgid "The Discord bot is already running."
+msgstr "Discord 機器人已經在運行。"
+
+#: .\commands\default\comms.py:1985
+msgid "Starting the Discord bot session."
+msgstr "正在啟動 Discord 機器人。"
+
+#: .\commands\default\comms.py:1991
+msgid ""
+"Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|"
+"ninclude the Discord server."
+msgstr ""
+"發送到 Evennia 的消息|w將 {'' if discord_bot.db.tag_guild else '不'}|"
+"n包含 Discord 服務器。"
+
+#: .\commands\default\comms.py:1998
+msgid ""
+"Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|"
+"ninclude the originating channel."
+msgstr ""
+"中繼消息|w將{'' if discord_bot.db.tag_channel else '不'}|"
+"n包含起始頻道。"
+
+#: .\commands\default\comms.py:2023
+msgid "No Discord connections found."
+msgstr "未找到 Discord 連接。"
+
+#: .\commands\default\comms.py:2031
+msgid "Usage: discord2chan/remove <link id>"
+msgstr "用法：discord2chan/remove <link id>"
+
+#: .\commands\default\comms.py:2038
+msgid ""
+"Removed link between {ev_chan} and #{dc_info.get('name','?')}@{dc_info."
+"get('guild','?')}"
+msgstr ""
+"已移除 {ev_chan} 和 #{dc_info.get('name','?')}@{dc_info."
+"get('guild','?')} 之間的鏈接"
+
+#: .\commands\default\comms.py:2043 .\commands\default\comms.py:2073
+msgid "There are no active connections to Discord."
+msgstr "沒有啟用中的 Discord 連接。"
+
+#: .\commands\default\comms.py:2071
+#, python-brace-format
+msgid "There are no Discord channels connected to {ev_channel}."
+msgstr "沒有與 {ev_channel} 連接的 Discord 頻道。"
+
+#: .\commands\default\comms.py:2079
+msgid "Those channels are already linked."
+msgstr "這些頻道已經鏈接。"
+
+#: .\commands\default\comms.py:2086
+#, python-brace-format
+msgid "There is no channel '{ev_channel}'"
+msgstr "沒有頻道 '{ev_channel}'"
+
+#: .\commands\default\comms.py:2095
+#, python-brace-format
+msgid "Discord connection created: {channel_obj.name} <-> #{dc_channel_name}."
+msgstr "Discord 連接已創建：{channel_obj.name} <-> #{dc_channel_name}。"
+
+#: .\commands\default\general.py:51
+msgid "You have no home!"
+msgstr "你沒有家！"
+
+#: .\commands\default\general.py:53
+msgid "You are already home!"
+msgstr "你已經在家了！"
+
+#: .\commands\default\general.py:55
+msgid "There's no place like home ..."
+msgstr "沒有地方比得上家..."
+
+#: .\commands\default\general.py:84
+msgid "You have no location to look at!"
+msgstr "你沒有可以看的位置！"
+
+#: .\commands\default\general.py:179
+msgid "|wNo nicks defined.|n"
+msgstr "|w沒有定義暱稱。|n"
+
+#: .\commands\default\general.py:181
+msgid "Type"
+msgstr "類型"
+
+#: .\commands\default\general.py:181
+msgid "Nick match"
+msgstr "暱稱匹配"
+
+#: .\commands\default\general.py:181
+msgid "Replacement"
+msgstr "替換"
+
+#: .\commands\default\general.py:187
+#, python-format
+msgid ""
+"|wDefined Nicks:|n\n"
+"%s"
+msgstr ""
+"|w定義的暱稱：|n\n"
+"%s"
+
+#: .\commands\default\general.py:194
+msgid "Cleared all nicks."
+msgstr "清除所有暱稱。"
+
+#: .\commands\default\general.py:199
+msgid "usage nick/delete <nick> or <#num> ('nicks' for list)"
+msgstr "用法：nick/delete <nick> 或 <#num>（查看'nicks'列表）"
+
+#: .\commands\default\general.py:210
+msgid "Not a valid nick index. See 'nicks' for a list."
+msgstr "不是有效的暱稱索引。請查看'nicks'列表。"
+
+#: .\commands\default\general.py:222
+#, python-format
+msgid "%s-nick"
+msgstr "%s-暱稱"
+
+#: .\commands\default\general.py:226
+#, python-brace-format
+msgid "{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n."
+msgstr "{nicktypestr} 已移除：'|w{old_nickstring}|n' -> |w{old_replstring}|n。"
+
+#: .\commands\default\general.py:229
+msgid "No matching nicks to remove."
+msgstr "沒有匹配的暱稱可移除。"
+
+#: .\commands\default\general.py:248 .\commands\default\general.py:269
+#: .\commands\default\general.py:290
+msgid "{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
+msgstr "{nicktype.capitalize()}-暱稱：'{nick}' -> '{repl}'"
+
+#: .\commands\default\general.py:252 .\commands\default\general.py:273
+#: .\commands\default\general.py:294
+#, python-brace-format
+msgid "No nicks found matching '{self.lhs}'"
+msgstr "未找到匹配'{self.lhs}'的暱稱"
+
+#: .\commands\default\general.py:298
+msgid "Usage: nick[/switches] nickname = [realname]"
+msgstr "用法：nick[/switches] 暱稱 = [真名]"
+
+#: .\commands\default\general.py:307
+msgid "No point in setting nick same as the string to replace..."
+msgstr "將暱稱設置為與替換字符串相同毫無意義..."
+
+#: .\commands\default\general.py:314
+msgid "{nicktype.capitalize()}-nick"
+msgstr "{nicktype.capitalize()}-暱稱"
+
+#: .\commands\default\general.py:326
+msgid ""
+"\n"
+"Identical {nicktypestr.lower()} already set."
+msgstr ""
+"\n"
+"已設置相同的{nicktypestr.lower()}。"
+
+#: .\commands\default\general.py:328
+#, python-brace-format
+msgid ""
+"\n"
+"{nicktypestr} '|w{old_nickstring}|n' updated to map to '|w{replstring}|n'."
+msgstr ""
+"\n"
+"{nicktypestr} '|w{old_nickstring}|n' 已更新為映射到 '|w{replstring}|n'。"
+
+#: .\commands\default\general.py:330
+#, python-brace-format
+msgid ""
+"\n"
+"{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'."
+msgstr ""
+"\n"
+"{nicktypestr} '|w{nickstring}|n' 映射到 '|w{replstring}|n'。"
+
+#: .\commands\default\general.py:335
+msgid ""
+"You must use the same $-markers both in the nick and in the replacement."
+msgstr "您必須在暱稱和替換中使用相同的 $ 標記。"
+
+#: .\commands\default\general.py:340
+#, python-brace-format
+msgid ""
+"\n"
+"{nicktypestr} '|w{old_nickstring}|n' maps to '|w{old_replstring}|n'."
+msgstr ""
+"\n"
+"{nicktypestr} '|w{old_nickstring}|n' 映射到 '|w{old_replstring}|n'。"
+
+#: .\commands\default\general.py:366
+msgid "You are not carrying anything."
+msgstr "你什麼也沒帶。"
+
+#: .\commands\default\general.py:376
+#, python-brace-format
+msgid ""
+"|wYou are carrying:\n"
+"{table}"
+msgstr ""
+"|w你攜帶著：\n"
+"{table}"
+
+#: .\commands\default\general.py:439
+msgid "Get what?"
+msgstr "拿什麼？"
+
+#: .\commands\default\general.py:449
+msgid "You can't get yourself."
+msgstr "你不能拿自己。"
+
+#: .\commands\default\general.py:459
+msgid "You can't get that."
+msgstr "你不能拿那個。"
+
+#: .\commands\default\general.py:475
+msgid "That can't be picked up."
+msgstr "那個不能被撿起來。"
+
+#: .\commands\default\general.py:478
+#, python-brace-format
+msgid "$You() $conj(pick) up {obj_name}."
+msgstr "$You() 撿起 {obj_name}。"
+
+#: .\commands\default\general.py:501
+msgid "Drop what?"
+msgstr "放下什麼？"
+
+#: .\commands\default\general.py:509
+#, python-brace-format
+msgid "You aren't carrying {self.args}."
+msgstr "你沒有攜帶 {self.args}。"
+
+#: .\commands\default\general.py:510
+#, python-brace-format
+msgid "You carry more than one {self.args}:"
+msgstr "你攜帶了多個 {self.args}："
+
+#: .\commands\default\general.py:535
+msgid "That can't be dropped."
+msgstr "那個不能被放下。"
+
+#: .\commands\default\general.py:538
+#, python-brace-format
+msgid "$You() $conj(drop) {obj_name}."
+msgstr "$You() 放下{obj_name}。"
+
+#: .\commands\default\general.py:562
+msgid "Usage: give <inventory object> = <target>"
+msgstr "用法：give <庫存物品> = <目標>"
+
+#: .\commands\default\general.py:568
+#, python-brace-format
+msgid "You aren't carrying {self.lhs}."
+msgstr "你沒有攜帶 {self.lhs}。"
+
+#: .\commands\default\general.py:569
+#, python-brace-format
+msgid "You carry more than one {self.lhs}:"
+msgstr "你攜帶了多個 {self.lhs}："
+
+#: .\commands\default\general.py:585
+msgid "You keep {plural if len(to_give) > 1 else singular} to yourself."
+msgstr "你將{plural if len(to_give) > 1 else singular}留給自己。"
+
+#: .\commands\default\general.py:603
+msgid "You could not give that to {target.get_display_name(caller)}."
+msgstr "你不能將那個給 {target.get_display_name(caller)}。"
+
+#: .\commands\default\general.py:606
+msgid "You give {obj_name} to {target.get_display_name(caller)}."
+msgstr "你將 {obj_name} 給了 {target.get_display_name(caller)}。"
+
+#: .\commands\default\general.py:607
+msgid "{caller.get_display_name(target)} gives you {obj_name}."
+msgstr "{caller.get_display_name(target)} 給了你 {obj_name}。"
+
+#: .\commands\default\general.py:630
+msgid "You must add a description."
+msgstr "你必須添加描述。"
+
+#: .\commands\default\general.py:634
+msgid "You set your description."
+msgstr "你設置了你的描述。"
+
+#: .\commands\default\general.py:660
+msgid "Say what?"
+msgstr "說什麼？"
+
+#: .\commands\default\general.py:697
+msgid "Usage: whisper <character> = <message>"
+msgstr "用法：whisper <角色> = <消息>"
+
+#: .\commands\default\general.py:760
+msgid "What do you want to do?"
+msgstr "你想做什麼？"
+
+#: .\locks\lockhandler.py:242
+#, python-brace-format
+msgid "Lock: lock-function '{lockfunc}' is not available."
+msgstr "鎖：鎖定功能 '{lockfunc}' 不可用。"
+
+#: .\locks\lockhandler.py:265
+#, python-brace-format
+msgid "Lock: definition '{lock_string}' has syntax errors."
+msgstr "鎖：定義 '{lock_string}' 有語法錯誤。"
+
+#: .\locks\lockhandler.py:274
+#, python-brace-format
+msgid ""
+"LockHandler on {obj}: access type '{access_type}' changed from '{source}' to "
+"'{goal}' "
+msgstr ""
+"LockHandler 在 {obj} 上：訪問類型 '{access_type}' 從 '{source}' 更改為 "
+"'{goal}'"
+
+#: .\locks\lockhandler.py:357
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "鎖：'{lockdef}' 不包含冒號（:）。"
+
+#: .\locks\lockhandler.py:366
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "鎖：'{lockdef}' 沒有訪問類型（冒號左側為空）。"
+
+#: .\locks\lockhandler.py:374
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "鎖：'{lockdef}' 的括號不匹配。"
+
+#: .\locks\lockhandler.py:381
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "鎖：'{lockdef}' 沒有有效的鎖定功能。"
+
+#: .\objects\objects.py:1045
+#, python-brace-format
+msgid "Couldn't perform move ({err}). Contact an admin."
+msgstr "無法執行移動操作（{err}）。請聯繫管理員。"
+
+#: .\objects\objects.py:1055
+msgid "The destination doesn't exist."
+msgstr "目的地不存在。"
+
+#: .\objects\objects.py:1167
+#, python-brace-format
+msgid "Could not find default home '(#{dbid})'."
+msgstr "找不到默認的家（#{dbid}）。"
+
+#: .\objects\objects.py:1181
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "出錯了！您被丟到一個未知的地方。請聯繫管理員。"
+
+#: .\objects\objects.py:1364
+#, python-brace-format
+msgid "Your character {key} has been destroyed."
+msgstr "您的角色 {key} 已被銷毀。"
+
+#: .\objects\objects.py:2141
+#, python-brace-format
+msgid "You now have {name} in your possession."
+msgstr "您現在擁有 {name}。"
+
+#: .\objects\objects.py:2151
+#, python-brace-format
+msgid "{object} arrives to {destination} from {origin}."
+msgstr "{object} 從 {origin} 抵達 {destination}。"
+
+#: .\objects\objects.py:2153
+#, python-brace-format
+msgid "{object} arrives to {destination}."
+msgstr "{object} 抵達 {destination}。"
+
+#: .\objects\objects.py:2895
+msgid "This is a character."
+msgstr "這是一個角色。"
+
+#: .\objects\objects.py:3002
+#, python-brace-format
+msgid "|r{obj} has no location and no home is set.|n"
+msgstr "|r{obj} 沒有位置，也沒有設置家。|n"
+
+#: .\objects\objects.py:3021
+#, python-brace-format
+msgid ""
+"\n"
+"You become |c{name}|n.\n"
+msgstr ""
+"\n"
+"你的靈魂一閃進入了 |c{name}|n 的軀殼。\n"
+
+#: .\objects\objects.py:3026
+#, python-brace-format
+msgid "{name} has entered the game."
+msgstr "{name} 已進入遊戲。"
+
+#: .\objects\objects.py:3056
+#, python-brace-format
+msgid "{name} has left the game{reason}."
+msgstr "{name} 已離開遊戲{reason}。"
+
+#: .\objects\objects.py:3178
+msgid "This is a room."
+msgstr "這是一個房間。"
+
+#: .\objects\objects.py:3387
+msgid "This is an exit."
+msgstr "這是一個出口。"
+
+#: .\objects\objects.py:3489
+msgid "You cannot go there."
+msgstr "你不能去那裡。"
+
+#: .\prototypes\prototypes.py:56
+msgid "Error"
+msgstr "錯誤"
+
+#: .\prototypes\prototypes.py:57
+msgid "Warning"
+msgstr "警告"
+
+#: .\prototypes\prototypes.py:418
+msgid "Prototype requires a prototype_key"
+msgstr "原型需要 prototype_key"
+
+#: .\prototypes\prototypes.py:426 .\prototypes\prototypes.py:496
+#: .\prototypes\prototypes.py:1158
+#, python-brace-format
+msgid "{protkey} is a read-only prototype (defined as code in {module})."
+msgstr "{protkey} 是一個只讀原型（在 {module} 中定義為代碼）。"
+
+#: .\prototypes\prototypes.py:428 .\prototypes\prototypes.py:498
+#: .\prototypes\prototypes.py:1160
+#, python-brace-format
+msgid "{protkey} is a read-only prototype (passed directly as a dict)."
+msgstr "{protkey} 是一個只讀原型（直接作為字典傳遞）。"
+
+#: .\prototypes\prototypes.py:505
+#, python-brace-format
+msgid "Prototype {prototype_key} was not found."
+msgstr "未找到原型 {prototype_key}。"
+
+#: .\prototypes\prototypes.py:513
+#, python-brace-format
+msgid ""
+"{caller} needs explicit 'edit' permissions to delete prototype "
+"{prototype_key}."
+msgstr "{caller} 需要明確的“編輯”權限來刪除原型 {prototype_key}。"
+
+#: .\prototypes\prototypes.py:666
+#, python-brace-format
+msgid "Found {num} matching prototypes."
+msgstr "找到 {num} 個匹配的原型。"
+
+#: .\prototypes\prototypes.py:823
+msgid "No prototypes found."
+msgstr "未找到原型。"
+
+#: .\prototypes\prototypes.py:870
+msgid "Prototype lacks a 'prototype_key'."
+msgstr "原型缺少 'prototype_key'。"
+
+#: .\prototypes\prototypes.py:879
+#, python-brace-format
+msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
+msgstr "原型 {protkey} 需要 `typeclass` 或 'prototype_parent'。"
+
+#: .\prototypes\prototypes.py:886
+#, python-brace-format
+msgid ""
+"Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
+"or 'prototype_parent' keys."
+msgstr ""
+"由於缺少 'typeclass' 或 'prototype_parent' 鍵，原型 {protkey} 只能作為混合使"
+"用。"
+
+#: .\prototypes\prototypes.py:897
+#, python-brace-format
+msgid ""
+"{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
+"not be imported!"
+msgstr "{err}：原型 {protkey} 基於 typeclass {typeclass}，無法導入！"
+
+#: .\prototypes\prototypes.py:916
+#, python-brace-format
+msgid "Prototype {protkey} tries to parent itself."
+msgstr "原型 {protkey} 試圖將自己作為父原型。"
+
+#: .\prototypes\prototypes.py:928
+#, python-brace-format
+msgid ""
+"Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
+msgstr "未找到原型 {protkey} 的 `prototype_parent`（名為 '{parent}'）。"
+
+#: .\prototypes\prototypes.py:936
+#, python-brace-format
+msgid "{protkey} has infinite nesting of prototypes."
+msgstr "{protkey} 有無限的原型嵌套。"
+
+#: .\prototypes\prototypes.py:965
+#, python-brace-format
+msgid ""
+"Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
+" chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype "
+"with a typeclass."
+msgstr ""
+"原型 {protkey} 的父鏈中沒有定義 `typeclass`。添加 `typeclass` 或指向具有 "
+"typeclass 的原型的 `prototype_parent`。"
+
+#: .\prototypes\spawner.py:498
+#, python-brace-format
+msgid ""
+"Diff contains non-dicts that are not on the form (old, new, action_to_take): "
+"{diffpart}"
+msgstr "差異包含非字典，格式不是（舊、新、要採取的操作）：{diffpart}"
+
+#: .\scripts\scripthandler.py:51
+#, python-brace-format
+msgid ""
+"\n"
+" '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}"
+msgstr ""
+"\n"
+" '{key}'（{next_repeat}/{interval}, 重複 {repeats} 次）：{desc}"
+
+#: .\scripts\scripts.py:349
+#, python-brace-format
+msgid "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'."
+msgstr "腳本 {key}(#{dbid}) 類型 '{name}'：at_repeat() 錯誤 '{err}'。"
+
+#: .\server\initial_setup.py:30
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"\n"
+"As a privileged user, write |wbatchcommand tutorial_world.build|n to build\n"
+"tutorial content. Once built, try |wintro|n for starting help and |wtutorial|"
+"n to\n"
+"play the demo game.\n"
+msgstr ""
+"\n"
+"歡迎來到您的新 |wEvennia|n 遊戲！如需幫助、想貢獻、報告問題或加入社區，請訪"
+"問 https://www.evennia.com。\n"
+"\n"
+"作為特權用戶，請輸入 |wbatchcommand tutorial_world.build|n 來構建教程內容。\n"
+"構建完成後，嘗試 |wintro|n 獲取幫助並輸入 |wtutorial|n 玩演示遊戲。\n"
+
+#: .\server\initial_setup.py:104
+msgid "This is User #1."
+msgstr "這是用戶 #1。"
+
+#: .\server\initial_setup.py:123
+msgid "Limbo"
+msgstr "臨時"
+
+#: .\server\portal\portalsessionhandler.py:43
+#, python-brace-format
+msgid ""
+"{servername} DoS protection is active.You are queued to connect in {num} "
+"seconds ..."
+msgstr "{servername} DoS 保護已啟用。您將在 {num} 秒後連接..."
+
+#: .\server\service.py:122
+msgid " (connection lost)"
+msgstr "（連接丟失）"
+
+#: .\server\service.py:132
+msgid "idle timeout exceeded"
+msgstr "空閒超時"
+
+#: .\server\sessionhandler.py:50
+msgid "Your client sent an incorrect UTF-8 sequence."
+msgstr "您的客戶端發送了不正確的 UTF-8 序列。"
+
+#: .\server\sessionhandler.py:418
+msgid " ... Server restarted."
+msgstr " ... 服務器已重新啟動。"
+
+#: .\server\sessionhandler.py:648
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "從其他地方登錄。正在斷開連接。"
+
+#: .\server\sessionhandler.py:676
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "空閒超時，正在斷開連接。"
+
+#: .\server\throttle.py:23
+msgid ""
+"Too many failed attempts; you must wait a few minutes before trying again."
+msgstr "嘗試失敗次數過多；您必須等待幾分鐘後再試。"
+
+#: .\server\validators.py:32
+msgid "Sorry, that username is reserved."
+msgstr "對不起，該用戶名已被保留。"
+
+#: .\server\validators.py:39
+msgid "Sorry, that username is already taken."
+msgstr "對不起，該用戶名已被佔用。"
+
+#: .\utils\eveditor.py:70
+msgid ""
+"\n"
+" <txt>  - any non-command is appended to the end of the buffer.\n"
+" :  <l> - view buffer or only line(s) <l>\n"
+" :: <l> - raw-view buffer or only line(s) <l>\n"
+" :::    - escape - enter ':' as the only character on the line.\n"
+" :h     - this help.\n"
+"\n"
+" :w     - save the buffer (don't quit)\n"
+" :wq    - save buffer and quit\n"
+" :q     - quit (will be asked to save if buffer was changed)\n"
+" :q!    - quit without saving, no questions asked\n"
+"\n"
+" :u     - (undo) step backwards in undo history\n"
+" :uu    - (redo) step forward in undo history\n"
+" :UU    - reset all changes back to initial state\n"
+"\n"
+" :dd <l>     - delete last line or line(s) <l>\n"
+" :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>\n"
+" :DD         - clear entire buffer\n"
+"\n"
+" :y  <l>        - yank (copy) line(s) <l> to the copy buffer\n"
+" :x  <l>        - cut line(s) <l> and store it in the copy buffer\n"
+" :p  <l>        - put (paste) previously copied line(s) directly before <l>\n"
+" :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move "
+"down\n"
+" :r  <l> <txt>  - replace line <l> with text <txt>\n"
+" :I  <l> <txt>  - insert text at the beginning of line <l>\n"
+" :A  <l> <txt>  - append text after the end of line <l>\n"
+"\n"
+" :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line "
+"<l>\n"
+"\n"
+" :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f "
+"(full)\n"
+" :f <l>     - flood-fill entire buffer or line <l>. Equivalent to :j <l> l\n"
+" :fi <l>    - indent entire buffer or line <l>\n"
+" :fd <l>    - de-indent entire buffer or line <l>\n"
+"\n"
+" :echo - turn echoing of the input on/off (helpful for some clients)\n"
+msgstr ""
+"\n"
+" <txt>  - 任何非命令將追加到緩衝區末尾。\n"
+" :  <l> - 查看緩衝區或僅查看第 <l> 行\n"
+" :: <l> - 原始查看緩衝區或僅查看第 <l> 行\n"
+" :::    - 轉義 - 輸入 ':' 作為行的唯一字符。\n"
+" :h     - 此幫助。\n"
+"\n"
+" :w     - 保存緩衝區（不退出）\n"
+" :wq    - 保存緩衝區並退出\n"
+" :q     - 退出（如果緩衝區已更改，將要求保存）\n"
+" :q!    - 不保存退出，不問任何問題\n"
+"\n"
+" :u     - （撤銷）步驟後退在撤銷歷史中\n"
+" :uu    - （重做）步驟前進在撤銷歷史中\n"
+" :UU    - 將所有更改重置為初始狀態\n"
+"\n"
+" :dd <l>     - 刪除最後一行或第 <l> 行\n"
+" :dw <l> <w> - 刪除整個緩衝區或第 <l> 行中的單詞或正則表達式 <w>\n"
+" :DD         - 清空整個緩衝區\n"
+"\n"
+" :y  <l>        - 將第 <l> 行複製（yank）到複製緩衝區\n"
+" :x  <l>        - 剪切第 <l> 行並將其存儲在複製緩衝區中\n"
+" :p  <l>        - 將先前複製的行粘貼到第 <l> 行之前\n"
+" :i  <l> <txt>  - 在第 <l> 行插入新文本 <txt>。舊行將下移\n"
+" :r  <l> <txt>  - 用文本 <txt> 替換第 <l> 行\n"
+" :I  <l> <txt>  - 在第 <l> 行的開頭插入文本\n"
+" :A  <l> <txt>  - 在第 <l> 行末尾追加文本\n"
+"\n"
+" :s <l> <w> <txt> - 搜索/替換緩衝區或第 <l> 行中的單詞或正則表達式 <w>\n"
+"\n"
+" :j <l> <w> - 對齊緩衝區或第 <l> 行。<w> 是 f, c, l 或 r。默認為 f (完全對"
+"齊)\n"
+" :f <l>     - 填充整個緩衝區或第 <l> 行。相當於 :j <l> l\n"
+" :fi <l>    - 縮進整個緩衝區或第 <l> 行\n"
+" :fd <l>    - 取消縮進整個緩衝區或第 <l> 行\n"
+"\n"
+" :echo - 開啟/關閉輸入回顯（對某些客戶端有幫助）\n"
+
+#: .\utils\eveditor.py:110
+msgid ""
+"\n"
+"    Legend:\n"
+"    <l>   - line number, like '5' or range, like '3:7'.\n"
+"    <w>   - a single word, or multiple words with quotes around them.\n"
+"    <txt> - longer string, usually not needing quotes.\n"
+msgstr ""
+"\n"
+"    備註：\n"
+"    <l>   - 行號，如 '5' 或範圍，如 '3:7'。\n"
+"    <w>   - 單個單詞，或帶引號的多個單詞。\n"
+"    <txt> - 更長的字符串，通常不需要引號。\n"
+
+#: .\utils\eveditor.py:119
+msgid ""
+"\n"
+" :!    - Execute code buffer without saving\n"
+" :<    - Decrease the level of automatic indentation for the next lines\n"
+" :>    - Increase the level of automatic indentation for the next lines\n"
+" :=    - Switch automatic indentation on/off\n"
+msgstr ""
+"\n"
+" :!    - 執行代碼緩衝區而不保存\n"
+" :<    - 降低下一行的自動縮進級別\n"
+" :>    - 增加下一行的自動縮進級別\n"
+" :=    - 切換自動縮進開/關\n"
+
+#: .\utils\eveditor.py:130
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rBuffer load function error. Could not load initial data.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r緩衝區加載功能錯誤。無法加載初始數據。|n\n"
+
+#: .\utils\eveditor.py:138
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rSave function returned an error. Buffer not saved.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r保存功能返回錯誤。緩衝區未保存。|n\n"
+
+#: .\utils\eveditor.py:145
+msgid "|rNo save function defined. Buffer cannot be saved.|n"
+msgstr "|r未定義保存功能。無法保存緩衝區。|n"
+
+#: .\utils\eveditor.py:147
+msgid "No changes need saving"
+msgstr "無需保存更改"
+
+#: .\utils\eveditor.py:148
+msgid "Exited editor."
+msgstr "已退出編輯器。"
+
+#: .\utils\eveditor.py:151
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rQuit function gave an error. Skipping.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r退出功能出錯。跳過。|n\n"
+
+#: .\utils\eveditor.py:159
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rThe editor state could not be saved for persistent mode. Switching\n"
+"to non-persistent mode (which means the editor session won't survive\n"
+"an eventual server reload - so save often!)|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r編輯器狀態無法保存為持久模式。切換到非持久模式（這意味著編輯器會話無法在\n"
+"服務器重新加載時保持 - 所以請經常保存！）|n\n"
+
+#: .\utils\eveditor.py:169
+msgid ""
+"EvEditor persistent-mode error. Commonly, this is because one or more of the "
+"EvEditor callbacks could not be pickled, for example because it's a class "
+"method or is defined inside another function."
+msgstr ""
+"EvEditor 持久模式錯誤。通常，這是因為一個或多個 EvEditor 回調無法被序列化，例"
+"如因為它是一個類方法或定義在另一個函數內。"
+
+#: .\utils\eveditor.py:175
+msgid "Nothing to undo."
+msgstr "無可撤銷的操作。"
+
+#: .\utils\eveditor.py:176
+msgid "Nothing to redo."
+msgstr "無可重做的操作。"
+
+#: .\utils\eveditor.py:177
+msgid "Undid one step."
+msgstr "撤銷了一步操作。"
+
+#: .\utils\eveditor.py:178
+msgid "Redid one step."
+msgstr "重做了一步操作。"
+
+#: .\utils\eveditor.py:505
+msgid "Single ':' added to buffer."
+msgstr "單個 ':' 添加到緩衝區。"
+
+#: .\utils\eveditor.py:520
+msgid "Save before quitting?"
+msgstr "退出前保存？"
+
+#: .\utils\eveditor.py:535
+msgid "Reverted all changes to the buffer back to original state."
+msgstr "將緩衝區的所有更改恢復到原始狀態。"
+
+#: .\utils\eveditor.py:540
+#, python-brace-format
+msgid "Deleted {string}."
+msgstr "刪除了 {string}。"
+
+#: .\utils\eveditor.py:545
+msgid "You must give a search word to delete."
+msgstr "您必須提供要刪除的搜索詞。"
+
+#: .\utils\eveditor.py:551
+#, python-brace-format
+msgid "Removed {arg1} for lines {l1}-{l2}."
+msgstr "移除了行 {l1}-{l2} 的 {arg1}。"
+
+#: .\utils\eveditor.py:557
+#, python-brace-format
+msgid "Removed {arg1} for {line}."
+msgstr "移除了行 {line} 的 {arg1}。"
+
+#: .\utils\eveditor.py:573
+#, python-brace-format
+msgid "Cleared {nlines} lines from buffer."
+msgstr "已從緩衝區清除 {nlines} 行。"
+
+#: .\utils\eveditor.py:578
+#, python-brace-format
+msgid "{line}, {cbuf} yanked."
+msgstr "已複製 {line}, {cbuf}。"
+
+#: .\utils\eveditor.py:585
+#, python-brace-format
+msgid "{line}, {cbuf} cut."
+msgstr "已剪切 {line}, {cbuf}。"
+
+#: .\utils\eveditor.py:589
+msgid "Copy buffer is empty."
+msgstr "複製緩衝區為空。"
+
+#: .\utils\eveditor.py:594
+#, python-brace-format
+msgid "Pasted buffer {cbuf} to {line}."
+msgstr "已將緩衝區 {cbuf} 粘貼到 {line}。"
+
+#: .\utils\eveditor.py:602
+msgid "You need to enter a new line and where to insert it."
+msgstr "您需要輸入新行及其插入位置。"
+
+#: .\utils\eveditor.py:607
+#, python-brace-format
+msgid "Inserted {num} new line(s) at {line}."
+msgstr "已在 {line} 插入 {num} 行。"
+
+#: .\utils\eveditor.py:615
+msgid "You need to enter a replacement string."
+msgstr "您需要輸入替換字符串。"
+
+#: .\utils\eveditor.py:620
+#, python-brace-format
+msgid "Replaced {num} line(s) at {line}."
+msgstr "已在 {line} 替換 {num} 行。"
+
+#: .\utils\eveditor.py:627
+msgid "You need to enter text to insert."
+msgstr "您需要輸入要插入的文本。"
+
+#: .\utils\eveditor.py:635
+#, python-brace-format
+msgid "Inserted text at beginning of {line}."
+msgstr "已在 {line} 的開頭插入文本。"
+
+#: .\utils\eveditor.py:639
+msgid "You need to enter text to append."
+msgstr "您需要輸入要追加的文本。"
+
+#: .\utils\eveditor.py:647
+#, python-brace-format
+msgid "Appended text to end of {line}."
+msgstr "已在 {line} 的末尾追加文本。"
+
+#: .\utils\eveditor.py:652
+msgid "You must give a search word and something to replace it with."
+msgstr "您必須提供搜索詞及其替換內容。"
+
+#: .\utils\eveditor.py:658
+#, python-brace-format
+msgid "Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}."
+msgstr "已將行 {l1}-{l2} 中的 {arg1} 替換為 {arg2}。"
+
+#: .\utils\eveditor.py:664
+#, python-brace-format
+msgid "Search-replaced {arg1} -> {arg2} for {line}."
+msgstr "已將行 {line} 中的 {arg1} 替換為 {arg2}。"
+
+#: .\utils\eveditor.py:688
+#, python-brace-format
+msgid "Flood filled lines {l1}-{l2}."
+msgstr "已填充行 {l1}-{l2}。"
+
+#: .\utils\eveditor.py:690
+#, python-brace-format
+msgid "Flood filled {line}."
+msgstr "已填充行 {line}。"
+
+#: .\utils\eveditor.py:712
+msgid "Valid justifications are"
+msgstr "有效的對齊方式是"
+
+#: .\utils\eveditor.py:721
+#, python-brace-format
+msgid "{align}-justified lines {l1}-{l2}."
+msgstr "已將行 {l1}-{l2} 對齊為 {align}。"
+
+#: .\utils\eveditor.py:727
+#, python-brace-format
+msgid "{align}-justified {line}."
+msgstr "已將行 {line} 對齊為 {align}。"
+
+#: .\utils\eveditor.py:739
+#, python-brace-format
+msgid "Indented lines {l1}-{l2}."
+msgstr "已縮進行 {l1}-{l2}。"
+
+#: .\utils\eveditor.py:741
+#, python-brace-format
+msgid "Indented {line}."
+msgstr "已縮進行 {line}。"
+
+#: .\utils\eveditor.py:751
+#, python-brace-format
+msgid "Removed left margin (dedented) lines {l1}-{l2}."
+msgstr "已取消行 {l1}-{l2} 的左邊距（去縮進）。"
+
+#: .\utils\eveditor.py:756
+#, python-brace-format
+msgid "Removed left margin (dedented) {line}."
+msgstr "已取消行 {line} 的左邊距（去縮進）。"
+
+#: .\utils\eveditor.py:764
+#, python-brace-format
+msgid "Echo mode set to {mode}"
+msgstr "回顯模式設置為 {mode}"
+
+#: .\utils\eveditor.py:769 .\utils\eveditor.py:784 .\utils\eveditor.py:799
+#: .\utils\eveditor.py:810
+msgid "This command is only available in code editor mode."
+msgstr "此命令僅在代碼編輯器模式下可用。"
+
+#: .\utils\eveditor.py:777
+#, python-brace-format
+msgid "Decreased indentation: new indentation is {indent}."
+msgstr "縮小縮進：新縮進為 {indent}。"
+
+#: .\utils\eveditor.py:782 .\utils\eveditor.py:797
+msgid "|rManual indentation is OFF.|n Use := to turn it on."
+msgstr "|r手動縮進已關閉。|n 使用 := 打開它。"
+
+#: .\utils\eveditor.py:792
+#, python-brace-format
+msgid "Increased indentation: new indentation is {indent}."
+msgstr "增加縮進：新縮進為 {indent}。"
+
+#: .\utils\eveditor.py:806
+msgid "Auto-indentation turned on."
+msgstr "自動縮進已開啟。"
+
+#: .\utils\eveditor.py:808
+msgid "Auto-indentation turned off."
+msgstr "自動縮進已關閉。"
+
+#: .\utils\eveditor.py:1107
+#, python-brace-format
+msgid "Line Editor [{name}]"
+msgstr "行編輯器 [{name}]"
+
+#: .\utils\eveditor.py:1115
+msgid "(:h for help)"
+msgstr "（:h 獲取幫助）"
+
+#: .\utils\evmenu.py:310
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice or try 'q' to abort."
+msgstr ""
+"菜單節點 '{nodename}' 未實現或引發錯誤。請做另一個選擇或嘗試 'q' 退出。"
+
+#: .\utils\evmenu.py:313
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "菜單節點 '{nodename}' 錯誤。"
+
+#: .\utils\evmenu.py:314
+msgid "No description."
+msgstr "無描述。"
+
+#: .\utils\evmenu.py:315
+msgid "Commands: <menu option>, help, quit"
+msgstr "命令：<菜單選項>、help、quit"
+
+#: .\utils\evmenu.py:316
+msgid "Commands: <menu option>, help"
+msgstr "命令：<菜單選項>、help"
+
+#: .\utils\evmenu.py:317
+msgid "Commands: help, quit"
+msgstr "命令：help、quit"
+
+#: .\utils\evmenu.py:318
+msgid "Commands: help"
+msgstr "命令：help"
+
+#: .\utils\evmenu.py:319 .\utils\evmenu.py:1826
+msgid "Choose an option or try 'help'."
+msgstr "選擇一個選項或嘗試 'help'。"
+
+#: .\utils\evmenu.py:1350
+msgid "|rInvalid choice.|n"
+msgstr "|r無效的選擇。|n"
+
+#: .\utils\evmenu.py:1413
+msgid "|Wcurrent|n"
+msgstr "|W當前|n"
+
+#: .\utils\evmenu.py:1421
+msgid "|wp|Wrevious page|n"
+msgstr "|wp|W前一頁|n"
+
+#: .\utils\evmenu.py:1428
+msgid "|wn|Wext page|n"
+msgstr "|wn|W下一頁|n"
+
+#: .\utils\evmenu.py:1665
+msgid "Aborted."
+msgstr "已中止。"
+
+#: .\utils\evmenu.py:1688
+msgid "|rError in ask_yes_no. Choice not confirmed (report to admin)|n"
+msgstr "|rask_yes_no 錯誤。選擇未確認（報告給管理員）|n"
+
+#: .\utils\evmore.py:240
+msgid "|xExited pager.|n"
+msgstr "|x已退出分頁器。|n"
+
+#: .\utils\optionhandler.py:139 .\utils\optionhandler.py:164
+msgid "Option not found!"
+msgstr "未找到選項！"
+
+#: .\utils\optionhandler.py:161
+msgid "Option field blank!"
+msgstr "選項字段為空！"
+
+#: .\utils\optionhandler.py:167
+msgid "Multiple matches:"
+msgstr "多個匹配項："
+
+#: .\utils\optionhandler.py:167
+msgid "Please be more specific."
+msgstr "請更具體一些。"
+
+#: .\utils\utils.py:2227
+#, python-brace-format
+msgid ""
+"{obj}.{handlername} is a handler and can't be set directly. To add values, "
+"use `{obj}.{handlername}.add()` instead."
+msgstr ""
+"{obj}.{handlername} 是處理程序，無法直接設置。要添加值，請改用 `{obj}."
+"{handlername}.add()`。"
+
+#: .\utils\utils.py:2237
+#, python-brace-format
+msgid ""
+"{obj}.{handlername} is a handler and can't be deleted directly. To remove "
+"values, use `{obj}.{handlername}.remove()` instead."
+msgstr ""
+"{obj}.{handlername} 是處理程序，無法直接刪除。要刪除值，請改用 `{obj}."
+"{handlername}.remove()`。"
+
+#: .\utils\utils.py:2389
+#, python-brace-format
+msgid "Could not find '{query}'."
+msgstr "未找到 '{query}'。"
+
+#: .\utils\utils.py:2396
+#, python-brace-format
+msgid "More than one match for '{query}' (please narrow target):\n"
+msgstr "多個匹配項 '{query}'（請縮小目標）：\n"
+
+#: .\utils\validatorfuncs.py:28
+#, python-brace-format
+msgid "Input could not be converted to text ({err})"
+msgstr "輸入無法轉換為文本（{err}）"
+
+#: .\utils\validatorfuncs.py:37
+#, python-brace-format
+msgid "Nothing entered for a {option_key}!"
+msgstr "未輸入 {option_key}！"
+
+#: .\utils\validatorfuncs.py:41
+#, python-brace-format
+msgid "'{entry}' is not a valid {option_key}."
+msgstr "'{entry}' 不是有效的 {option_key}。"
+
+#: .\utils\validatorfuncs.py:66 .\utils\validatorfuncs.py:239
+#, python-brace-format
+msgid "No {option_key} entered!"
+msgstr "未輸入 {option_key}！"
+
+#: .\utils\validatorfuncs.py:75
+#, python-brace-format
+msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
+msgstr "時區字符串 '{acct_tz}' 不是有效的時區（{err}）"
+
+#: .\utils\validatorfuncs.py:92 .\utils\validatorfuncs.py:100
+#, python-brace-format
+msgid "{option_key} must be entered in a 24-hour format such as: {timeformat}"
+msgstr "{option_key} 必須以24小時格式輸入，例如：{timeformat}"
+
+#: .\utils\validatorfuncs.py:144
+#, python-brace-format
+msgid "Could not convert section '{interval}' to a {option_key}."
+msgstr "無法將部分 '{interval}' 轉換為 {option_key}。"
+
+#: .\utils\validatorfuncs.py:156
+#, python-brace-format
+msgid "That {option_key} is in the past! Must give a Future datetime!"
+msgstr "該 {option_key} 在過去！必須給出未來的日期時間！"
+
+#: .\utils\validatorfuncs.py:166
+#, python-brace-format
+msgid "Must enter a whole number for {option_key}!"
+msgstr "必須輸入 {option_key} 的整數！"
+
+#: .\utils\validatorfuncs.py:172
+#, python-brace-format
+msgid "Could not convert '{entry}' to a whole number for {option_key}!"
+msgstr "無法將 '{entry}' 轉換為 {option_key} 的整數！"
+
+#: .\utils\validatorfuncs.py:183
+#, python-brace-format
+msgid "Must enter a whole number greater than 0 for {option_key}!"
+msgstr "必須輸入大於0的 {option_key} 的整數！"
+
+#: .\utils\validatorfuncs.py:194
+#, python-brace-format
+msgid "{option_key} must be a whole number greater than or equal to 0!"
+msgstr "{option_key} 必須是大於或等於0的整數！"
+
+#: .\utils\validatorfuncs.py:213
+#, python-brace-format
+msgid "Must enter a true/false input for {option_key}. Accepts {alternatives}."
+msgstr "必須為 {option_key} 輸入true/false。接受 {alternatives}。"
+
+#: .\utils\validatorfuncs.py:243
+#, python-brace-format
+msgid "That matched: {matches}. Please be more specific!"
+msgstr "匹配：{matches}。請更具體！"
+
+#: .\utils\validatorfuncs.py:250
+#, python-brace-format
+msgid "Could not find timezone '{entry}' for {option_key}!"
+msgstr "找不到時區 '{entry}' 作為 {option_key}！"
+
+#: .\utils\validatorfuncs.py:258
+msgid "Email address field empty!"
+msgstr "電子郵件地址字段為空！"
+
+#: .\utils\validatorfuncs.py:261
+#, python-brace-format
+msgid "That isn't a valid {option_key}!"
+msgstr "那不是有效的 {option_key}！"
+
+#: .\utils\validatorfuncs.py:268
+#, python-brace-format
+msgid "No {option_key} entered to set!"
+msgstr "未輸入 {option_key} 來設置！"
+
+#: .\utils\validatorfuncs.py:272
+msgid "Must enter an access type!"
+msgstr "必須輸入訪問類型！"
+
+#: .\utils\validatorfuncs.py:276
+#, python-brace-format
+msgid "Access type must be one of: {alternatives}"
+msgstr "訪問類型必須是以下之一：{alternatives}"
+
+#: .\utils\validatorfuncs.py:281
+msgid "Lock func not entered."
+msgstr "未輸入鎖定功能。"
+
+#: .\web\templates\admin\app_list.html:19
+msgid "Add"
+msgstr "添加"
+
+#: .\web\templates\admin\app_list.html:26
+msgid "View"
+msgstr "查看"
+
+#: .\web\templates\admin\app_list.html:28
+msgid "Change"
+msgstr "更改"
+
+#: .\web\templates\admin\app_list.html:39
+msgid "You don’t have permission to view or edit anything."
+msgstr "您沒有查看或編輯任何內容的權限。"
