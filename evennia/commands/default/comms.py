@@ -9,6 +9,8 @@ Communication commands:
 
 from django.conf import settings
 from django.db.models import Q
+from django.utils.translation import gettext as _, pgettext as p_
+
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
@@ -281,13 +283,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if handle_errors:
             if not channels:
                 self.msg(
-                    f"No channel found matching '{channelname}' "
-                    "(could also be due to missing access)."
+                    _("No channel found matching '{channelname}' (could also be due to missing access).").format(channelname=channelname)
                 )
                 return None
             elif len(channels) > 1:
                 self.msg(
-                    f"Multiple possible channel matches/alias for '{channelname}':\n"
+                    _("Multiple possible channel matches/alias for '{channelname}':\n").format(channelname=channelname)
                     + ", ".join(chan.key for chan in channels)
                 )
                 return None
@@ -312,7 +313,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         if not channel.access(self.caller, "send"):
-            self.msg(f"You are not allowed to send messages to channel {channel}")
+            self.msg(_("You are not allowed to send messages to channel {channel}").format(channel=channel))
             return
 
         # avoid unsafe tokens in message
@@ -358,12 +359,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if channel.has_connection(caller):
-            return False, f"Already listening to channel {channel.key}."
+            return False, _("Already listening to channel {channel.key}.").format(channel=channel)
 
         # this sets up aliases in post_join_channel by default
         result = channel.connect(caller)
 
-        return result, "" if result else f"Were not allowed to subscribe to channel {channel.key}"
+        return result, "" if result else _("Were not allowed to subscribe to channel {channel.key}").format(channel=channel)
 
     def unsub_from_channel(self, channel, **kwargs):
         """
@@ -382,12 +383,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not channel.has_connection(caller):
-            return False, f"Not listening to channel {channel.key}."
+            return False, _("Not listening to channel {channel.key}.").format(channel=channel)
 
         # this will also clean aliases
         result = channel.disconnect(caller)
 
-        return result, "" if result else f"Could not unsubscribe from channel {channel.key}"
+        return result, "" if result else _("Could not unsubscribe from channel {channel.key}").format(channel=channel)
 
     def add_alias(self, channel, alias, **kwargs):
         """
@@ -436,7 +437,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if self.caller.nicks.has(alias, category="channel", **kwargs):
             DefaultChannel.remove_user_channel_alias(self.caller, alias)
             return True, ""
-        return False, "No such alias was defined."
+        return False, _("No such alias was defined.")
 
     def get_channel_aliases(self, channel):
         """
@@ -469,7 +470,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         if channel.mute(self.caller):
             return True, ""
-        return False, f"Channel {channel.key} was already muted."
+        return False, _("Channel {channel.key} was already muted.").format(channel=channel)
 
     def unmute_channel(self, channel):
         """
@@ -485,7 +486,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         if channel.unmute(self.caller):
             return True, ""
-        return False, f"Channel {channel.key} was already unmuted."
+        return False, _("Channel {channel.key} was already unmuted.").format(channel=channel)
 
     def create_channel(self, name, description, typeclass=None, aliases=None):
         """
@@ -511,7 +512,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             typeclass = CHANNEL_DEFAULT_TYPECLASS
 
         if typeclass.objects.channel_search(name, exact=True):
-            return False, f"Channel {name} already exists."
+            return False, _("Channel {name} already exists.").format(channel=channel)
 
         # set up the new channel
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
@@ -542,13 +543,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         channel_key = channel.key
         if message is None:
             message = (
-                f"|rChannel {channel_key} is being destroyed. "
-                "Make sure to clean any channel aliases.|n"
+                _("|rChannel {channel_key} is being destroyed. Make sure to clean any channel aliases.|n").format(channel_key=channel_key)
             )
         if message:
             channel.msg(message, senders=caller, bypass_mute=True)
         channel.delete()
-        logger.log_sec(f"Channel {channel_key} was deleted by {caller}")
+        logger.log_sec(_("Channel {channel_key} was deleted by {caller}").format(channel_key=channel_key, caller=caller))
 
     def set_lock(self, channel, lockstring):
         """
@@ -623,7 +623,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         if not channel.subscriptions.has(target):
-            return False, f"{target} is not connected to channel {channel.key}."
+            return False, _("{target} is not connected to channel {channel.key}.").format(channel=channel)
         # find all of target's nicks linked to this channel and delete them
         for nick in [
             nick
@@ -632,14 +632,13 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         ]:
             nick.delete()
         channel.disconnect(target)
-        reason = f" Reason: {reason}" if reason else ""
-        target.msg(f"You were booted from channel {channel.key} by {self.caller.key}.{reason}")
+        reason = _(" Reason: {reason}").format(reason=reason) if reason else ""
+        target.msg(_("You were booted from channel {channel.key} by {self.caller.key}.{reason}").format(channel=channel, self=self, reason=reason))
         if not quiet:
-            channel.msg(f"{target.key} was booted from channel by {self.caller.key}.{reason}")
+            channel.msg(_("{target.key} was booted from channel by {self.caller.key}.{reason}").format(target=target, self=self, reason=reason))
 
         logger.log_sec(
-            f"Channel Boot: {target} (Channel: {channel}, "
-            f"Reason: {reason.strip()}, Caller: {self.caller}"
+            _("Channel Boot: {target} (Channel: {channel}, Reason: {reason.strip()}, Caller: {self.caller}").format(target=target, channel=channel, reason=reason, self=self)
         )
         return True, ""
 
@@ -662,7 +661,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         self.boot_user(channel, target, quiet=quiet, reason=reason)
         if channel.ban(target):
             return True, ""
-        return False, f"{target} is already banned from this channel."
+        return False, _("{target} is already banned from this channel.").format(target=target)
 
     def unban_user(self, channel, target):
         """
@@ -681,7 +680,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         if channel.unban(target):
             return True, ""
-        return False, f"{target} was not previously banned from this channel."
+        return False, _("{target} was not previously banned from this channel.").format(target=target)
 
     def channel_list_bans(self, channel):
         """
@@ -822,11 +821,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         for chan in channels:
             if chan not in subscribed:
-                substatus = "|rNo|n"
+                substatus = p_("channel_subscribed", "|rNo|n")
             elif caller in chan.mutelist:
-                substatus = "|rMuting|n"
+                substatus = p_("channel_subscribed", "|rMuting|n")
             else:
-                substatus = "|gYes|n"
+                substatus = p_("channel_subscribed", "|gYes|n")
             my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
                 *(
@@ -859,32 +858,31 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             table = self.display_all_channels(subscribed, available)
 
             self.msg(
-                "\n|wAvailable channels|n (use no argument to "
-                f"only show your subscriptions)\n{table}"
+                _("\n|wAvailable channels|n (use no argument to only show your subscriptions)\n{table}").format(table=table)
             )
             return
 
         if not channel_names:
             # empty arg show only subscribed channels
-            subscribed, _ = self.list_channels()
+            subscribed, _list = self.list_channels()
             table = self.display_subbed_channels(subscribed)
 
-            self.msg(f"\n|wChannel subscriptions|n (use |w/all|n to see all available):\n{table}")
+            self.msg(_("\n|wChannel subscriptions|n (use |w/all|n to see all available):\n{table}").format(table=table))
             return
 
         if not self.switches and not self.args:
-            self.msg("Usage[/switches]: channel [= message]")
+            self.msg(_("Usage[/switches]: channel [= message]"))
             return
 
         if "create" in switches:
             # create a new channel
             if not self.access(caller, "manage"):
-                self.msg("You don't have access to use channel/create.")
+                self.msg(_("You don't have access to use channel/create."))
                 return
 
             config = self.lhs
             if not config:
-                self.msg("To create: channel/create name[;aliases][:typeclass] [= description]")
+                self.msg(_("To create: channel/create name[;aliases][:typeclass] [= description]"))
                 return
             name, *typeclass = config.rsplit(":", 1)
             typeclass = typeclass[0] if typeclass else None
@@ -892,7 +890,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             description = self.rhs or ""
             chan, err = self.create_channel(name, description, typeclass=typeclass, aliases=aliases)
             if chan:
-                self.msg(f"Created (and joined) new channel '{chan.key}'.")
+                self.msg(_("Created (and joined) new channel '{chan.key}'.").format(chan=chan))
             else:
                 self.msg(err)
             return
@@ -901,11 +899,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # remove a personal alias (no channel needed)
             alias = self.args.strip()
             if not alias:
-                self.msg("Specify the alias to remove as channel/unalias <alias>")
+                self.msg(_("Specify the alias to remove as channel/unalias <alias>"))
                 return
             success, err = self.remove_alias(alias)
             if success:
-                self.msg(f"Removed your channel alias '{alias}'.")
+                self.msg(_("Removed your channel alias '{alias}'.").format(alias=alias))
             else:
                 self.msg(err)
             return
@@ -929,12 +927,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             found_channels = self.search_channel(channel_name, exact=False, handle_errors=False)
             if not found_channels:
                 errors.append(
-                    f"No channel found matching '{channel_name}' "
-                    "(could also be due to missing access)."
+                    _("No channel found matching '{channel_name}' (could also be due to missing access).").format(channel_name=channel_name)
                 )
             elif len(found_channels) > 1:
                 errors.append(
-                    f"Multiple possible channel matches/alias for '{channel_name}':\n"
+                    _("Multiple possible channel matches/alias for '{channel_name}':\n").format(channel_name=channel_name)
                     + ", ".join(chan.key for chan in found_channels)
                 )
             else:
@@ -959,17 +956,14 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 subscribed, available = self.list_channels()
                 if channel in subscribed:
                     table = self.display_subbed_channels([channel])
-                    header = f"Channel |w{channel.key}|n"
+                    header = _("Channel |w{channel.key}|n").format(channel=channel)
                     self.msg(
-                        f"{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) "
-                        "to chat and the 'channel' command "
-                        f"to customize)\n{table}"
+                        _("{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) to chat and the 'channel' command to customize)\n{table}").format(header=header, channel=channel, table=table)
                     )
                 elif channel in available:
                     table = self.display_all_channels([], [channel])
                     self.msg(
-                        "\n|wNot subscribed to this channel|n (use /list to "
-                        f"show all subscriptions)\n{table}"
+                        _("\n|wNot subscribed to this channel|n (use /list to show all subscriptions)\n{table}").format(table=table)
                     )
             return
 
@@ -981,8 +975,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 index = max(0, int(index))
             except ValueError:
                 self.msg(
-                    "The history index (describing how many lines to go back) "
-                    "must be an integer >= 0."
+                    _("The history index (describing how many lines to go back) must be an integer >= 0.")
                 )
                 return
             self.get_channel_history(channel, start_index=index)
@@ -998,11 +991,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 for alias in aliases:
                     self.add_alias(channel, alias)
                 alias_txt = ", ".join(aliases)
-                alias_txt = f" using alias(es) {alias_txt}" if aliases else ""
+                alias_txt = _(" using alias(es) {alias_txt}").format(alias_txt=alias_txt) if aliases else ""
                 self.msg(
-                    "You are now subscribed "
-                    f"to the channel {channel.key}{alias_txt}. Use /alias to "
-                    "add additional aliases for referring to the channel."
+                    _("You are now subscribed to the channel {channel.key}{alias_txt}. Use /alias to add additional aliases for referring to the channel.").format(channel=channel, alias_txt=alias_txt)
                 )
             else:
                 self.msg(err)
@@ -1012,7 +1003,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # un-subscribe from a channel
             success, err = self.unsub_from_channel(channel)
             if success:
-                self.msg(f"You un-subscribed from channel {channel.key}. All aliases were cleared.")
+                self.msg(_("You un-subscribed from channel {channel.key}. All aliases were cleared.").format(channel=channel))
             else:
                 self.msg(err)
             return
@@ -1021,17 +1012,17 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # create a new personal alias for a channel
             alias = self.rhs
             if not alias:
-                self.msg("Specify the alias as channel/alias channelname = alias")
+                self.msg(_("Specify the alias as channel/alias channelname = alias"))
                 return
             self.add_alias(channel, alias)
-            self.msg(f"Added/updated your alias '{alias}' for channel {channel.key}.")
+            self.msg(_("Added/updated your alias '{alias}' for channel {channel.key}.").format(alias=alias, channel=channel))
             return
 
         if "mute" in switches:
             # mute a given channel
             success, err = self.mute_channel(channel)
             if success:
-                self.msg(f"Muted channel {channel.key}.")
+                self.msg(_("Muted channel {channel.key}.").format(channel=channel))
             else:
                 self.msg(err)
             return
@@ -1040,7 +1031,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # unmute a given channel
             success, err = self.unmute_channel(channel)
             if success:
-                self.msg(f"Un-muted channel {channel.key}.")
+                self.msg(_("Un-muted channel {channel.key}.").format(channel=channel))
             else:
                 self.msg(err)
             return
@@ -1049,28 +1040,24 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # destroy a channel we control
 
             if not self.access(caller, "manage"):
-                self.msg("You don't have access to use channel/destroy.")
+                self.msg(_("You don't have access to use channel/destroy."))
                 return
 
             if not channel.access(caller, "control"):
-                self.msg("You can only delete channels you control.")
+                self.msg(_("You can only delete channels you control."))
                 return
 
             reason = self.rhs or None
 
             def _perform_delete(caller, *args, **kwargs):
                 self.destroy_channel(channel, message=reason)
-                self.msg(f"Channel {channel.key} was successfully deleted.")
+                self.msg(_("Channel {channel.key} was successfully deleted.").format(channel=channel))
 
             ask_yes_no(
                 caller,
-                prompt=(
-                    f"Are you sure you want to delete channel '{channel.key}' "
-                    "(make sure name is correct!)?\nThis will disconnect and "
-                    "remove all users' aliases. {options}?"
-                ),
+                prompt=_("Are you sure you want to delete channel '{channel.key}' (make sure name is correct!)?\nThis will disconnect and remove all users' aliases. {{options}}?").format(channel=channel),
                 yes_action=_perform_delete,
-                no_action="Aborted.",
+                no_action=p_("channel_operation", "Aborted."),
                 default="N",
             )
 
@@ -1078,79 +1065,79 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # set channel description
 
             if not self.access(caller, "manage"):
-                self.msg("You don't have access to use channel/desc.")
+                self.msg(_("You don't have access to use channel/desc."))
                 return
 
             if not channel.access(caller, "control"):
-                self.msg("You can only change description of channels you control.")
+                self.msg(_("You can only change description of channels you control."))
                 return
 
             desc = self.rhs.strip()
 
             if not desc:
-                self.msg("Usage: /desc channel = description")
+                self.msg(_("Usage: /desc channel = description"))
                 return
 
             self.set_desc(channel, desc)
-            self.msg("Updated channel description.")
+            self.msg(_("Updated channel description."))
 
         if "lock" in switches:
             # add a lockstring to channel
 
             if not self.access(caller, "changelocks"):
-                self.msg("You don't have access to use channel/lock.")
+                self.msg(_("You don't have access to use channel/lock."))
                 return
 
             if not channel.access(caller, "control"):
-                self.msg("You need 'control'-access to change locks on this channel.")
+                self.msg(_("You need 'control'-access to change locks on this channel."))
                 return
 
             lockstring = self.rhs.strip()
 
             if not lockstring:
-                self.msg("Usage: channel/lock channelname = lockstring")
+                self.msg(_("Usage: channel/lock channelname = lockstring"))
                 return
 
             success, err = self.set_lock(channel, self.rhs)
             if success:
-                self.msg("Added/updated lock on channel.")
+                self.msg(_("Added/updated lock on channel."))
             else:
-                self.msg(f"Could not add/update lock: {err}")
+                self.msg(_("Could not add/update lock: {err}").format(err=err))
             return
 
         if "unlock" in switches:
             # remove/update lockstring from channel
 
             if not self.access(caller, "changelocks"):
-                self.msg("You don't have access to use channel/unlock.")
+                self.msg(_("You don't have access to use channel/unlock."))
                 return
 
             if not channel.access(caller, "control"):
-                self.msg("You need 'control'-access to change locks on this channel.")
+                self.msg(_("You need 'control'-access to change locks on this channel."))
                 return
 
             lockstring = self.rhs.strip()
 
             if not lockstring:
-                self.msg("Usage: channel/unlock channelname = lockstring")
+                self.msg(_("Usage: channel/unlock channelname = lockstring"))
                 return
 
             success, err = self.unset_lock(channel, self.rhs)
             if success:
-                self.msg("Removed lock from channel.")
+                self.msg(_("Removed lock from channel."))
             else:
-                self.msg(f"Could not remove lock: {err}")
+                self.msg(_("Could not remove lock: {err}").format(err=err))
             return
 
         if "boot" in switches:
             # boot a user from channel(s)
 
             if not self.access(caller, "admin"):
-                self.msg("You don't have access to use channel/boot.")
+                self.msg(_("You don't have access to use channel/boot."))
                 return
 
             if not self.rhs:
-                self.msg("Usage: channel/boot channel[,channel,...] = username [:reason]")
+                self.msg(_("Usage: channel/boot channel[,channel,...] = username [:reason]"))
                 return
 
             target_str, *reason = self.rhs.rsplit(":", 1)
@@ -1158,36 +1145,31 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             for chan in channels:
                 if not chan.access(caller, "control"):
-                    self.msg(f"You need 'control'-access to boot a user from {chan.key}.")
+                    self.msg(_("You need 'control'-access to boot a user from {chan.key}.").format(chan=chan))
                     return
 
                 # the target must be a member of all given channels
                 target = caller.search(target_str, candidates=chan.subscriptions.all())
                 if not target:
-                    self.msg(f"Cannot boot '{target_str}' - not in channel {chan.key}.")
+                    self.msg(_("Cannot boot '{target_str}' - not in channel {chan.key}.").format(chan=chan, target_str=target_str))
                     return
 
             def _boot_user(caller, *args, **kwargs):
                 for chan in channels:
                     success, err = self.boot_user(chan, target, quiet=False, reason=reason)
                     if success:
-                        self.msg(f"Booted {target.key} from channel {chan.key}.")
+                        self.msg(_("Booted {target.key} from channel {chan.key}.").format(target=target, chan=chan))
                     else:
-                        self.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
+                        self.msg(_("Cannot boot {target.key} from channel {chan.key}: {err}").format(target=target, chan=chan, err=err))
 
             channames = ", ".join(chan.key for chan in channels)
-            reasonwarn = (
-                ". Also note that your reason will be echoed to the channel" if reason else ""
-            )
+            reasonwarn = _(". Also note that your reason will be echoed to the channel") if reason else ""
+                
             ask_yes_no(
                 caller,
-                prompt=(
-                    f"Are you sure you want to boot user {target.key} from "
-                    f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}). "
-                    "{options}?"
-                ),
+                prompt=_("Are you sure you want to boot user {target.key} from channel(s) {channames} (make sure name/channels are correct{reasonwarn}). {{options}}?").format(target=target, channames=channames, reasonwarn=reasonwarn),
                 yes_action=_boot_user,
-                no_action="Aborted.",
+                no_action=p_("channel_operation", "Aborted."),
                 default="Y",
             )
             return
@@ -1196,19 +1178,18 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # ban a user from channel(s)
 
             if not self.access(caller, "admin"):
-                self.msg("You don't have access to use channel/ban.")
+                self.msg(_("You don't have access to use channel/ban."))
                 return
 
             if not self.rhs:
                 # view bans for channels
 
                 if not channel.access(caller, "control"):
-                    self.msg(f"You need 'control'-access to view bans on channel {channel.key}")
+                    self.msg(_("You need 'control'-access to view bans on channel {channel.key}").format(channel=channel))
                     return
 
                 bans = [
-                    "Channel bans "
-                    "(to ban, use channel/ban channel[,channel,...] = username [:reason]"
+                    _("Channel bans (to ban, use channel/ban channel[,channel,...] = username [:reason]")
                 ]
                 bans.extend(self.channel_list_bans(channel))
                 self.msg("\n".join(bans))
@@ -1220,36 +1201,31 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             for chan in channels:
                 # the target must be a member of all given channels
                 if not chan.access(caller, "control"):
-                    self.msg(f"You don't have access to ban users on channel {chan.key}")
+                    self.msg(_("You don't have access to ban users on channel {chan.key}").format(chan=chan))
                     return
 
                 target = caller.search(target_str, candidates=chan.subscriptions.all())
 
                 if not target:
-                    self.msg(f"Cannot ban '{target_str}' - not in channel {chan.key}.")
+                    self.msg(_("Cannot ban '{target_str}' - not in channel {chan.key}.").format(target_str=target_str, chan=chan))
                     return
 
             def _ban_user(caller, *args, **kwargs):
                 for chan in channels:
                     success, err = self.ban_user(chan, target, quiet=False, reason=reason)
                     if success:
-                        self.msg(f"Banned {target.key} from channel {chan.key}.")
+                        self.msg(_("Banned {target.key} from channel {chan.key}.").format(target=target, chan=chan))
                     else:
-                        self.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
+                        self.msg(_("Cannot boot {target.key} from channel {chan.key}: {err}").format(target=target, chan=chan, err=err))
 
             channames = ", ".join(chan.key for chan in channels)
-            reasonwarn = (
-                ". Also note that your reason will be echoed to the channel" if reason else ""
-            )
+            reasonwarn = _(". Also note that your reason will be echoed to the channel") if reason else ""
+            
             ask_yes_no(
                 caller,
-                (
-                    f"Are you sure you want to ban user {target.key} from "
-                    f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}) "
-                    "{options}?"
-                ),
+                _("Are you sure you want to ban user {target.key} from channel(s) {channames} (make sure name/channels are correct{reasonwarn}) {{options}}?").format(target=target, channames=channames, reasonwarn=reasonwarn),
                 _ban_user,
-                "Aborted.",
+                p_("channel_operation", "Aborted."),
             )
             return
 
@@ -1257,32 +1233,32 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # unban a previously banned user from channel
 
             if not self.access(caller, "admin"):
-                self.msg("You don't have access to use channel/unban.")
+                self.msg(_("You don't have access to use channel/unban."))
                 return
 
             target_str = self.rhs.strip()
 
             if not target_str:
-                self.msg("Usage: channel[,channel,...] = user")
+                self.msg(_("Usage: channel[,channel,...] = user"))
                 return
 
             banlists = []
             for chan in channels:
                 # the target must be a member of all given channels
                 if not chan.access(caller, "control"):
-                    self.msg(f"You don't have access to unban users on channel {chan.key}")
+                    self.msg(_("You don't have access to unban users on channel {chan.key}").format(chan=chan))
                     return
                 banlists.extend(chan.banlist)
 
             target = caller.search(target_str, candidates=banlists)
             if not target:
-                self.msg(f"Could not find a banned user '{target_str}' in given channel(s).")
+                self.msg(_("Could not find a banned user '{target_str}' in given channel(s).").format(target_str=target_str))
                 return
 
             for chan in channels:
                 success, err = self.unban_user(channel, target)
                 if success:
-                    self.msg(f"Un-banned {target_str} from channel {chan.key}")
+                    self.msg(_("Un-banned {target_str} from channel {chan.key}").format(target_str=target_str, chan=chan))
                 else:
                     self.msg(err)
             return
@@ -1290,7 +1266,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if "who" in switches:
             # view who's a member of a channel
 
-            who_list = [f"Subscribed to {channel.key}:"]
+            who_list = [_("Subscribed to {channel.key}:").format(channel=channel)]
             who_list.extend(self.channel_list_who(channel))
             self.msg("\n".join(who_list))
             return
@@ -1361,10 +1337,10 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         if "last" in self.switches:
             if pages_we_sent:
                 recv = ",".join(obj.key for obj in pages_we_sent[0].receivers)
-                self.msg(f"You last paged |c{recv}|n:{pages_we_sent[0].message}")
+                self.msg(_("You last paged |c{recv}|n:{pages_we_sent[0].message}").format(pages_we_sent=pages_we_sent, recv=recv))
                 return
             else:
-                self.msg("You haven't paged anyone yet.")
+                self.msg(_("You haven't paged anyone yet."))
                 return
 
         if self.args:
@@ -1404,23 +1380,20 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 if pages_we_sent:
                     targets = pages_we_sent[0].receivers
                 else:
-                    self.msg("Who do you want page?")
+                    self.msg(_("Who do you want page?"))
                     return
 
-            header = f"|wAccount|n |c{caller.key}|n |wpages:|n"
+            header = _("|wAccount|n |c{caller.key}|n |wpages:|n").format(caller=caller)
             if message.startswith(":"):
                 message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
-            target_perms = " or ".join(
-                [f"id({target.id})" for target in targets + [caller]]
-            )
             create.create_message(
                 caller,
                 message,
                 receivers=targets,
                 locks=(
-                    f"read:{target_perms} or perm(Admin);"
+                    f"read:id({caller.id}) or perm(Admin);"
                     f"delete:id({caller.id}) or perm(Admin);"
                     f"edit:id({caller.id}) or perm(Admin)"
                 ),
@@ -1432,20 +1405,20 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             rstrings = []
             for target in targets:
                 if not target.access(caller, "msg"):
-                    rstrings.append(f"You are not allowed to page {target}.")
+                    rstrings.append(_("You are not allowed to page {target}.").format(target=target))
                     continue
                 target.msg(f"{header} {message}")
                 if hasattr(target, "sessions") and not target.sessions.count():
                     received.append(f"|C{target.name}|n")
                     rstrings.append(
-                        f"{received[-1]} is offline. They will see your message "
-                        "if they list their pages later."
+                        _("{received[-1]} is offline. They will see your message "
+                        "if they list their pages later.").format(received=received)
                     )
                 else:
                     received.append(f"|c{target.name}|n")
             if rstrings:
                 self.msg("\n".join(rstrings))
-            self.msg("You paged %s with: '%s'." % (", ".join(received), message))
+            self.msg(_("You paged %s with: '%s'.") % (", ".join(received), message))
             return
 
         else:
@@ -1454,8 +1427,8 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 lastpages = pages[-number:]
             else:
                 lastpages = pages
-            to_template = "|w{date}{clr} {sender}|nto{clr}{receiver}|n:> {message}"
-            from_template = "|w{date}{clr} {receiver}|nfrom{clr}{sender}|n:< {message}"
+            to_template = _("|w{date}{clr} {sender}|nto{clr}{receiver}|n:> {message}")
+            from_template = _("|w{date}{clr} {receiver}|nfrom{clr}{sender}|n:< {message}")
             listing = []
             prev_selfsend = False
             for page in lastpages:
@@ -1498,9 +1471,9 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             lastpages = "\n ".join(listing)
 
             if lastpages:
-                string = f"Your latest pages:\n {lastpages}"
+                string = _("Your latest pages:\n {lastpages}").format(lastpages=lastpages)
             else:
-                string = "You haven't sent or received any pages yet."
+                string = _("You haven't paged anyone yet.")
             self.msg(string)
             return
 
@@ -1542,7 +1515,7 @@ def _list_bots(cmd):
             )
         return table
     else:
-        return "No irc bots found."
+        return _("No irc bots found.")
 
 
 class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
@@ -1585,7 +1558,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         """Setup the irc-channel mapping"""
 
         if not settings.IRC_ENABLED:
-            string = """IRC is not enabled. You need to activate it in game/settings.py."""
+            string = _("""IRC is not enabled. You need to activate it in game/settings.py.""")
             self.msg(string)
             return
 
@@ -1603,15 +1576,15 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 matches = AccountDB.objects.filter(db_is_bot=True, id=dbref)
             if matches:
                 matches[0].delete()
-                self.msg("IRC connection destroyed.")
+                self.msg(_("IRC connection destroyed."))
             else:
-                self.msg("IRC connection/bot could not be removed, does it exist?")
+                self.msg(_("IRC connection/bot could not be removed, does it exist?"))
             return
 
         if not self.args or not self.rhs:
             string = (
-                "Usage: irc2chan[/switches] <evennia_channel> ="
-                " <ircnetwork> <port> <#irchannel> <botname>[:typeclass]"
+                _("Usage: irc2chan[/switches] <evennia_channel> ="
+                " <ircnetwork> <port> <#irchannel> <botname>[:typeclass]")
             )
             self.msg(string)
             return
@@ -1624,7 +1597,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             ]
             irc_channel = f"#{irc_channel}"
         except Exception:
-            string = "IRC bot definition '%s' is not valid." % self.rhs
+            string = _("IRC bot definition '%s' is not valid.") % self.rhs
             self.msg(string)
             return
 
@@ -1642,13 +1615,13 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             # re-use an existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg(f"Account '{botname}' already exists and is not a bot.")
+                self.msg(_("Account '{botname}' already exists and is not a bot.").format(botname=botname))
                 return
         else:
             try:
                 bot = create.create_account(botname, None, None, typeclass=botclass)
             except Exception as err:
-                self.msg(f"|rError, could not create the bot:|n '{err}'.")
+                self.msg(_("|rError, could not create the bot:|n '{err}'.").format(err=err))
                 return
         bot.start(
             ev_channel=channel,
@@ -1658,7 +1631,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             irc_port=irc_port,
             irc_ssl=irc_ssl,
         )
-        self.msg("Connection created. Starting IRC bot.")
+        self.msg(_("Connection created. Starting IRC bot."))
 
 
 class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
@@ -1693,42 +1666,42 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         # should always be on the form botname option
         args = self.args.split()
         if len(args) != 2:
-            self.msg("Usage: ircstatus [#dbref ping||nicklist||reconnect]")
+            self.msg(_("Usage: ircstatus [#dbref ping||nicklist||reconnect]"))
             return
         botname, option = args
         if option not in ("ping", "users", "reconnect", "nicklist", "who"):
-            self.msg("Not a valid option.")
+            self.msg(_("Not a valid option."))
             return
         matches = None
         if utils.dbref(botname):
             matches = AccountDB.objects.filter(db_is_bot=True, id=utils.dbref(botname))
         if not matches:
             self.msg(
-                "No matching IRC-bot found. Use ircstatus without arguments to list active bots."
+                _("No matching IRC-bot found. Use ircstatus without arguments to list active bots.")
             )
             return
         ircbot = matches[0]
         channel = ircbot.db.irc_channel
         network = ircbot.db.irc_network
         port = ircbot.db.irc_port
-        chtext = f"IRC bot '{ircbot.db.irc_botname}' on channel {channel} ({network}:{port})"
+        chtext = _("IRC bot '{ircbot.db.irc_botname}' on channel {channel} ({network}:{port})").format(ircbot=ircbot, channel=channel, port=port, network=network)
         if option == "ping":
             # check connection by sending outself a ping through the server.
-            self.msg(f"Pinging through {chtext}.")
+            self.msg(_("Pinging through {chtext}.").format(chtext=chtext))
             ircbot.ping(self.caller)
         elif option in ("users", "nicklist", "who"):
             # retrieve user list. The bot must handles the echo since it's
             # an asynchronous call.
-            self.msg(f"Requesting nicklist from {channel} ({network}:{port}).")
+            self.msg(_("Requesting nicklist from {channel} ({network}:{port}).").format(channel=channel, port=port, network=network))
             ircbot.get_nicklist(self.caller)
         elif self.caller.locks.check_lockstring(
             self.caller, "dummy:perm(ircstatus) or perm(Developer)"
         ):
             # reboot the client
-            self.msg(f"Forcing a disconnect + reconnect of {chtext}.")
+            self.msg(_("Forcing a disconnect + reconnect of {chtext}.").format(chtext=chtext))
             ircbot.reconnect()
         else:
-            self.msg("You don't have permission to force-reload the IRC bot.")
+            self.msg(_("You don't have permission to force-reload the IRC bot."))
 
 
 # RSS connection
@@ -1776,8 +1749,8 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             assert feedparser  # to avoid checker error of not being used
         except ImportError:
             string = (
-                "RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser)."
-                " Install before continuing."
+                _("RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser)."
+                " Install before continuing.")
             )
             self.msg(string)
             return
@@ -1803,7 +1776,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                     )
                 self.msg(table)
             else:
-                self.msg("No rss bots found.")
+                self.msg(_("No rss bots found."))
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
@@ -1814,13 +1787,13 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                 matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
             if matches:
                 matches[0].delete()
-                self.msg("RSS connection destroyed.")
+                self.msg(_("RSS connection destroyed."))
             else:
-                self.msg("RSS connection/bot could not be removed, does it exist?")
+                self.msg(_("RSS connection/bot could not be removed, does it exist?"))
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: rss2chan[/switches] <evennia_channel> = <rss url>"
+            string = _("Usage: rss2chan[/switches] <evennia_channel> = <rss url>")
             self.msg(string)
             return
         channel = self.lhs
@@ -1832,13 +1805,13 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             # re-use existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg(f"Account '{botname}' already exists and is not a bot.")
+                self.msg(_("Account '{botname}' already exists and is not a bot.").format(botname=botname))
                 return
         else:
             # create a new bot
             bot = create.create_account(botname, None, None, typeclass=bots.RSSBot)
         bot.start(ev_channel=channel, rss_url=url, rss_rate=10)
-        self.msg("RSS reporter created. Fetching RSS.")
+        self.msg(_("RSS reporter created. Fetching RSS."))
 
 
 class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
@@ -1873,7 +1846,7 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
         """Setup the Grapevine channel mapping"""
 
         if not settings.GRAPEVINE_ENABLED:
-            self.msg("Set GRAPEVINE_ENABLED=True in settings to enable.")
+            self.msg(_("Set GRAPEVINE_ENABLED=True in settings to enable."))
             return
 
         if "list" in self.switches:
@@ -1896,7 +1869,7 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
                     table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapevine_channel)
                 self.msg(table)
             else:
-                self.msg("No grapevine bots found.")
+                self.msg(_("No grapevine bots found."))
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
@@ -1908,13 +1881,13 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
                 matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
             if matches:
                 matches[0].delete()
-                self.msg("Grapevine connection destroyed.")
+                self.msg(_("Grapevine connection destroyed."))
             else:
-                self.msg("Grapevine connection/bot could not be removed, does it exist?")
+                self.msg(_("Grapevine connection/bot could not be removed, does it exist?"))
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>"
+            string = _("Usage: grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>")
             self.msg(string)
             return
 
@@ -1927,16 +1900,16 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
             # re-use existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg(f"Account '{botname}' already exists and is not a bot.")
+                self.msg(_("Account '{botname}' already exists and is not a bot.").format(botname=botname))
                 return
             else:
-                self.msg(f"Reusing bot '{botname}' ({bot.dbref})")
+                self.msg(_("Reusing bot '{botname}' ({bot.dbref})").format(bot=bot, botname=botname))
         else:
             # create a new bot
             bot = create.create_account(botname, None, None, typeclass=bots.GrapevineBot)
 
         bot.start(ev_channel=channel, grapevine_channel=grapevine_channel)
-        self.msg(f"Grapevine connection created {channel} <-> {grapevine_channel}.")
+        self.msg(_("Grapevine connection created {channel} <-> {grapevine_channel}.").format(channel=channel, grapevine_channel=grapevine_channel))
 
 
 class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
@@ -1982,7 +1955,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
 
         if not settings.DISCORD_BOT_TOKEN:
             self.msg(
-                "You must add your Discord bot application token to settings as DISCORD_BOT_TOKEN"
+                _("You must add your Discord bot application token to settings as DISCORD_BOT_TOKEN")
             )
             return
 
@@ -1994,36 +1967,36 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
             discord_bot = create.create_account("DiscordBot", None, None, typeclass=bot_class)
             discord_bot.start()
-            self.msg("Created and initialized a new Discord relay bot.")
+            self.msg(_("Created and initialized a new Discord relay bot."))
         else:
             discord_bot = discord_bot[0]
 
         if not discord_bot.is_typeclass(settings.DISCORD_BOT_CLASS, exact=True):
             self.msg(
-                f"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does"
-                f" not match {settings.DISCORD_BOT_CLASS} in settings!"
+                _("WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does"
+                  " not match {settings.DISCORD_BOT_CLASS} in settings!").format(settings=settings, discord_bot=discord_bot)
             )
 
         if "start" in self.switches:
             if discord_bot.sessions.all():
-                self.msg("The Discord bot is already running.")
+                self.msg(_("The Discord bot is already running."))
             else:
                 discord_bot.start()
-                self.msg("Starting the Discord bot session.")
+                self.msg(_("Starting the Discord bot session."))
             return
 
         if "guild" in self.switches:
             discord_bot.db.tag_guild = not discord_bot.db.tag_guild
             self.msg(
-                f"Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|ninclude"
-                " the Discord server."
+                _("Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|ninclude"
+                 " the Discord server.").format(discord_bot=discord_bot)
             )
             return
         if "channel" in self.switches:
             discord_bot.db.tag_channel = not discord_bot.db.tag_channel
             self.msg(
-                f"Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|ninclude"
-                " the originating channel."
+                _("Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|ninclude"
+                 " the originating channel.").format(discord_bot=discord_bot)
             )
             return
 
@@ -2047,7 +2020,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                     )
                 self.msg(table)
             else:
-                self.msg("No Discord connections found.")
+                self.msg(_("No Discord connections found."))
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
@@ -2055,19 +2028,19 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                 try:
                     lid = int(self.args.strip())
                 except ValueError:
-                    self.msg("Usage: discord2chan/remove <link id>")
+                    self.msg(_("Usage: discord2chan/remove <link id>"))
                     return
                 if lid < len(channel_list):
                     ev_chan, dc_chan = discord_bot.db.channels.pop(lid)
                     dc_chan_names = discord_bot.attributes.get("discord_channels", {})
                     dc_info = dc_chan_names.get(dc_chan, {"name": "unknown", "guild": "unknown"})
                     self.msg(
-                        f"Removed link between {ev_chan} and"
-                        f" #{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
+                        _("Removed link between {ev_chan} and"
+                        " #{dc_info.get('name','?')}@{dc_info.get('guild','?')}").format(dc_info=dc_info, ev_chan=ev_chan)
                     )
                     return
             else:
-                self.msg("There are no active connections to Discord.")
+                self.msg(_("There are no active connections to Discord."))
                 return
 
         ev_channel = self.lhs
@@ -2095,22 +2068,22 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                 if results:
                     self.msg(table)
                 else:
-                    self.msg(f"There are no Discord channels connected to {ev_channel}.")
+                    self.msg(_("There are no Discord channels connected to {ev_channel}.").format(ev_channel=ev_channel))
             else:
-                self.msg("There are no active connections to Discord.")
+                self.msg(_("There are no active connections to Discord."))
             return
 
         # check if link already exists
         if channel_list := discord_bot.db.channels:
             if (ev_channel, dc_channel) in channel_list:
-                self.msg("Those channels are already linked.")
+                self.msg(_("Those channels are already linked."))
                 return
         else:
             discord_bot.db.channels = []
         # create the new link
         channel_obj = search.search_channel(ev_channel)
         if not channel_obj:
-            self.msg(f"There is no channel '{ev_channel}'")
+            self.msg(_("There is no channel '{ev_channel}'").format(ev_channel=ev_channel))
             return
         channel_obj = channel_obj[0]
         discord_bot.db.channels.append((channel_obj.name, dc_channel))
@@ -2119,4 +2092,4 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             dc_channel_name = dc_chans.get(dc_channel, {}).get("name", dc_channel)
         else:
             dc_channel_name = dc_channel
-        self.msg(f"Discord connection created: {channel_obj.name} <-> #{dc_channel_name}.")
+        self.msg(_("Discord connection created: {channel_obj.name} <-> #{dc_channel_name}.").format(channel_obj=channel_obj, dc_channel_name=dc_channel_name))
