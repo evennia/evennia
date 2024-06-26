@@ -5,7 +5,7 @@ General Character commands usually available to all characters
 import re
 
 from django.conf import settings
-
+from django.utils.translation import gettext as _
 import evennia
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
@@ -48,11 +48,11 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         home = caller.home
         if not home:
-            caller.msg("You have no home!")
+            caller.msg(_("You have no home!"))
         elif home == caller.location:
-            caller.msg("You are already home!")
+            caller.msg(_("You are already home!"))
         else:
-            caller.msg("There's no place like home ...")
+            caller.msg(_("There's no place like home ..."))
             caller.move_to(home, move_type="teleport")
 
 
@@ -81,7 +81,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
         if not self.args:
             target = caller.location
             if not target:
-                caller.msg("You have no location to look at!")
+                caller.msg(_("You have no location to look at!"))
                 return
         else:
             target = caller.search(self.args)
@@ -176,27 +176,27 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if "list" in switches or self.cmdstring in ("nicks",):
             if not nicklist:
-                string = "|wNo nicks defined.|n"
+                string = _("|wNo nicks defined.|n")
             else:
-                table = self.styled_table("#", "Type", "Nick match", "Replacement")
+                table = self.styled_table("#", _("Type"), _("Nick match"), _("Replacement"))
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
                     table.add_row(
                         str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement)
                     )
-                string = "|wDefined Nicks:|n\n%s" % table
+                string = _("|wDefined Nicks:|n\n%s") % table
             caller.msg(string)
             return
 
         if "clearall" in switches:
             caller.nicks.clear()
             caller.account.nicks.clear()
-            caller.msg("Cleared all nicks.")
+            caller.msg(_("Cleared all nicks."))
             return
 
         if "delete" in switches or "del" in switches:
             if not self.args or not self.lhs:
-                caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
+                caller.msg(_("usage nick/delete <nick> or <#num> ('nicks' for list)"))
                 return
             # see if a number was given
             arg = self.args.lstrip("#")
@@ -207,7 +207,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 if 0 < delindex <= len(nicklist):
                     oldnicks.append(nicklist[delindex - 1])
                 else:
-                    caller.msg("Not a valid nick index. See 'nicks' for a list.")
+                    caller.msg(_("Not a valid nick index. See 'nicks' for a list."))
                     return
             else:
                 if not specified_nicktype:
@@ -219,14 +219,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             if oldnicks:
                 for oldnick in oldnicks:
                     nicktype = oldnick.category
-                    nicktypestr = "%s-nick" % nicktype.capitalize()
+                    nicktypestr = _("%s-nick") % nicktype.capitalize()
                     _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     caller.msg(
-                        f"{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n."
+                        _("{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n.").format(nicktypestr=nicktypestr, old_nickstring=old_nickstring, old_replstring=old_replstring)
                     )
             else:
-                caller.msg("No matching nicks to remove.")
+                caller.msg(_("No matching nicks to remove."))
             return
 
         if not self.rhs and self.lhs:
@@ -245,11 +245,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
+                        strings.append(_("{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'").format(nicktype=nicktype, nick=nick, repl=repl))
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg(f"No nicks found matching '{self.lhs}'")
+                caller.msg(_("No nicks found matching '{self.lhs}'").format(self=self))
             return
 
         if not self.rhs and self.lhs:
@@ -266,11 +266,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
+                        strings.append(_("{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'").format(nicktype=nicktype, nick=nick, repl=repl))
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg(f"No nicks found matching '{self.lhs}'")
+                caller.msg(_("No nicks found matching '{self.lhs}'").format(self=self))
             return
 
         if not self.rhs and self.lhs:
@@ -287,15 +287,15 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
+                        strings.append(_("{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'").format(nicktype=nicktype, nick=nick, repl=repl))
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg(f"No nicks found matching '{self.lhs}'")
+                caller.msg(_("No nicks found matching '{self.lhs}'").format(self=self))
             return
 
         if not self.args or not self.lhs:
-            caller.msg("Usage: nick[/switches] nickname = [realname]")
+            caller.msg(_("Usage: nick[/switches] nickname = [realname]"))
             return
 
         # setting new nicks
@@ -304,14 +304,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         replstring = self.rhs
 
         if replstring == nickstring:
-            caller.msg("No point in setting nick same as the string to replace...")
+            caller.msg(_("No point in setting nick same as the string to replace..."))
             return
 
         # check so we have a suitable nick type
         errstring = ""
         string = ""
         for nicktype in nicktypes:
-            nicktypestr = f"{nicktype.capitalize()}-nick"
+            nicktypestr = _("{nicktype.capitalize()}-nick").format(nicktype=nicktype)
             old_nickstring = None
             old_replstring = None
 
@@ -323,24 +323,21 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 errstring = ""
                 if oldnick:
                     if replstring == old_replstring:
-                        string += f"\nIdentical {nicktypestr.lower()} already set."
+                        string += _("\nIdentical {nicktypestr.lower()} already set.").format(nicktypestr=nicktypestr)
                     else:
-                        string += (
-                            f"\n{nicktypestr} '|w{old_nickstring}|n' updated to map to"
-                            f" '|w{replstring}|n'."
-                        )
+                        string += _("\n{nicktypestr} '|w{old_nickstring}|n' updated to map to '|w{replstring}|n'.").format(nicktypestr=nicktypestr, old_nickstring=old_nickstring, replstring=replstring)
                 else:
-                    string += f"\n{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'."
+                    string += _("\n{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'.").format(nicktypestr=nicktypestr, nickstring=nickstring, replstring=replstring)
                 try:
                     caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
                     caller.msg(
-                        "You must use the same $-markers both in the nick and in the replacement."
+                        _("You must use the same $-markers both in the nick and in the replacement.")
                     )
                     return
             elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += f"\n{nicktypestr} '|w{old_nickstring}|n' maps to '|w{old_replstring}|n'."
+                string += _("\n{nicktypestr} '|w{old_nickstring}|n' maps to '|w{old_replstring}|n'.").format(nicktypestr=nicktypestr, old_nickstring=old_nickstring, old_replstring=old_replstring)
                 errstring = ""
         string = errstring if errstring else string
         caller.msg(_cy(string))
@@ -366,7 +363,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
         """check inventory"""
         items = self.caller.contents
         if not items:
-            string = "You are not carrying anything."
+            string = _("You are not carrying anything.")
         else:
             from evennia.utils.ansi import raw as raw_ansi
 
@@ -376,7 +373,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
                     f"|C{key}|n",
                     "{}|n".format(utils.crop(raw_ansi(desc or ""), width=50) or ""),
                 )
-            string = f"|wYou are carrying:\n{table}"
+            string = _("|wYou are carrying:\n{table}").format(table=table)
         self.msg(text=(string, {"type": "inventory"}))
 
 
@@ -439,7 +436,7 @@ class CmdGet(NumberedTargetCommand):
         caller = self.caller
 
         if not self.args:
-            self.msg("Get what?")
+            self.msg(_("Get what?"))
             return
         objs = caller.search(self.args, location=caller.location, stacked=self.number)
         if not objs:
@@ -449,7 +446,7 @@ class CmdGet(NumberedTargetCommand):
         objs = utils.make_iter(objs)
 
         if len(objs) == 1 and caller == objs[0]:
-            self.msg("You can't get yourself.")
+            self.msg(_("You can't get yourself."))
             return
 
         # if we aren't allowed to get any of the objects, cancel the get
@@ -459,7 +456,7 @@ class CmdGet(NumberedTargetCommand):
                 if obj.db.get_err_msg:
                     self.msg(obj.db.get_err_msg)
                 else:
-                    self.msg("You can't get that.")
+                    self.msg(_("You can't get that."))
                 return
             # calling at_pre_get hook method
             if not obj.at_pre_get(caller):
@@ -475,10 +472,10 @@ class CmdGet(NumberedTargetCommand):
 
         if not moved:
             # none of the objects were successfully moved
-            self.msg("That can't be picked up.")
+            self.msg(_("That can't be picked up."))
         else:
             obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
-            caller.location.msg_contents(f"$You() $conj(pick) up {obj_name}.", from_obj=caller)
+            caller.location.msg_contents(_("$You() $conj(pick) up {obj_name}.").format(obj_name=obj_name), from_obj=caller)
 
 
 class CmdDrop(NumberedTargetCommand):
@@ -501,7 +498,7 @@ class CmdDrop(NumberedTargetCommand):
 
         caller = self.caller
         if not self.args:
-            caller.msg("Drop what?")
+            caller.msg(_("Drop what?"))
             return
 
         # Because the DROP command by definition looks for items
@@ -509,8 +506,8 @@ class CmdDrop(NumberedTargetCommand):
         objs = caller.search(
             self.args,
             location=caller,
-            nofound_string=f"You aren't carrying {self.args}.",
-            multimatch_string=f"You carry more than one {self.args}:",
+            nofound_string=_("You aren't carrying {self.args}.").format(self=self),
+            multimatch_string=_("You carry more than one {self.args}:").format(self=self),
             stacked=self.number,
         )
         if not objs:
@@ -535,10 +532,10 @@ class CmdDrop(NumberedTargetCommand):
 
         if not moved:
             # none of the objects were successfully moved
-            self.msg("That can't be dropped.")
+            self.msg(_("That can't be dropped."))
         else:
             obj_name = moved[0].get_numbered_name(len(moved), caller, return_string=True)
-            caller.location.msg_contents(f"$You() $conj(drop) {obj_name}.", from_obj=caller)
+            caller.location.msg_contents(_("$You() $conj(drop) {obj_name}.").format(obj_name=obj_name), from_obj=caller)
 
 
 class CmdGive(NumberedTargetCommand):
@@ -562,14 +559,14 @@ class CmdGive(NumberedTargetCommand):
 
         caller = self.caller
         if not self.args or not self.rhs:
-            caller.msg("Usage: give <inventory object> = <target>")
+            caller.msg(_("Usage: give <inventory object> = <target>"))
             return
         # find the thing(s) to give away
         to_give = caller.search(
             self.lhs,
             location=caller,
-            nofound_string=f"You aren't carrying {self.lhs}.",
-            multimatch_string=f"You carry more than one {self.lhs}:",
+            nofound_string=_("You aren't carrying {self.lhs}.").format(self=self),
+            multimatch_string=_("You carry more than one {self.lhs}:").format(self=self),
             stacked=self.number,
         )
         if not to_give:
@@ -585,7 +582,7 @@ class CmdGive(NumberedTargetCommand):
 
         singular, plural = to_give[0].get_numbered_name(len(to_give), caller)
         if target == caller:
-            caller.msg(f"You keep {plural if len(to_give) > 1 else singular} to yourself.")
+            caller.msg(_("You keep {plural if len(to_give) > 1 else singular} to yourself.").format(plural=plural, to_give=to_give, singular=singular))
             return
 
         # if any of the objects aren't allowed to be given, cancel the give
@@ -603,11 +600,11 @@ class CmdGive(NumberedTargetCommand):
                 obj.at_give(caller, target)
 
         if not moved:
-            caller.msg(f"You could not give that to {target.get_display_name(caller)}.")
+            caller.msg(_("You could not give that to {target.get_display_name(caller)}.").format(target=target, caller=caller))
         else:
             obj_name = to_give[0].get_numbered_name(len(moved), caller, return_string=True)
-            caller.msg(f"You give {obj_name} to {target.get_display_name(caller)}.")
-            target.msg(f"{caller.get_display_name(target)} gives you {obj_name}.")
+            caller.msg(_("You give {obj_name} to {target.get_display_name(caller)}.").format(obj_name=obj_name, target=target, caller=caller))
+            target.msg(_("{caller.get_display_name(target)} gives you {obj_name}.").format(caller=caller, target=target, obj_name=obj_name))
 
 
 class CmdSetDesc(COMMAND_DEFAULT_CLASS):
@@ -630,11 +627,11 @@ class CmdSetDesc(COMMAND_DEFAULT_CLASS):
         """add the description"""
 
         if not self.args:
-            self.msg("You must add a description.")
+            self.msg(_("You must add a description."))
             return
 
         self.caller.db.desc = self.args.strip()
-        self.msg("You set your description.")
+        self.msg(_("You set your description."))
 
 
 class CmdSay(COMMAND_DEFAULT_CLASS):
@@ -660,7 +657,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Say what?")
+            caller.msg(_("Say what?"))
             return
 
         speech = self.args
@@ -697,7 +694,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs or not self.rhs:
-            caller.msg("Usage: whisper <character> = <message>")
+            caller.msg(_("Usage: whisper <character> = <message>"))
             return
 
         receivers = [recv.strip() for recv in self.lhs.split(",")]
@@ -760,7 +757,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Hook function"""
         if not self.args:
-            msg = "What do you want to do?"
+            msg = _("What do you want to do?")
             self.msg(msg)
         else:
             msg = f"{self.caller.name}{self.args}"
