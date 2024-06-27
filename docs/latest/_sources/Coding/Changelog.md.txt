@@ -50,7 +50,7 @@ June 27, 2024
   template properly (InspectorCaracal)
 - [Fix][pull3545]: Fix fallback issue in cmdhandler for local-object cmdsets (InspectorCaracal)
 - [Fix][pull3554]: Fix/readd custom `ic` command to the `character_creator` contrib (InspectorCaracal)
-- [Fix][pull3466]: Make sure the `website/base.html` website base is targeted
+- [Fix][pull3566]: Make sure the `website/base.html` website base is targeted
   explicitly so it doesn't get overridden by same file name elsewhere in app (InspectorCaracal)
 - [fix][issue3387]: Update all game template doc strings to be more up-to-date
   (Griatch)
