@@ -68,8 +68,8 @@ jobs:
       - name: Set MySQL custom options
         if: ${{ matrix.TESTING_DB == 'mysql' }}
         run: |
-          sudo cp ${{ github.workspace }}/.github/workflows/mysql_options.cnf /etc/mysql/custom.cnf
-          sudo chown -R mysql:mysql /etc/mysql/custom.cnf
+          sudo cp ${{ github.workspace }}/.github/workflows/mysql_options.cnf /etc/mysql/conf.d/custom.cnf
+          sudo chown -R mysql:mysql /etc/mysql/conf.d/custom.cnf
 
       # - name: Set up database (${{ matrix.TESTING_DB }})
       #   uses: ./.github/actions/setup-database
