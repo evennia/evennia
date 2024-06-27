@@ -48,6 +48,8 @@
   template properly (InspectorCaracal)
 - [Fix][pull3545]: Fix fallback issue in cmdhandler for local-object cmdsets (InspectorCaracal)
 - [Fix][pull3554]: Fix/readd custom `ic` command to the `character_creator` contrib (InspectorCaracal)
+- [Fix][pull3466]: Make sure the `website/base.html` website base is targeted
+  explicitly so it doesn't get overridden by same file name elsewhere in app (InspectorCaracal)
 - [Docs]: Doc fixes (Griatch, chiizujin, InspectorCaracal, iLPDev)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
@@ -79,6 +81,7 @@
 [pull3549]: https://github.com/evennia/evennia/pull/3549
 [pull3554]: https://github.com/evennia/evennia/pull/3554
 [pull3523]: https://github.com/evennia/evennia/pull/3523
+[pull3566]: https://github.com/evennia/evennia/pull/3566
 [issue3522]: https://github.com/evennia/evennia/issue/3522
 
 

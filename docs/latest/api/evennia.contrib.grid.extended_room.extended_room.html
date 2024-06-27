@@ -695,7 +695,7 @@ del - Delete the description of an object. If another state is given, its descri
 <blockquote>
 <div><p>will be deleted.</p>
 </div></blockquote>
-<p>spring|summer|autumn|winter - room description to use in respective in-game season
+<p>spring||summer||autumn||winter - room description to use in respective in-game season
 &lt;other&gt; - room description to use with an arbitrary room state.</p>
 </dd>
 </dl>
@@ -831,7 +831,7 @@ strings, but case is preserved.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.grid.extended_room.extended_room.CmdExtendedRoomDesc.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;desc', 'no_prefix': 'desc ', 'tags': '', 'text': '\n    describe an object or the current room.\n\n    Usage:\n      &#64;desc[/switch] [&lt;obj&gt; =] &lt;description&gt;\n\n    Switches:\n      edit - Open up a line editor for more advanced editing.\n      del - Delete the description of an object. If another state is given, its description\n        will be deleted.\n      spring|summer|autumn|winter - room description to use in respective in-game season\n      &lt;other&gt; - room description to use with an arbitrary room state.\n\n    Sets the description an object. If an object is not given,\n    describe the current room, potentially showing any additional stateful descriptions. The room\n    states only work with rooms.\n\n    Examples:\n        &#64;desc/winter A cold winter scene.\n        &#64;desc/edit/summer\n        &#64;desc/burning This room is burning!\n        &#64;desc A normal room with no state.\n        &#64;desc/del/burning\n\n    Rooms will automatically change season as the in-game time changes. You can\n    set a specific room-state with the |wroomstate|n command.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.extended_room.CmdExtendedRoomDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;desc', 'no_prefix': 'desc ', 'tags': '', 'text': '\n    describe an object or the current room.\n\n    Usage:\n      &#64;desc[/switch] [&lt;obj&gt; =] &lt;description&gt;\n\n    Switches:\n      edit - Open up a line editor for more advanced editing.\n      del - Delete the description of an object. If another state is given, its description\n        will be deleted.\n      spring||summer||autumn||winter - room description to use in respective in-game season\n      &lt;other&gt; - room description to use with an arbitrary room state.\n\n    Sets the description an object. If an object is not given,\n    describe the current room, potentially showing any additional stateful descriptions. The room\n    states only work with rooms.\n\n    Examples:\n        &#64;desc/winter A cold winter scene.\n        &#64;desc/edit/summer\n        &#64;desc/burning This room is burning!\n        &#64;desc A normal room with no state.\n        &#64;desc/del/burning\n\n    Rooms will automatically change season as the in-game time changes. You can\n    set a specific room-state with the |wroomstate|n command.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.extended_room.CmdExtendedRoomDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
