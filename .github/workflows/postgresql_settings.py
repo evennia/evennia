@@ -42,7 +42,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "evennia",
-        "USER": "postgresql",  # evennia
+        "USER": "postgres",  # evennia
         "PASSWORD": "postgres",
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
