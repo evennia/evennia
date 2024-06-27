@@ -142,11 +142,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+
 <span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">all_from_module</span><span class="p">,</span>
+    <span class="n">is_iter</span><span class="p">,</span>
+    <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">string_partial_matching</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># this is either a string of the attribute name, or a tuple of strings of the attribute name and category</span>
 <span class="n">_ACHIEVEMENT_ATTR</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;ACHIEVEMENT_CONTRIB_ATTRIBUTE&quot;</span><span class="p">,</span> <span class="s2">&quot;achievements&quot;</span><span class="p">))</span>
@@ -414,12 +421,12 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">achievement_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">):</span>
             <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;|yNot Started|n&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">count</span> <span class="o">=</span> <span class="n">achievement_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">achievement_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="c1"># is this achievement tracking items separately?</span>
             <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">achievement_data</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">]):</span>
                 <span class="c1"># we&#39;ll display progress as how many items have been completed</span>
                 <span class="n">completed</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">val</span> <span class="o">&gt;=</span> <span class="n">count</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">achievement_data</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">])[</span><span class="kc">True</span><span class="p">]</span>
-                <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">completed</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">achievement_data</span><span class="p">[</span><span class="s1">&#39;progress&#39;</span><span class="p">])</span>
+                <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">completed</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">achievement_data</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># we display progress as the percent of the total count</span>
                 <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">achievement_data</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">//</span> <span class="n">count</span>
@@ -471,8 +478,7 @@
         <span class="k">elif</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="c1"># we merge our progress data into the full dict of achievements</span>
             <span class="n">achievement_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">key</span><span class="p">:</span> <span class="n">data</span> <span class="o">|</span> <span class="n">progress_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">achievements</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">data</span> <span class="o">|</span> <span class="n">progress_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">achievements</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">}</span>
 
         <span class="c1"># we show all of the currently available achievements regardless of progress status</span>

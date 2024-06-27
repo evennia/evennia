@@ -154,6 +154,87 @@ will end up at the <strong>$1</strong> position in the replacement. Together, th
 the account-level <strong>channel</strong> command is used. If you were to rename that command you must
 tweak the output to something like <strong>yourchannelcommandname {channelname} = $1</strong>.</p></li>
 </ul>
+<ul>
+<li><dl class="simple">
+<dt>Properties:</dt><dd><p>mutelist
+banlist
+wholist</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Working methods:</dt><dd><p>get_log_filename()
+set_log_filename(filename)
+has_connection(account) - check if the given account listens to this channel
+connect(account) - connect account to this channel
+disconnect(account) - disconnect account from channel
+access(access_obj, access_type=’listen’, default=False) - check the</p>
+<blockquote>
+<div><p>access on this channel (default access_type is listen)</p>
+</div></blockquote>
+<p>create(key, creator=None, <a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
+delete() - delete this channel
+message_transform(msg, emit=False, prefix=True,</p>
+<blockquote>
+<div><p>sender_strings=None, external=False) - called by
+the comm system and triggers the hooks below</p>
+</div></blockquote>
+<dl class="simple">
+<dt>msg(msgobj, header=None, senders=None, sender_strings=None,</dt><dd><dl class="simple">
+<dt>persistent=None, online=False, emit=False, external=False) - main</dt><dd><p>send method, builds and sends a new message to channel.</p>
+</dd>
+</dl>
+</dd>
+<dt>tempmsg(msg, header=None, senders=None) - wrapper for sending non-persistent</dt><dd><p>messages.</p>
+</dd>
+<dt>distribute_message(msg, online=False) - send a message to all</dt><dd><p>connected accounts on channel, optionally sending only
+to accounts that are currently online (optimized for very large sends)</p>
+</dd>
+</dl>
+<p>mute(subscriber, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs)
+unmute(subscriber, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)
+ban(target, <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs)
+unban(target, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs)
+add_user_channel_alias(user, alias, <a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs)
+remove_user_channel_alias(user, alias, <a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl>
+<dt>Useful hooks:</dt><dd><p>at_channel_creation() - called once, when the channel is created
+basetype_setup()
+at_init()
+at_first_save()
+channel_prefix() - how the channel should be</p>
+<blockquote>
+<div><p>prefixed when returning to user. Returns a string</p>
+</div></blockquote>
+<dl class="simple">
+<dt>format_senders(senders) - should return how to display multiple</dt><dd><p>senders to a channel</p>
+</dd>
+<dt>pose_transform(msg, sender_string) - should detect if the</dt><dd><p>sender is posing, and if so, modify the string</p>
+</dd>
+<dt>format_external(msg, senders, emit=False) - format messages sent</dt><dd><p>from outside the game, like from IRC</p>
+</dd>
+<dt>format_message(msg, emit=False) - format the message body before</dt><dd><p>displaying it to the user. ‘emit’ generally means that the
+message should not be displayed with the sender’s name.</p>
+</dd>
+</dl>
+<p>channel_prefix()</p>
+<p>pre_join_channel(joiner) - if returning False, abort join
+post_join_channel(joiner) - called right after successful join
+pre_leave_channel(leaver) - if returning False, abort leave
+post_leave_channel(leaver) - called right after successful leave
+at_pre_msg(message, <a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs)
+at_post_msg(message, <a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs)
+web_get_admin_url()
+web_get_create_url()
+web_get_detail_url()
+web_get_update_url()
+web_get_delete_url()</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt id="evennia.comms.comms.DefaultChannel.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.comms.managers.ChannelManager object&gt;</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.objects" title="Permalink to this definition">¶</a></dt>
@@ -610,7 +691,7 @@ to exclude the channel prefix.</p></li>
 </ul>
 <p>Called after all receivers are processed:
 - <strong>channel.at_post_all_msg(message, **kwargs)</strong></p>
-<p>(where the senders/bypass_mute are embedded into <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs for
+<p>(where the senders/bypass_mute are embedded into <a href="#id21"><span class="problematic" id="id22">**</span></a>kwargs for
 later access in hooks)</p>
 </dd></dl>
 

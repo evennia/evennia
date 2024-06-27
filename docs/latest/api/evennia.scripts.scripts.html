@@ -123,8 +123,117 @@ ability to run timers.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.scripts.</code><code class="sig-name descname">DefaultScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.ScriptBase</span></code></p>
 <p>This is the base TypeClass for all Scripts. Scripts describe
-events, timers and states in game, they can have a time component
-or describe a state that changes under certain conditions.</p>
+all entities/systems without a physical existence in the game world
+that require database storage (like an economic system or
+combat tracker). They
+can also have a timer/ticker component.</p>
+<p>A script type is customized by redefining some or all of its hook
+methods and variables.</p>
+<ul class="simple">
+<li><p>available properties (check docs for full listing, this could be
+outdated).</p></li>
+</ul>
+<blockquote>
+<div><p>key (string) - name of object
+name (string)- same as key
+aliases (list of strings) - aliases to the object. Will be saved</p>
+<blockquote>
+<div><p>to database as AliasDB entries but returned as strings.</p>
+</div></blockquote>
+<p>dbref (int, read-only) - unique #id-number. Also “id” can be used.
+date_created (string) - time stamp of object creation
+permissions (list of strings) - list of permission strings</p>
+<p>desc (string)      - optional description of script, shown in listings
+obj (Object)       - optional object that this script is connected to</p>
+<blockquote>
+<div><p>and acts on (set automatically by obj.scripts.add())</p>
+</div></blockquote>
+<dl class="simple">
+<dt>interval (int)     - how often script should run, in seconds. &lt;0 turns</dt><dd><p>off ticker</p>
+</dd>
+<dt>start_delay (bool) - if the script should start repeating right away or</dt><dd><p>wait self.interval seconds</p>
+</dd>
+<dt>repeats (int)      - how many times the script should repeat before</dt><dd><p>stopping. 0 means infinite repeats</p>
+</dd>
+</dl>
+<p>persistent (bool)  - if script should survive a server shutdown or not
+is_active (bool)   - if script is currently running</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Handlers</p></li>
+</ul>
+<blockquote>
+<div><p>locks - lock-handler: use locks.add() to add new lock strings
+db - attribute-handler: store/retrieve database attributes on this</p>
+<blockquote>
+<div><p>self.db.myattr=val, val=self.db.myattr</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ndb - non-persistent attribute handler: same as db but does not</dt><dd><p>create a database entry when storing data</p>
+</dd>
+</dl>
+</div></blockquote>
+<ul class="simple">
+<li><p>Helper methods</p></li>
+</ul>
+<blockquote>
+<div><p>create(key, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)
+start() - start script (this usually happens automatically at creation</p>
+<blockquote>
+<div><p>and obj.script.add() etc)</p>
+</div></blockquote>
+<p>stop()  - stop script, and delete it
+pause() - put the script on hold, until unpause() is called. If script</p>
+<blockquote>
+<div><p>is persistent, the pause state will survive a shutdown.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>unpause() - restart a previously paused script. The script will continue</dt><dd><p>from the paused timer (but at_start() will be called).</p>
+</dd>
+<dt>time_until_next_repeat() - if a timed script (interval&gt;0), returns time</dt><dd><p>until next tick</p>
+</dd>
+</dl>
+</div></blockquote>
+<ul class="simple">
+<li><p>Hook methods (should also include self as the first argument):</p></li>
+</ul>
+<blockquote>
+<div><dl>
+<dt>at_script_creation() - called only once, when an object of this</dt><dd><p>class is first created.</p>
+</dd>
+<dt>is_valid() - is called to check if the script is valid to be running</dt><dd><blockquote>
+<div><p>at the current time. If is_valid() returns False, the running
+script is stopped and removed from the game. You can use this
+to check state changes (i.e. an script tracking some combat
+stats at regular intervals is only valid to run while there is
+actual combat going on).</p>
+</div></blockquote>
+<dl class="simple">
+<dt>at_start() - Called every time the script is started, which for persistent</dt><dd><p>scripts is at least once every server start. Note that this is
+unaffected by self.delay_start, which only delays the first
+call to at_repeat().</p>
+</dd>
+<dt>at_repeat() - Called every self.interval seconds. It will be called</dt><dd><p>immediately upon launch unless self.delay_start is True, which
+will delay the first call of this method by self.interval
+seconds. If self.interval==0, this method will never
+be called.</p>
+</dd>
+</dl>
+<p>at_pause()
+at_stop() - Called as the script object is stopped and is about to be</p>
+<blockquote>
+<div><p>removed from the game, e.g. because is_valid() returned False.</p>
+</div></blockquote>
+<p>at_script_delete()
+at_server_reload() - Called when server reloads. Can be used to</p>
+<blockquote>
+<div><p>save temporary variables you want should survive a reload.</p>
+</div></blockquote>
+<p>at_server_shutdown() - called at a full server shutdown.
+at_server_start()</p>
+</dd>
+</dl>
+</div></blockquote>
 <dl class="py method">
 <dt id="evennia.scripts.scripts.DefaultScript.create">
 <em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.create" title="Permalink to this definition">¶</a></dt>

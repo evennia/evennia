@@ -764,8 +764,85 @@
 <div class="viewcode-block" id="DefaultScript"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript">[docs]</a><span class="k">class</span> <span class="nc">DefaultScript</span><span class="p">(</span><span class="n">ScriptBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base TypeClass for all Scripts. Scripts describe</span>
-<span class="sd">    events, timers and states in game, they can have a time component</span>
-<span class="sd">    or describe a state that changes under certain conditions.</span>
+<span class="sd">    all entities/systems without a physical existence in the game world</span>
+<span class="sd">    that require database storage (like an economic system or</span>
+<span class="sd">    combat tracker). They</span>
+<span class="sd">    can also have a timer/ticker component.</span>
+
+<span class="sd">    A script type is customized by redefining some or all of its hook</span>
+<span class="sd">    methods and variables.</span>
+
+<span class="sd">    * available properties (check docs for full listing, this could be</span>
+<span class="sd">      outdated).</span>
+
+<span class="sd">     key (string) - name of object</span>
+<span class="sd">     name (string)- same as key</span>
+<span class="sd">     aliases (list of strings) - aliases to the object. Will be saved</span>
+<span class="sd">              to database as AliasDB entries but returned as strings.</span>
+<span class="sd">     dbref (int, read-only) - unique #id-number. Also &quot;id&quot; can be used.</span>
+<span class="sd">     date_created (string) - time stamp of object creation</span>
+<span class="sd">     permissions (list of strings) - list of permission strings</span>
+
+<span class="sd">     desc (string)      - optional description of script, shown in listings</span>
+<span class="sd">     obj (Object)       - optional object that this script is connected to</span>
+<span class="sd">                          and acts on (set automatically by obj.scripts.add())</span>
+<span class="sd">     interval (int)     - how often script should run, in seconds. &lt;0 turns</span>
+<span class="sd">                          off ticker</span>
+<span class="sd">     start_delay (bool) - if the script should start repeating right away or</span>
+<span class="sd">                          wait self.interval seconds</span>
+<span class="sd">     repeats (int)      - how many times the script should repeat before</span>
+<span class="sd">                          stopping. 0 means infinite repeats</span>
+<span class="sd">     persistent (bool)  - if script should survive a server shutdown or not</span>
+<span class="sd">     is_active (bool)   - if script is currently running</span>
+
+<span class="sd">    * Handlers</span>
+
+<span class="sd">     locks - lock-handler: use locks.add() to add new lock strings</span>
+<span class="sd">     db - attribute-handler: store/retrieve database attributes on this</span>
+<span class="sd">                        self.db.myattr=val, val=self.db.myattr</span>
+<span class="sd">     ndb - non-persistent attribute handler: same as db but does not</span>
+<span class="sd">                        create a database entry when storing data</span>
+
+<span class="sd">    * Helper methods</span>
+
+<span class="sd">     create(key, **kwargs)</span>
+<span class="sd">     start() - start script (this usually happens automatically at creation</span>
+<span class="sd">               and obj.script.add() etc)</span>
+<span class="sd">     stop()  - stop script, and delete it</span>
+<span class="sd">     pause() - put the script on hold, until unpause() is called. If script</span>
+<span class="sd">               is persistent, the pause state will survive a shutdown.</span>
+<span class="sd">     unpause() - restart a previously paused script. The script will continue</span>
+<span class="sd">                 from the paused timer (but at_start() will be called).</span>
+<span class="sd">     time_until_next_repeat() - if a timed script (interval&gt;0), returns time</span>
+<span class="sd">                 until next tick</span>
+
+<span class="sd">    * Hook methods (should also include self as the first argument):</span>
+
+<span class="sd">     at_script_creation() - called only once, when an object of this</span>
+<span class="sd">                            class is first created.</span>
+<span class="sd">     is_valid() - is called to check if the script is valid to be running</span>
+<span class="sd">                  at the current time. If is_valid() returns False, the running</span>
+<span class="sd">                  script is stopped and removed from the game. You can use this</span>
+<span class="sd">                  to check state changes (i.e. an script tracking some combat</span>
+<span class="sd">                  stats at regular intervals is only valid to run while there is</span>
+<span class="sd">                  actual combat going on).</span>
+<span class="sd">      at_start() - Called every time the script is started, which for persistent</span>
+<span class="sd">                  scripts is at least once every server start. Note that this is</span>
+<span class="sd">                  unaffected by self.delay_start, which only delays the first</span>
+<span class="sd">                  call to at_repeat().</span>
+<span class="sd">      at_repeat() - Called every self.interval seconds. It will be called</span>
+<span class="sd">                  immediately upon launch unless self.delay_start is True, which</span>
+<span class="sd">                  will delay the first call of this method by self.interval</span>
+<span class="sd">                  seconds. If self.interval==0, this method will never</span>
+<span class="sd">                  be called.</span>
+<span class="sd">      at_pause()</span>
+<span class="sd">      at_stop() - Called as the script object is stopped and is about to be</span>
+<span class="sd">                  removed from the game, e.g. because is_valid() returned False.</span>
+<span class="sd">      at_script_delete()</span>
+<span class="sd">      at_server_reload() - Called when server reloads. Can be used to</span>
+<span class="sd">                  save temporary variables you want should survive a reload.</span>
+<span class="sd">      at_server_shutdown() - called at a full server shutdown.</span>
+<span class="sd">      at_server_start()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

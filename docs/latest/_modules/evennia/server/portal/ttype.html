@@ -222,10 +222,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">clientname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;XTERM&quot;</span><span class="p">)</span>
-                    <span class="ow">or</span> <span class="n">clientname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-256COLOR&quot;</span><span class="p">)</span>
-                    <span class="ow">or</span> <span class="n">clientname</span>
-                    <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">clientname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;XTERM&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">clientname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-256COLOR&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">clientname</span>
+                <span class="ow">in</span> <span class="p">(</span>
                     <span class="s2">&quot;ATLANTIS&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 0.9.9.0 (aug 2009)</span>
                     <span class="s2">&quot;CMUD&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 3.04 (mar 2009)</span>
                     <span class="s2">&quot;KILDCLIENT&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 2.2.0 (sep 2005)</span>
@@ -235,17 +235,13 @@
                     <span class="s2">&quot;BEIP&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 2.00.206 (late 2009) (BeipMu)</span>
                     <span class="s2">&quot;POTATO&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 2.00 (maybe earlier)</span>
                     <span class="s2">&quot;TINYFUGUE&quot;</span><span class="p">,</span>  <span class="c1"># &gt; 4.x (maybe earlier)</span>
-            <span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">):</span>
                 <span class="n">xterm256</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="c1"># use name to identify support for xterm truecolor</span>
             <span class="n">truecolor</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">clientname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-TRUECOLOR&quot;</span><span class="p">)</span> <span class="ow">or</span>
-                    <span class="n">clientname</span> <span class="ow">in</span> <span class="p">(</span>
-                            <span class="s2">&quot;AXMUD&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;TINTIN&quot;</span>
-                    <span class="p">)):</span>
+            <span class="k">if</span> <span class="n">clientname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-TRUECOLOR&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">clientname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;AXMUD&quot;</span><span class="p">,</span> <span class="s2">&quot;TINTIN&quot;</span><span class="p">):</span>
                 <span class="n">truecolor</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="c1"># all clients supporting TTYPE at all seem to support ANSI</span>
@@ -261,9 +257,9 @@
             <span class="n">tupper</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
             <span class="c1"># identify xterm256 based on flag</span>
             <span class="n">xterm256</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-256COLOR&quot;</span><span class="p">)</span>
-                    <span class="ow">or</span> <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;XTERM&quot;</span><span class="p">)</span>  <span class="c1"># Apple Terminal, old Tintin</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-COLOR&quot;</span><span class="p">)</span>  <span class="c1"># old Tintin, Putty</span>
+                <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-256COLOR&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;XTERM&quot;</span><span class="p">)</span>  <span class="c1"># Apple Terminal, old Tintin</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">tupper</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-COLOR&quot;</span><span class="p">)</span>  <span class="c1"># old Tintin, Putty</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">xterm256</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;ANSI&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>

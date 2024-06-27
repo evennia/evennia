@@ -223,6 +223,221 @@ entities you define should inherit from DefaultObject at some distance.</p>
 <strong>evennia.create_object()</strong> function rather than to initialize the class
 directly - this will both set things up and efficiently save the object
 without <strong>obj.save()</strong> having to be called explicitly.</p>
+<p>Note: Check the autodocs for complete class members, this may not always
+be up-to date.</p>
+<ul class="simple">
+<li><p>Base properties defined/available on all Objects</p></li>
+</ul>
+<blockquote>
+<div><p>key (string) - name of object
+name (string)- same as key
+dbref (int, read-only) - unique #id-number. Also “id” can be used.
+date_created (string) - time stamp of object creation</p>
+<dl class="simple">
+<dt>account (Account) - controlling account (if any, only set together with</dt><dd><p>sessid below)</p>
+</dd>
+<dt>sessid (int, read-only) - session id (if any, only set together with</dt><dd><p>account above). Use <strong>sessions</strong> handler to get the
+Sessions directly.</p>
+</dd>
+</dl>
+<p>location (Object) - current location. Is None if this is a room
+home (Object) - safety start-location
+has_account (bool, read-only)- will only return <em>connected</em> accounts
+contents (list, read only) - returns all objects inside this object
+exits (list of Objects, read-only) - returns all exits from this</p>
+<blockquote>
+<div><p>object, if any</p>
+</div></blockquote>
+<p>destination (Object) - only set if this object is an exit.
+is_superuser (bool, read-only) - True/False if this user is a superuser
+is_connected (bool, read-only) - True if this object is associated with</p>
+<blockquote>
+<div><p>an Account with any connected sessions.</p>
+</div></blockquote>
+<p>has_account (bool, read-only) - True is this object has an associated account.
+is_superuser (bool, read-only): True if this object has an account and that</p>
+<blockquote>
+<div><p>account is a superuser.</p>
+</div></blockquote>
+</div></blockquote>
+<ul class="simple">
+<li><p>Handlers available</p></li>
+</ul>
+<blockquote>
+<div><p>aliases - alias-handler: use aliases.add/remove/get() to use.
+permissions - permission-handler: use permissions.add/remove() to</p>
+<blockquote>
+<div><p>add/remove new perms.</p>
+</div></blockquote>
+<p>locks - lock-handler: use locks.add() to add new lock strings
+scripts - script-handler. Add new scripts to object with scripts.add()
+cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
+nicks - nick-handler. New nicks with nicks.add().
+sessions - sessions-handler. Get Sessions connected to this</p>
+<blockquote>
+<div><p>object with sessions.get()</p>
+</div></blockquote>
+<p>attributes - attribute-handler. Use attributes.add/remove/get.
+db - attribute-handler: Shortcut for attribute-handler. Store/retrieve</p>
+<blockquote>
+<div><p>database attributes using self.db.myattr=val, val=self.db.myattr</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ndb - non-persistent attribute handler: same as db but does not create</dt><dd><p>a database entry when storing data</p>
+</dd>
+</dl>
+</div></blockquote>
+<ul class="simple">
+<li><p>Helper methods (see src.objects.objects.py for full headers)</p></li>
+</ul>
+<blockquote>
+<div><p>get_search_query_replacement(searchdata, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)
+get_search_direct_match(searchdata, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
+get_search_candidates(searchdata, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs)
+get_search_result(searchdata, attribute_name=None, typeclass=None,</p>
+<blockquote>
+<div><p>candidates=None, exact=False, use_dbref=None, tags=None, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)</p>
+</div></blockquote>
+<p>get_stacked_result(results, <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs)
+handle_search_results(searchdata, results, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs)
+search(searchdata, global_search=False, use_nicks=True, typeclass=None,</p>
+<blockquote>
+<div><p>location=None, attribute_name=None, quiet=False, exact=False,
+candidates=None, use_locks=True, nofound_string=None,
+multimatch_string=None, use_dbref=None, tags=None, stacked=0)</p>
+</div></blockquote>
+<p>search_account(searchdata, quiet=False)
+execute_cmd(raw_string, session=None, <a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs))
+msg(text=None, from_obj=None, session=None, options=None, <a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs)
+for_contents(func, exclude=None, <a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs)
+msg_contents(message, exclude=None, from_obj=None, mapping=None,</p>
+<blockquote>
+<div><p>raise_funcparse_errors=False, <a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs)</p>
+</div></blockquote>
+<p>move_to(destination, quiet=False, emit_to_obj=None, use_destination=True)
+clear_contents()
+create(key, account, caller, method, <a href="#id21"><span class="problematic" id="id22">**</span></a>kwargs)
+copy(new_key=None)
+at_object_post_copy(new_obj, <a href="#id23"><span class="problematic" id="id24">**</span></a>kwargs)
+delete()
+is_typeclass(typeclass, exact=False)
+swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
+access(accessing_obj, access_type=’read’, default=False,</p>
+<blockquote>
+<div><p>no_superuser_bypass=False, <a href="#id25"><span class="problematic" id="id26">**</span></a>kwargs)</p>
+</div></blockquote>
+<p>filter_visible(obj_list, looker, <a href="#id27"><span class="problematic" id="id28">**</span></a>kwargs)
+get_default_lockstring()
+get_cmdsets(caller, current, <a href="#id29"><span class="problematic" id="id30">**</span></a>kwargs)
+check_permstring(permstring)
+get_cmdset_providers()
+get_display_name(looker=None, <a href="#id31"><span class="problematic" id="id32">**</span></a>kwargs)
+get_extra_display_name_info(looker=None, <a href="#id33"><span class="problematic" id="id34">**</span></a>kwargs)
+get_numbered_name(count, looker, <a href="#id35"><span class="problematic" id="id36">**</span></a>kwargs)
+get_display_header(looker, <a href="#id37"><span class="problematic" id="id38">**</span></a>kwargs)
+get_display_desc(looker, <a href="#id39"><span class="problematic" id="id40">**</span></a>kwargs)
+get_display_exits(looker, <a href="#id41"><span class="problematic" id="id42">**</span></a>kwargs)
+get_display_characters(looker, <a href="#id43"><span class="problematic" id="id44">**</span></a>kwargs)
+get_display_things(looker, <a href="#id45"><span class="problematic" id="id46">**</span></a>kwargs)
+get_display_footer(looker, <a href="#id47"><span class="problematic" id="id48">**</span></a>kwargs)
+format_appearance(appearance, looker, <a href="#id49"><span class="problematic" id="id50">**</span></a>kwargs)
+return_apperance(looker, <a href="#id51"><span class="problematic" id="id52">**</span></a>kwargs)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Hooks (these are class methods, so args should start with self):</p></li>
+</ul>
+<blockquote>
+<div><dl class="simple">
+<dt>basetype_setup()     - only called once, used for behind-the-scenes</dt><dd><p>setup. Normally not modified.</p>
+</dd>
+<dt>basetype_posthook_setup() - customization in basetype, after the object</dt><dd><p>has been created; Normally not modified.</p>
+</dd>
+<dt>at_object_creation() - only called once, when object is first created.</dt><dd><p>Object customizations go here.</p>
+</dd>
+<dt>at_object_delete() - called just before deleting an object. If returning</dt><dd><p>False, deletion is aborted. Note that all objects
+inside a deleted object are automatically moved
+to their &lt;home&gt;, they don’t need to be removed here.</p>
+</dd>
+<dt>at_init()            - called whenever typeclass is cached from memory,</dt><dd><p>at least once every server restart/reload</p>
+</dd>
+</dl>
+<p>at_first_save()
+at_cmdset_get(<a href="#id53"><span class="problematic" id="id54">**</span></a>kwargs) - this is called just before the command handler</p>
+<blockquote>
+<div><p>requests a cmdset from this object. The kwargs are
+not normally used unless the cmdset is created
+dynamically (see e.g. Exits).</p>
+</div></blockquote>
+<dl class="simple">
+<dt>at_pre_puppet(account)- (account-controlled objects only) called just</dt><dd><p>before puppeting</p>
+</dd>
+<dt>at_post_puppet()     - (account-controlled objects only) called just</dt><dd><p>after completing connection account&lt;-&gt;object</p>
+</dd>
+<dt>at_pre_unpuppet()    - (account-controlled objects only) called just</dt><dd><p>before un-puppeting</p>
+</dd>
+<dt>at_post_unpuppet(account) - (account-controlled objects only) called just</dt><dd><p>after disconnecting account&lt;-&gt;object link</p>
+</dd>
+</dl>
+<p>at_server_reload()   - called before server is reloaded
+at_server_shutdown() - called just before server is fully shut down</p>
+<dl class="simple">
+<dt>at_access(result, accessing_obj, access_type) - called with the result</dt><dd><p>of a lock access check on this object. Return value
+does not affect check result.</p>
+</dd>
+<dt>at_pre_move(destination)             - called just before moving object</dt><dd><p>to the destination. If returns False, move is cancelled.</p>
+</dd>
+<dt>announce_move_from(destination)         - called in old location, just</dt><dd><p>before move, if obj.move_to() has quiet=False</p>
+</dd>
+<dt>announce_move_to(source_location)       - called in new location, just</dt><dd><p>after move, if obj.move_to() has quiet=False</p>
+</dd>
+<dt>at_post_move(source_location)          - always called after a move has</dt><dd><p>been successfully performed.</p>
+</dd>
+</dl>
+<p>at_pre_object_leave(leaving_object, destination, <a href="#id55"><span class="problematic" id="id56">**</span></a>kwargs)
+at_object_leave(obj, target_location, move_type=”move”, <a href="#id57"><span class="problematic" id="id58">**</span></a>kwargs)
+at_object_leave(obj, target_location)   - called when an object leaves</p>
+<blockquote>
+<div><p>this object in any fashion</p>
+</div></blockquote>
+<p>at_pre_object_receive(obj, source_location)
+at_object_receive(obj, source_location, move_type=”move”, <a href="#id59"><span class="problematic" id="id60">**</span></a>kwargs) - called when this object receives</p>
+<blockquote>
+<div><p>another object</p>
+</div></blockquote>
+<p>at_post_move(source_location, move_type=”move”, <a href="#id61"><span class="problematic" id="id62">**</span></a>kwargs)</p>
+<dl class="simple">
+<dt>at_traverse(traversing_object, target_location, <a href="#id63"><span class="problematic" id="id64">**</span></a>kwargs) - (exit-objects only)</dt><dd><p>handles all moving across the exit, including
+calling the other exit hooks. Use super() to retain
+the default functionality.</p>
+</dd>
+<dt>at_post_traverse(traversing_object, source_location) - (exit-objects only)</dt><dd><p>called just after a traversal has happened.</p>
+</dd>
+<dt>at_failed_traverse(traversing_object)      - (exit-objects only) called if</dt><dd><p>traversal fails and property err_traverse is not defined.</p>
+</dd>
+<dt>at_msg_receive(self, msg, from_obj=None, <a href="#id65"><span class="problematic" id="id66">**</span></a>kwargs) - called when a message</dt><dd><p>(via self.msg()) is sent to this obj.
+If returns false, aborts send.</p>
+</dd>
+<dt>at_msg_send(self, msg, to_obj=None, <a href="#id67"><span class="problematic" id="id68">**</span></a>kwargs) - called when this objects</dt><dd><p>sends a message to someone via self.msg().</p>
+</dd>
+<dt>return_appearance(looker) - describes this object. Used by “look”</dt><dd><p>command by default</p>
+</dd>
+<dt>at_desc(looker=None)      - called by ‘look’ whenever the</dt><dd><p>appearance is requested.</p>
+</dd>
+</dl>
+<p>at_pre_get(getter, <a href="#id69"><span class="problematic" id="id70">**</span></a>kwargs)
+at_get(getter)            - called after object has been picked up.</p>
+<blockquote>
+<div><p>Does not stop pickup.</p>
+</div></blockquote>
+<p>at_pre_give(giver, getter, <a href="#id71"><span class="problematic" id="id72">**</span></a>kwargs)
+at_give(giver, getter, <a href="#id73"><span class="problematic" id="id74">**</span></a>kwargs)
+at_pre_drop(dropper, <a href="#id75"><span class="problematic" id="id76">**</span></a>kwargs)
+at_drop(dropper, <a href="#id77"><span class="problematic" id="id78">**</span></a>kwargs)          - called when this object has been dropped.
+at_pre_say(speaker, message, <a href="#id79"><span class="problematic" id="id80">**</span></a>kwargs)
+at_say(message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, <a href="#id81"><span class="problematic" id="id82">**</span></a>kwargs)</p>
+<p>at_look(target, <a href="#id83"><span class="problematic" id="id84">**</span></a>kwargs)
+at_desc(looker=None)</p>
+</div></blockquote>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.cmdset_provider_order">
 <code class="sig-name descname">cmdset_provider_order</code><em class="property"> = 100</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.cmdset_provider_order" title="Permalink to this definition">¶</a></dt>
@@ -413,7 +628,7 @@ overriding in child classes.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>searchdata</strong> (<em>str</em>) – The search criterion.</p></li>
-<li><p><strong>attribute_name</strong> (<em>str</em>) – The attribute to search on (default is <a href="#id1"><span class="problematic" id="id2">**</span></a>.</p></li>
+<li><p><strong>attribute_name</strong> (<em>str</em>) – The attribute to search on (default is <a href="#id85"><span class="problematic" id="id86">**</span></a>.</p></li>
 <li><p><strong>typeclass</strong> (<em>Typeclass</em><em> or </em><em>list</em>) – The typeclass to search for.</p></li>
 <li><p><strong>candidates</strong> (<em>list</em>) – A list of objects to search between.</p></li>
 <li><p><strong>exact</strong> (<em>bool</em>) – Require exact match.</p></li>

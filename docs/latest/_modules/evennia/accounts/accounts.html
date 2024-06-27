@@ -318,7 +318,6 @@
 <span class="sd">     - user (User, read-only) - django User authorization object</span>
 <span class="sd">     - obj (Object) - game object controlled by account. &#39;character&#39; can also</span>
 <span class="sd">                     be used.</span>
-<span class="sd">     - sessions (list of Sessions) - sessions connected to this account</span>
 <span class="sd">     - is_superuser (bool, read-only) - if the connected user is a superuser</span>
 
 <span class="sd">    * Handlers</span>
@@ -331,18 +330,47 @@
 <span class="sd">     - scripts - script-handler. Add new scripts to object with scripts.add()</span>
 <span class="sd">     - cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object</span>
 <span class="sd">     - nicks - nick-handler. New nicks with nicks.add().</span>
+<span class="sd">     - sessions - session-handler. Use session.get() to see all sessions connected, if any</span>
+<span class="sd">     - options - option-handler. Defaults are taken from settings.OPTIONS_ACCOUNT_DEFAULT</span>
+<span class="sd">     - characters - handler for listing the account&#39;s playable characters</span>
 
-<span class="sd">    * Helper methods</span>
+<span class="sd">    * Helper methods (check autodocs for full updated listing)</span>
 
 <span class="sd">     - msg(text=None, from_obj=None, session=None, options=None, **kwargs)</span>
 <span class="sd">     - execute_cmd(raw_string)</span>
-<span class="sd">     - search(ostring, global_search=False, attribute_name=None,</span>
-<span class="sd">                      use_nicks=False, location=None,</span>
-<span class="sd">                      ignore_errors=False, account=False)</span>
+<span class="sd">     - search(searchdata, return_puppet=False, search_object=False, typeclass=None,</span>
+<span class="sd">                      nofound_string=None, multimatch_string=None, use_nicks=True,</span>
+<span class="sd">                      quiet=False, **kwargs)</span>
 <span class="sd">     - is_typeclass(typeclass, exact=False)</span>
 <span class="sd">     - swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)</span>
-<span class="sd">     - access(accessing_obj, access_type=&#39;read&#39;, default=False, no_superuser_bypass=False)</span>
+<span class="sd">     - access(accessing_obj, access_type=&#39;read&#39;, default=False, no_superuser_bypass=False, **kwargs)</span>
 <span class="sd">     - check_permstring(permstring)</span>
+<span class="sd">     - get_cmdsets(caller, current, **kwargs)</span>
+<span class="sd">     - get_cmdset_providers()</span>
+<span class="sd">     - uses_screenreader(session=None)</span>
+<span class="sd">     - get_display_name(looker, **kwargs)</span>
+<span class="sd">     - get_extra_display_name_info(looker, **kwargs)</span>
+<span class="sd">     - disconnect_session_from_account()</span>
+<span class="sd">     - puppet_object(session, obj)</span>
+<span class="sd">     - unpuppet_object(session)</span>
+<span class="sd">     - unpuppet_all()</span>
+<span class="sd">     - get_puppet(session)</span>
+<span class="sd">     - get_all_puppets()</span>
+<span class="sd">     - is_banned(**kwargs)</span>
+<span class="sd">     - get_username_validators(validator_config=settings.AUTH_USERNAME_VALIDATORS)</span>
+<span class="sd">     - authenticate(username, password, ip=&quot;&quot;, **kwargs)</span>
+<span class="sd">     - normalize_username(username)</span>
+<span class="sd">     - validate_username(username)</span>
+<span class="sd">     - validate_password(password, account=None)</span>
+<span class="sd">     - set_password(password, **kwargs)</span>
+<span class="sd">     - get_character_slots()</span>
+<span class="sd">     - get_available_character_slots()</span>
+<span class="sd">     - create_character(*args, **kwargs)</span>
+<span class="sd">     - create(*args, **kwargs)</span>
+<span class="sd">     - delete(*args, **kwargs)</span>
+<span class="sd">     - channel_msg(message, channel, senders=None, **kwargs)</span>
+<span class="sd">     - idle_time()</span>
+<span class="sd">     - connection_time()</span>
 
 <span class="sd">    * Hook methods</span>
 
@@ -353,15 +381,26 @@
 <span class="sd">       usually handled on the character level:</span>
 
 <span class="sd">     - at_init()</span>
+<span class="sd">     - at_first_save()</span>
 <span class="sd">     - at_access()</span>
 <span class="sd">     - at_cmdset_get(**kwargs)</span>
+<span class="sd">     - at_password_change(**kwargs)</span>
 <span class="sd">     - at_first_login()</span>
+<span class="sd">     - at_pre_login()</span>
 <span class="sd">     - at_post_login(session=None)</span>
-<span class="sd">     - at_disconnect()</span>
+<span class="sd">     - at_failed_login(session, **kwargs)</span>
+<span class="sd">     - at_disconnect(reason=None, **kwargs)</span>
+<span class="sd">     - at_post_disconnect(**kwargs)</span>
 <span class="sd">     - at_message_receive()</span>
 <span class="sd">     - at_message_send()</span>
 <span class="sd">     - at_server_reload()</span>
 <span class="sd">     - at_server_shutdown()</span>
+<span class="sd">     - at_look(target=None, session=None, **kwargs)</span>
+<span class="sd">     - at_post_create_character(character, **kwargs)</span>
+<span class="sd">     - at_post_add_character(char)</span>
+<span class="sd">     - at_post_remove_character(char)</span>
+<span class="sd">     - at_pre_channel_msg(message, channel, senders=None, **kwargs)</span>
+<span class="sd">     - at_post_chnnel_msg(message, channel, senders=None, **kwargs)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

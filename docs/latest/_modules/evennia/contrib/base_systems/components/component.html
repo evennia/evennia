@@ -107,16 +107,17 @@
 <span class="sd">    This is the metaclass for components,</span>
 <span class="sd">    responsible for registering components to the listing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Every class that uses this metaclass will be registered</span>
 <span class="sd">        as a component in the Component Listing using its name.</span>
 <span class="sd">        All of them require a unique name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">attrs_name</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+        <span class="n">attrs_name</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attrs_name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">COMPONENT_LISTING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrs_name</span><span class="p">):</span>
             <span class="n">new_fields</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_fields&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_fields</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_fields</span>
             <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
                 <span class="n">_parent_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;_fields&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">_parent_fields</span><span class="p">:</span>

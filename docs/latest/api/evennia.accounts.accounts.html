@@ -154,7 +154,6 @@ game.</p>
 </dd>
 </dl>
 </li>
-<li><p>sessions (list of Sessions) - sessions connected to this account</p></li>
 <li><p>is_superuser (bool, read-only) - if the connected user is a superuser</p></li>
 </ul>
 </div></blockquote>
@@ -177,25 +176,54 @@ game.</p>
 <li><p>scripts - script-handler. Add new scripts to object with scripts.add()</p></li>
 <li><p>cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object</p></li>
 <li><p>nicks - nick-handler. New nicks with nicks.add().</p></li>
+<li><p>sessions - session-handler. Use session.get() to see all sessions connected, if any</p></li>
+<li><p>options - option-handler. Defaults are taken from settings.OPTIONS_ACCOUNT_DEFAULT</p></li>
+<li><p>characters - handler for listing the account’s playable characters</p></li>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li><p>Helper methods</p></li>
+<li><p>Helper methods (check autodocs for full updated listing)</p></li>
 </ul>
 <blockquote>
 <div><ul class="simple">
 <li><p>msg(text=None, from_obj=None, session=None, options=None, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)</p></li>
 <li><p>execute_cmd(raw_string)</p></li>
 <li><dl class="simple">
-<dt>search(ostring, global_search=False, attribute_name=None,</dt><dd><p>use_nicks=False, location=None,
-ignore_errors=False, account=False)</p>
+<dt>search(searchdata, return_puppet=False, search_object=False, typeclass=None,</dt><dd><p>nofound_string=None, multimatch_string=None, use_nicks=True,
+quiet=False, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
 </dd>
 </dl>
 </li>
 <li><p>is_typeclass(typeclass, exact=False)</p></li>
 <li><p>swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)</p></li>
-<li><p>access(accessing_obj, access_type=’read’, default=False, no_superuser_bypass=False)</p></li>
+<li><p>access(accessing_obj, access_type=’read’, default=False, no_superuser_bypass=False, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs)</p></li>
 <li><p>check_permstring(permstring)</p></li>
+<li><p>get_cmdsets(caller, current, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)</p></li>
+<li><p>get_cmdset_providers()</p></li>
+<li><p>uses_screenreader(session=None)</p></li>
+<li><p>get_display_name(looker, <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs)</p></li>
+<li><p>get_extra_display_name_info(looker, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs)</p></li>
+<li><p>disconnect_session_from_account()</p></li>
+<li><p>puppet_object(session, obj)</p></li>
+<li><p>unpuppet_object(session)</p></li>
+<li><p>unpuppet_all()</p></li>
+<li><p>get_puppet(session)</p></li>
+<li><p>get_all_puppets()</p></li>
+<li><p>is_banned(<a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs)</p></li>
+<li><p>get_username_validators(validator_config=settings.AUTH_USERNAME_VALIDATORS)</p></li>
+<li><p>authenticate(username, password, ip=””, <a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs)</p></li>
+<li><p>normalize_username(username)</p></li>
+<li><p>validate_username(username)</p></li>
+<li><p>validate_password(password, account=None)</p></li>
+<li><p>set_password(password, <a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs)</p></li>
+<li><p>get_character_slots()</p></li>
+<li><p>get_available_character_slots()</p></li>
+<li><p>create_character(<a href="#id19"><span class="problematic" id="id20">*</span></a>args, <a href="#id21"><span class="problematic" id="id22">**</span></a>kwargs)</p></li>
+<li><p>create(<a href="#id23"><span class="problematic" id="id24">*</span></a>args, <a href="#id25"><span class="problematic" id="id26">**</span></a>kwargs)</p></li>
+<li><p>delete(<a href="#id27"><span class="problematic" id="id28">*</span></a>args, <a href="#id29"><span class="problematic" id="id30">**</span></a>kwargs)</p></li>
+<li><p>channel_msg(message, channel, senders=None, <a href="#id31"><span class="problematic" id="id32">**</span></a>kwargs)</p></li>
+<li><p>idle_time()</p></li>
+<li><p>connection_time()</p></li>
 </ul>
 </div></blockquote>
 <ul class="simple">
@@ -210,15 +238,26 @@ at_account_creation()</p>
 </dl>
 <ul class="simple">
 <li><p>at_init()</p></li>
+<li><p>at_first_save()</p></li>
 <li><p>at_access()</p></li>
-<li><p>at_cmdset_get(<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p></li>
+<li><p>at_cmdset_get(<a href="#id33"><span class="problematic" id="id34">**</span></a>kwargs)</p></li>
+<li><p>at_password_change(<a href="#id35"><span class="problematic" id="id36">**</span></a>kwargs)</p></li>
 <li><p>at_first_login()</p></li>
+<li><p>at_pre_login()</p></li>
 <li><p>at_post_login(session=None)</p></li>
-<li><p>at_disconnect()</p></li>
+<li><p>at_failed_login(session, <a href="#id37"><span class="problematic" id="id38">**</span></a>kwargs)</p></li>
+<li><p>at_disconnect(reason=None, <a href="#id39"><span class="problematic" id="id40">**</span></a>kwargs)</p></li>
+<li><p>at_post_disconnect(<a href="#id41"><span class="problematic" id="id42">**</span></a>kwargs)</p></li>
 <li><p>at_message_receive()</p></li>
 <li><p>at_message_send()</p></li>
 <li><p>at_server_reload()</p></li>
 <li><p>at_server_shutdown()</p></li>
+<li><p>at_look(target=None, session=None, <a href="#id43"><span class="problematic" id="id44">**</span></a>kwargs)</p></li>
+<li><p>at_post_create_character(character, <a href="#id45"><span class="problematic" id="id46">**</span></a>kwargs)</p></li>
+<li><p>at_post_add_character(char)</p></li>
+<li><p>at_post_remove_character(char)</p></li>
+<li><p>at_pre_channel_msg(message, channel, senders=None, <a href="#id47"><span class="problematic" id="id48">**</span></a>kwargs)</p></li>
+<li><p>at_post_chnnel_msg(message, channel, senders=None, <a href="#id49"><span class="problematic" id="id50">**</span></a>kwargs)</p></li>
 </ul>
 </div></blockquote>
 <dl class="py attribute">
@@ -454,7 +493,7 @@ account’s end.</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p><em>puppets (Object or list)</em> –</p>
 <dl class="simple">
-<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id5"><span class="problematic" id="id6">**</span></a>MULTISESSION_MODE**s will
+<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id51"><span class="problematic" id="id52">**</span></a>MULTISESSION_MODE**s will
 get a list of all puppeted objects.</p>
 </dd>
 </dl>
@@ -471,7 +510,7 @@ get a list of all puppeted objects.</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p><em>puppets (Object or list)</em> –</p>
 <dl class="simple">
-<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id7"><span class="problematic" id="id8">**</span></a>MULTISESSION_MODE**s will
+<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id53"><span class="problematic" id="id54">**</span></a>MULTISESSION_MODE**s will
 get a list of all puppeted objects.</p>
 </dd>
 </dl>
@@ -819,7 +858,7 @@ For most normal messages, there is only a single sender. If
 there are no senders, this may be a broadcasting message.</p></li>
 <li><p><strong>**kwargs</strong> – These are additional keywords passed into <strong>channel_msg</strong>.
 If <strong>no_prefix=True</strong> or <strong>emit=True</strong> are passed, the channel
-prefix will not be added (<a href="#id9"><span class="problematic" id="id10">**</span></a>[channelname]: ** by default)</p></li>
+prefix will not be added (<a href="#id55"><span class="problematic" id="id56">**</span></a>[channelname]: ** by default)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
