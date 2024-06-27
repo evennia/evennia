@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Copy custom MySQL option file 
+      - name: Set MySQL custom options
         if: ${{ matrix.TESTING_DB == 'mysql' }}
         run: |
           sudo cp ${{ github.workspace }}/.github/workflows/mysql_options.cnf /etc/mysql/custom.cnf
