@@ -3,8 +3,7 @@
 In this lesson we'll learn how to create our own Evennia [Commands](../../../Components/Commands.md) If you are new to Python you'll also learn some more basics about how to manipulate strings and get information out of Evennia.
 
 A Command is something that handles the input from a user and causes a result to happen.
-An example is `look`, which examines your current location and tells you what it looks like and
-what is in it.
+An example is `look`, which examines your current location and tells you what it looks like and what is in it.
 
 ```{sidebar} Commands are not typeclassed
 
@@ -20,7 +19,7 @@ Command-Sets are then associated with objects, for example with your Character. 
 
 ## Creating a custom command
 
-Open `mygame/commands/command.py`:
+Open `mygame/commands/command.py`. This file already has stuff filled in for you.
 
 ```python
 """

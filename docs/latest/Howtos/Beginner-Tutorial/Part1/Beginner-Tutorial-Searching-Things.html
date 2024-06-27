@@ -158,10 +158,13 @@ Rose
 <li><p>It will always return exactly one match. If it found zero or more than one match, the return is <code class="docutils literal notranslate"><span class="pre">None</span></code>. This is different from <code class="docutils literal notranslate"><span class="pre">evennia.search</span></code> (see below), which always returns a list.</p></li>
 <li><p>On a no-match or multimatch, <code class="docutils literal notranslate"><span class="pre">.search</span></code> will automatically send an error message to <code class="docutils literal notranslate"><span class="pre">obj</span></code>. So you don’t have to worry about reporting messages if the result is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
-<p>In other words, this method handles error messaging for you. A very common way to use it is in commands:</p>
+<p>In other words, this method handles error messaging for you. A very common way to use it is in commands. You can put your command anywhere, but let’s try the pre-filled-in <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in for example mygame/commands/command.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span> <span class="k">as</span> <span class="n">BaseCommand</span>
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span> 
+    <span class="c1"># ... </span>
 
 <span class="k">class</span> <span class="nc">CmdQuickFind</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>

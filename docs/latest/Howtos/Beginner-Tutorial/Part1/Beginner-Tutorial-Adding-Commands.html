@@ -130,8 +130,7 @@
 <h1><span class="section-number">8. </span>Adding custom commands<a class="headerlink" href="#adding-custom-commands" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we’ll learn how to create our own Evennia <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Commands</span></a> If you are new to Python you’ll also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
 <p>A Command is something that handles the input from a user and causes a result to happen.
-An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells you what it looks like and
-what is in it.</p>
+An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells you what it looks like and what is in it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Commands are not typeclassed</p>
 <p>If you just came from the previous lesson, you might want to know that Commands and CommandSets are not <code class="docutils literal notranslate"><span class="pre">typeclassed</span></code>. That is, instances of them are not saved to the database. They are “just” normal Python classes.</p>
@@ -142,7 +141,7 @@ what is in it.</p>
 <p>Command-Sets are then associated with objects, for example with your Character. Doing so makes the commands in that cmdset available to the object. By default, Evennia groups all character-commands into one big cmdset called the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>. It sits on <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (and thus, through inheritance, on <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code>).</p>
 <section id="creating-a-custom-command">
 <h2><span class="section-number">8.1. </span>Creating a custom command<a class="headerlink" href="#creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
-<p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>:</p>
+<p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>. This file already has stuff filled in for you.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
