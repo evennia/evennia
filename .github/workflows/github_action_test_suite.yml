@@ -59,17 +59,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --defaults-extra-file=/etc/mysql/conf.d/custom.cnf
         ports:
           - 3306:3306
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set MySQL custom options
+      - name: Reboot MySQL with custom options
         if: ${{ matrix.TESTING_DB == 'mysql' }}
         run: |
           sudo cp ${{ github.workspace }}/.github/workflows/mysql_options.cnf /etc/mysql/conf.d/custom.cnf
           sudo chown -R mysql:mysql /etc/mysql/conf.d/custom.cnf
+          sudo service mysql restart
 
       # - name: Set up database (${{ matrix.TESTING_DB }})
       #   uses: ./.github/actions/setup-database
