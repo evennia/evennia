@@ -32,10 +32,26 @@ jobs:
       UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: evennia
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5s
+        ports:
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up database (${{ matrix.TESTING_DB }})
+        if: matrix.TESTING_DB != 'postgresql'
         uses: ./.github/actions/setup-database
         with:
           database: ${{ matrix.TESTING_DB }}
@@ -74,6 +90,9 @@ jobs:
         working-directory: testing_mygame
         run: |
           evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
 
       # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
       # calculation!
