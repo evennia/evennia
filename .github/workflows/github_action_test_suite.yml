@@ -40,10 +40,10 @@ jobs:
           POSTGRES_DB: evennia
           POSTGRES_PASSWORD: evennia
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd=pg_isready
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
         ports:
           - 5432:5432
 
@@ -55,12 +55,15 @@ jobs:
           MYSQL_USER: evennia
           MYSQL_PASSWORD: evennia
         options: >-
-          --health-cmd "mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --character-set-server "utf8mb4"
-          --collation-server "utf8mb4_unicode_ci"
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --character-set-server=utf8mb4
+          --collation-server=utf8mb4_unicode_ci
+          --innodb-large-prefix=1
+          --innodb-file-format=Barracuda
+          --innodb-file-per-table=1
         ports:
           - 3306:3306
 
