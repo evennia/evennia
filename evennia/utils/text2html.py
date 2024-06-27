@@ -12,7 +12,6 @@ import re
 from html import escape as html_escape
 
 from .ansi import *
-
 from .hex_colors import HexColors
 
 # All xterm256 RGB equivalents

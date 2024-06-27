@@ -5,10 +5,11 @@ Base typeclass for in-game Channels.
 
 import re
 
-import evennia
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
+
+import evennia
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase

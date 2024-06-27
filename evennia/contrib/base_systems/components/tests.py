@@ -87,23 +87,23 @@ class TestComponents(EvenniaTest):
 
     def test_character_components_set_fields_properly(self):
         test_a_fields = self.char1.test_a._fields
-        self.assertIn('my_int', test_a_fields)
-        self.assertIn('my_list', test_a_fields)
+        self.assertIn("my_int", test_a_fields)
+        self.assertIn("my_list", test_a_fields)
         self.assertEqual(len(test_a_fields), 2)
 
         test_b_fields = self.char1.test_b._fields
-        self.assertIn('my_int', test_b_fields)
-        self.assertIn('my_list', test_b_fields)
-        self.assertIn('default_tag', test_b_fields)
-        self.assertIn('single_tag', test_b_fields)
-        self.assertIn('multiple_tags', test_b_fields)
-        self.assertIn('default_single_tag', test_b_fields)
+        self.assertIn("my_int", test_b_fields)
+        self.assertIn("my_list", test_b_fields)
+        self.assertIn("default_tag", test_b_fields)
+        self.assertIn("single_tag", test_b_fields)
+        self.assertIn("multiple_tags", test_b_fields)
+        self.assertIn("default_single_tag", test_b_fields)
         self.assertEqual(len(test_b_fields), 6)
 
         test_ic_a_fields = self.char1.ic_a._fields
-        self.assertIn('my_int', test_ic_a_fields)
-        self.assertIn('my_list', test_ic_a_fields)
-        self.assertIn('my_other_int', test_ic_a_fields)
+        self.assertIn("my_int", test_ic_a_fields)
+        self.assertIn("my_list", test_ic_a_fields)
+        self.assertIn("my_other_int", test_ic_a_fields)
         self.assertEqual(len(test_ic_a_fields), 3)
 
     def test_inherited_typeclass_does_not_include_child_class_components(self):

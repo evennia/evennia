@@ -69,8 +69,8 @@ from collections import OrderedDict
 from django.conf import settings
 
 from evennia.utils import logger, utils
-from evennia.utils.utils import to_str
 from evennia.utils.hex_colors import HexColors
+from evennia.utils.utils import to_str
 
 hex2truecolor = HexColors()
 hex_sub = HexColors.hex_sub

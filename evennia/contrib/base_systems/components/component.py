@@ -15,16 +15,17 @@ class BaseComponent(type):
     This is the metaclass for components,
     responsible for registering components to the listing.
     """
+
     def __new__(cls, name, parents, attrs):
         """
         Every class that uses this metaclass will be registered
         as a component in the Component Listing using its name.
         All of them require a unique name.
         """
-        attrs_name = attrs.get('name')
+        attrs_name = attrs.get("name")
         if attrs_name and not COMPONENT_LISTING.get(attrs_name):
             new_fields = {}
-            attrs['_fields'] = new_fields
+            attrs["_fields"] = new_fields
             for parent in parents:
                 _parent_fields = getattr(parent, "_fields")
                 if _parent_fields:

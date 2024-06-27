@@ -474,7 +474,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     _RE_N.sub("", prompt) + ("||n" if prompt.endswith("|") else "|n"),
                     strip_ansi=nocolor,
                     xterm256=xterm256,
-                    truecolor=truecolor
+                    truecolor=truecolor,
                 )
                 if mxp:
                     prompt = mxp_parse(prompt)
@@ -511,7 +511,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     strip_ansi=nocolor,
                     xterm256=xterm256,
                     mxp=mxp,
-                    truecolor=truecolor
+                    truecolor=truecolor,
                 )
                 if mxp:
                     linetosend = mxp_parse(linetosend)

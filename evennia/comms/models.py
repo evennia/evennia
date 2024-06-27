@@ -22,6 +22,7 @@ necessary to easily be able to delete connections on the fly).
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+
 from evennia.comms import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.typeclasses.models import TypedObject

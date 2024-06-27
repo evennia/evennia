@@ -47,8 +47,17 @@ from collections import deque
 
 from django.conf import settings
 from django.db.models import Q
-from evennia import (CmdSet, DefaultRoom, EvEditor, FuncParser,
-                     InterruptCommand, default_cmds, gametime, utils)
+
+from evennia import (
+    CmdSet,
+    DefaultRoom,
+    EvEditor,
+    FuncParser,
+    InterruptCommand,
+    default_cmds,
+    gametime,
+    utils,
+)
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import list_to_string, repeat
 

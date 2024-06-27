@@ -722,7 +722,7 @@ class CmdEditorGroup(CmdEditorBase):
             }
             align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
             # shift width arg right if no alignment specified
-            if self.arg1.startswith('='):
+            if self.arg1.startswith("="):
                 self.arg2 = self.arg1
                 self.arg1 = None
             if self.arg1 and self.arg1.lower() not in align_map:

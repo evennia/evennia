@@ -9,6 +9,7 @@ Communication commands:
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
@@ -1412,9 +1413,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
-            target_perms = " or ".join(
-                [f"id({target.id})" for target in targets + [caller]]
-            )
+            target_perms = " or ".join([f"id({target.id})" for target in targets + [caller]])
             create.create_message(
                 caller,
                 message,

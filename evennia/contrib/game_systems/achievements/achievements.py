@@ -50,11 +50,18 @@ Example:
 """
 
 from collections import Counter
+
 from django.conf import settings
-from evennia.utils import logger
-from evennia.utils.utils import all_from_module, is_iter, make_iter, string_partial_matching
-from evennia.utils.evmore import EvMore
+
 from evennia.commands.default.muxcommand import MuxCommand
+from evennia.utils import logger
+from evennia.utils.evmore import EvMore
+from evennia.utils.utils import (
+    all_from_module,
+    is_iter,
+    make_iter,
+    string_partial_matching,
+)
 
 # this is either a string of the attribute name, or a tuple of strings of the attribute name and category
 _ACHIEVEMENT_ATTR = make_iter(getattr(settings, "ACHIEVEMENT_CONTRIB_ATTRIBUTE", "achievements"))
@@ -322,12 +329,12 @@ class CmdAchieve(MuxCommand):
         elif not achievement_data.get("progress"):
             status = "|yNot Started|n"
         else:
-            count = achievement_data.get("count",1)
+            count = achievement_data.get("count", 1)
             # is this achievement tracking items separately?
             if is_iter(achievement_data["progress"]):
                 # we'll display progress as how many items have been completed
                 completed = Counter(val >= count for val in achievement_data["progress"])[True]
-                pct = (completed * 100) // len(achievement_data['progress'])
+                pct = (completed * 100) // len(achievement_data["progress"])
             else:
                 # we display progress as the percent of the total count
                 pct = (achievement_data["progress"] * 100) // count
@@ -379,8 +386,7 @@ class CmdAchieve(MuxCommand):
         elif "all" in self.switches:
             # we merge our progress data into the full dict of achievements
             achievement_data = {
-                key: data | progress_data.get(key, {})
-                for key, data in achievements.items()
+                key: data | progress_data.get(key, {}) for key, data in achievements.items()
             }
 
         # we show all of the currently available achievements regardless of progress status

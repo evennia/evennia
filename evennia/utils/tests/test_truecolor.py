@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from evennia.utils.ansi import ANSIString as AN, ANSIParser
+from evennia.utils.ansi import ANSIParser
+from evennia.utils.ansi import ANSIString as AN
 
 parser = ANSIParser().parse_ansi
 

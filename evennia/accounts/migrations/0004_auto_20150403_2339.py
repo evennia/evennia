@@ -2,8 +2,9 @@
 
 
 import django.core.validators
-import evennia.accounts.manager
 from django.db import migrations, models
+
+import evennia.accounts.manager
 
 
 class Migration(migrations.Migration):
