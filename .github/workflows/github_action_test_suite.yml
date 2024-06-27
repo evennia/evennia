@@ -90,7 +90,7 @@ jobs:
         working-directory: testing_mygame
         run: |
           echo "::group::Running tests ..."
-          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia -v 2 --parallel
+          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia -v 2
           echo "::endgroup::"
         env:
           POSTGRES_HOST: localhost
