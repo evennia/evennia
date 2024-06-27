@@ -59,10 +59,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          --charset "utf8mb4"
-          --init_command "set collation_connection=utf8mb4_unicode_ci"
         ports:
           - 3306:3306
+        volumes: 
+          - ${{ github.workspace }}/.github/workflows/mysql_options.cnf:/etc/mysql/conf.d/custom.cnf
 
     steps:
       - uses: actions/checkout@v3
