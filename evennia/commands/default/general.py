@@ -368,7 +368,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             from evennia.utils.ansi import raw as raw_ansi
 
             table = self.styled_table(border="header")
-            for key, desc, _ in utils.group_objects_by_key_and_desc(items, caller=self.caller):
+            for key, desc, d_ in utils.group_objects_by_key_and_desc(items, caller=self.caller):
                 table.add_row(
                     f"|C{key}|n",
                     "{}|n".format(utils.crop(raw_ansi(desc or ""), width=50) or ""),
