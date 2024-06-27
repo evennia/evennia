@@ -19,25 +19,25 @@ runs:
   using: "composite"
 
   steps:
-    - name: Set up PostgreSQL server
-      if: ${{ inputs.database == 'postgresql' }}
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: "12"
-        postgresql db: "evennia"
-        postgresql user: "evennia"
-        postgresql password: "password"
+    # - name: Set up PostgreSQL server
+    #   if: ${{ inputs.database == 'postgresql' }}
+    #   uses: harmon758/postgresql-action@v1
+    #   with:
+    #     postgresql version: "12"
+    #     postgresql db: "evennia"
+    #     postgresql user: "evennia"
+    #     postgresql password: "password"
 
-    - name: Wait for PostgreSQL to activate
-      if: ${{ inputs.database == 'postgresql' }}
-      run: |
-        while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
-        do
-          sleep 1
-          echo -n .
-        done
-        echo
-      shell: bash
+    # - name: Wait for PostgreSQL to activate
+    #   if: ${{ inputs.database == 'postgresql' }}
+    #   run: |
+    #     while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
+    #     do
+    #       sleep 1
+    #       echo -n .
+    #     done
+    #     echo
+    #   shell: bash
 
     - name: Set up MySQL server
       if: ${{ inputs.database == 'mysql' }}
@@ -50,7 +50,7 @@ runs:
         collation server: "utf8_general_ci"
         mysql database: "evennia"
         mysql user: "evennia"
-        mysql password: "password"
+        mysql password: "evennia"
         mysql root password: root_password
 
     - name: Wait for MySQL to activate
@@ -68,7 +68,7 @@ runs:
       if: ${{ inputs.database == 'mysql' }}
       run: |
         cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
-          create user 'evennia'@'%' identified by 'password';
+          create user 'evennia'@'%' identified by 'evennia';
           grant all on \`evennia%\`.* to 'evennia'@'%';
           grant process on *.* to 'evennia'@'%';
           flush privileges

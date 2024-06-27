@@ -26,7 +26,7 @@ jobs:
             TESTING_DB: "sqlite3"
             coverage-test: true
 
-    timeout-minutes: 35
+    timeout-minutes: 40
 
     env:
       UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
@@ -40,47 +40,22 @@ jobs:
           POSTGRES_DB: evennia
           POSTGRES_PASSWORD: evennia
         options: >-
-          --health-cmd=pg_isready
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 5432:5432
-
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: evennia
-          MYSQL_USER: evennia
-          MYSQL_PASSWORD: evennia
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-          --character-set-server=utf8mb4
-          --collation-server=utf8mb4_unicode_ci
-          --innodb-large-prefix=1
-          --innodb-file-format=Barracuda
-          --innodb-file-per-table=1
-        ports:
-          - 3306:3306
 
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Reboot MySQL with custom options
-      #   if: ${{ matrix.TESTING_DB == 'mysql' }}
-      #   run: |
-      #     sudo cp ${{ github.workspace }}/.github/workflows/mysql_options.cnf /etc/mysql/conf.d/custom.cnf
-      #     sudo chown -R mysql:mysql /etc/mysql/conf.d/custom.cnf
-
-      # - name: Set up database (${{ matrix.TESTING_DB }})
-      #   uses: ./.github/actions/setup-database
-      #   with:
-      #     database: ${{ matrix.TESTING_DB }}
-      #   timeout-minutes: 5
+      - name: Set up MySQL
+        if: ${{ matrix.TESTING_DB == 'mysql' }}
+        uses: ./.github/actions/setup-database
+        with:
+          database: ${{ matrix.TESTING_DB }}
+        timeout-minutes: 5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
