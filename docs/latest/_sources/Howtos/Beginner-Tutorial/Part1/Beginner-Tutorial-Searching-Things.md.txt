@@ -135,9 +135,9 @@ Above we find first the rose and then an Account. You can try both using `py`:
     > py evennia.search_account("YourName")[0]
     <Player: YourName>
 
-In the example above we used `[0]` to only get the first match of the queryset, which in this case gives us the rose and your Account respectively. Note that if you don't find any matches, using `[0]` like this leads to an error, so it's mostly useful for debugging.
+The `search_object/account` returns all matches. We use `[0]` to only get the first match of the queryset, which in this case gives us the rose and your Account respectively. Note that if you don't find any matches, using `[0]` like this leads to an error, so it's mostly useful for debugging.
 
-If you you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself. This is too detailed for testing out just with `py`, but good to know if you want to make your own search methods:
+In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself. This is too detailed for testing out just with `py`, but good to know if you want to make your own search methods:
 
 ```python
     the_one_ring = evennia.search_object("The one Ring")
