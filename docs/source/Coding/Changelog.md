@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 4.2.0
+
+June 27, 2024
 
 - [Feature][pull3470]: New `exit_order` kwarg to
   `DefaultObject.get_display_exits` to easier customize the order in which
