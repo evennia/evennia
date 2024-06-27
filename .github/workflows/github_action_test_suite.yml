@@ -89,7 +89,9 @@ jobs:
         if: ${{ ! matrix.coverage-test }}
         working-directory: testing_mygame
         run: |
-          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
+          echo "::group::Running tests ..."
+          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia -v 2 --parallel
+          echo "::endgroup::"
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
