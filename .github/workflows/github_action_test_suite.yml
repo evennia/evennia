@@ -36,9 +36,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: evennia
           POSTGRES_DB: evennia
+          POSTGRES_PASSWORD: evennia
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -47,15 +47,31 @@ jobs:
         ports:
           - 5432:5432
 
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: evennia
+          MYSQL_USER: evennia
+          MYSQL_PASSWORD: evennia
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --charset "utf8mb4"
+          --init_command "set collation_connection=utf8mb4_unicode_ci"
+        ports:
+          - 3306:3306
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up database (${{ matrix.TESTING_DB }})
-        if: matrix.TESTING_DB != 'postgresql'
-        uses: ./.github/actions/setup-database
-        with:
-          database: ${{ matrix.TESTING_DB }}
-        timeout-minutes: 5
+      # - name: Set up database (${{ matrix.TESTING_DB }})
+      #   uses: ./.github/actions/setup-database
+      #   with:
+      #     database: ${{ matrix.TESTING_DB }}
+      #   timeout-minutes: 5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -93,6 +109,8 @@ jobs:
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3306
 
       # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
       # calculation!
