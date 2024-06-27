@@ -99,7 +99,8 @@ Below are the access_types checked by the default commandset.
   - `send` - who may send to the channel.
   - `listen` - who may subscribe and listen to the channel.
 - [HelpEntry](./Help-System.md):
-  - `examine` - who may view this help entry (usually everyone)
+  - `view` - if the help entry header should show up in the help index
+  - `read` - who may view this help entry (usually everyone)
   - `edit` - who may edit this help entry.
 
 So to take an example, whenever an exit is to be traversed, a lock of the type *traverse* will be checked. Defining a suitable lock type for an exit object would thus involve a lockstring `traverse: <lock functions>`.
