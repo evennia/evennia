@@ -26,7 +26,7 @@ runs:
         postgresql version: "12"
         postgresql db: "evennia"
         postgresql user: "evennia"
-        postgresql password: "password"
+        postgresql password: "evennia"
 
     - name: Wait for PostgreSQL to activate
       if: ${{ inputs.database == 'postgresql' }}
