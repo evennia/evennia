@@ -43,9 +43,10 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "evennia",
         "USER": "evennia",
-        "PASSWORD": "evennia",
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "",  # use default
+        "TEST": {"NAME": "default"},
     }
 }
 

@@ -26,7 +26,7 @@ runs:
         postgresql version: "12"
         postgresql db: "evennia"
         postgresql user: "evennia"
-        postgresql password: "evennia"
+        postgresql password: "password"
 
     - name: Wait for PostgreSQL to activate
       if: ${{ inputs.database == 'postgresql' }}
@@ -50,7 +50,7 @@ runs:
         collation server: "utf8_general_ci"
         mysql database: "evennia"
         mysql user: "evennia"
-        mysql password: "evennia"
+        mysql password: "password"
         mysql root password: root_password
 
     - name: Wait for MySQL to activate
@@ -68,7 +68,7 @@ runs:
       if: ${{ inputs.database == 'mysql' }}
       run: |
         cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
-          create user 'evennia'@'%' identified by 'evennia';
+          create user 'evennia'@'%' identified by 'password';
           grant all on \`evennia%\`.* to 'evennia'@'%';
           grant process on *.* to 'evennia'@'%';
           flush privileges
