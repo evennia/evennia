@@ -23,12 +23,15 @@ On the `DefaultObject` is a `.search` method which we have already tried out whe
 - It will always return exactly one match. If it found zero or more than one match, the return is `None`. This is different from `evennia.search` (see below), which always returns a list.
 - On a no-match or multimatch, `.search` will automatically send an error message to `obj`. So you don't have to worry about reporting messages if the result is `None`.
 
-In other words, this method handles error messaging for you. A very common way to use it is in commands:
+In other words, this method handles error messaging for you. A very common way to use it is in commands. You can put your command anywhere, but let's try the pre-filled-in `mygame/commands/command.py`.
 
 ```python
 # in for example mygame/commands/command.py
 
-from evennia import Command
+from evennia import Command as BaseCommand
+
+class Command(BaseCommand): 
+    # ... 
 
 class CmdQuickFind(Command):
     """ 
