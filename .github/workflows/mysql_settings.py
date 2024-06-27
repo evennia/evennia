@@ -50,13 +50,13 @@ DATABASES = {
              "charset": "utf8mb4",
              "init_command": "set collation_connection=utf8mb4_unicode_ci",
          },
-        "TEST": {
-            "NAME": "evennia",
-            "OPTIONS": {
-                "charset": "utf8mb4",
-                "init_command": "set collation_connection=utf8mb4_unicode_ci",
-            },
-        },
+#         "TEST": {
+#             "NAME": "evennia",
+#             "OPTIONS": {
+#                 "charset": "utf8mb4",
+#                 "init_command": "set collation_connection=utf8mb4_unicode_ci",
+#             },
+#         },
     }
 }
 

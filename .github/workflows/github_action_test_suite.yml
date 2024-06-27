@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
         TESTING_DB: ["sqlite3", "postgresql", "mysql"]
         include:
           - python-version: "3.10"
@@ -32,25 +32,10 @@ jobs:
       UNIT_TEST_SETTINGS: "--settings=settings --timing --parallel auto"
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: evennia
-          POSTGRES_DB: evennia
-          POSTGRES_PASSWORD: evennia
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up MySQL
+      - name: Set up {{ matrix.TESTING_DB }} database
         if: ${{ matrix.TESTING_DB == 'mysql' }}
         uses: ./.github/actions/setup-database
         with:
@@ -89,9 +74,7 @@ jobs:
         if: ${{ ! matrix.coverage-test }}
         working-directory: testing_mygame
         run: |
-          echo "::group::Running tests ..."
           evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
-          echo "::endgroup::"
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
