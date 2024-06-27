@@ -198,7 +198,14 @@ the typeclasses in this module:</p>
 
 </pre></div>
 </div>
-<p>You will then need to reload the server and potentially force-reload
+<p>You need to set up Evennia to use the RPsystem’s form to separate
+between sdescs (<code class="docutils literal notranslate"><span class="pre">3-tall</span></code>) to make it compatible with how the rest of Evennia
+separates between other multi-matches of searches/commands:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SEARCH_MULTIMATCH_REGEX = r&quot;(?P&lt;number&gt;[0-9]+)-(?P&lt;name&gt;[^-]*)(?P&lt;args&gt;.*)&quot;
+SEARCH_MULTIMATCH_TEMPLATE = &quot; {number}-{name}{aliases}{info}\n&quot;
+</pre></div>
+</div>
+<p>Finally, you will then need to reload the server and potentially force-reload
 your objects, if you originally created them without this.</p>
 <p>Example for your character:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; type/reset/force me = typeclasses.characters.Character
