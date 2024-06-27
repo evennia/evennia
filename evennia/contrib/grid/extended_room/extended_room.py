@@ -47,17 +47,8 @@ from collections import deque
 
 from django.conf import settings
 from django.db.models import Q
-
-from evennia import (
-    CmdSet,
-    DefaultRoom,
-    EvEditor,
-    FuncParser,
-    InterruptCommand,
-    default_cmds,
-    gametime,
-    utils,
-)
+from evennia import (CmdSet, DefaultRoom, EvEditor, FuncParser,
+                     InterruptCommand, default_cmds, gametime, utils)
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import list_to_string, repeat
 
@@ -677,7 +668,7 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
       edit - Open up a line editor for more advanced editing.
       del - Delete the description of an object. If another state is given, its description
         will be deleted.
-      spring|summer|autumn|winter - room description to use in respective in-game season
+      spring||summer||autumn||winter - room description to use in respective in-game season
       <other> - room description to use with an arbitrary room state.
 
     Sets the description an object. If an object is not given,
