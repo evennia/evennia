@@ -48,15 +48,15 @@ DATABASES = {
         "PORT": os.environ.get("MYSQL_PORT", "3306"),
         "OPTIONS": {
              "charset": "utf8mb4",
-#             "init_command": "set collation_connection=utf8mb4_unicode_ci",
+             "init_command": "set collation_connection=utf8mb4_unicode_ci",
          },
-#        "TEST": {
-#            "NAME": "evennia",
-#            "OPTIONS": {
-#                "charset": "utf8mb4",
-#                "init_command": "set collation_connection=utf8mb4_unicode_ci",
-#            },
-#        },
+        "TEST": {
+            "NAME": "evennia",
+            "OPTIONS": {
+                "charset": "utf8mb4",
+                "init_command": "set collation_connection=utf8mb4_unicode_ci",
+            },
+        },
     }
 }
 
