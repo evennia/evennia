@@ -212,7 +212,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
             receivers.append(target)
 
         if self.create_report(
-            self.account, self.message, receivers=receivers, locks=self.report_locks, tags=["report"]
+            self.account, self.report_message, receivers=receivers, locks=self.report_locks, tags=["report"]
         ):
             # the report Msg was successfully created
             self.msg(self.success_msg)
