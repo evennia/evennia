@@ -346,6 +346,44 @@ class TestRPSystem(BaseEvenniaTest):
         self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
         self.assertEqual(self.speaker.search("colliding"), self.receiver2)
 
+    def test_get_search_result(self):
+        self.obj1 = create_object(rpsystem.ContribRPObject, key="Obj1", location=self.room)
+        self.obj1.sdesc.add("something")
+        self.obj2 = create_object(rpsystem.ContribRPCharacter, key="Obj2", location=self.room)
+        self.obj2.sdesc.add("something")
+        candidates = [self.obj1, self.obj2]
+
+        # search candidates by sdesc: both objects should be found
+        result = self.speaker.get_search_result("something", candidates)
+        self.assertEqual(list(result), candidates)
+
+        # search by sdesc with 2-disambiguator: only second object should be found
+        result = self.speaker.get_search_result("2-something", candidates)
+        self.assertEqual(list(result), [self.obj2])
+
+        # search empty candidates: no objects should be found
+        result = self.speaker.get_search_result("something", candidates=[])
+        self.assertEqual(list(result), [])
+
+        # typeclass was given: only matching object should be found
+        result = self.speaker.get_search_result(
+            "something", candidates=candidates, typeclass=rpsystem.ContribRPCharacter
+        )
+        self.assertEqual(list(result), [self.obj2])
+
+        # search by key with player permissions: no objects should be found
+        result = self.speaker.get_search_result("obj1", candidates)
+        self.assertEqual(list(result), [])
+
+        # search by key with builder permissions: object should be found
+        self.speaker.permissions.add("builder")
+        result = self.speaker.get_search_result("obj1", candidates)
+        self.assertEqual(list(result), [self.obj1])
+
+        # search by key with builder permissions when NOT IN candidates: object should NOT be found
+        result = self.speaker.get_search_result("obj1", [self.obj2])
+        self.assertEqual(list(result), [])
+
 
 class TestRPSystemCommands(BaseEvenniaCommandTest):
     def setUp(self):
