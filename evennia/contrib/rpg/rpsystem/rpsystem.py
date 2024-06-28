@@ -442,7 +442,7 @@ def parse_sdescs_and_recogs(
                 (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
             )
             # filter out any non-matching candidates
-            bestmatches = [(obj, m.group()) for m, obj, text in matches if m]
+            bestmatches = [(obj, mtch.group()) for mtch, obj, text in matches if mtch]
 
         else:
             # to find the longest match, we start from the marker and lengthen the
