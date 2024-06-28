@@ -41,7 +41,6 @@ from evennia.comms.models import Msg
 
 from . import menu
 
-# TODO: use actual default command class
 _DEFAULT_COMMAND_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # the default report types
@@ -155,6 +154,28 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
         self.hub = hub
         return super().at_pre_cmd()
 
+    def target_search(self, searchterm, **kwargs):
+        """
+        Search for a target that matches the given search term. By default, does a normal search via the
+        caller - a local object search for a Character, or an account search for an Account.
+
+        Args:
+            searchterm (str) - The string to search for
+
+        Returns:
+            result (Object, Account, or None) - the result of the search
+        """
+        return self.caller.search(searchterm)
+
+    def create_report(self, *args, **kwargs):
+        """
+        Creates the report. By default, this creates a Msg with any provided args and kwargs.
+
+        Returns:
+            success (bool) - True if the report was created successfully, or False if there was an issue.
+        """
+        return create.create_message(*args, **kwargs)
+
     def func(self):
         hub = self.hub
         if not self.args:
@@ -169,7 +190,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
 
         target = None
         if target_str:
-            target = self.caller.search(target_str)
+            target = self.target_search(target_str)
             if not target:
                 return
         elif self.require_target:
@@ -180,7 +201,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
         if target:
             receivers.append(target)
 
-        if create.create_message(
+        if self.create_report(
             self.account, message, receivers=receivers, locks=self.report_locks, tags=["report"]
         ):
             # the report Msg was successfully created

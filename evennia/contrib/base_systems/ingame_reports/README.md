@@ -41,13 +41,15 @@ Players can submit new reports through the command for each report type, and sta
 
 Players can submit reports using the following commands:
 
-* `bug` - Files a bug report. An optional target can be included, making it easier for devs/builders to track down issues.
-* `report` - Reports a player for inappropriate or rule-breaking behavior. *Requires* a target to be provided - it searches among accounts by default.
-* `idea` - Submits a general suggestion, with no target. It also has an alias of `ideas` which allows you to view all of your submitted ideas.
+* `bug <text>` - Files a bug report. An optional target can be included - `bug <target> = <text>` - making it easier for devs/builders to track down issues.
+* `report <player> = <text>` - Reports a player for inappropriate or rule-breaking behavior. *Requires* a target to be provided - it searches among accounts by default.
+* `idea <text>` - Submits a general suggestion, with no target. It also has an alias of `ideas` which allows you to view all of your submitted ideas.
 
 ### Managing reports
 
-The `manage reports` command allows staff to review and manage the various types of reports. It dynamically aliases itself to include whatever types of reports you've configured for your game - by default, this means it makes `manage bugs`, `manage players`, and `manage ideas` available along with the default `manage reports`.
+The `manage reports` command allows staff to review and manage the various types of reports by launching a management menu.
+
+This command will dynamically add aliases to itself based on the types of reports available, with each command string launching a menu for that particular report type. The aliases are built on the pattern `manage <report type>s` - by default, this means it makes `manage bugs`, `manage players`, and `manage ideas` available along with the default `manage reports`, and that e.g. `manage bugs` will launch the management menu for `bug`-type reports.
 
 Aside from reading over existing reports, the menu allows you to change the status of any given report. By default, the contrib includes two different status tags: `in progress` and `closed`.
 
@@ -66,7 +68,10 @@ INGAME_REPORT_STATUS_TAGS = ('in progress', 'rejected', 'completed')
 
 ### Adding new types of reports
 
-The contrib is designed to make adding new types of reports to the system as simple as possible, requiring only two steps.
+The contrib is designed to make adding new types of reports to the system as simple as possible, requiring only two steps:
+
+1. Update your settings file to include an `INGAME_REPORT_TYPES` setting.
+2. Create and add a new `ReportCmd` to your command set.
 
 #### Update your settings
 
