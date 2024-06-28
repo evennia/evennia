@@ -154,6 +154,22 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
         self.hub = hub
         return super().at_pre_cmd()
 
+    def parse(self):
+        """
+        Parse the target and message out of the arguments.
+        
+        Override if you want different syntax, but make sure to assign `report_message` and `target_str`.
+        """
+        # do the base MuxCommand parsing first
+        super().parse()
+        # split out the report message and target strings
+        if self.rhs:
+            self.report_message = self.rhs
+            self.target_str = self.lhs
+        else:
+            self.report_message = self.lhs
+            self.target_str = ""
+
     def target_search(self, searchterm, **kwargs):
         """
         Search for a target that matches the given search term. By default, does a normal search via the
@@ -181,16 +197,10 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
         if not self.args:
             self.msg("You must provide a message.")
             return
-        if self.rhs:
-            message = self.rhs
-            target_str = self.lhs
-        else:
-            message = self.lhs
-            target_str = ""
 
         target = None
-        if target_str:
-            target = self.target_search(target_str)
+        if self.target_str:
+            target = self.target_search(self.target_str)
             if not target:
                 return
         elif self.require_target:
@@ -202,7 +212,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
             receivers.append(target)
 
         if self.create_report(
-            self.account, message, receivers=receivers, locks=self.report_locks, tags=["report"]
+            self.account, self.message, receivers=receivers, locks=self.report_locks, tags=["report"]
         ):
             # the report Msg was successfully created
             self.msg(self.success_msg)
