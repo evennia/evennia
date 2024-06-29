@@ -31,7 +31,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdAchieve)
 ```
 
-**Optional** - The achievements contrib stores individual progress data on the `achievements` attribute by default, visible via `obj.db.attributes`. You can change this by assigning an attribute (key, category) tuple to the setting `ACHIEVEMENT_CONTRIB_ATTRIBUTE`
+**Optional** - The achievements contrib stores individual progress data on the `achievements` attribute by default, visible via `obj.db.achievements`. You can change this by assigning an attribute (key, category) tuple to the setting `ACHIEVEMENT_CONTRIB_ATTRIBUTE`
 
 Example:
 ```py
