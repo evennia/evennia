@@ -1,57 +1,78 @@
 # Setting up PyCharm with Evennia
 
-[PyCharm](https://www.jetbrains.com/pycharm/) is a Python developer's IDE from Jetbrains available for Windows, Mac and Linux. It is a commercial product but offer free trials, a scaled-down community edition and also generous licenses for OSS projects like Evennia.
+[PyCharm](https://www.jetbrains.com/pycharm/) is a Python developer's IDE from Jetbrains available for Windows, Mac and Linux. 
+It is a commercial product but offer free trials, a scaled-down community edition and also generous licenses for OSS projects like Evennia.
 
-> This page was originally tested on Windows (so use Windows-style path examples), but should work the same for all platforms.
+First, download and install the IDE edition of your choosing.
+The professional edition has integrated support for Django which can
+make certain steps easier but the community edition has everything you need.
 
-First, install Evennia on your local machine with [[Getting Started]]. If you're new to PyCharm, loading your project is as easy as selecting the `Open` option when PyCharm starts, and browsing to your game folder (the one created with `evennia --init`). We refer to it as `mygame` here. 
+After setting it up, you want to create a new project.
+1. Click on the new project button.
+2. Select the location for your project.
+You should create two new folders, one for the root of your project and one
+for the evennia game directly. It should look like `/location/projectfolder/gamefolder`
+3. Select the `Custom environment` interpreter type, using `Generate New` of type `Virtual env` using a
+compatible base python version as recommended in https://www.evennia.com/docs/latest/Setup/Installation.html#requirements
+Then choose a folder for your virtual environment as a sub folder of your project folder.
 
-If you want to be able to examine evennia's core code or the scripts inside your virtualenv, you'll
-need to add them to your project too:
+![Example new project configuration](https://i.imgur.com/kewCJwY.png)
 
-1. Go to `File > Open...`
-1. Select the folder (i.e. the `evennia` root)
-1. Select "Open in current window" and "Add to currently opened projects"
+Click on the create button and it will take you inside your new project with a bare bones virtual environment.
+To install Evennia, you can then either clone evennia in your project folder or install it via pip.
+The simplest way is to use pip.
 
-It's a good idea to set up the interpreter this before attempting anything further. The rest of this page assumes your project is already configured in PyCharm.
+Click on the `terminal` button
 
-1. Go to `File > Settings... > Project: \<mygame\> > Project Interpreter`
-1. Click the Gear symbol `> Add local`
-1. Navigate to your `evenv/scripts directory`, and select Python.exe
+![Terminal Button](https://i.imgur.com/fDr4nhv.png)
 
-Enjoy seeing all your imports checked properly, setting breakpoints, and live variable watching!
+1. Type in `pip install evennia`
+2. In this pycharm terminal window, continue the rest of the steps outlined here https://www.evennia.com/docs/latest/Setup/Installation.html#initialize-a-new-game
 
 ## Debug Evennia from inside PyCharm
 
-1. Launch Evennia in your preferred way (usually from a console/terminal)
-1. Open your project in PyCharm
-1. In the PyCharm menu, select `Run > Attach to Local Process...`
-1. From the list, pick the `twistd` process with the `server.py` parameter (Example: `twistd.exe --nodaemon --logfile=\<mygame\>\server\logs\server.log --python=\<evennia repo\>\evennia\server\server.py`)
+### Attaching to the process
+1. Launch Evennia in the pycharm terminal
+2. Attempt to start it twice, this will give you the process ID of the server
+3. In the PyCharm menu, select `Run > Attach to Process...`
+4. From the list, pick the corresponding process id, it should be the `twistd` process with the `server.py` parameter (Example: `twistd.exe --nodaemon --logfile=\<mygame\>\server\logs\server.log --python=\<evennia repo\>\evennia\server\server.py`)
 
-Of course you can attach to the `portal` process as well.  If you want to debug the Evennia launcher
+You can attach to the `portal` process as well, if you want to debug the Evennia launcher
 or runner for some reason (or just learn how they work!), see Run Configuration below.
 
 > NOTE: Whenever you reload Evennia, the old Server process will die and a new one start. So when you restart you have to detach from the old and then reattach to the new process that was created.
 
-> To make the process less tedious you can apply a filter in settings to show only the server.py process in the list. To do that navigate to: `Settings/Preferences | Build, Execution, Deployment | Python Debugger` and then in `Attach to process` field put in: `twistd.exe" --nodaemon`. This is an example for windows, I don't have a working mac/linux box.
 
-![Example process filter configuration](https://i.imgur.com/vkSheR8.png)
-
-## Run Evennia from inside PyCharm
+### Run Evennia with a Run/Debug Configuration
 
 This configuration allows you to launch Evennia from inside PyCharm. Besides convenience, it also allows suspending and debugging the evennia_launcher or evennia_runner at points earlier than you could by running them externally and attaching. In fact by the time the server and/or portal are running the launcher will have exited already.
 
+#### On Windows
 1. Go to `Run > Edit Configutations...`
-1. Click the plus-symbol to add a new configuration and choose Python
-1. Add the script: `\<yourrepo\>\evenv\Scripts\evennia_launcher.py` (substitute your virtualenv if it's not named `evenv`)
-1. Set script parameters to: `start -l` (-l enables console logging)
-1. Ensure the chosen interpreter is from your virtualenv
-1. Set Working directory to your `mygame` folder (not evenv nor evennia)
-1. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD start" or similar).
+2. Click the plus-symbol to add a new configuration and choose Python
+3. Add the script: `\<yourprojectfolder>\.venv\Scripts\evennia_launcher.py` (substitute your virtualenv if it's not named `evenv`)
+4. Set script parameters to: `start -l` (-l enables console logging)
+5. Ensure the chosen interpreter is your virtualenv
+6. Set Working directory to your `mygame` folder (not your project folder nor evennia)
+7. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD start" or similar).
 
-Now set up a "stop" configuration by following the same steps as above, but set your Script parameters to: stop (and name the configuration appropriately).
+A dropdown box holding your new configurations should appear next to your PyCharm run button. 
+Select it start and press the debug icon to begin debugging.
 
-A dropdown box holding your new configurations should appear next to your PyCharm run button. Select MyMUD start and press the debug icon to begin debugging.  Depending on how far you let the program run, you may need to run your "MyMUD stop" config to actually stop the server, before you'll be able start it again.
+#### On Linux
+1. Go to `Run > Edit Configutations...`
+2. Click the plus-symbol to add a new configuration and choose Python
+3. Add the script: `/<yourprojectfolder>/.venv/bin/twistd` (substitute your virtualenv if it's not named `evenv`)
+4. Set script parameters to: `--python=/<yourprojectfolder>/.venv/lib/python3.11/site-packages/evennia/server/server.py --logger=evennia.utils.logger.GetServerLogObserver --pidfile=/<yourprojectfolder>/<yourgamefolder>/server/server.pid --nodaemon`
+5. Add an environment variable `DJANGO_SETTINGS_MODULE=server.conf.settings`
+6. Ensure the chosen interpreter is your virtualenv
+7. Set Working directory to your game folder (not your project folder nor evennia)
+8. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD start" or similar).
+
+A dropdown box holding your new configurations should appear next to your PyCharm run button. 
+Select it start and press the debug icon to begin debugging.
+Note that this only starts the server process, you will still need to start the portal
+using evennia start AFTER launching the server process.
 
 ### Alternative config - utilizing logfiles as source of data
 
