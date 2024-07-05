@@ -188,10 +188,10 @@ The hexadecimal color codes used here are the same ones used in web design.
 
 | Tag | Effect | 
 | -------- | ---- | 
-| \|###### | foreground RGB (red/green/blue), 6-digit hexadecimal format. | 
-| \|\[###### | background RGB | 
-| \|### | foreground RGB (red/green/blue), 3-digit hexadecimal format. | 
-| \|\[### | background RGB | 
+| \|#$$$$$$ | foreground RGB (red/green/blue), 6-digit hexadecimal format, where $ = 0-F | 
+| \|\[#$$$$$$ | background RGB | 
+| \|#$$$ | foreground RGB (red/green/blue), 3-digit hexadecimal format. | 
+| \|\[#$$$ | background RGB | 
 
 Some 6-digit examples: 
 
