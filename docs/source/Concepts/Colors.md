@@ -56,7 +56,7 @@ For the webclient, Evennia will translate the codes to CSS tags.
 |\|X | normal black foreground color |
 | \|\[# | background colours, e.g. \|\[c for bright cyan background and \|\[C a normal cyan background. |
 | \|!# | foreground color that inherits brightness from previous tags. Always uppcase, like \|!R |
-| \|h | make any following foreground ANSI colors bright (no effect on Xterm colors). Use with \|!#. Technically, \|h\|G == \|g. |
+| \|h | make any following foreground ANSI colors bright (also known as bold, no effect on Xterm colors). Use with \|!#. Technically, \|h\|G == \|g. |
 | \|H  | negates the effects of \|h, return foreground to normal (no effect on Xterm colors) | 
 | \|/ | line break. Use instead of Python \\n when adding strings from in-game. |
 | \|- | tab character when adding strings in-game. Can vay per client, so usually better with spaces. |
@@ -126,14 +126,14 @@ actually change the background color instead of the foreground:
     ```
     |*reversed text |!R now BG is red.
     ```
-For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-
-Tags) tutorial. But most of the time you might be better off to simply avoid `|*` and mark your text
+For a detailed explanation of these caveats, see the [Understanding Color Tags](../Howtos/Tutorial\-Understanding\-Color\-Tags.md) 
+tutorial. But most of the time you might be better off to simply avoid `|*` and mark your text
 manually instead.
 
 ## Xterm256 Colours
 
 ```{sidebar}
-See the [Understanding Color Tags](../Howtos/Tutorial-Understanding-Color-Tags.md) tutorial, for more on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
+See the [Understanding Color Tags](../Howtos/Tutorial\-Understanding\-Color\-Tags.md) tutorial, for more on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
 ```
 The _Xterm256_ standard is a colour scheme that supports 256 colours for text and/or background. It can be combined freely with ANSI colors (above), but some ANSI tags don't affect Xterm256 tags. 
 
@@ -173,3 +173,38 @@ If you have a client that supports Xterm256, you can use
 
 to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
 into a few blocks of colors, it means Xterm256 is not supported and ANSI are used as a replacement. You can use the `options` command to see if xterm256 is active for you. This depends on if your client told Evennia what it supports - if not, and you know what your client supports, you may have to activate some features manually.
+
+## 24-bit Colors (True color)
+
+```{sidebar}
+See the [Wikipedia entry on web colors](https://en.wikipedia.org/wiki/Web_colors) for more detailed information on this color format.
+```
+
+Some clients support 24-bit colors. This is also called [true color](https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)).
+Not all clients support true color, they will instead see the closest equivalent. It's important to bear in mind that things may look quite
+different from what you intended if you use subtle gradations in true color and it's viewed with a client that doesn't support true color.
+The hexadecimal color codes used here are the same ones used in web design.
+
+
+| Tag | Effect | 
+| -------- | ---- | 
+| \|###### | foreground RGB (red/green/blue), 6-digit hexadecimal format. | 
+| \|\[###### | background RGB | 
+| \|### | foreground RGB (red/green/blue), 3-digit hexadecimal format. | 
+| \|\[### | background RGB | 
+
+Some 6-digit examples: 
+
+| Tag | Effect | 
+| -------- | ---- | 
+| \|#ff0000 | bright red | 
+| \|#00ff00 | bright green | 
+| \|#0000ff | bright blue | 
+
+Some 3-digit examples: 
+
+| Tag | Effect | 
+| ---- | ---- | 
+| \|#f00 | bright red | 
+| \|#0f0 | bright green | 
+| \|#00f | bright blue | 
