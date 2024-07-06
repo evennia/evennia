@@ -197,14 +197,16 @@ Some 6-digit examples:
 
 | Tag | Effect | 
 | -------- | ---- | 
-| \|#ff0000 | bright red | 
-| \|#00ff00 | bright green | 
-| \|#0000ff | bright blue | 
+| \|#ff0000 | bright red foreground| 
+| \|#00ff00 | bright green foreground| 
+| \|#0000ff | bright blue foreground| 
+| \|#\[ff0000 | bright red background| 
 
 Some 3-digit examples: 
 
 | Tag | Effect | 
 | ---- | ---- | 
-| \|#f00 | bright red | 
-| \|#0f0 | bright green | 
-| \|#00f | bright blue | 
+| \|#f00 | bright red foreground| 
+| \|#0f0 | bright green foreground| 
+| \|#00f | bright blue foreground| 
+| \|\[#f00 | bright red background| 
