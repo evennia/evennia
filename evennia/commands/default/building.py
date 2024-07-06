@@ -3289,7 +3289,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 if "loc" in self.switches and not is_account and result.location:
                     string += (
                         f" (|wlocation|n: |g{result.location.get_display_name(caller)}"
-                        f"{result.get_extra_display_name_info(caller)}|n)"
+                        f"{result.location.get_extra_display_name_info(caller)}|n)"
                     )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
