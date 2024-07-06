@@ -1320,15 +1320,18 @@ def funcparser_callable_your_capitalize(
     )
 
 
-def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
+def funcparser_callable_conjugate(*args, caller=None, receiver=None, mapping=None, **kwargs):
     """
-    Usage: $conj(word, [options])
+    Usage: $conj(word, [key])
 
     Conjugate a verb according to if it should be 2nd or third person.
 
     Keyword Args:
         caller (Object): The object who represents 'you' in the string.
         receiver (Object): The recipient of the string.
+        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
+            used to find which object the optional `key` argument refers to. If not given,
+            the `caller` kwarg is used.
 
     Returns:
         str: The parsed string.
@@ -1337,13 +1340,10 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
         ParsingError: If `you` and `recipient` were not both supplied.
 
     Notes:
-        Note that the verb will not be capitalized. It also
-        assumes that the active party (You) is the one performing the verb.
-        This automatic conjugation will fail if the active part is another person
-        than 'you'. The caller/receiver must be passed to the parser directly.
+        Note that the verb will not be capitalized.
 
     Examples:
-        This is often used in combination with the $you/You( callables.
+        This is often used in combination with the $you/You callables.
 
         - `With a grin, $you() $conj(jump)`
 
@@ -1356,14 +1356,80 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
     if not (caller and receiver):
         raise ParsingError("No caller/receiver supplied to $conj callable")
 
-    second_person_str, third_person_str = verb_actor_stance_components(args[0])
-    return second_person_str if caller == receiver else third_person_str
+    verb, *options = args
+    obj = caller
+    if mapping and options:
+        # get the correct referenced object from the mapping, or fall back to caller
+        obj = mapping.get(options[0], caller)
+
+    second_person_str, third_person_str = verb_actor_stance_components(verb)
+    return second_person_str if obj == receiver else third_person_str
 
 
-def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=False, **kwargs):
+def funcparser_callable_conjugate_for_pronouns(
+    *args, caller=None, receiver=None, mapping=None, **kwargs
+):
+    """
+    Usage: $pconj(word, [key])
+
+    Conjugate a verb according to if it should be 2nd or third person, respecting the
+    singular/plural gendering for third person.
+
+    Keyword Args:
+        caller (Object): The object who represents 'you' in the string.
+        receiver (Object): The recipient of the string.
+        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
+            used to find which object the optional `key` argument refers to. If not given,
+            the `caller` kwarg is used.
+
+    Returns:
+        str: The parsed string.
+
+    Raises:
+        ParsingError: If `you` and `recipient` were not both supplied.
+
+    Notes:
+        Note that the verb will not be capitalized.
+
+    Examples:
+        This is often used in combination with the $pron/Pron callables.
+
+        - `With a grin, $pron(you) $pconj(jump)`
+
+        You will see "With a grin, you jump."
+        With your gender as "male", others will see "With a grin, he jumps."
+        With your gender as "plural", others will see "With a grin, they jump."
+
+    """
+    if not args:
+        return ""
+    if not (caller and receiver):
+        raise ParsingError("No caller/receiver supplied to $conj callable")
+
+    verb, *options = args
+    obj = caller
+    if mapping and options:
+        # get the correct referenced object from the mapping, or fall back to caller
+        obj = mapping.get(options[0], caller)
+
+    # identify whether the 3rd person form should be singular or plural
+    plural = False
+    if hasattr(obj, "gender"):
+        if callable(obj.gender):
+            plural = obj.gender() == "plural"
+        else:
+            plural = obj.gender == "plural"
+
+    second_person_str, third_person_str = verb_actor_stance_components(verb, plural=plural)
+    return second_person_str if obj == receiver else third_person_str
+
+
+def funcparser_callable_pronoun(
+    *args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs
+):
     """
 
-    Usage: $pron(word, [options])
+    Usage: $pron(word, [options], [key])
 
     Adjust pronouns to the expected form. Pronouns are words you use instead of a
     proper name, such as 'him', 'herself', 'theirs' etc. These look different
@@ -1424,6 +1490,9 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
             - `1st person`/`1st`/`1`
             - `2nd person`/`2nd`/`2`
             - `3rd person`/`3rd`/`3`
+        key (str, optional): If a mapping is provided, a string defining which object to
+            reference when finding the correct pronoun. If not provided, it defaults
+            to `caller`
 
     Keyword Args:
 
@@ -1435,6 +1504,9 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
         receiver (Object): The recipient of the string. This being the same as
             `caller` or not helps determine 2nd vs 3rd-person forms. This is
             provided automatically by the funcparser.
+        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
+            used to find which object the optional `key` argument refers to. If not given,
+            the `caller` kwarg is used.
         capitalize (bool): The input retains its capitalization. If this is set the output is
             always capitalized.
 
@@ -1457,8 +1529,17 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
     """
     if not args:
         return ""
+    # by default, we use the caller as the object being referred to
+    obj = caller
 
     pronoun, *options = args
+    if options and mapping:
+        # check if the last argument is a valid mapping key
+        if options[-1] in mapping:
+            # get the object and remove the key from options
+            obj = mapping[options[-1]]
+            options = options[:-1]
+
     # options is either multiple args or a space-separated string
     if len(options) == 1:
         options = options[0]
@@ -1468,11 +1549,11 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
     default_gender = "neutral"
     default_viewpoint = "2nd person"
 
-    if hasattr(caller, "gender"):
-        if callable(caller.gender):
-            default_gender = caller.gender()
+    if hasattr(obj, "gender"):
+        if callable(obj.gender):
+            default_gender = obj.gender()
         else:
-            default_gender = caller.gender
+            default_gender = obj.gender
 
     if "viewpoint" in kwargs:
         # passed into FuncParser initialization
@@ -1490,7 +1571,7 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
         pronoun_1st_or_2nd_person = pronoun_1st_or_2nd_person.capitalize()
         pronoun_3rd_person = pronoun_3rd_person.capitalize()
 
-    return pronoun_1st_or_2nd_person if caller == receiver else pronoun_3rd_person
+    return pronoun_1st_or_2nd_person if obj == receiver else pronoun_3rd_person
 
 
 def funcparser_callable_pronoun_capitalize(
@@ -1557,6 +1638,7 @@ ACTOR_STANCE_CALLABLES = {
     "obj": funcparser_callable_you,
     "Obj": funcparser_callable_you_capitalize,
     "conj": funcparser_callable_conjugate,
+    "pconj": funcparser_callable_conjugate_for_pronouns,
     "pron": funcparser_callable_pronoun,
     "Pron": funcparser_callable_pronoun_capitalize,
     **FUNCPARSER_CALLABLES,

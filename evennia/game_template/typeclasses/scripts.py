@@ -17,10 +17,17 @@ from evennia.scripts.scripts import DefaultScript
 
 class Script(DefaultScript):
     """
+    This is the base TypeClass for all Scripts. Scripts describe
+    all entities/systems without a physical existence in the game world
+    that require database storage (like an economic system or
+    combat tracker). They
+    can also have a timer/ticker component.
+
     A script type is customized by redefining some or all of its hook
     methods and variables.
 
-    * available properties
+    * available properties (check docs for full listing, this could be
+      outdated).
 
      key (string) - name of object
      name (string)- same as key
@@ -52,6 +59,7 @@ class Script(DefaultScript):
 
     * Helper methods
 
+     create(key, **kwargs)
      start() - start script (this usually happens automatically at creation
                and obj.script.add() etc)
      stop()  - stop script, and delete it
@@ -81,11 +89,14 @@ class Script(DefaultScript):
                   will delay the first call of this method by self.interval
                   seconds. If self.interval==0, this method will never
                   be called.
+      at_pause()
       at_stop() - Called as the script object is stopped and is about to be
                   removed from the game, e.g. because is_valid() returned False.
+      at_script_delete()
       at_server_reload() - Called when server reloads. Can be used to
                   save temporary variables you want should survive a reload.
       at_server_shutdown() - called at a full server shutdown.
+      at_server_start()
 
     """
 

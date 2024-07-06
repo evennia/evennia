@@ -1,8 +1,8 @@
 # Evennia Documentation
 
-This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
+This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles. This manual was last updated June 27, 2024, see the [Evennia Changelog](Coding/Changelog.md). Latest released Evennia version is 4.2.0.
 
-- [Introduction](./Evennia-Introduction.md) - what is this Evennia thing? 
+- [Introduction](./Evennia-Introduction.md) - what is this Evennia thing?
 - [Evennia in Pictures](./Evennia-In-Pictures.md) - a visual overview of Evennia
 - [Contributing and Getting help](./Contributing.md) - when you get stuck or want to chip in
 
@@ -10,7 +10,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 - [Installation](Setup/Setup-Overview.md#installation-and-running) - getting started
 - [Running the Game](Setup/Running-Evennia.md)  - how to start, stop and reload Evennia
-- [Updating the Server](Setup/Updating-Evennia.md) - how to update Evennia 
+- [Updating the Server](Setup/Updating-Evennia.md) - how to update Evennia
 - [Configuration](Setup/Setup-Overview.md#configuration) - how to set up Evennia the way you like it
 - [Going Online](Setup/Setup-Overview.md#going-online) - bringing your game online
 

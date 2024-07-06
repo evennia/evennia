@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **49** contribs currently included
+This page is auto-generated and summarizes all **50** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -29,16 +29,16 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 
 | | | | | |
 |---|---|---|---|---|
-| [auditing](#auditing) | [awsstorage](#awsstorage) | [barter](#barter) | [batchprocessor](#batchprocessor) | [bodyfunctions](#bodyfunctions) |
-| [buffs](#buffs) | [building_menu](#building_menu) | [character_creator](#character_creator) | [clothing](#clothing) | [color_markups](#color_markups) |
-| [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) | [custom_gametime](#custom_gametime) |
-| [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) | [extended_room](#extended_room) |
-| [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) | [health_bar](#health_bar) |
-| [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [llm](#llm) | [mail](#mail) | [mapbuilder](#mapbuilder) |
-| [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) |
-| [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) |
-| [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) |
-| [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
+| [achievements](#achievements) | [auditing](#auditing) | [awsstorage](#awsstorage) | [barter](#barter) | [batchprocessor](#batchprocessor) |
+| [bodyfunctions](#bodyfunctions) | [buffs](#buffs) | [building_menu](#building_menu) | [character_creator](#character_creator) | [clothing](#clothing) |
+| [color_markups](#color_markups) | [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) |
+| [custom_gametime](#custom_gametime) | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) |
+| [extended_room](#extended_room) | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) |
+| [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [llm](#llm) | [mail](#mail) |
+| [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) |
+| [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) |
+| [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) |
+| [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -241,8 +241,8 @@ _Contribution by Griatch, 2019_
 A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
 spawn and join puzzle rooms that track their state independently. Any number of players
 can join to solve a room together. This is the engine created for 'EvscapeRoom', which won
-the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game
-content but contains the utilities and base classes and an empty example room.
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has only
+very minimal game content, it contains the utilities and base classes and an empty example room.
 
 [Read the documentation](./Contrib-Evscaperoom.md) - [Browse the Code](evennia.contrib.full_systems.evscaperoom)
 
@@ -266,6 +266,7 @@ Contribs-Guidelines.md
 ```{toctree}
 :maxdepth: 1
 
+Contrib-Achievements.md
 Contrib-Barter.md
 Contrib-Clothing.md
 Contrib-Containers.md
@@ -277,6 +278,16 @@ Contrib-Multidescer.md
 Contrib-Puzzles.md
 Contrib-Turnbattle.md
 ```
+
+
+### `achievements`
+
+_A simple, but reasonably comprehensive, system for tracking achievements. Achievements are defined using ordinary Python dicts, reminiscent of the core prototypes system, and while it's expected you'll use it only on Characters or Accounts, they can be tracked for any typeclassed object._
+
+The contrib provides several functions for tracking and accessing achievements, as well as a basic in-game command for viewing achievement status.
+
+[Read the documentation](./Contrib-Achievements.md) - [Browse the Code](evennia.contrib.game_systems.achievements)
+
 
 
 ### `barter`

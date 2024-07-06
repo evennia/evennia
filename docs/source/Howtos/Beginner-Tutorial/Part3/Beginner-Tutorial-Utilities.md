@@ -135,7 +135,7 @@ ABILITY_REVERSE_MAP =  {
 
 Above, the `Ability` class holds some basic properties of a character sheet.
 
-The `ABILITY_REVERSE_MAP` is a convenient map to go the other way &mdas; if in some command we were to enter the string 'cha', we could use this mapping to directly convert your input to the correct `Ability`. For example:
+The `ABILITY_REVERSE_MAP` is a convenient map to go the other way &mdash; if in some command we were to enter the string 'cha', we could use this mapping to directly convert your input to the correct `Ability`. For example:
 
     ability = ABILITY_REVERSE_MAP.get(your_input)
 

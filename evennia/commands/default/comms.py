@@ -1413,12 +1413,13 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
+            target_perms = " or ".join([f"id({target.id})" for target in targets + [caller]])
             create.create_message(
                 caller,
                 message,
                 receivers=targets,
                 locks=(
-                    f"read:id({caller.id}) or perm(Admin);"
+                    f"read:{target_perms} or perm(Admin);"
                     f"delete:id({caller.id}) or perm(Admin);"
                     f"edit:id({caller.id}) or perm(Admin)"
                 ),
@@ -1498,7 +1499,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             if lastpages:
                 string = f"Your latest pages:\n {lastpages}"
             else:
-                string = "You haven't paged anyone yet."
+                string = "You haven't sent or received any pages yet."
             self.msg(string)
             return
 

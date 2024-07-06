@@ -244,7 +244,7 @@ class GlobalScriptContainer(Container):
         """
         if not self.loaded:
             self.load_data()
-        return self.scripts.values()
+        return list(self.loaded_data.values())
 
 
 # Create all singletons

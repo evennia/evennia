@@ -24,6 +24,7 @@ evennia.utils
    evennia.utils.evtable
    evennia.utils.funcparser
    evennia.utils.gametime
+   evennia.utils.hex_colors
    evennia.utils.logger
    evennia.utils.optionclasses
    evennia.utils.optionhandler

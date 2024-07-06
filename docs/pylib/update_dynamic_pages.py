@@ -3,8 +3,10 @@ Update dynamically generated doc pages based on github sources.
 
 """
 
+from datetime import datetime
 from os.path import abspath, dirname
 from os.path import join as pathjoin
+from re import sub as re_sub
 
 ROOTDIR = dirname(dirname(dirname(abspath(__file__))))
 DOCDIR = pathjoin(ROOTDIR, "docs")
@@ -86,12 +88,45 @@ if settings.SERVERNAME == "Evennia":
 
     print("  -- Updated Settings-Default.md")
 
+def update_index():
+    """
+    Read the index.md file and inject the latest version number and updated time.
+
+    """
+    indexfile = pathjoin(DOCSRCDIR, "index.md")
+    versionfile = pathjoin(EVENNIADIR, "VERSION.txt")
+
+    with open(indexfile) as f:
+        srcdata = f.read()
+
+    # replace the version number
+    with open(versionfile) as f:
+        version = f.read().strip()
+
+    pattern = r"Evennia version is \d+\.\d+\.\d+\."
+    replacement = f"Evennia version is {version}."
+
+    srcdata = re_sub(pattern, replacement, srcdata)
+
+    # replace the last-updated time
+    now = datetime.now().strftime("%B %d, %Y")
+
+    pattern = r"This manual was last updated [A-Z][a-z]+ \d{1,2}, \d{4}"
+    replacement = f"This manual was last updated {now}"
+
+    srcdata = re_sub(pattern, replacement, srcdata)
+
+    with open(indexfile, "w") as f:
+        f.write(srcdata)
+
+    print("  -- Updated index.md")
 
 def update_dynamic_pages():
     """
     Run the various updaters
 
     """
+    update_index()
     update_changelog()
     update_default_settings()
     update_code_style()

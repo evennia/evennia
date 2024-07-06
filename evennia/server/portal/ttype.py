@@ -44,7 +44,7 @@ class Ttype:
     def __init__(self, protocol):
         """
         Initialize ttype by storing protocol on ourselves and calling
-        the client to see if it supporst ttype.
+        the client to see if it supports ttype.
 
         Args:
             protocol (Protocol): The protocol instance.
@@ -147,9 +147,15 @@ class Ttype:
             ):
                 xterm256 = True
 
+            # use name to identify support for xterm truecolor
+            truecolor = False
+            if clientname.endswith("-TRUECOLOR") or clientname in ("AXMUD", "TINTIN"):
+                truecolor = True
+
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags["ANSI"] = True
             self.protocol.protocol_flags["XTERM256"] = xterm256
+            self.protocol.protocol_flags["TRUECOLOR"] = truecolor
             self.protocol.protocol_flags["CLIENTNAME"] = clientname
             self.protocol.requestNegotiation(TTYPE, SEND)
 
