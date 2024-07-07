@@ -261,6 +261,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
+
     pass
 
 
@@ -594,6 +595,7 @@ def cmdhandler(
             cmd.session = session
             cmd.account = account
             cmd.raw_string = unformatted_raw_string
+
             # cmd.obj  # set via on-object cmdset handler for each command,
             # since this may be different for every command when
             # merging multiple cmdsets
@@ -686,7 +688,11 @@ def cmdhandler(
             else:
                 # no explicit cmdobject given, figure it out
                 cmdset = yield get_and_merge_cmdsets(
-                    caller, cmdset_providers_list, callertype, raw_string, cmdid=cmdid
+                    caller,
+                    cmdset_providers_list,
+                    callertype,
+                    raw_string,
+                    cmdid=cmdid,
                 )
                 if not cmdset:
                     # this is bad and shouldn't happen.
@@ -703,7 +709,7 @@ def cmdhandler(
                 # Parse the input string and match to available cmdset.
                 # This also checks for permissions, so all commands in match
                 # are commands the caller is allowed to call.
-                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller, session)
 
                 # Deal with matches
 
