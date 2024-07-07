@@ -521,9 +521,8 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     ):
         return True
 
-    if getattr(accessed_obj, "session_caller", False):
-        obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
-        account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
+    obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
+    account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
 
     if not account:
         return True
