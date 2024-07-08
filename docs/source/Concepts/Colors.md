@@ -56,8 +56,14 @@ For the webclient, Evennia will translate the codes to CSS tags.
 |\|X | normal black foreground color |
 | \|\[# | background colours, e.g. \|\[c for bright cyan background and \|\[C a normal cyan background. |
 | \|!# | foreground color that inherits brightness from previous tags. Always uppcase, like \|!R |
-| \|h | make any following foreground ANSI colors bright (also known as bold, no effect on Xterm colors). Use with \|!#. Technically, \|h\|G == \|g. |
-| \|H  | negates the effects of \|h, return foreground to normal (no effect on Xterm colors) | 
+| \|h | make any following foreground ANSI colors bright (for Xterm256/true color makes the font bold if client supports it). Use with \|!#. Technically, \|h\|G == \|g. |
+| \|H  | negates the effects of \|h | 
+| \|u  | underline font if client supports it | 
+| \|U  | negates the effects of \|u | 
+| \|i  | italic font if client supports it | 
+| \|I  | negates the effects of \|i | 
+| \|s  | strikethrough font if client supports it | 
+| \|S  | negates the effects of \|s | 
 | \|/ | line break. Use instead of Python \\n when adding strings from in-game. |
 | \|- | tab character when adding strings in-game. Can vay per client, so usually better with spaces. |
 | \|_ | a space. Only needed to avoid auto-cropping at the end of a in-game input | 
