@@ -84,6 +84,11 @@ ANSI_ESCAPE = "\033"
 ANSI_NORMAL = "\033[0m"
 
 ANSI_UNDERLINE = "\033[4m"
+ANSI_UNDERLINE_RESET = "\033[24m"
+ANSI_ITALIC = "\033[3m"
+ANSI_ITALIC_RESET = "\033[23m"
+ANSI_STRIKE = "\033[9m"
+ANSI_STRIKE_RESET = "\033[29m"
 ANSI_HILITE = "\033[1m"
 ANSI_UNHILITE = "\033[22m"
 ANSI_BLINK = "\033[5m"
@@ -149,6 +154,11 @@ class ANSIParser(object):
         (r"|*", ANSI_INVERSE),  # invert
         (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
         (r"|u", ANSI_UNDERLINE),  # underline
+        (r"|U", ANSI_UNDERLINE_RESET),  # underline reset
+        (r"|i", ANSI_ITALIC),  # italic
+        (r"|I", ANSI_ITALIC_RESET),  # italic reset
+        (r"|s", ANSI_STRIKE),  # strikethrough
+        (r"|S", ANSI_STRIKE_RESET),  # strikethrough reset
         (r"|r", ANSI_HILITE + ANSI_RED),
         (r"|g", ANSI_HILITE + ANSI_GREEN),
         (r"|y", ANSI_HILITE + ANSI_YELLOW),
