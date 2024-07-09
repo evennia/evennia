@@ -3922,7 +3922,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
-    options = ("search", "del")
+    switch_options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
