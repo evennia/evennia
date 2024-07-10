@@ -2307,6 +2307,9 @@ def m_len(target, use_display_len=False):
     Args:
         target (str): A string with potential MXP components
             to search.
+        use_display_len (bool, optional): If `True`, use display_len
+            instead of len.  Default is `False`, use `True` if target
+            contain east asian characters.
 
     Returns:
         length (int): The length of `target`, ignoring MXP components.
