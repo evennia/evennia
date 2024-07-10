@@ -10,11 +10,10 @@ import time
 import typing
 from collections import defaultdict
 
+import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -345,8 +344,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
      at_object_leave(obj, target_location)   - called when an object leaves
                         this object in any fashion
      at_pre_object_receive(obj, source_location)
-     at_object_receive(obj, source_location, move_type="move", **kwargs) - called when this object receives
-                        another object
+     at_object_receive(obj, source_location, move_type="move", **kwargs) - called when this object
+                       receives another object
      at_post_move(source_location, move_type="move", **kwargs)
 
      at_traverse(traversing_object, target_location, **kwargs) - (exit-objects only)
@@ -494,7 +493,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             "obj.location to move an object here.".format(self.__class__)
         )
 
-    contents = property(contents_get, contents_set, contents_set, contents_set)
+    contents = property(contents_get, contents_set, contents_set)
 
     @property
     def exits(self):
@@ -556,7 +555,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         provided to the search function is included, and could be modified in-place here.
 
         Args:
-            searchdata (str): The search criterion (could be modified by `get_search_query_replacement`).
+            searchdata (str): The search criterion (could be modified by
+                `get_search_query_replacement`).
             **kwargs (any): These are the same as passed to the `search` method.
 
         Returns:
