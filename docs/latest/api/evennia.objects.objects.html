@@ -400,9 +400,9 @@ at_object_leave(obj, target_location)   - called when an object leaves</p>
 <div><p>this object in any fashion</p>
 </div></blockquote>
 <p>at_pre_object_receive(obj, source_location)
-at_object_receive(obj, source_location, move_type=”move”, <a href="#id59"><span class="problematic" id="id60">**</span></a>kwargs) - called when this object receives</p>
+at_object_receive(obj, source_location, move_type=”move”, <a href="#id59"><span class="problematic" id="id60">**</span></a>kwargs) - called when this object</p>
 <blockquote>
-<div><p>another object</p>
+<div><p>receives another object</p>
 </div></blockquote>
 <p>at_post_move(source_location, move_type=”move”, <a href="#id61"><span class="problematic" id="id62">**</span></a>kwargs)</p>
 <dl class="simple">
@@ -550,6 +550,30 @@ filtering on content-types.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.contents">
+<em class="property">property </em><code class="sig-name descname">contents</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the contents of this object, i.e. all
+objects that has this object set as its location.
+This should be publically available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exclude</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – Object to exclude from returned
+contents list</p></li>
+<li><p><strong>content_type</strong> (<em>str</em>) – A content_type to filter by. None for no
+filtering.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – List of contents of this Object.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Also available as the <strong>.contents</strong> property, but that doesn’t allow for exclusion and
+filtering on content-types.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.exits">
 <em class="property">property </em><code class="sig-name descname">exits</code><a class="headerlink" href="#evennia.objects.objects.DefaultObject.exits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all exits from this object, i.e. all objects at this
@@ -603,7 +627,8 @@ provided to the search function is included, and could be modified in-place here
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>searchdata</strong> (<em>str</em>) – The search criterion (could be modified by <strong>get_search_query_replacement</strong>).</p></li>
+<li><p><strong>searchdata</strong> (<em>str</em>) – The search criterion (could be modified by
+<strong>get_search_query_replacement</strong>).</p></li>
 <li><p><strong>**kwargs</strong> (<em>any</em>) – These are the same as passed to the <strong>search</strong> method.</p></li>
 </ul>
 </dd>

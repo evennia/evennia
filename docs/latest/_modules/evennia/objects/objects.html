@@ -102,11 +102,10 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
@@ -437,8 +436,8 @@
 <span class="sd">     at_object_leave(obj, target_location)   - called when an object leaves</span>
 <span class="sd">                        this object in any fashion</span>
 <span class="sd">     at_pre_object_receive(obj, source_location)</span>
-<span class="sd">     at_object_receive(obj, source_location, move_type=&quot;move&quot;, **kwargs) - called when this object receives</span>
-<span class="sd">                        another object</span>
+<span class="sd">     at_object_receive(obj, source_location, move_type=&quot;move&quot;, **kwargs) - called when this object</span>
+<span class="sd">                       receives another object</span>
 <span class="sd">     at_post_move(source_location, move_type=&quot;move&quot;, **kwargs)</span>
 
 <span class="sd">     at_traverse(traversing_object, target_location, **kwargs) - (exit-objects only)</span>
@@ -586,7 +585,7 @@
             <span class="s2">&quot;obj.location to move an object here.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-    <span class="n">contents</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">contents_get</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">)</span>
+    <span class="n">contents</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">contents_get</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">,</span> <span class="n">contents_set</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">exits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -648,7 +647,8 @@
 <span class="sd">        provided to the search function is included, and could be modified in-place here.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            searchdata (str): The search criterion (could be modified by `get_search_query_replacement`).</span>
+<span class="sd">            searchdata (str): The search criterion (could be modified by</span>
+<span class="sd">                `get_search_query_replacement`).</span>
 <span class="sd">            **kwargs (any): These are the same as passed to the `search` method.</span>
 
 <span class="sd">        Returns:</span>

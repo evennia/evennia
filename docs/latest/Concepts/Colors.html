@@ -72,6 +72,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#xterm256-colours">Xterm256 Colours</a></li>
+<li><a class="reference internal" href="#bit-colors-true-color">24-bit Colors (True color)</a></li>
 </ul>
 </li>
 </ul>
@@ -219,10 +220,28 @@ will see the text in the specified colour, otherwise the tags will be stripped (
 <td><p>foreground color that inherits brightness from previous tags. Always uppcase, like |!R</p></td>
 </tr>
 <tr class="row-odd"><td><p>|h</p></td>
-<td><p>make any following foreground ANSI colors bright (no effect on Xterm colors). Use with |!#. Technically, |h|G == |g.</p></td>
+<td><p>make any following foreground ANSI colors bright (for Xterm256/true color makes the font bold if client supports it). Use with |!#. Technically, |h|G == |g.</p></td>
 </tr>
 <tr class="row-even"><td><p>|H</p></td>
-<td><p>negates the effects of |h, return foreground to normal (no effect on Xterm colors)</p></td>
+<td><p>negates the effects of |h</p></td>
+</tr>
+<tr class="row-odd"><td><p>|u</p></td>
+<td><p>underline font if client supports it</p></td>
+</tr>
+<tr class="row-even"><td><p>|U</p></td>
+<td><p>negates the effects of |u</p></td>
+</tr>
+<tr class="row-odd"><td><p>|i</p></td>
+<td><p>italic font if client supports it</p></td>
+</tr>
+<tr class="row-even"><td><p>|I</p></td>
+<td><p>negates the effects of |i</p></td>
+</tr>
+<tr class="row-odd"><td><p>|s</p></td>
+<td><p>strikethrough font if client supports it</p></td>
+</tr>
+<tr class="row-even"><td><p>|S</p></td>
+<td><p>negates the effects of |s</p></td>
 </tr>
 <tr class="row-odd"><td><p>|/</p></td>
 <td><p>line break. Use instead of Python \n when adding strings from in-game.</p></td>
@@ -293,8 +312,8 @@ actually change the background color instead of the foreground:</p>
 </div>
 </li>
 </ul>
-<p>For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-
-Tags) tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
+<p>For a detailed explanation of these caveats, see the <a class="reference internal" href="../Howtos/Tutorial-Understanding-Color-Tags.html"><span class="doc std std-doc">Understanding Color Tags</span></a>
+tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
 manually instead.</p>
 </section>
 </section>
@@ -381,6 +400,81 @@ the closest equivalent ANSI color. You can mix Xterm256 tags with ANSI tags as y
 </div>
 <p>to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
 into a few blocks of colors, it means Xterm256 is not supported and ANSI are used as a replacement. You can use the <code class="docutils literal notranslate"><span class="pre">options</span></code> command to see if xterm256 is active for you. This depends on if your client told Evennia what it supports - if not, and you know what your client supports, you may have to activate some features manually.</p>
+</section>
+<section id="bit-colors-true-color">
+<h2>24-bit Colors (True color)<a class="headerlink" href="#bit-colors-true-color" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See the <a class="reference external" href="https://en.wikipedia.org/wiki/Web_colors">Wikipedia entry on web colors</a> for more detailed information on this color format.</p>
+</aside>
+<p>Some clients support 24-bit colors. This is also called <a class="reference external" href="https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)">true color</a>.
+Not all clients support true color, they will instead see the closest equivalent. It’s important to bear in mind that things may look quite
+different from what you intended if you use subtle gradations in true color and it’s viewed with a client that doesn’t support true color.
+The hexadecimal color codes used here are the same ones used in web design.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|#$$$$$$</p></td>
+<td><p>foreground RGB (red/green/blue), 6-digit hexadecimal format, where $ = 0-F</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[#$$$$$$</p></td>
+<td><p>background RGB</p></td>
+</tr>
+<tr class="row-even"><td><p>|#$$$</p></td>
+<td><p>foreground RGB (red/green/blue), 3-digit hexadecimal format.</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[#$$$</p></td>
+<td><p>background RGB</p></td>
+</tr>
+</tbody>
+</table>
+<p>Some 6-digit examples:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|#ff0000</p></td>
+<td><p>bright red foreground</p></td>
+</tr>
+<tr class="row-odd"><td><p>|#00ff00</p></td>
+<td><p>bright green foreground</p></td>
+</tr>
+<tr class="row-even"><td><p>|#0000ff</p></td>
+<td><p>bright blue foreground</p></td>
+</tr>
+<tr class="row-odd"><td><p>|#[ff0000</p></td>
+<td><p>bright red background</p></td>
+</tr>
+</tbody>
+</table>
+<p>Some 3-digit examples:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|#f00</p></td>
+<td><p>bright red foreground</p></td>
+</tr>
+<tr class="row-odd"><td><p>|#0f0</p></td>
+<td><p>bright green foreground</p></td>
+</tr>
+<tr class="row-even"><td><p>|#00f</p></td>
+<td><p>bright blue foreground</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[#f00</p></td>
+<td><p>bright red background</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
