@@ -1,5 +1,24 @@
 # Changelog
 
+## Main
+
+- [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
+underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
+- [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
+    of local search on multimatch (InspectorCaracal)
+- [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
+- [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
+- [Fix][pull3571]: Issue disambiguating between certain partial multimatches
+  (InspectorCaracal)
+- [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
+- [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
+
+[pull3585]: https://github.com/evennia/evennia/pull/3585
+[pull3580]: https://github.com/evennia/evennia/pull/3580
+[pull3571]: https://github.com/evennia/evennia/pull/3571
+[pull3586]: https://github.com/evennia/evennia/pull/3586
+[pull3550]: https://github.com/evennia/evennia/pull/3550
+
 ## Evennia 4.2.0
 
 June 27, 2024
