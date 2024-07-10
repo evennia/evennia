@@ -176,6 +176,11 @@
 <span class="n">ANSI_NORMAL</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
 
 <span class="n">ANSI_UNDERLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[4m&quot;</span>
+<span class="n">ANSI_UNDERLINE_RESET</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[24m&quot;</span>
+<span class="n">ANSI_ITALIC</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[3m&quot;</span>
+<span class="n">ANSI_ITALIC_RESET</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[23m&quot;</span>
+<span class="n">ANSI_STRIKE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[9m&quot;</span>
+<span class="n">ANSI_STRIKE_RESET</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[29m&quot;</span>
 <span class="n">ANSI_HILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m&quot;</span>
 <span class="n">ANSI_UNHILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[22m&quot;</span>
 <span class="n">ANSI_BLINK</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[5m&quot;</span>
@@ -241,6 +246,11 @@
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|*&quot;</span><span class="p">,</span> <span class="n">ANSI_INVERSE</span><span class="p">),</span>  <span class="c1"># invert</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|^&quot;</span><span class="p">,</span> <span class="n">ANSI_BLINK</span><span class="p">),</span>  <span class="c1"># blinking text (very annoying and not supported by all clients)</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|u&quot;</span><span class="p">,</span> <span class="n">ANSI_UNDERLINE</span><span class="p">),</span>  <span class="c1"># underline</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|U&quot;</span><span class="p">,</span> <span class="n">ANSI_UNDERLINE_RESET</span><span class="p">),</span>  <span class="c1"># underline reset</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|i&quot;</span><span class="p">,</span> <span class="n">ANSI_ITALIC</span><span class="p">),</span>  <span class="c1"># italic</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|I&quot;</span><span class="p">,</span> <span class="n">ANSI_ITALIC_RESET</span><span class="p">),</span>  <span class="c1"># italic reset</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|s&quot;</span><span class="p">,</span> <span class="n">ANSI_STRIKE</span><span class="p">),</span>  <span class="c1"># strikethrough</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|S&quot;</span><span class="p">,</span> <span class="n">ANSI_STRIKE_RESET</span><span class="p">),</span>  <span class="c1"># strikethrough reset</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|r&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span><span class="p">),</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|g&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span><span class="p">),</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|y&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span><span class="p">),</span>

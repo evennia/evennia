@@ -484,7 +484,7 @@
         <span class="c1"># if no sdesc, include key plus aliases instead</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">candidate_map</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
-        <span class="n">candidate_map</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">obj</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span>
+            <span class="n">candidate_map</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">obj</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span>
 
     <span class="c1"># escape mapping syntax on the form {#id} if it exists already in emote,</span>
     <span class="c1"># if so it is replaced with just &quot;id&quot;.</span>
@@ -514,7 +514,10 @@
 
         <span class="c1"># first see if there is a number given (e.g. 1-tall)</span>
         <span class="n">num_identifier</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># return &quot;&quot; if no match, rather than None</span>
+        <span class="c1"># get the beginning of the actual text, minus the numeric identifier</span>
         <span class="n">match_index</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">num_identifier</span><span class="p">:</span>
+            <span class="n">match_index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_identifier</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="c1"># split the emote string at the reference marker, to process everything after it</span>
         <span class="n">head</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">match_index</span><span class="p">]</span>
         <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
@@ -531,7 +534,7 @@
                 <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">rquery</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">candidate_map</span>
             <span class="p">)</span>
             <span class="c1"># filter out any non-matching candidates</span>
-            <span class="n">bestmatches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">for</span> <span class="n">match</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
+            <span class="n">bestmatches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">mtch</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">for</span> <span class="n">mtch</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">mtch</span><span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># to find the longest match, we start from the marker and lengthen the</span>
@@ -1425,30 +1428,30 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># we also want to use the default search method</span>
         <span class="n">search_obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_search_result</span>
-        <span class="n">is_builder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">)</span>
+        <span class="n">is_builder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">if</span> <span class="n">candidates</span><span class="p">:</span>
-            <span class="n">candidates</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">searched_results</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">_PREFIX</span> <span class="o">+</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
-                <span class="c1"># we search by candidate keys here; this allows full error</span>
-                <span class="c1"># management and use of all kwargs - we will use searchdata</span>
-                <span class="c1"># in eventual error reporting later (not their keys). Doing</span>
-                <span class="c1"># it like this e.g. allows for use of the typeclass kwarg</span>
-                <span class="c1"># limiter.</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">and</span> <span class="n">is_builder</span><span class="p">:</span>
-                <span class="c1"># builders get to do a global search by key+alias</span>
-                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">searched_results</span> <span class="ow">and</span> <span class="n">is_builder</span><span class="p">:</span>
+                <span class="c1"># builders get to do a search by key</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we do a default search on each result by key, here, to apply extra filtering kwargs</span>
+                <span class="k">for</span> <span class="n">searched_obj</span> <span class="ow">in</span> <span class="n">searched_results</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="n">obj</span>
+                            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">search_obj</span><span class="p">(</span>
+                                <span class="n">searched_obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="p">[</span><span class="n">searched_obj</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># global searches with #drefs end up here. Global searches are</span>
-            <span class="c1"># only done in code, so is controlled, #dbrefs are turned off</span>
-            <span class="c1"># for non-Builders.</span>
+            <span class="c1"># no candidates means it&#39;s a global search, so we pass it back to the default</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">search_obj</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
