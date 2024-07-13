@@ -812,6 +812,65 @@ class TestJustify(TestCase):
         self.assertIn(ANSI_RED, str(result))
 
 
+class TestAtSearchResult(TestCase):
+    """
+    Test the utils.at_search_result function.
+
+    """
+
+    class MockObject:
+        def __init__(self, key):
+            self.key = key
+            self.aliases = ''
+
+        def get_display_name(self, looker, **kwargs):
+            return self.key
+        
+        def get_extra_info(self, looker, **kwargs):
+            return ''
+
+        def __repr__(self):
+            return f"MockObject({self.key})"
+
+    def test_single_match(self):
+        """if there is only one match, it should return the matched object"""
+        obj1 = self.MockObject("obj1")
+        caller = mock.MagicMock()
+        self.assertEqual(obj1, utils.at_search_result([obj1], caller, "obj1"))
+
+    def test_no_match(self):
+        """if there are no provided matches, the caller should receive the correct error message"""
+        caller = mock.MagicMock()
+        self.assertIsNone(utils.at_search_result([], caller, "obj1"))
+        caller.msg.assert_called_once_with("Could not find 'obj1'.")
+
+    def test_basic_multimatch(self):
+        """multiple matches with the same name should return a message with incrementing indices"""
+        matches = [ self.MockObject("obj1") for _ in range(3) ]
+        caller = mock.MagicMock()
+        self.assertIsNone(utils.at_search_result(matches, caller, "obj1"))
+        multimatch_msg = """\
+More than one match for 'obj1' (please narrow target):
+ obj1-1
+ obj1-2
+ obj1-3"""
+        caller.msg.assert_called_once_with(multimatch_msg)
+
+    def test_partial_multimatch(self):
+        """multiple partial matches with different names should increment index by unique name"""
+        matches = [ self.MockObject("obj1") for _ in range(3) ] + [ self.MockObject("obj2") for _ in range(2) ]
+        caller = mock.MagicMock()
+        self.assertIsNone(utils.at_search_result(matches, caller, "obj"))
+        multimatch_msg = """\
+More than one match for 'obj' (please narrow target):
+ obj1-1
+ obj1-2
+ obj1-3
+ obj2-1
+ obj2-2"""
+        caller.msg.assert_called_once_with(multimatch_msg)
+
+
 class TestGroupObjectsByKeyAndDesc(TestCase):
     """
     Test the utils.group_objects_by_key_and_desc function.
