@@ -177,9 +177,9 @@ this module carefully before continuing.
 
 ### `ingame_reports`
 
-_This contrib provides an in-game reports system, handling bug reports, player reports, and idea submissions by default. It also supports adding your own types of reports, or removing any of the default report types._
+_Contrib by InspectorCaracal, 2024_
 
-Each type of report has its own command for submitting new reports, and an admin command is also provided for managing the reports through a menu.
+This contrib provides an in-game reports system, handling bug reports, player reports, and idea submissions by default. It also supports adding your own types of reports, or removing any of the default report types.
 
 [Read the documentation](./Contrib-Ingame-Reports.md) - [Browse the Code](evennia.contrib.base_systems.ingame_reports)
 

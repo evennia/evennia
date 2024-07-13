@@ -1,5 +1,7 @@
 # In-Game Reporting System
 
+Contrib by InspectorCaracal, 2024
+
 This contrib provides an in-game reports system, handling bug reports, player reports, and idea submissions by default. It also supports adding your own types of reports, or removing any of the default report types.
 
 Each type of report has its own command for submitting new reports, and an admin command is also provided for managing the reports through a menu.
@@ -116,7 +118,7 @@ class CmdCustomReport(ReportCmdBase):
 
     Usage:
         customreport <message>
-    
+
     This is a custom report type.
     """
 
@@ -126,6 +128,7 @@ class CmdCustomReport(ReportCmdBase):
 ```
 
 Add this new command to your default cmdset to enable filing your new report type.
+
 
 ----
 
