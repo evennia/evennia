@@ -128,3 +128,9 @@ class CmdCustomReport(ReportCmdBase):
 ```
 
 Add this new command to your default cmdset to enable filing your new report type.
+
+
+----
+
+<small>This document page is generated from `evennia/contrib/base_systems/ingame_reports/README.md`. Changes to this
+file will be overwritten, so edit that file rather than this one.</small>
