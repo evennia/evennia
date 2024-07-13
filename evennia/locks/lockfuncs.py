@@ -514,8 +514,16 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     only when out of character. When not logged in at all, this
     function will still return True.
     """
+    if (
+        getattr(accessed_obj, "session_caller", False)
+        and utils.inherits_from(accessing_obj, evennia.server.serversession.ServerSession)
+        and not accessing_obj.get_puppet()
+    ):
+        return True
+
     obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
     account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
+
     if not account:
         return True
     try:
@@ -533,20 +541,6 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
         return not account.get_puppet(session)
     except TypeError:
         return not session.get_puppet()
-
-
-def objtag(accessing_obj, accessed_obj, *args, **kwargs):
-    """
-    Usage:
-        objtag(tagkey)
-        objtag(tagkey, category)
-
-    Only true if accessed_obj has the specified tag and optional
-    category.
-    """
-    tagkey = args[0] if args else None
-    category = args[1] if len(args) > 1 else None
-    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):

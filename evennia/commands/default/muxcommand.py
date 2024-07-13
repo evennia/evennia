@@ -111,6 +111,8 @@ class MuxCommand(Command):
             self.rhs_split = "="
         if not hasattr(self, "account_caller"):
             self.account_caller = False
+        if not hasattr(self, "session_caller"):
+            self.session_caller = False
 
         # split out switches
         switches, delimiters = [], self.rhs_split

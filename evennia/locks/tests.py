@@ -7,13 +7,14 @@ the stability and integrity of the codebase during updates.
 This module tests the lock functionality of Evennia.
 
 """
+
 from evennia.utils.test_resources import BaseEvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel
     from django.utils.unittest import TestCase, override_settings
 except ImportError:
-    from django.test import TestCase, override_settings
+    from django.test import override_settings
 
 from evennia import settings_default
 from evennia.locks import lockfuncs
@@ -213,7 +214,12 @@ class TestLockfuncs(BaseEvenniaTest):
         self.assertEqual(False, lockfuncs.is_ooc(self.char1, self.char1))
 
     def test_is_ooc__session(self):
-        self.assertEqual(False, lockfuncs.is_ooc(self.session, self.char1))
+        self.account.unpuppet_all()
+        self.char1.session_caller = True
+        self.assertTrue(lockfuncs.is_ooc(self.session, self.char1))
+
+        self.char1.session_caller = False
+        self.assertTrue(lockfuncs.is_ooc(self.session, self.char1))
 
     def test_is_ooc__account(self):
         self.assertEqual(False, lockfuncs.is_ooc(self.account, self.char1))
@@ -230,7 +236,8 @@ class TestPermissionCheck(BaseEvenniaTest):
     def test_check__success(self):
         """Test combinations that should pass the check"""
         self.assertEqual(
-            [perm for perm in self.char1.account.permissions.all()], ["developer", "player"]
+            [perm for perm in self.char1.account.permissions.all()],
+            ["developer", "player"],
         )
         self.assertTrue(self.char1.permissions.check("Builder"))
         self.assertTrue(self.char1.permissions.check("Builder", "Player"))
@@ -248,7 +255,8 @@ class TestPermissionCheck(BaseEvenniaTest):
         self.char1.account.permissions.add("Builder")
 
         self.assertEqual(
-            [perm for perm in self.char1.account.permissions.all()], ["builder", "player"]
+            [perm for perm in self.char1.account.permissions.all()],
+            ["builder", "player"],
         )
         self.assertFalse(self.char1.permissions.check("Developer"))
         self.assertFalse(self.char1.permissions.check("Developer", "Player", require_all=True))

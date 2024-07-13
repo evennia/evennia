@@ -16,7 +16,7 @@ from django.utils.text import slugify
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
+from evennia.utils.utils import is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
@@ -594,7 +594,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 "help-entry-detail",
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
-        except Exception as e:
+        except Exception:
             return "#"
 
     def web_get_admin_url(self):

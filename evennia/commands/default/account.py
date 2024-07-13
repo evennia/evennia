@@ -25,7 +25,7 @@ from codecs import lookup as codecs_lookup
 from django.conf import settings
 
 import evennia
-from evennia.utils import create, logger, search, utils
+from evennia.utils import logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -253,12 +253,12 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
 
     key = "ic"
     # lock must be all() for different puppeted objects to access it.
-    locks = "cmd:all()"
+    locks = "cmd:is_ooc()"
     aliases = "puppet"
     help_category = "General"
 
     # this is used by the parent
-    account_caller = True
+    session_caller = True
 
     def func(self):
         """
