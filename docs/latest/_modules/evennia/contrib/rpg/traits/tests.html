@@ -101,10 +101,9 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
-
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTestCase</span><span class="p">,</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">traits</span>
 
@@ -246,7 +245,17 @@
         <span class="k">del</span> <span class="n">trait</span><span class="o">.</span><span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traits&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;traits&quot;</span><span class="p">)[</span><span class="s2">&quot;test1&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="kc">None</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TraitHandlerTest.test_related_traits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_related_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_related_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test traits related to each other via Trait.get_trait()&quot;&quot;&quot;</span>
+
+        <span class="n">trait1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test1</span>
+        <span class="n">trait2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">trait1</span><span class="o">.</span><span class="n">traithandler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">trait1</span><span class="o">.</span><span class="n">get_trait</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span> <span class="n">trait1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">trait1</span><span class="o">.</span><span class="n">get_trait</span><span class="p">(</span><span class="s2">&quot;test2&quot;</span><span class="p">),</span> <span class="n">trait2</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TestTrait"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait">[docs]</a><span class="k">class</span> <span class="nc">TestTrait</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>

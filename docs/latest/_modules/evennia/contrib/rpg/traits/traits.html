@@ -548,15 +548,9 @@
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">_SaverDict</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">class_from_module</span><span class="p">,</span>
-    <span class="n">inherits_from</span><span class="p">,</span>
-    <span class="n">list_to_string</span><span class="p">,</span>
-    <span class="n">percent</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">percent</span>
 
 <span class="c1"># Available Trait classes.</span>
 <span class="c1"># This way the user can easily supply their own. Each</span>
@@ -749,7 +743,9 @@
         <span class="k">if</span> <span class="n">trait</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">:</span>
             <span class="n">trait_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">[</span><span class="n">trait_key</span><span class="p">][</span><span class="s2">&quot;trait_type&quot;</span><span class="p">]</span>
             <span class="n">trait_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trait_class</span><span class="p">(</span><span class="n">trait_type</span><span class="p">)</span>
-            <span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">trait_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_cls</span><span class="p">(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;trait_data&quot;</span><span class="p">)[</span><span class="n">trait_key</span><span class="p">])</span>
+            <span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">trait_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_cls</span><span class="p">(</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;trait_data&quot;</span><span class="p">)[</span><span class="n">trait_key</span><span class="p">],</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">trait</span></div>
 
 <div class="viewcode-block" id="TraitHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
@@ -948,7 +944,7 @@
     <span class="c1"># and have them treated like data to store.</span>
     <span class="n">allow_extra_properties</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="Trait.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_data</span><span class="p">):</span>
+<div class="viewcode-block" id="Trait.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_data</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This both initializes and validates the Trait on creation. It must</span>
 <span class="sd">        raise exception if validation fails. The TraitHandler will call this</span>
@@ -961,12 +957,15 @@
 <span class="sd">                value in cls.data_default_values. Any extra kwargs will be made</span>
 <span class="sd">                available as extra properties on the Trait, assuming the class</span>
 <span class="sd">                variable `allow_extra_properties` is set.</span>
+<span class="sd">            handler (TraitHandler): The handler that this Trait is connected to.</span>
+<span class="sd">                This is for referencing other traits.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TraitException: If input-validation failed.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">validate_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">trait_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span> <span class="o">=</span> <span class="n">handler</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait_data</span><span class="p">,</span> <span class="n">_SaverDict</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
@@ -1047,6 +1046,7 @@
             <span class="s2">&quot;data_default&quot;</span><span class="p">,</span>
             <span class="s2">&quot;trait_type&quot;</span><span class="p">,</span>
             <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;traithandler&quot;</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1062,10 +1062,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set extra parameters as attributes.</span>
 
 <span class="sd">        Arbitrary attributes set on a Trait object will be</span>
-<span class="sd">        stored in the &#39;extra&#39; key of the `_data` attribute.</span>
+<span class="sd">        stored as extra keys in the Trait&#39;s data.</span>
 
-<span class="sd">        This behavior is enabled by setting the instance</span>
-<span class="sd">        variable `_locked` to True.</span>
+<span class="sd">        This behavior is enabled by setting the instance variable `allow_extra_properties`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">propobj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1076,7 +1075,7 @@
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># this is some other value</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_data&quot;</span><span class="p">,):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="s2">&quot;traithandler&quot;</span><span class="p">):</span>
                 <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">):</span>
@@ -1144,6 +1143,11 @@
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Display name for the trait.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Trait.get_trait"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.get_trait">[docs]</a>    <span class="k">def</span> <span class="nf">get_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get another Trait from the handler. Not used by default, but can be used</span>
+<span class="sd">        for custom traits that are affected by other traits on the same handler.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span></div>
 
     <span class="n">key</span> <span class="o">=</span> <span class="n">name</span>
 
