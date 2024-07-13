@@ -75,6 +75,7 @@
 <li><a class="reference internal" href="#email-login"><code class="docutils literal notranslate"><span class="pre">email_login</span></code></a></li>
 <li><a class="reference internal" href="#godotwebsocket"><code class="docutils literal notranslate"><span class="pre">godotwebsocket</span></code></a></li>
 <li><a class="reference internal" href="#ingame-python"><code class="docutils literal notranslate"><span class="pre">ingame_python</span></code></a></li>
+<li><a class="reference internal" href="#ingame-reports"><code class="docutils literal notranslate"><span class="pre">ingame_reports</span></code></a></li>
 <li><a class="reference internal" href="#menu-login"><code class="docutils literal notranslate"><span class="pre">menu_login</span></code></a></li>
 <li><a class="reference internal" href="#mux-comms-cmds"><code class="docutils literal notranslate"><span class="pre">mux_comms_cmds</span></code></a></li>
 <li><a class="reference internal" href="#unixcommand"><code class="docutils literal notranslate"><span class="pre">unixcommand</span></code></a></li>
@@ -201,7 +202,7 @@ in the <a class="reference external" href="https://github.com/evennia/evennia/di
 <p><em>Contribs</em> are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than ‘core’ Evennia.
-This page is auto-generated and summarizes all <strong>50</strong> contribs currently included
+This page is auto-generated and summarizes all <strong>51</strong> contribs currently included
 with the Evennia distribution.</p>
 <p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
@@ -278,32 +279,38 @@ copy its entire folder to your game directory and modify/use it from there.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#health-bar"><span class="std std-doc">health_bar</span></a></p></td>
 <td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
 <td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
+<td><p><a class="reference internal" href="#ingame-reports"><span class="std std-doc">ingame_reports</span></a></p></td>
 <td><p><a class="reference internal" href="#llm"><span class="std std-doc">llm</span></a></p></td>
-<td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
+<td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
 <td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
 <td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
 <td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
-<td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
+<td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
 <td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
-<td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
+<td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
 <td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
 <td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
 <td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
-<td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
+<td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
 <td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
 <td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
 <td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
-<td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -325,6 +332,7 @@ login systems, new command syntaxes, and build helpers.</em></p>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Email-Login.html">Email-based login system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Godotwebsocket.html">Godot Websocket</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Ingame-Python.html">Evennia in-game Python system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Ingame-Reports.html">In-Game Reporting System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Menu-Login.html">Menu-based login system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Mux-Comms-Cmds.html">Legacy Comms-commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Unixcommand.html">Unix-like Command style</a></li>
@@ -400,6 +408,12 @@ Keep in mind, however, that allowing Python in-game comes with <em>severe</em>
 security concerns (you must trust your builders deeply), so read the warnings in
 this module carefully before continuing.</p>
 <p><a class="reference internal" href="Contrib-Ingame-Python.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.ingame_python.html#evennia-contrib-base-systems-ingame-python"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="ingame-reports">
+<h3><code class="docutils literal notranslate"><span class="pre">ingame_reports</span></code><a class="headerlink" href="#ingame-reports" title="Permalink to this headline">¶</a></h3>
+<p><em>This contrib provides an in-game reports system, handling bug reports, player reports, and idea submissions by default. It also supports adding your own types of reports, or removing any of the default report types.</em></p>
+<p>Each type of report has its own command for submitting new reports, and an admin command is also provided for managing the reports through a menu.</p>
+<p><a class="reference internal" href="Contrib-Ingame-Reports.html"><span class="doc std std-doc">Read the documentation</span></a> - <span class="xref myst">Browse the Code</span></p>
 </section>
 <section id="menu-login">
 <h3><code class="docutils literal notranslate"><span class="pre">menu_login</span></code><a class="headerlink" href="#menu-login" title="Permalink to this headline">¶</a></h3>
