@@ -6,6 +6,8 @@
   bugs etc in-game (InspectorCaracal)
 - [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
 underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
+- [Fix][pull3571]: Better visual display of partial multimatch search results
+  (InspectorCaracal)
 - [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
     of local search on multimatch (InspectorCaracal)
 - [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
@@ -21,6 +23,7 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 [pull3586]: https://github.com/evennia/evennia/pull/3586
 [pull3550]: https://github.com/evennia/evennia/pull/3550
 [pull3531]: https://github.com/evennia/evennia/pull/3531
+[pull3571]: https://github.com/evennia/evennia/pull/3571
 
 ## Evennia 4.2.0
 
