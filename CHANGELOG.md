@@ -6,6 +6,8 @@
   bugs etc in-game (InspectorCaracal)
 - [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
 underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
+- Feat: Add `Trait.traithandler` back-reference so custom Traits from the Traits
+  contrib can find and reference other Traits. (Griatch)
 - [Fix][pull3571]: Better visual display of partial multimatch search results
   (InspectorCaracal)
 - [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
