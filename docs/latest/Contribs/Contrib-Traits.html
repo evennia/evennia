@@ -71,7 +71,10 @@
 <li><a class="reference internal" href="#traitproperties">TraitProperties</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#using-traits">Using traits</a></li>
+<li><a class="reference internal" href="#using-traits">Using traits</a><ul>
+<li><a class="reference internal" href="#relating-traits-to-one-another">Relating traits to one another</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#trait-types">Trait types</a><ul>
 <li><a class="reference internal" href="#trait">Trait</a></li>
 <li><a class="reference internal" href="#static-trait">Static trait</a></li>
@@ -85,6 +88,9 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#expanding-with-your-own-traits">Expanding with your own Traits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#as-traitproperty">as TraitProperty</a><ul>
 <li><a class="reference internal" href="#adding-additional-traithandlers">Adding additional TraitHandlers</a></li>
 </ul>
 </li>
@@ -182,8 +188,6 @@ define it explicitly. You can combine both styles if you like.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
                         <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-
 </pre></div>
 </div>
 <p>When adding the trait, you supply the name of the property (<code class="docutils literal notranslate"><span class="pre">hunting</span></code>) along
@@ -209,7 +213,6 @@ other properties/methods on your class.</p>
     <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
 </pre></div>
 </div>
 <blockquote>
@@ -227,7 +230,7 @@ the same handler (<code class="docutils literal notranslate"><span class="pre">.
 </section>
 <section id="using-traits">
 <h2>Using traits<a class="headerlink" href="#using-traits" title="Permalink to this headline">¶</a></h2>
-<p>A trait is added to the traithandler (if you use <code class="docutils literal notranslate"><span class="pre">TraitProperty</span></code> the handler is just created under
+<p>A trait are entities added to the traithandler (if you use <code class="docutils literal notranslate"><span class="pre">TraitProperty</span></code> the handler is just created under
 the hood) after which one can access it as a property on the handler (similarly to how you can do
 .db.attrname for Attributes in Evennia).</p>
 <p>All traits have a <em>read-only</em> field <code class="docutils literal notranslate"><span class="pre">.value</span></code>. This is only used to read out results, you never
@@ -269,9 +272,25 @@ each other depends on the trait type.</p>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">5</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">17</span>
-
 </pre></div>
 </div>
+<section id="relating-traits-to-one-another">
+<h3>Relating traits to one another<a class="headerlink" href="#relating-traits-to-one-another" title="Permalink to this headline">¶</a></h3>
+<p>From a trait you can access its own Traithandler as <code class="docutils literal notranslate"><span class="pre">.traithandler</span></code>. You can
+also find another trait on the same handler by using the
+<code class="docutils literal notranslate"><span class="pre">Trait.get_trait(&quot;traitname&quot;)</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">get_trait</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">100</span>
+</pre></div>
+</div>
+<p>This is not too useful for the default trait types - they are all operating
+independently from one another. But if you create your own trait classes, you
+can use this to make traits that depend on each other.</p>
+<p>For example, you could picture making a Trait that is the sum of the values of
+two other traits and capped by the value of a third trait. Such complex
+interactions are common in RPG rule systems but are by definition game specific.</p>
+<p>See an example in the section about <a class="reference internal" href="#expanding-with-your-own-traits"><span class="std std-doc">making your own Trait classes</span></a>.</p>
+</section>
 </section>
 <section id="trait-types">
 <h2>Trait types<a class="headerlink" href="#trait-types" title="Permalink to this headline">¶</a></h2>
@@ -288,7 +307,6 @@ compatible type.</p>
 <span class="o">&gt;</span> <span class="n">trait1</span> <span class="o">+</span> <span class="mi">2</span>
 <span class="o">&gt;</span> <span class="n">trait1</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">5</span>
-
 </pre></div>
 </div>
 <p>Two numerical traits can also be compared (bigger-than etc), which is useful in
@@ -296,7 +314,6 @@ all sorts of rule-resolution.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">if</span> <span class="n">trait1</span> <span class="o">&gt;</span> <span class="n">trait2</span><span class="p">:</span>
     <span class="c1"># do stuff</span>
-
 </pre></div>
 </div>
 <section id="trait">
@@ -316,7 +333,6 @@ like a glorified Attribute.</p>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;stringvalue&quot;</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
 <span class="s2">&quot;stringvalue&quot;</span>
-
 </pre></div>
 </div>
 </section>
@@ -338,7 +354,6 @@ that varies slowly or not at all, and which may be modified in-place.</p>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">12</span>
-
 </pre></div>
 </div>
 </section>
@@ -373,8 +388,6 @@ remove it. A suggested use for a Counter Trait would be to track skill values.</
 
 <span class="c1"># for TraitProperties, pass the args/kwargs of traits.add() to the</span>
 <span class="c1"># TraitProperty constructor instead.</span>
-
-
 </pre></div>
 </div>
 <p>Counters have some extra properties:</p>
@@ -403,7 +416,6 @@ By calling <code class="docutils literal notranslate"><span class="pre">.desc()<
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
 <span class="s2">&quot;expert&quot;</span>
-
 </pre></div>
 </div>
 </section>
@@ -442,13 +454,13 @@ a previous value.</p>
 <span class="mi">71</span>    <span class="c1"># we have stopped at the ratetarget</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># disable auto-change</span>
-
-
 </pre></div>
 </div>
 <p>Note that when retrieving the <code class="docutils literal notranslate"><span class="pre">current</span></code>, the result will always be of the same
 type as the <code class="docutils literal notranslate"><span class="pre">.base</span></code> even <code class="docutils literal notranslate"><span class="pre">rate</span></code> is a non-integer value. So if <code class="docutils literal notranslate"><span class="pre">base</span></code> is an <code class="docutils literal notranslate"><span class="pre">int</span></code>
-(default)<code class="docutils literal notranslate"><span class="pre">,</span> <span class="pre">the</span> </code>current<code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">will</span> <span class="pre">also</span> <span class="pre">be</span> <span class="pre">rounded</span> <span class="pre">the</span> <span class="pre">closest</span> <span class="pre">full</span> <span class="pre">integer.</span> <span class="pre">If</span> <span class="pre">you</span> <span class="pre">want</span> <span class="pre">to</span> <span class="pre">see</span> <span class="pre">the</span> <span class="pre">exact</span></code>current<code class="docutils literal notranslate"><span class="pre">value,</span> <span class="pre">set</span></code>base<code class="docutils literal notranslate"><span class="pre">to</span> <span class="pre">a</span> <span class="pre">float</span> <span class="pre">-</span> <span class="pre">you</span> <span class="pre">will</span> <span class="pre">then</span> <span class="pre">need</span> <span class="pre">to</span> <span class="pre">use</span></code>round()` yourself on the result if you want integers.</p>
+(default), the <code class="docutils literal notranslate"><span class="pre">current</span></code> value will also be rounded the closest full integer.
+If you want to see the exact <code class="docutils literal notranslate"><span class="pre">current</span></code> value, set <code class="docutils literal notranslate"><span class="pre">base</span></code> to a float - you
+will then need to use <code class="docutils literal notranslate"><span class="pre">round()</span></code> yourself on the result if you want integers.</p>
 </section>
 <section id="percent">
 <h4>.percent()<a class="headerlink" href="#percent" title="Permalink to this headline">¶</a></h4>
@@ -459,7 +471,6 @@ return the value as a percentage.</p>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percent</span><span class="p">(</span><span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="mf">71.0</span>
-
 </pre></div>
 </div>
 </section>
@@ -490,7 +501,6 @@ stamina and the like.</p>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">30</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">80</span>
-
 </pre></div>
 </div>
 <p>The Gauge trait is subclass of the Counter, so you have access to the same
@@ -521,8 +531,6 @@ the existing Trait classes).</p>
 
     <span class="k">def</span> <span class="nf">sedate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
-
-
 </pre></div>
 </div>
 <p>Above is an example custom-trait-class “rage” that stores a property “rage” on
@@ -538,15 +546,25 @@ default (0). Above we also added some helper methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mood&quot;</span><span class="p">,</span> <span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mood</span><span class="o">.</span><span class="n">rage</span>
 <span class="mi">30</span>
-
-<span class="c1"># as TraitProperty</span>
-
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">rage</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
-
+</pre></div>
+</div>
+<p>Remember that you can use <code class="docutils literal notranslate"><span class="pre">.get_trait(&quot;name&quot;)</span></code> to access other traits on the
+same handler.  Let’s say that the rage modifier is actually limited by
+the characters’s current STR value times 3, with a max of 100:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RageTrait</span><span class="p">(</span><span class="n">StaticTrait</span><span class="p">):</span>
+    <span class="c1">#...</span>
+    <span class="k">def</span> <span class="nf">berserk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_trait</span><span class="p">(</span><span class="s2">&quot;STR&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="as-traitproperty">
+<h1>as TraitProperty<a class="headerlink" href="#as-traitproperty" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">rage</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <section id="adding-additional-traithandlers">
 <h2>Adding additional TraitHandlers<a class="headerlink" href="#adding-additional-traithandlers" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes, it is easier to top-level classify traits, such as stats, skills, or other categories of traits you want to handle independantly of each other. Here is an example showing an example on the object typeclass, expanding on the first installation example:</p>
@@ -564,7 +582,7 @@ default (0). Above we also added some helper methods.</p>
     <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .traits</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
+
     <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .stats</span>
@@ -584,6 +602,10 @@ default (0). Above we also added some helper methods.</p>
                         <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>Rememebr that the <code class="docutils literal notranslate"><span class="pre">.get_traits()</span></code> method only works for accessing Traits within the
+<em>same</em> TraitHandler.</p>
+</div></blockquote>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/traits/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
