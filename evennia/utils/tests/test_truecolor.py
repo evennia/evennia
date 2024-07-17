@@ -88,7 +88,6 @@ class TestANSIStringHex(TestCase):
         self.assertEqual(ansi_256, self.output4, "Output xterm256")
 
 
-
 class TestANSIParser(TestCase):
     """
     Tests the ansi fallback of the hex color conversion and
