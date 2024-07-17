@@ -121,27 +121,22 @@ class HexColors:
 
         r, g, b = self._hex_to_rgb_24_bit(tag)
 
-        # Is it greyscale?
-        if r == g and g == b:
-            return f"{indicator}=" + self._GREYS[self._grey_int(r)]
+        if not truecolor:
+            # Fallback to xterm256 syntax
+            r, g, b = self._rgb_24_bit_to_256(r, g, b)
+            return f"{indicator}{r}{g}{b}"
 
         else:
-            if not truecolor:
-                # Fallback to xterm256 syntax
-                r, g, b = self._rgb_24_bit_to_256(r, g, b)
-                return f"{indicator}{r}{g}{b}"
+            xtag = f"\033["
+            if "[" in indicator:
+                # Background Color
+                xtag += "4"
 
             else:
-                xtag = f"\033["
-                if "[" in indicator:
-                    # Background Color
-                    xtag += "4"
+                xtag += "3"
 
-                else:
-                    xtag += "3"
-
-                xtag += f"8;2;{r};{g};{b}m"
-                return xtag
+            xtag += f"8;2;{r};{g};{b}m"
+            return xtag
 
     def xterm_truecolor_to_html_style(self, fg="", bg="") -> str:
         """
