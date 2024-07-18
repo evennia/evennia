@@ -304,11 +304,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
      at_object_creation() - only called once, when object is first created.
                             Object customizations go here.
+     at_object_post_creation() - only called once, when object is first created.
+                            Additional setup involving e.g. prototype-set attributes can go here.
      at_object_delete() - called just before deleting an object. If returning
                             False, deletion is aborted. Note that all objects
                             inside a deleted object are automatically moved
                             to their <home>, they don't need to be removed here.
-
+     at_object_spawn()    - called when object is spawned from a prototype or updated
+                            by the spawner to apply prototype changes.
      at_init()            - called whenever typeclass is cached from memory,
                             at least once every server restart/reload
      at_first_save()
@@ -1923,9 +1926,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.init_evennia_properties()
 
         if hasattr(self, "_createdict"):
-            # this will only be set if the utils.create function
-            # was used to create the object. We want the create
-            # call's kwargs to override the values set by hooks.
+            # this will be set if the object was created by the utils.create function
+            # or the spawner. We want these kwargs to override the values set by 
+            # the initial hooks.
             cdict = self._createdict
             updates = []
             if not cdict.get("key"):
@@ -1968,6 +1971,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     self.nattributes.add(key, value)
 
             del self._createdict
+        
+        # run the post-setup hook
+        self.at_object_post_creation()
 
         self.basetype_posthook_setup()
 
@@ -2026,6 +2032,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
+    def at_object_post_creation(self):
+        """
+        Called once, when this object is first created and after any attributes, tags, etc.
+        that were passed to the `create_object` function or defined in a prototype have been
+        applied.
+
+        """
+        pass
+
     def at_object_delete(self):
         """
         Called just before the database object is persistently
@@ -2034,6 +2049,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         return True
+
+    def at_object_spawn(self):
+        """
+        Called once when this object is first spawned or updated from a prototype, after all the
+        creation hooks have been run and the object has been saved.
+        """
+        pass
 
     def at_init(self):
         """
