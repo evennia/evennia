@@ -2052,8 +2052,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_object_spawn(self):
         """
-        Called once when this object is first spawned or updated from a prototype, after all the
-        creation hooks have been run and the object has been saved.
+        Called when this object is spawned or updated from a prototype, after all other
+        hooks have been run.
         """
         pass
 
