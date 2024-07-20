@@ -11,6 +11,8 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 - [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (0xDEADFED5)
 - [Fix][pull3571]: Better visual display of partial multimatch search results
   (InspectorCaracal)
+- [Fix][issue3378]: Prototype 'alias' key was not properly homogenized to a list
+  (Griatch)
 - [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
     of local search on multimatch (InspectorCaracal)
 - [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
@@ -28,6 +30,7 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 [pull3531]: https://github.com/evennia/evennia/pull/3531
 [pull3571]: https://github.com/evennia/evennia/pull/3571
 [pull3582]: https://github.com/evennia/evennia/pull/3582
+[issue3378]: https://github.com/evennia/evennia/issues/3578
 
 ## Evennia 4.2.0
 

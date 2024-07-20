@@ -67,7 +67,6 @@ import re
 from collections import OrderedDict
 
 from django.conf import settings
-
 from evennia.utils import logger, utils
 from evennia.utils.hex_colors import HexColors
 from evennia.utils.utils import to_str
@@ -124,7 +123,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
+ANSI_ESCAPES = ("{{", r"\\", r"\|\|")
 
 _PARSE_CACHE = OrderedDict()
 _PARSE_CACHE_SIZE = 10000

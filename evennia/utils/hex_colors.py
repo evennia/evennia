@@ -9,9 +9,9 @@ class HexColors:
     Based on code from @InspectorCaracal
     """
 
-    _RE_FG = "\|#"
-    _RE_BG = "\|\[#"
-    _RE_FG_OR_BG = "\|\[?#"
+    _RE_FG = r"\|#"
+    _RE_BG = r"\|\[#"
+    _RE_FG_OR_BG = r"\|\[?#"
     _RE_HEX_LONG = "[0-9a-fA-F]{6}"
     _RE_HEX_SHORT = "[0-9a-fA-F]{3}"
     _RE_BYTE = "[0-2]?[0-9]?[0-9]"
@@ -23,8 +23,8 @@ class HexColors:
     # Used for greyscale
     _GREYS = "abcdefghijklmnopqrstuvwxyz"
 
-    TRUECOLOR_FG = f"\x1b\[38;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m"
-    TRUECOLOR_BG = f"\x1b\[48;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m"
+    TRUECOLOR_FG = rf"\x1b\[38;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m"
+    TRUECOLOR_BG = rf"\x1b\[48;2;{_RE_BYTE};{_RE_BYTE};{_RE_BYTE}m"
 
     # Our matchers for use with ANSIParser and ANSIString
     hex_sub = re.compile(rf"{_RE_HEX_PATTERN}", re.DOTALL)
