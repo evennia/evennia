@@ -18,7 +18,7 @@ from evennia.locks.lockhandler import LockException
 from evennia.utils import create, logger, search, utils
 from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.logger import tail_log_file
-from evennia.utils.utils import class_from_module, strip_unsafe_input
+from evennia.utils.utils import class_from_module, strip_unsafe_input, time_as_timezone
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 CHANNEL_DEFAULT_TYPECLASS = class_from_module(
@@ -1485,9 +1485,11 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     receiver = f"{receiver} " if multi_recv else ""
                     sender = f" {sender} " if multi_send else f" {sender}"
 
+                time_zone = self.account.options.get("timezone")
+                date_created = time_as_timezone(page.date_created, time_zone)
                 listing.append(
                     template.format(
-                        date=utils.datetime_format(page.date_created),
+                        date=utils.datetime_format(date_created, time_zone),
                         clr=clr,
                         sender=sender,
                         receiver=receiver,
