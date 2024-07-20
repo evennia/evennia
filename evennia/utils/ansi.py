@@ -822,7 +822,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         if not decoded:
             # Completely new ANSI String
             clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=MXP_ENABLED)
-            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED)
+            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED, truecolor=True)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
