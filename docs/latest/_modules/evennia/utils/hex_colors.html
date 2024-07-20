@@ -213,27 +213,22 @@
 
         <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hex_to_rgb_24_bit</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
 
-        <span class="c1"># Is it greyscale?</span>
-        <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">g</span> <span class="ow">and</span> <span class="n">g</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indicator</span><span class="si">}</span><span class="s2">=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_GREYS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_grey_int</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">truecolor</span><span class="p">:</span>
+            <span class="c1"># Fallback to xterm256 syntax</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rgb_24_bit_to_256</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indicator</span><span class="si">}{</span><span class="n">r</span><span class="si">}{</span><span class="n">g</span><span class="si">}{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">truecolor</span><span class="p">:</span>
-                <span class="c1"># Fallback to xterm256 syntax</span>
-                <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rgb_24_bit_to_256</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indicator</span><span class="si">}{</span><span class="n">r</span><span class="si">}{</span><span class="n">g</span><span class="si">}{</span><span class="n">b</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">xtag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;[&quot;</span> <span class="ow">in</span> <span class="n">indicator</span><span class="p">:</span>
+                <span class="c1"># Background Color</span>
+                <span class="n">xtag</span> <span class="o">+=</span> <span class="s2">&quot;4&quot;</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">xtag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[&quot;</span>
-                <span class="k">if</span> <span class="s2">&quot;[&quot;</span> <span class="ow">in</span> <span class="n">indicator</span><span class="p">:</span>
-                    <span class="c1"># Background Color</span>
-                    <span class="n">xtag</span> <span class="o">+=</span> <span class="s2">&quot;4&quot;</span>
+                <span class="n">xtag</span> <span class="o">+=</span> <span class="s2">&quot;3&quot;</span>
 
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">xtag</span> <span class="o">+=</span> <span class="s2">&quot;3&quot;</span>
-
-                <span class="n">xtag</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;8;2;</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">m&quot;</span>
-                <span class="k">return</span> <span class="n">xtag</span></div>
+            <span class="n">xtag</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;8;2;</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">m&quot;</span>
+            <span class="k">return</span> <span class="n">xtag</span></div>
 
 <div class="viewcode-block" id="HexColors.xterm_truecolor_to_html_style"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors.xterm_truecolor_to_html_style">[docs]</a>    <span class="k">def</span> <span class="nf">xterm_truecolor_to_html_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
