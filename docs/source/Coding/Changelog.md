@@ -8,6 +8,7 @@
 underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 - Feat: Add `Trait.traithandler` back-reference so custom Traits from the Traits
   contrib can find and reference other Traits. (Griatch)
+- [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (0xDEADFED5)
 - [Fix][pull3571]: Better visual display of partial multimatch search results
   (InspectorCaracal)
 - [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
@@ -26,6 +27,7 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 [pull3550]: https://github.com/evennia/evennia/pull/3550
 [pull3531]: https://github.com/evennia/evennia/pull/3531
 [pull3571]: https://github.com/evennia/evennia/pull/3571
+[pull3582]: https://github.com/evennia/evennia/pull/3582
 
 ## Evennia 4.2.0
 
