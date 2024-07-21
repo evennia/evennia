@@ -290,8 +290,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         # absolute mode - just crop or fill to width
         abs_lines = []
         for line in text.split("\n"):
-            nlen = m_len(line)
-            if m_len(line) < width:
+            nlen = m_len(line, True)
+            if m_len(line, True) < width:
                 line += sp * (width - nlen)
             else:
                 line = crop(line, width=width, suffix="")
@@ -306,7 +306,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
             words.append(("\n", 0))
-        words.extend((word, m_len(word)) for word in paragraph.split())
+        words.extend((word, m_len(word, True)) for word in paragraph.split())
 
     if not words:
         # Just whitespace!
@@ -2299,7 +2299,7 @@ def calledby(callerdepth=1):
     return "\n".join(out[::-1])
 
 
-def m_len(target):
+def m_len(target, use_display_len=False):
     """
     Provides length checking for strings with MXP patterns, and falls
     back to normal len for other objects.
@@ -2307,6 +2307,9 @@ def m_len(target):
     Args:
         target (str): A string with potential MXP components
             to search.
+        use_display_len (bool, optional): If `True`, use display_len
+            instead of len.  Default is `False`, use `True` if target
+            contain east asian characters.
 
     Returns:
         length (int): The length of `target`, ignoring MXP components.
@@ -2316,8 +2319,8 @@ def m_len(target):
     from evennia.utils.ansi import ANSI_PARSER
 
     if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
-    return len(target)
+        return display_len(ANSI_PARSER.strip_mxp(target)) if use_display_len else len(ANSI_PARSER.strip_mxp(target))
+    return display_len(target) if use_display_len else len(target)
 
 
 def display_len(target):
