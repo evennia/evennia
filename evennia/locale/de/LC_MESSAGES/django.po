@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-28 21:18+0100\n"
-"PO-Revision-Date: 2024-08-05 17:48+0200\n"
+"PO-Revision-Date: 2024-08-05 18:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -138,7 +138,7 @@ msgstr "Es gab mehrere Treffer."
 #: commands/cmdhandler.py:763
 #, python-brace-format
 msgid "Command '{command}' is not available."
-msgstr "Der Befehlt '{command}' ist nicht verfügbar."
+msgstr "Der Befehl '{command}' ist nicht verfügbar."
 
 #: commands/cmdhandler.py:773
 #, python-brace-format
