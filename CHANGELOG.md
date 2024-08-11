@@ -7,6 +7,8 @@
 Attribute values (Griatch)
 [Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
 defined explicitly to be restarted/recrated in settings.py (Griatch)
+Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
+did not add it to the handler's object (Griatch)
 [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 
 [issue3591]: https://github.com/evennia/evennia/issues/3591
