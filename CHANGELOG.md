@@ -1,5 +1,11 @@
 # Changelog
 
+## Main branch
+
+[Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
+
+[issue3592]: https://github.com/evennia/evennia/issues/3591
+
 ## Evennia 4.3.0
 
 Aug 11, 2024
