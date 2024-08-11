@@ -137,7 +137,7 @@ location.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A NPC typeclass which extends the character class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_char_entered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_char_entered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A simple is_aggressive check.</span>
 <span class="sd">        Can be expanded upon later.</span>
@@ -148,7 +148,12 @@ location.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say Greetings, </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we make a simple method on the <code class="docutils literal notranslate"><span class="pre">NPC</span></code>˙. We expect it to be called when a (player-)character enters the room. We don’t actually set the <code class="docutils literal notranslate"><span class="pre">is_aggressive</span></code> <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> beforehand; if it’s not set, the NPC is simply non-hostile.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Passing extra information</p>
+<p>Note that we don’t use the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> property here. This can be used to pass extra information into hooks in your game and would be used when you make custom move commands. For example, if you <code class="docutils literal notranslate"><span class="pre">run</span></code> into the room, you could inform all hooks by doing <code class="docutils literal notranslate"><span class="pre">obj.move_to(...,</span> <span class="pre">running=True)</span></code>. Maybe your librarian NPC should have a separate reaction for people running into their library!</p>
+<p>We make sure to pass the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> from the standard <code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> hook below.</p>
+</aside>
+<p>Here we make a simple method on the <code class="docutils literal notranslate"><span class="pre">NPC</span></code>˙ called <code class="docutils literal notranslate"><span class="pre">at_char_entered</span></code>. We expect it to be called when a (player-)character enters the room. We don’t actually set the <code class="docutils literal notranslate"><span class="pre">is_aggressive</span></code> <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> beforehand; we leave this up for the admin to activate in-game. if it’s not set, the NPC is simply non-hostile.</p>
 <p>Whenever <em>something</em> enters the <code class="docutils literal notranslate"><span class="pre">Room</span></code>, its <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_receive" title="evennia.objects.objects.DefaultObject.at_object_receive"><span class="xref myst py py-meth">at_object_receive</span></a> hook will be called. So we should override it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
@@ -160,19 +165,19 @@ location.</p>
 
     <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arriving_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arriving_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">arriving_obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span> 
             <span class="c1"># this has an active acccount - a player character</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
                 <span class="c1"># get all npcs in the room and inform them</span>
-                <span class="k">if</span>  <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;typeclasses.npcs.NPC&quot;</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">at_char_entered</span><span class="p">(</span><span class="n">arriving_obj</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;typeclasses.npcs.NPC&quot;</span><span class="p">):</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">at_char_entered</span><span class="p">(</span><span class="n">arriving_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Universal Object methods</p>
-<p>Remember that Rooms are <code class="docutils literal notranslate"><span class="pre">Objects</span></code>. So the same <code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> hook will fire for you when you pick something up (making you ‘receive’ it). Or for a box when putting something inside it.</p>
+<p>Remember that Rooms are <code class="docutils literal notranslate"><span class="pre">Objects</span></code>, and other Objects have these same hooks. So an <code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> hook will fire for you when you pick something up (making you ‘receive’ it). Or for a box when putting something inside it, for example.</p>
 </aside>
 <p>A currently puppeted Character will have an <code class="docutils literal notranslate"><span class="pre">.account</span></code> attached to it. We use that to know that the thing arriving is a Character. We then use Evennia’s <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.inherits_from" title="evennia.utils.utils.inherits_from"><span class="xref myst py py-func">utils.inherits_from</span></a> helper utility to get every NPC in the room can each of their newly created <code class="docutils literal notranslate"><span class="pre">at_char_entered</span></code> method.</p>
 <p>Make sure to <code class="docutils literal notranslate"><span class="pre">reload</span></code>.</p>
