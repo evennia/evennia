@@ -112,7 +112,6 @@
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_comma_separated_integer_list</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectDBManager</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -163,8 +162,18 @@
         <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ctypes</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Object </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> has no `_content_types` property. Skipping content-cache setup. &quot;</span>
+                    <span class="s2">&quot;This error suggests it is not a valid Evennia Typeclass but maybe a root model &quot;</span>
+                    <span class="s2">&quot;like `ObjectDB`. Investigate the `db_typeclass_path` of the object and make sure &quot;</span>
+                    <span class="s2">&quot;it points to a proper, existing Typeclass.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

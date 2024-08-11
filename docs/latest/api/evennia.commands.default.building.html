@@ -647,7 +647,7 @@ You can specify the /force switch to bypass this confirmation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdDestroy.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;delete', '&#64;del']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;del', '&#64;delete']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -688,7 +688,7 @@ You can specify the /force switch to bypass this confirmation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdDestroy.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;delete &#64;del', 'category': 'building', 'key': '&#64;destroy', 'no_prefix': 'destroy delete del', 'tags': '', 'text': '\n    permanently delete objects\n\n    Usage:\n       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]\n\n    Switches:\n       override - The destroy command will usually avoid accidentally\n                  destroying account objects. This switch overrides this safety.\n       force - destroy without confirmation.\n    Examples:\n       destroy house, roof, door, 44-78\n       destroy 5-10, flower, 45\n       destroy/force north\n\n    Destroys one or many objects. If dbrefs are used, a range to delete can be\n    given, e.g. 4-10. Also the end points will be deleted. This command\n    displays a confirmation before destroying, to make sure of your choice.\n    You can specify the /force switch to bypass this confirmation.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;del &#64;delete', 'category': 'building', 'key': '&#64;destroy', 'no_prefix': 'destroy del delete', 'tags': '', 'text': '\n    permanently delete objects\n\n    Usage:\n       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]\n\n    Switches:\n       override - The destroy command will usually avoid accidentally\n                  destroying account objects. This switch overrides this safety.\n       force - destroy without confirmation.\n    Examples:\n       destroy house, roof, door, 44-78\n       destroy 5-10, flower, 45\n       destroy/force north\n\n    Destroys one or many objects. If dbrefs are used, a range to delete can be\n    given, e.g. 4-10. Also the end points will be deleted. This command\n    displays a confirmation before destroying, to make sure of your choice.\n    You can specify the /force switch to bypass this confirmation.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1415,7 +1415,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;swap', '&#64;parent', '&#64;typeclasses', '&#64;update', '&#64;type']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;typeclasses', '&#64;type', '&#64;parent', '&#64;update', '&#64;swap']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1446,7 +1446,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;swap &#64;parent &#64;typeclasses &#64;update &#64;type', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass swap parent typeclasses update type', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;typeclasses &#64;type &#64;parent &#64;update &#64;swap', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass typeclasses type parent update swap', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1908,7 +1908,7 @@ one is given.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdFind.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;search', '&#64;locate']</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;locate', '&#64;search']</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1939,7 +1939,7 @@ one is given.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdFind.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;search &#64;locate', 'category': 'building', 'key': '&#64;find', 'no_prefix': 'find search locate', 'tags': '', 'text': '\n    search the database for objects\n\n    Usage:\n      find[/switches] &lt;name or dbref or *account&gt; [= dbrefmin[-dbrefmax]]\n      locate - this is a shorthand for using the /loc switch.\n\n    Switches:\n      room       - only look for rooms (location=None)\n      exit       - only look for exits (destination!=None)\n      char       - only look for characters (BASE_CHARACTER_TYPECLASS)\n      exact      - only exact matches are returned.\n      loc        - display object location if exists and match has one result\n      startswith - search for names starting with the string, rather than containing\n\n    Searches the database for an object of a particular name or exact #dbref.\n    Use *accountname to search for an account. The switches allows for\n    limiting object matches to certain game entities. Dbrefmin and dbrefmax\n    limits matches to within the given dbrefs range, or above/below if only\n    one is given.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;locate &#64;search', 'category': 'building', 'key': '&#64;find', 'no_prefix': 'find locate search', 'tags': '', 'text': '\n    search the database for objects\n\n    Usage:\n      find[/switches] &lt;name or dbref or *account&gt; [= dbrefmin[-dbrefmax]]\n      locate - this is a shorthand for using the /loc switch.\n\n    Switches:\n      room       - only look for rooms (location=None)\n      exit       - only look for exits (destination!=None)\n      char       - only look for characters (BASE_CHARACTER_TYPECLASS)\n      exact      - only exact matches are returned.\n      loc        - display object location if exists and match has one result\n      startswith - search for names starting with the string, rather than containing\n\n    Searches the database for an object of a particular name or exact #dbref.\n    Use *accountname to search for an account. The switches allows for\n    limiting object matches to certain game entities. Dbrefmin and dbrefmax\n    limits matches to within the given dbrefs range, or above/below if only\n    one is given.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2043,18 +2043,25 @@ scripts.</p>
 <dt>Usage:</dt><dd><p>script[/switches] [script-#dbref, key, script.path]
 script[/start||stop] &lt;obj&gt; = [&lt;script.path or script-key&gt;]</p>
 </dd>
-<dt>Switches:</dt><dd><p>start - start/unpause an existing script’s timer.
-stop - stops an existing script’s timer
-pause - pause a script’s timer
+<dt>Switches:</dt><dd><p>start  - start/unpause an existing script’s timer.
+stop   - stops an existing script’s timer
+pause  - pause a script’s timer
 delete - deletes script. This will also stop the timer as needed</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>script                            - list all scripts
-script foo.bar.Script             - create a new global Script
-script/pause foo.bar.Script       - pause global script
-script scriptname|#dbref          - examine named existing global script
-script/delete #dbref[-#dbref]     - delete script or range by #dbref</p>
+<p>script                             - list all scripts
+script key:foo.bar.Script         - create a new global Script with typeclass</p>
+<blockquote>
+<div><p>and key ‘key’</p>
+</div></blockquote>
+<dl class="simple">
+<dt>script foo.bar.Script              - create a new global Script with typeclass</dt><dd><p>(key taken from typeclass or auto-generated)</p>
+</dd>
+</dl>
+<p>script/pause foo.bar.Script        - pause global script
+script typeclass|name|#dbref       - examine named existing global script
+script/delete #dbref[-#dbref]      - delete script or range by #dbref</p>
 <p>script myobj =                    - list all scripts on object
 script myobj = foo.bar.Script     - create and assign script to object
 script/stop myobj = name|#dbref   - stop named script on object
@@ -2082,7 +2089,7 @@ objects.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdScripts.switch_options">
-<code class="sig-name descname">switch_options</code><em class="property"> = ('create', 'start', 'stop', 'pause', 'delete')</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">switch_options</code><em class="property"> = ('start', 'stop', 'pause', 'delete')</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2102,13 +2109,86 @@ objects.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdScripts.switch_mapping">
-<code class="sig-name descname">switch_mapping</code><em class="property"> = {'create': '|gCreated|n', 'delete': '|rDeleted|n', 'pause': '|Paused|n', 'start': '|gStarted|n', 'stop': '|RStopped|n'}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_mapping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">switch_mapping</code><em class="property"> = {'delete': '|rDeleted|n', 'pause': '|Paused|n', 'start': '|gStarted|n', 'stop': '|RStopped|n'}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_mapping" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdScripts.hide_script_paths">
 <code class="sig-name descname">hide_script_paths</code><em class="property"> = ('evennia.prototypes.prototypes.DbPrototype',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.hide_script_paths" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdScripts.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScripts.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the cmdhandler once the command name
+has been identified. It creates a new set of member variables
+that can be later accessed from self.func() (see below)</p>
+<p>The following variables are available for our use when entering this
+method (from the command definition, and assigned on the fly by the
+cmdhandler):</p>
+<blockquote>
+<div><p>self.key - the name of this command (‘look’)
+self.aliases - the aliases of this cmd (‘l’)
+self.permissions - permission string for this command
+self.help_category - overall category of command</p>
+<p>self.caller - the object calling this command
+self.cmdstring - the actual command name used to call this</p>
+<blockquote>
+<div><dl class="simple">
+<dt>(this allows you to know which alias was used,</dt><dd><p>for example)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>self.args - the raw input; everything following self.cmdstring.
+self.cmdset - the cmdset from which this command was picked. Not</p>
+<blockquote>
+<div><p>often used (useful for commands like ‘help’ or to
+list all available commands etc)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.obj - the object on which this command was defined. It is often</dt><dd><p>the same as self.caller.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>A MUX command has the following possible syntax:</p>
+<blockquote>
+<div><p>name[ with several words][/switch[/switch..]] arg1[,arg2,…] [[=|,] arg[,..]]</p>
+</div></blockquote>
+<p>The ‘name[ with several words]’ part is already dealt with by the
+cmdhandler at this point, and stored in self.cmdname (we don’t use
+it here). The rest of the command is stored in self.args, which can
+start with the switch indicator /.</p>
+<dl class="simple">
+<dt>Optional variables to aid in parsing, if set:</dt><dd><dl class="simple">
+<dt>self.switch_options  - (tuple of valid /switches expected by this</dt><dd><p>command (without the /))</p>
+</dd>
+<dt>self.rhs_split       - Alternate string delimiter or tuple of strings</dt><dd><p>to separate left/right hand sides. tuple form
+gives priority split to first string delimiter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This parser breaks self.args into its constituents and stores them in the
+following variables:</p>
+<blockquote>
+<div><p>self.switches = [list of /switches (without the /)]
+self.raw = This is the raw argument input, including switches
+self.args = This is re-defined to be everything <em>except</em> the switches
+self.lhs = Everything to the left of = (lhs:’left-hand side’). If</p>
+<blockquote>
+<div><p>no = is found, this is identical to self.args.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.rhs: Everything to the right of = (rhs:’right-hand side’).</dt><dd><p>If no ‘=’ is found, this is None.</p>
+</dd>
+</dl>
+<p>self.lhslist - [self.lhs split into a list by comma]
+self.rhslist - [list of self.rhs split into a list by comma]
+self.arglist = [list of space-separated args (stripped, including ‘=’ if it exists)]</p>
+<p>All args and list members are stripped of excess whitespace around the
+strings, but case is preserved.</p>
+</div></blockquote>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.commands.default.building.CmdScripts.func">
@@ -2123,7 +2203,7 @@ objects.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdScripts.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;script', 'category': 'system', 'key': '&#64;scripts', 'no_prefix': 'scripts script', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [script-#dbref, key, script.path]\n      script[/start||stop] &lt;obj&gt; = [&lt;script.path or script-key&gt;]\n\n    Switches:\n      start - start/unpause an existing script's timer.\n      stop - stops an existing script's timer\n      pause - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    Examples:\n        script                            - list all scripts\n        script foo.bar.Script             - create a new global Script\n        script/pause foo.bar.Script       - pause global script\n        script scriptname|#dbref          - examine named existing global script\n        script/delete #dbref[-#dbref]     - delete script or range by #dbref\n\n        script myobj =                    - list all scripts on object\n        script myobj = foo.bar.Script     - create and assign script to object\n        script/stop myobj = name|#dbref   - stop named script on object\n        script/delete myobj = name|#dbref - delete script on object\n        script/delete myobj =             - delete ALL scripts on object\n\n    When given with an `&lt;obj&gt;` as left-hand-side, this creates and\n    assigns a new script to that object. Without an `&lt;obj&gt;`, this\n    manages and inspects global scripts.\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;script', 'category': 'system', 'key': '&#64;scripts', 'no_prefix': 'scripts script', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [script-#dbref, key, script.path]\n      script[/start||stop] &lt;obj&gt; = [&lt;script.path or script-key&gt;]\n\n    Switches:\n      start  - start/unpause an existing script's timer.\n      stop   - stops an existing script's timer\n      pause  - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    Examples:\n        script                             - list all scripts\n        script key:foo.bar.Script         - create a new global Script with typeclass\n                                             and key 'key'\n        script foo.bar.Script              - create a new global Script with typeclass\n                                             (key taken from typeclass or auto-generated)\n        script/pause foo.bar.Script        - pause global script\n        script typeclass|name|#dbref       - examine named existing global script\n        script/delete #dbref[-#dbref]      - delete script or range by #dbref\n\n        script myobj =                    - list all scripts on object\n        script myobj = foo.bar.Script     - create and assign script to object\n        script/stop myobj = name|#dbref   - stop named script on object\n        script/delete myobj = name|#dbref - delete script on object\n        script/delete myobj =             - delete ALL scripts on object\n\n    When given with an `&lt;obj&gt;` as left-hand-side, this creates and\n    assigns a new script to that object. Without an `&lt;obj&gt;`, this\n    manages and inspects global scripts.\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

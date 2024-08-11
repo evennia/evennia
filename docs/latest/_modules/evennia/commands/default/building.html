@@ -97,11 +97,10 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Max</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Q</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">generate_cmdset_providers</span><span class="p">,</span> <span class="n">get_and_merge_cmdsets</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
@@ -2923,8 +2922,12 @@
             <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">)</span>
 
         <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">valuetype</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">strvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">strvalue</span>
+            <span class="n">valuetype</span> <span class="o">=</span> <span class="s2">&quot; |B[strvalue]|n&quot;</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attribute_value_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">typ</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; |B[type: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">]|n&quot;</span> <span class="k">if</span> <span class="n">typ</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; |B[type:</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">]|n</span><span class="si">{</span><span class="n">valuetype</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">typ</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">valuetype</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">_FUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">escape</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -2938,8 +2941,12 @@
             <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">)</span>
 
         <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">valuetype</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">strvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">strvalue</span>
+            <span class="n">valuetype</span> <span class="o">=</span> <span class="s2">&quot; |B[strvalue]|n&quot;</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attribute_value_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">typ</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; |B[type: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">]|n&quot;</span> <span class="k">if</span> <span class="n">typ</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; |B[type: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">]|n</span><span class="si">{</span><span class="n">valuetype</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">typ</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">valuetype</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">_FUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">escape</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -3531,7 +3538,7 @@
                     <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
                     <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span>
                 <span class="p">),</span>
-                <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span>
                 <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span>
                 <span class="n">nextrep</span><span class="p">,</span>
                 <span class="n">rept</span><span class="p">,</span>
@@ -3552,17 +3559,20 @@
 <span class="sd">      script[/start||stop] &lt;obj&gt; = [&lt;script.path or script-key&gt;]</span>
 
 <span class="sd">    Switches:</span>
-<span class="sd">      start - start/unpause an existing script&#39;s timer.</span>
-<span class="sd">      stop - stops an existing script&#39;s timer</span>
-<span class="sd">      pause - pause a script&#39;s timer</span>
+<span class="sd">      start  - start/unpause an existing script&#39;s timer.</span>
+<span class="sd">      stop   - stops an existing script&#39;s timer</span>
+<span class="sd">      pause  - pause a script&#39;s timer</span>
 <span class="sd">      delete - deletes script. This will also stop the timer as needed</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        script                            - list all scripts</span>
-<span class="sd">        script foo.bar.Script             - create a new global Script</span>
-<span class="sd">        script/pause foo.bar.Script       - pause global script</span>
-<span class="sd">        script scriptname|#dbref          - examine named existing global script</span>
-<span class="sd">        script/delete #dbref[-#dbref]     - delete script or range by #dbref</span>
+<span class="sd">        script                             - list all scripts</span>
+<span class="sd">        script key:foo.bar.Script         - create a new global Script with typeclass</span>
+<span class="sd">                                             and key &#39;key&#39;</span>
+<span class="sd">        script foo.bar.Script              - create a new global Script with typeclass</span>
+<span class="sd">                                             (key taken from typeclass or auto-generated)</span>
+<span class="sd">        script/pause foo.bar.Script        - pause global script</span>
+<span class="sd">        script typeclass|name|#dbref       - examine named existing global script</span>
+<span class="sd">        script/delete #dbref[-#dbref]      - delete script or range by #dbref</span>
 
 <span class="sd">        script myobj =                    - list all scripts on object</span>
 <span class="sd">        script myobj = foo.bar.Script     - create and assign script to object</span>
@@ -3587,14 +3597,13 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@scripts&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@script&quot;</span><span class="p">]</span>
-    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="s2">&quot;pause&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="s2">&quot;pause&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(scripts) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
     <span class="n">excluded_typeclass_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.prototypes.prototypes.DbPrototype&quot;</span><span class="p">]</span>
 
     <span class="n">switch_mapping</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;create&quot;</span><span class="p">:</span> <span class="s2">&quot;|gCreated|n&quot;</span><span class="p">,</span>
         <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="s2">&quot;|gStarted|n&quot;</span><span class="p">,</span>
         <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="s2">&quot;|RStopped|n&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pause&quot;</span><span class="p">:</span> <span class="s2">&quot;|Paused|n&quot;</span><span class="p">,</span>
@@ -3603,21 +3612,32 @@
     <span class="c1"># never show these script types</span>
     <span class="n">hide_script_paths</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;evennia.prototypes.prototypes.DbPrototype&quot;</span><span class="p">,)</span>
 
-    <span class="k">def</span> <span class="nf">_search_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="c1"># test first if this is a script match</span>
-        <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-            <span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_script_paths</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scripts</span>
-        <span class="c1"># try typeclass path</span>
+    <span class="k">def</span> <span class="nf">_search_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># see if a dbref was provided</span>
+        <span class="k">if</span> <span class="n">dbref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="p">):</span>
+            <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">scripts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No script found with dbref </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InterruptCommand</span>
+
+        <span class="c1"># if we provided a key, we must find an exact match, otherwise we&#39;re creating that anew</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">db_key__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">,</span> <span class="n">db_typeclass_path__iendswith</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_script_paths</span><span class="p">)</span>
+
+        <span class="c1"># the more general case - try typeclass path</span>
         <span class="n">scripts</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path__iendswith</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path__iendswith</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="p">)</span>
             <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_script_paths</span><span class="p">)</span>
             <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">scripts</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span>
         <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="c1"># may be a dbref-range</span>
             <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="p">(</span><span class="n">dbref</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -3629,6 +3649,29 @@
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">scripts</span>
+
+<div class="viewcode-block" id="CmdScripts.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScripts.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">_separate_key_typeclass</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+            <span class="n">part1</span><span class="p">,</span> <span class="o">*</span><span class="n">part2</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="n">part2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">part2</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">part1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="c1"># arg with &quot;=&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span> <span class="o">=</span> <span class="n">_separate_key_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># an empty &quot;=&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># arg without &quot;=&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_query</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span> <span class="o">=</span> <span class="n">_separate_key_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdScripts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScripts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;implement method&quot;&quot;&quot;</span>
@@ -3645,20 +3688,8 @@
             <span class="k">return</span>
 
         <span class="c1"># find script or object to operate on</span>
-        <span class="n">scripts</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
-            <span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
-            <span class="n">script_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># an empty &quot;=&quot;</span>
-            <span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
-            <span class="n">script_query</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">obj_query</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">script_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
-
-        <span class="n">scripts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_script</span><span class="p">(</span><span class="n">script_query</span><span class="p">)</span> <span class="k">if</span> <span class="n">script_query</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">objects</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">obj_query</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj_query</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">scripts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_script</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_query</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_query</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">objects</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
@@ -3667,7 +3698,7 @@
                 <span class="c1"># we have an object</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
                     <span class="c1"># creation mode</span>
-                    <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_query</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Script |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="si">}</span><span class="s2">|n successfully added and &quot;</span>
                             <span class="sa">f</span><span class="s2">&quot;started on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -3695,7 +3726,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># create global script</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">new_script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                    <span class="n">new_script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+                        <span class="n">typeclass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typeclass_query</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_query</span>
+                    <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
                     <span class="n">new_script</span> <span class="o">=</span> <span class="kc">None</span>

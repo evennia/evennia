@@ -200,7 +200,17 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
-<p>[Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)</p>
+<p>Feat: Support <code class="docutils literal notranslate"><span class="pre">scripts</span> <span class="pre">key:typeclass</span></code> form to create global scripts
+with dynamic keys (rather than just relying on typeclass’ key). Support
+searching using the same syntax (Griatch)
+<a class="reference external" href="https://github.com/evennia/evennia/issues/3556">Fix</a>: Better error if trying to treat ObjectDB as a typeclass (Griatch)
+<a class="reference external" href="https://github.com/evennia/evennia/issues/3590">Fix</a>: Make <code class="docutils literal notranslate"><span class="pre">examine</span></code> command properly show <code class="docutils literal notranslate"><span class="pre">strattr</span></code> type
+Attribute values (Griatch)
+<a class="reference external" href="https://github.com/evennia/evennia/issues/3519">Fix</a>: <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> container didn’t list global scripts not
+defined explicitly to be restarted/recrated in <a class="reference external" href="http://settings.py">settings.py</a> (Griatch)
+Fix: Passing an already instantiated Script to <code class="docutils literal notranslate"><span class="pre">obj.scripts.add</span></code> (<code class="docutils literal notranslate"><span class="pre">ScriptHandler.add</span></code>)
+did not add it to the handler’s object (Griatch)
+<a class="reference external" href="https://github.com/evennia/evennia/issues/3591">Docs</a>: Fix of NPC reaction tutorial code (Griatch)</p>
 </section>
 <section id="evennia-4-3-0">
 <h2>Evennia 4.3.0<a class="headerlink" href="#evennia-4-3-0" title="Permalink to this headline">¶</a></h2>

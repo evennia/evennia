@@ -106,13 +106,10 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
@@ -124,14 +121,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">account</span><span class="p">,</span>
-    <span class="n">admin</span><span class="p">,</span>
-    <span class="n">batchprocess</span><span class="p">,</span>
-    <span class="n">building</span><span class="p">,</span>
-    <span class="n">comms</span><span class="p">,</span>
-    <span class="n">general</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">general</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">syscommands</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">unloggedin</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
@@ -140,6 +130,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
@@ -538,7 +530,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/pause </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Pause task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">paused</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -547,7 +539,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Unpause task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="c1"># verify task continues after unpause</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -557,7 +549,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/do_task </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Do_task task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
@@ -565,7 +557,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/remove </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Remove task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
@@ -573,7 +565,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/call </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Call task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="c1"># make certain the task is still active</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">())</span>
@@ -585,7 +577,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Cancel task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">())</span></div>
@@ -889,13 +881,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span>
             <span class="s2">&quot;self/test2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Char/test2 [category=None]:</span><span class="se">\n\n</span><span class="s2">this is a \$random() value.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Char/test2 [category=None]:</span><span class="se">\n\n</span><span class="s2">this is a </span><span class="se">\\</span><span class="s2">$random() value.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;strattr&quot;</span><span class="p">,</span> <span class="s2">&quot;testval&quot;</span><span class="p">,</span> <span class="n">strattr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span>
+            <span class="s2">&quot;self/strattr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Char/strattr [category=None] [strvalue]:</span><span class="se">\n\n</span><span class="s2">testval&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_set_obj_alias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_set_obj_alias">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_obj_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetObjAlias</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;Cleared aliases from Obj&quot;</span><span class="p">)</span>
@@ -1746,17 +1745,17 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_script_multi_delete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script_multi_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_script_multi_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">script1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
-        <span class="n">script2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
-        <span class="n">script3</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
+        <span class="n">script1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;script1&quot;</span><span class="p">)</span>
+        <span class="n">script2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;script2&quot;</span><span class="p">)</span>
+        <span class="n">script3</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;script3&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/delete #</span><span class="si">{}</span><span class="s2">-#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - script1 (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - script2 (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - script3 (evennia.scripts.scripts.DefaultScript)&quot;</span>
             <span class="p">),</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
