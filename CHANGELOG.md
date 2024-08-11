@@ -3,8 +3,12 @@
 ## Main branch
 
 [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
+[Docs][issue3590]: Make `examine` command properly show `strattr` type
+Attribute values (Griatch)
 
-[issue3592]: https://github.com/evennia/evennia/issues/3591
+[issue3591]: https://github.com/evennia/evennia/issues/3591
+[issue3590]: https://github.com/evennia/evennia/issues/3590
+
 
 ## Evennia 4.3.0
 

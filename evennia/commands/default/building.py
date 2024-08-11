@@ -5,11 +5,10 @@ Building and world design commands
 import re
 import typing
 
+import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
-
-import evennia
 from evennia import InterruptCommand
 from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
@@ -2831,8 +2830,12 @@ class CmdExamine(ObjManipCommand):
             _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
 
         key, category, value = attr.db_key, attr.db_category, attr.value
+        valuetype = ""
+        if value is None and attr.strvalue is not None:
+            value = attr.strvalue
+            valuetype = " |B[strvalue]|n"
         typ = self._get_attribute_value_type(value)
-        typ = f" |B[type: {typ}]|n" if typ else ""
+        typ = f" |B[type:{typ}]|n{valuetype}" if typ else f"{valuetype}"
         value = utils.to_str(value)
         value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
         return (
@@ -2846,8 +2849,12 @@ class CmdExamine(ObjManipCommand):
             _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
 
         key, category, value = attr.db_key, attr.db_category, attr.value
+        valuetype = ""
+        if value is None and attr.strvalue is not None:
+            value = attr.strvalue
+            valuetype = " |B[strvalue]|n"
         typ = self._get_attribute_value_type(value)
-        typ = f" |B[type: {typ}]|n" if typ else ""
+        typ = f" |B[type: {typ}]|n{valuetype}" if typ else f"{valuetype}"
         value = utils.to_str(value)
         value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
         value = utils.crop(value)

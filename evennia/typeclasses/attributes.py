@@ -17,7 +17,6 @@ from copy import copy
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -142,6 +141,8 @@ class InMemoryAttribute(IAttribute):
             # Value and locks are special. We must call the wrappers.
             if key == "value":
                 self.value = value
+            elif key == "strvalue":
+                self.db_strvalue = value
             elif key == "lock_storage":
                 self.lock_storage = value
             else:
