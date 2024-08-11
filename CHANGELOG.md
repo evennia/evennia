@@ -1,6 +1,8 @@
 # Changelog
 
-## Main
+## Evennia 4.3.0
+
+Aug 11, 2024
 
 - [Feat][pull3531]: New contrib; `in-game reports` for handling user reports,
   bugs etc in-game (InspectorCaracal)
