@@ -104,7 +104,6 @@
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_lockstring</span><span class="p">,</span> <span class="n">validate_lockstring</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
@@ -196,6 +195,7 @@
                 <span class="n">prototype</span><span class="p">[</span><span class="n">protkey</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="n">homogenized</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">homogenized_aliases</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">homogenized_tags</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">homogenized_attrs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">homogenized_parents</span> <span class="o">=</span> <span class="p">[]</span>
@@ -203,7 +203,10 @@
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">reserved</span><span class="p">:</span>
             <span class="c1"># check all reserved keys</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;aliases&quot;</span><span class="p">:</span>
+                <span class="c1"># make sure aliases are always in a list even if given as a single string</span>
+                <span class="n">homogenized_aliases</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
                 <span class="c1"># tags must be on form [(tag, category, data), ...]</span>
                 <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[]))</span>
                 <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
@@ -252,13 +255,14 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># normal prototype-parent names are added as-is</span>
                         <span class="n">homogenized_parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
-
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># another reserved key</span>
                 <span class="n">homogenized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># unreserved keys -&gt; attrs</span>
             <span class="n">homogenized_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">homogenized_aliases</span><span class="p">:</span>
+        <span class="n">homogenized</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">homogenized_aliases</span>
     <span class="k">if</span> <span class="n">homogenized_attrs</span><span class="p">:</span>
         <span class="n">homogenized</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">homogenized_attrs</span>
     <span class="k">if</span> <span class="n">homogenized_tags</span><span class="p">:</span>

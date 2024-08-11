@@ -101,9 +101,9 @@
 <span class="sd">    Based on code from @InspectorCaracal</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_RE_FG</span> <span class="o">=</span> <span class="s2">&quot;\|#&quot;</span>
-    <span class="n">_RE_BG</span> <span class="o">=</span> <span class="s2">&quot;\|\[#&quot;</span>
-    <span class="n">_RE_FG_OR_BG</span> <span class="o">=</span> <span class="s2">&quot;\|\[?#&quot;</span>
+    <span class="n">_RE_FG</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\|#&quot;</span>
+    <span class="n">_RE_BG</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\|\[#&quot;</span>
+    <span class="n">_RE_FG_OR_BG</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\|\[?#&quot;</span>
     <span class="n">_RE_HEX_LONG</span> <span class="o">=</span> <span class="s2">&quot;[0-9a-fA-F]</span><span class="si">{6}</span><span class="s2">&quot;</span>
     <span class="n">_RE_HEX_SHORT</span> <span class="o">=</span> <span class="s2">&quot;[0-9a-fA-F]</span><span class="si">{3}</span><span class="s2">&quot;</span>
     <span class="n">_RE_BYTE</span> <span class="o">=</span> <span class="s2">&quot;[0-2]?[0-9]?[0-9]&quot;</span>
@@ -115,8 +115,8 @@
     <span class="c1"># Used for greyscale</span>
     <span class="n">_GREYS</span> <span class="o">=</span> <span class="s2">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span>
 
-    <span class="n">TRUECOLOR_FG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">\[38;2;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">m&quot;</span>
-    <span class="n">TRUECOLOR_BG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">\[48;2;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">m&quot;</span>
+    <span class="n">TRUECOLOR_FG</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;\x1b\[38;2;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">m&quot;</span>
+    <span class="n">TRUECOLOR_BG</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;\x1b\[48;2;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">_RE_BYTE</span><span class="si">}</span><span class="s2">m&quot;</span>
 
     <span class="c1"># Our matchers for use with ANSIParser and ANSIString</span>
     <span class="n">hex_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_RE_HEX_PATTERN</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
