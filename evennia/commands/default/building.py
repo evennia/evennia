@@ -3446,7 +3446,7 @@ class ScriptEvMore(EvMore):
                     if (hasattr(script, "obj") and script.obj)
                     else "<Global>"
                 ),
-                script.key,
+                script.db_key,
                 script.interval if script.interval > 0 else "--",
                 nextrep,
                 rept,
@@ -3467,17 +3467,20 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
       script[/start||stop] <obj> = [<script.path or script-key>]
 
     Switches:
-      start - start/unpause an existing script's timer.
-      stop - stops an existing script's timer
-      pause - pause a script's timer
+      start  - start/unpause an existing script's timer.
+      stop   - stops an existing script's timer
+      pause  - pause a script's timer
       delete - deletes script. This will also stop the timer as needed
 
     Examples:
-        script                            - list all scripts
-        script foo.bar.Script             - create a new global Script
-        script/pause foo.bar.Script       - pause global script
-        script scriptname|#dbref          - examine named existing global script
-        script/delete #dbref[-#dbref]     - delete script or range by #dbref
+        script                             - list all scripts
+        script key:foo.bar.Script         - create a new global Script with typeclass
+                                             and key 'key'
+        script foo.bar.Script              - create a new global Script with typeclass
+                                             (key taken from typeclass or auto-generated)
+        script/pause foo.bar.Script        - pause global script
+        script typeclass|name|#dbref       - examine named existing global script
+        script/delete #dbref[-#dbref]      - delete script or range by #dbref
 
         script myobj =                    - list all scripts on object
         script myobj = foo.bar.Script     - create and assign script to object
@@ -3502,14 +3505,13 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
     key = "@scripts"
     aliases = ["@script"]
-    switch_options = ("create", "start", "stop", "pause", "delete")
+    switch_options = ("start", "stop", "pause", "delete")
     locks = "cmd:perm(scripts) or perm(Builder)"
     help_category = "System"
 
     excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
 
     switch_mapping = {
-        "create": "|gCreated|n",
         "start": "|gStarted|n",
         "stop": "|RStopped|n",
         "pause": "|Paused|n",
@@ -3518,21 +3520,31 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     # never show these script types
     hide_script_paths = ("evennia.prototypes.prototypes.DbPrototype",)
 
-    def _search_script(self, args):
+    def _search_script(self):
         # test first if this is a script match
-        scripts = ScriptDB.objects.get_all_scripts(key=args).exclude(
-            db_typeclass_path__in=self.hide_script_paths
-        )
-        if scripts:
-            return scripts
+        print("search:", self.key_query, self.typeclass_query)
+        if self.key_query:
+            scripts = ScriptDB.objects.filter(
+                db_key__iexact=self.key_query, db_typeclass_path__iendswith=self.typeclass_query
+            ).exclude(db_typeclass_path__in=self.hide_script_paths)
+            if scripts:
+                return scripts
+
         # try typeclass path
         scripts = (
-            ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
+            ScriptDB.objects.filter(db_typeclass_path__iendswith=self.typeclass_query)
             .exclude(db_typeclass_path__in=self.hide_script_paths)
             .order_by("id")
         )
         if scripts:
             return scripts
+
+        # try dbref
+        scripts = ScriptDB.objects.get_all_scripts(self.typeclass_query)
+        if scripts:
+            return scripts
+
+        args = self.typeclass_query
         if "-" in args:
             # may be a dbref-range
             val1, val2 = (dbref(part.strip()) for part in args.split("-", 1))
@@ -3544,6 +3556,29 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 )
                 if scripts:
                     return scripts
+
+    def parse(self):
+        super().parse()
+
+        if not self.args:
+            return
+
+        def _separate_key_typeclass(part):
+            part1, *part2 = part.split(":", 1)
+            return (part1, part2[0]) if part2 else (None, part1)
+
+        if self.rhs:
+            # arg with "="
+            self.obj_query = self.lhs
+            self.key_query, self.typeclass_query = _separate_key_typeclass(self.rhs)
+        elif self.rhs is not None:
+            # an empty "="
+            self.obj_query = self.lhs
+            self.key_query, self.typeclass_query = None, None
+        else:
+            # arg without "="
+            self.obj_query = None
+            self.key_query, self.typeclass_query = _separate_key_typeclass(self.args)
 
     def func(self):
         """implement method"""
@@ -3560,20 +3595,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             return
 
         # find script or object to operate on
-        scripts, obj = None, None
-        if self.rhs:
-            obj_query = self.lhs
-            script_query = self.rhs
-        elif self.rhs is not None:
-            # an empty "="
-            obj_query = self.lhs
-            script_query = None
-        else:
-            obj_query = None
-            script_query = self.args
-
-        scripts = self._search_script(script_query) if script_query else None
-        objects = caller.search(obj_query, quiet=True) if obj_query else None
+        scripts = self._search_script() if self.typeclass_query else None
+        objects = caller.search(self.obj_query, quiet=True) if self.obj_query else None
         obj = objects[0] if objects else None
 
         if not self.switches:
@@ -3582,7 +3605,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 # we have an object
                 if self.rhs:
                     # creation mode
-                    if obj.scripts.add(self.rhs, autostart=True):
+                    if obj.scripts.add(self.typeclass_query, key=self.key_query, autostart=True):
                         caller.msg(
                             f"Script |w{self.rhs}|n successfully added and "
                             f"started on {obj.get_display_name(caller)}."
@@ -3610,7 +3633,9 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             else:
                 # create global script
                 try:
-                    new_script = create.create_script(self.args)
+                    new_script = create.create_script(
+                        typeclass=self.typeclass_query, key=self.key_query
+                    )
                 except ImportError:
                     logger.log_trace()
                     new_script = None
