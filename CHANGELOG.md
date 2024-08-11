@@ -2,6 +2,9 @@
 
 ## Main branch
 
+Feat: Support `scripts key:typeclass` form to create global scripts
+with dynamic keys (rather than just relying on typeclass' key). Support
+searching using the same syntax (Griatch)
 [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)

@@ -1653,17 +1653,17 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
 
     def test_script_multi_delete(self):
-        script1 = create.create_script()
-        script2 = create.create_script()
-        script3 = create.create_script()
+        script1 = create.create_script(key="script1")
+        script2 = create.create_script(key="script2")
+        script3 = create.create_script(key="script3")
 
         self.call(
             building.CmdScripts(),
             "/delete #{}-#{}".format(script1.id, script3.id),
             (
-                f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
-                f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
-                f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)"
+                f"Global Script Deleted - script1 (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - script2 (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - script3 (evennia.scripts.scripts.DefaultScript)"
             ),
             inputs=["y"],
         )

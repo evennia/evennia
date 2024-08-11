@@ -3521,26 +3521,27 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     hide_script_paths = ("evennia.prototypes.prototypes.DbPrototype",)
 
     def _search_script(self):
-        # test first if this is a script match
-        print("search:", self.key_query, self.typeclass_query)
-        if self.key_query:
-            scripts = ScriptDB.objects.filter(
-                db_key__iexact=self.key_query, db_typeclass_path__iendswith=self.typeclass_query
-            ).exclude(db_typeclass_path__in=self.hide_script_paths)
+
+        # see if a dbref was provided
+        if dbref(self.typeclass_query):
+            scripts = ScriptDB.objects.get_all_scripts(self.typeclass_query)
             if scripts:
                 return scripts
+            self.caller.msg(f"No script found with dbref {self.typeclass_query}")
+            raise InterruptCommand
 
-        # try typeclass path
+        # if we provided a key, we must find an exact match, otherwise we're creating that anew
+        if self.key_query:
+            return ScriptDB.objects.filter(
+                db_key__iexact=self.key_query, db_typeclass_path__iendswith=self.typeclass_query
+            ).exclude(db_typeclass_path__in=self.hide_script_paths)
+
+        # the more general case - try typeclass path
         scripts = (
             ScriptDB.objects.filter(db_typeclass_path__iendswith=self.typeclass_query)
             .exclude(db_typeclass_path__in=self.hide_script_paths)
             .order_by("id")
         )
-        if scripts:
-            return scripts
-
-        # try dbref
-        scripts = ScriptDB.objects.get_all_scripts(self.typeclass_query)
         if scripts:
             return scripts
 
