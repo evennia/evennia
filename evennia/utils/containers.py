@@ -14,7 +14,7 @@ from pickle import dumps
 
 from django.conf import settings
 from django.db.utils import OperationalError, ProgrammingError
-
+from evennia.scripts.models import ScriptDB
 from evennia.utils import logger
 from evennia.utils.utils import callables_from_module, class_from_module
 
@@ -217,7 +217,7 @@ class GlobalScriptContainer(Container):
         """
         if not self.loaded:
             self.load_data()
-        out_value = default
+        script_found = None
         if key in self.loaded_data:
             if key not in self.typeclass_storage:
                 # this means we are trying to load in a loop
@@ -230,8 +230,12 @@ class GlobalScriptContainer(Container):
             script_found = self._load_script(key)
             if script_found:
                 out_value = script_found
+        else:
+            # script not found in settings, see if one exists in database (not
+            # auto-started/recreated)
+            script_found = ScriptDB.objects.filter(db_key__iexact=key, db_obj__isnull=True).first()
 
-        return out_value
+        return script_found if script_found is not None else default
 
     def all(self):
         """
@@ -239,12 +243,19 @@ class GlobalScriptContainer(Container):
         scripts defined in settings.
 
         Returns:
-            scripts (list): All global script objects stored on the container.
+            list: All global script objects in game (both managed and unmanaged),
+                sorted alphabetically.
 
         """
         if not self.loaded:
             self.load_data()
-        return list(self.loaded_data.values())
+        managed_scripts = list(self.loaded_data.values())
+        unmanaged_scripts = list(
+            ScriptDB.objects.filter(db_obj__isnull=True).exclude(
+                id__in=[scr.id for scr in managed_scripts]
+            )
+        )
+        return list(sorted(managed_scripts + unmanaged_scripts, key=lambda scr: scr.db_key))
 
 
 # Create all singletons

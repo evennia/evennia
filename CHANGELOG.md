@@ -5,11 +5,14 @@
 [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
+[Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
+defined explicitly to be restarted/recrated in settings.py (Griatch)
 [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 
 [issue3591]: https://github.com/evennia/evennia/issues/3591
 [issue3590]: https://github.com/evennia/evennia/issues/3590
 [issue3556]: https://github.com/evennia/evennia/issues/3556
+[issue3519]: https://github.com/evennia/evennia/issues/3519
 
 
 ## Evennia 4.3.0
