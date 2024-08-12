@@ -4,10 +4,23 @@
 It is a commercial product but offer free trials, a scaled-down community edition and also generous licenses for OSS projects like Evennia.
 
 First, download and install the IDE edition of your choosing.
-The professional edition has integrated support for Django which can
-make certain steps easier but the community edition has everything you need.
+The community edition should have everything you need, 
+but the professional edition has integrated support for Django which can help.
 
-After setting it up, you want to create a new project.
+## From an existing project
+
+First, ensure you have completed the steps outlined [here](https://www.evennia.com/docs/latest/Setup/Installation.html#requirements)
+Especially the virtualenv part, this will make setting the IDE up much easier.
+
+1. Open Pycharm and click on the open button, open your root folder corresponding to `mygame/`.
+2. Click on File -> Settings -> Project -> Python Interpreter -> Add Interpreter -> Add Local Interpreter
+![Example](https://imgur.com/QRo8O1C.png)
+3. Click on VirtualEnv -> Existing Interpreter -> Select your existing `evenv` folder and click ok
+![Example](https://imgur.com/XDmgjTw.png)
+
+## From a new project
+
+
 1. Click on the new project button.
 2. Select the location for your project.
 You should create two new folders, one for the root of your project and one
@@ -16,7 +29,7 @@ for the evennia game directly. It should look like `/location/projectfolder/game
 compatible base python version as recommended in https://www.evennia.com/docs/latest/Setup/Installation.html#requirements
 Then choose a folder for your virtual environment as a sub folder of your project folder.
 
-![Example new project configuration](https://i.imgur.com/kewCJwY.png)
+![Example new project configuration](https://imgur.com/R5Yr9I4.png)
 
 Click on the create button and it will take you inside your new project with a bare bones virtual environment.
 To install Evennia, you can then either clone evennia in your project folder or install it via pip.
@@ -27,7 +40,20 @@ Click on the `terminal` button
 ![Terminal Button](https://i.imgur.com/fDr4nhv.png)
 
 1. Type in `pip install evennia`
-2. In this pycharm terminal window, continue the rest of the steps outlined here https://www.evennia.com/docs/latest/Setup/Installation.html#initialize-a-new-game
+2. Close the IDE and navigate to the project folder
+3. Rename the game folder to a temporary name and create a new empty folder with the previous name
+4. Open your OS terminal, navigate to your project folder and activate your virtualenv.
+On linux, `source .evenv/bin/activate`
+On windows, `evenv\Scripts\activate`
+5. Type in `evennia --init mygame`
+6. Move the files from your temporary folder, which should contain the `.idea/` folder into
+the folder you have created at step 3 and delete the now empty temporary folder.
+7. In the terminal, Move into the folder and type in `evennia migrate`
+8. Start evennia to ensure that it works with `evennia start` and stop it with `evennia stop`
+
+At this point, you can reopen your IDE and it should be functional.
+[Look here for additional information](https://www.evennia.com/docs/latest/Setup/Installation.html)
+
 
 ## Debug Evennia from inside PyCharm
 
