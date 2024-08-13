@@ -477,6 +477,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             tuple: A tuple (match, suggestions).
 
         """
+        def strip_prefix(query):
+            if query[0] in settings.CMD_IGNORE_PREFIXES:
+                return query[1:]
+            return query
+
         if not search_fields:
             # lunr search fields/boosts
             search_fields = [
@@ -487,7 +492,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 {"field_name": "tags", "boost": 1},  # tags are not used by default
             ]
         match, suggestions = None, None
-        base_query = query.lstrip("@")
+        base_query = strip_prefix(query)
         for match_query in (query, f"{query}*"):
             # We first do an exact word-match followed by a start-by query. The
             # return of this will either be a HelpCategory, a Command or a
@@ -495,14 +500,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             matches, suggestions = help_search_with_index(
                 match_query, entries, suggestion_maxnum=self.suggestion_maxnum, fields=search_fields
             )
-            # Move an exact match (including aliases) to the front of the list, treating 'command'
-            # and '@command' as the same thing
+            # Move an exact match (including aliases) to the front of the list, treating a prefixed
+            # and non-prefixed command as the same thing
             for m in matches[:]:
                 aliases = [m.key]
                 if not isinstance(m, HelpCategory):
                     # Aliases for help created with 'sethelp' is an AliasHandler
                     aliases += m.aliases if isinstance(m.aliases, list) else m.aliases.all()
-                if base_query in [alias.lstrip("@") for alias in aliases]:
+                if base_query in [strip_prefix(alias) for alias in aliases]:
                     matches.remove(m)
                     matches.insert(0, m)
                     break
@@ -512,7 +517,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         if match:
             # Move an exact suggestion match to the front of the list
             for s in suggestions[:]:
-                if base_query == s.lstrip("@"):
+                if base_query == strip_prefix(s):
                     suggestions.remove(s)
                     suggestions.insert(0, s)
                     break
