@@ -34,8 +34,8 @@ class CharacterCmdset(default_cmds.Character_CmdSet):
 
 ```
 
-Then reload to make the bew commands available. Note that they only work
-on rooms with the typeclass `ExtendedRoom`. Create new rooms with the right
+Then, reload to make the new commands available. Note that they only work
+on rooms with the `ExtendedRoom` typeclass. Create new rooms with the correct
 typeclass or use the `typeclass` command to swap existing rooms.
 
 """
@@ -677,7 +677,7 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
       edit - Open up a line editor for more advanced editing.
       del - Delete the description of an object. If another state is given, its description
         will be deleted.
-      spring|summer|autumn|winter - room description to use in respective in-game season
+      spring||summer||autumn||winter - room description to use in respective in-game season
       <other> - room description to use with an arbitrary room state.
 
     Sets the description an object. If an object is not given,

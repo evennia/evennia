@@ -33,7 +33,7 @@ jobs:
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up database (${{ matrix.TESTING_DB }})
         uses: ./.github/actions/setup-database

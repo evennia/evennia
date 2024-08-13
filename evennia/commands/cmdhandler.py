@@ -350,7 +350,7 @@ def get_and_merge_cmdsets(
             """
             # Gather cmdsets from location, objects in location or carried
             try:
-                local_obj_cmdsets = [None]
+                local_obj_cmdsets = []
                 try:
                     location = obj.location
                 except Exception:
@@ -438,11 +438,12 @@ def get_and_merge_cmdsets(
             cmdset for cmdset in object_cmdsets if cmdset and cmdset.key != "_EMPTY_CMDSET"
         ]
         # report cmdset errors to user (these should already have been logged)
-        yield [
-            report_to.msg(err_helper(cmdset.errmessage, cmdid=cmdid))
-            for cmdset in cmdsets
-            if cmdset.key == "_CMDSET_ERROR"
-        ]
+        if report_to:
+            yield [
+                report_to.msg(err_helper(cmdset.errmessage, cmdid=cmdid))
+                for cmdset in cmdsets
+                if cmdset.key == "_CMDSET_ERROR"
+            ]
 
         if cmdsets:
             # faster to do tuple on list than to build tuple directly

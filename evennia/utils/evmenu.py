@@ -520,13 +520,15 @@ class EvMenu:
             startnode (str, optional): The starting node name in the menufile.
             cmdset_mergetype (str, optional): 'Replace' (default) means the menu
                 commands will be exclusive - no other normal commands will
-                be usable while the user is in the menu. 'Union' means the
-                menu commands will be integrated with the existing commands
-                (it will merge with `merge_priority`), if so, make sure that
-                the menu's command names don't collide with existing commands
-                in an unexpected way. Also the CMD_NOMATCH and CMD_NOINPUT will
-                be overloaded by the menu cmdset. Other cmdser mergetypes
-                has little purpose for the menu.
+                be usable while the user is in the menu. 'Union' does merge the menu
+                command, but note that the only command used in EvMenu has key/alias
+                of NOINPUT/NOMATCH. So if you merge with 'Union' and a high `cmdset_prio`
+                (below), you won't replace individual normal commands as you may
+                expect. Instead commands will work normally and you'll only always fall
+                back to menu commands when no other command is found. There is no way
+                to partially replace normal commands with EvMenu actions - to do this,
+                remove the normal command from the caller's cmdset - if not found
+                the menu's version will kick in instead.
             cmdset_priority (int, optional): The merge priority for the
                 menu command set. The default (1) is usually enough for most
                 types of menus.

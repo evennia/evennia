@@ -144,12 +144,12 @@ class TestFuncParser(TestCase):
             (r'Test args3 $bar(foo, bar, "   too")', "Test args3 _test(foo, bar,    too)"),
             ("Test args4 $foo('')", "Test args4 _test('')"),  # ' treated as literal
             ('Test args4 $foo("")', "Test args4 _test()"),
-            ("Test args5 $foo(\(\))", "Test args5 _test(())"),
-            ("Test args6 $foo(\()", "Test args6 _test(()"),
+            (r"Test args5 $foo(\(\))", "Test args5 _test(())"),
+            (r"Test args6 $foo(\()", "Test args6 _test(()"),
             ("Test args7 $foo(())", "Test args7 _test(())"),
             ("Test args8 $foo())", "Test args8 _test())"),
             ("Test args9 $foo(=)", "Test args9 _test(=)"),
-            ("Test args10 $foo(\,)", "Test args10 _test(,)"),
+            (r"Test args10 $foo(\,)", "Test args10 _test(,)"),
             (r'Test args10 $foo(",")', "Test args10 _test(,)"),
             ("Test args11 $foo(()", "Test args11 $foo(()"),  # invalid syntax
             (
@@ -327,7 +327,7 @@ class TestFuncParser(TestCase):
         """
         string = "Test $foo(a) and $bar() and $rep(c) things"
         ret = self.parser.parse(string, escape=True)
-        self.assertEqual("Test \$foo(a) and \$bar() and \$rep(c) things", ret)
+        self.assertEqual(r"Test \$foo(a) and \$bar() and \$rep(c) things", ret)
 
     def test_parse_lit(self):
         """

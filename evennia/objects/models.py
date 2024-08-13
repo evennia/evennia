@@ -20,7 +20,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
-
 from evennia.objects.manager import ObjectDBManager
 from evennia.typeclasses.models import TypedObject
 from evennia.utils import logger
@@ -71,8 +70,18 @@ class ContentsHandler:
         objects = self.load()
         self._pkcache = {obj.pk: True for obj in objects}
         for obj in objects:
-            for ctype in obj._content_types:
-                self._typecache[ctype][obj.pk] = True
+            try:
+                ctypes = obj._content_types
+            except AttributeError:
+                logger.log_err(
+                    f"Object {obj} has no `_content_types` property. Skipping content-cache setup. "
+                    "This error suggests it is not a valid Evennia Typeclass but maybe a root model "
+                    "like `ObjectDB`. Investigate the `db_typeclass_path` of the object and make sure "
+                    "it points to a proper, existing Typeclass."
+                )
+            else:
+                for ctype in obj._content_types:
+                    self._typecache[ctype][obj.pk] = True
 
     def get(self, exclude=None, content_type=None):
         """

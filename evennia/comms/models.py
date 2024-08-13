@@ -151,7 +151,7 @@ class Msg(SharedMemoryModel):
     db_header = models.TextField("header", null=True, blank=True)
     # the message body itself
     db_message = models.TextField("message")
-    # send date
+    # send date (note - this is in UTC.  Use the .date_created property to get it in local time)
     db_date_created = models.DateTimeField(
         "date sent", editable=False, auto_now_add=True, db_index=True
     )
@@ -193,6 +193,11 @@ class Msg(SharedMemoryModel):
     @lazy_property
     def tags(self):
         return TagHandler(self)
+
+    @property
+    def date_created(self):
+        """Return the field in localized time based on settings.TIME_ZONE."""
+        return timezone.localtime(self.db_date_created)
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using

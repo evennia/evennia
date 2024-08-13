@@ -2,6 +2,7 @@ import datetime
 
 import git
 from django.conf import settings
+from django.core.management import call_command
 
 import evennia
 from evennia import CmdSet, InterruptCommand
@@ -140,20 +141,24 @@ class GitCommand(MuxCommand):
         Provide basic Git functionality within the game.
         """
         caller = self.caller
+        reload = False
 
         if self.action == "status":
             caller.msg(self.get_status())
         elif self.action == "branch" or (self.action == "checkout" and not self.args):
             caller.msg(self.get_branches())
         elif self.action == "checkout":
-            if self.checkout():
-                evennia.SESSION_HANDLER.portal_restart_server()
+            reload = self.checkout()
         elif self.action == "pull":
-            if self.pull():
-                evennia.SESSION_HANDLER.portal_restart_server()
+            reload = self.pull()
         else:
             caller.msg("You can only git status, git branch, git checkout, or git pull.")
             return
+
+        if reload:
+            # reload the server and the static file cache
+            evennia.SESSION_HANDLER.portal_restart_server()
+            call_command("collectstatic", interactive=False)
 
 
 class CmdGitEvennia(GitCommand):

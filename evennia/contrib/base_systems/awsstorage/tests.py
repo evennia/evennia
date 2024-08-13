@@ -65,7 +65,7 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         """
         Test the _clean_name when the path has a trailing slash
         """
-        path = self.storage._clean_name("path\\to\\somewhere")
+        path = self.storage._clean_name(r"path\to\somewhere")
         self.assertEqual(path, "path/to/somewhere")
 
     def test_pickle_with_bucket(self):
