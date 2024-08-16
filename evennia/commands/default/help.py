@@ -478,7 +478,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         """
         def strip_prefix(query):
-            if query[0] in settings.CMD_IGNORE_PREFIXES:
+            if query and query[0] in settings.CMD_IGNORE_PREFIXES:
                 return query[1:]
             return query
 
