@@ -456,15 +456,9 @@ from functools import total_ordering
 from time import time
 
 from django.conf import settings
-
 from evennia.utils import logger
 from evennia.utils.dbserialize import _SaverDict
-from evennia.utils.utils import (
-    class_from_module,
-    inherits_from,
-    list_to_string,
-    percent,
-)
+from evennia.utils.utils import class_from_module, inherits_from, list_to_string, percent
 
 # Available Trait classes.
 # This way the user can easily supply their own. Each
@@ -657,7 +651,9 @@ class TraitHandler:
         if trait is None and trait_key in self.trait_data:
             trait_type = self.trait_data[trait_key]["trait_type"]
             trait_cls = self._get_trait_class(trait_type)
-            trait = self._cache[trait_key] = trait_cls(_GA(self, "trait_data")[trait_key])
+            trait = self._cache[trait_key] = trait_cls(
+                _GA(self, "trait_data")[trait_key], handler=self
+            )
         return trait
 
     def add(
@@ -856,7 +852,7 @@ class Trait:
     # and have them treated like data to store.
     allow_extra_properties = True
 
-    def __init__(self, trait_data):
+    def __init__(self, trait_data, handler=None):
         """
         This both initializes and validates the Trait on creation. It must
         raise exception if validation fails. The TraitHandler will call this
@@ -869,12 +865,15 @@ class Trait:
                 value in cls.data_default_values. Any extra kwargs will be made
                 available as extra properties on the Trait, assuming the class
                 variable `allow_extra_properties` is set.
+            handler (TraitHandler): The handler that this Trait is connected to.
+                This is for referencing other traits.
 
         Raises:
             TraitException: If input-validation failed.
 
         """
         self._data = self.__class__.validate_input(self.__class__, trait_data)
+        self.traithandler = handler
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
@@ -955,6 +954,7 @@ class Trait:
             "data_default",
             "trait_type",
             "allow_extra_properties",
+            "traithandler",
         ):
             return _GA(self, key)
         try:
@@ -970,10 +970,9 @@ class Trait:
         """Set extra parameters as attributes.
 
         Arbitrary attributes set on a Trait object will be
-        stored in the 'extra' key of the `_data` attribute.
+        stored as extra keys in the Trait's data.
 
-        This behavior is enabled by setting the instance
-        variable `_locked` to True.
+        This behavior is enabled by setting the instance variable `allow_extra_properties`.
 
         """
         propobj = getattr(self.__class__, key, None)
@@ -984,7 +983,7 @@ class Trait:
             return
         else:
             # this is some other value
-            if key in ("_data",):
+            if key in ("_data", "traithandler"):
                 _SA(self, key, value)
                 return
             if _GA(self, "allow_extra_properties"):
@@ -1052,6 +1051,11 @@ class Trait:
     def name(self):
         """Display name for the trait."""
         return self._data["name"]
+
+    def get_trait(self, trait_key):
+        """Get another Trait from the handler. Not used by default, but can be used
+        for custom traits that are affected by other traits on the same handler."""
+        return self.traithandler.get(trait_key)
 
     key = name
 

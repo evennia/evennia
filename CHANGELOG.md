@@ -1,5 +1,61 @@
 # Changelog
 
+## Main branch
+
+Feat: Support `scripts key:typeclass` form to create global scripts
+with dynamic keys (rather than just relying on typeclass' key). Support
+searching using the same syntax (Griatch)
+[Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
+[Fix][issue3590]: Make `examine` command properly show `strattr` type
+Attribute values (Griatch)
+[Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
+defined explicitly to be restarted/recrated in settings.py (Griatch)
+Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
+did not add it to the handler's object (Griatch)
+[Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
+
+[issue3591]: https://github.com/evennia/evennia/issues/3591
+[issue3590]: https://github.com/evennia/evennia/issues/3590
+[issue3556]: https://github.com/evennia/evennia/issues/3556
+[issue3519]: https://github.com/evennia/evennia/issues/3519
+
+
+## Evennia 4.3.0
+
+Aug 11, 2024
+
+- [Feat][pull3531]: New contrib; `in-game reports` for handling user reports,
+  bugs etc in-game (InspectorCaracal)
+- [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
+underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
+- Feat: Add `Trait.traithandler` back-reference so custom Traits from the Traits
+  contrib can find and reference other Traits. (Griatch)
+- [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (0xDEADFED5)
+- [Fix][pull3571]: Better visual display of partial multimatch search results
+  (InspectorCaracal)
+- [Fix][issue3378]: Prototype 'alias' key was not properly homogenized to a list
+  (Griatch)
+- [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
+    of local search on multimatch (InspectorCaracal)
+- [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
+- [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
+- [Fix][pull3571]: Issue disambiguating between certain partial multimatches
+  (InspectorCaracal)
+- [Fix][pull3589]: Fix regex escaping in utils.py for future Python versions (hhsiao)
+- [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
+- [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
+
+[pull3585]: https://github.com/evennia/evennia/pull/3585
+[pull3580]: https://github.com/evennia/evennia/pull/3580
+[pull3571]: https://github.com/evennia/evennia/pull/3571
+[pull3586]: https://github.com/evennia/evennia/pull/3586
+[pull3550]: https://github.com/evennia/evennia/pull/3550
+[pull3531]: https://github.com/evennia/evennia/pull/3531
+[pull3571]: https://github.com/evennia/evennia/pull/3571
+[pull3582]: https://github.com/evennia/evennia/pull/3582
+[pull3589]: https://github.com/evennia/evennia/pull/3589
+[issue3378]: https://github.com/evennia/evennia/issues/3578
+
 ## Evennia 4.2.0
 
 June 27, 2024

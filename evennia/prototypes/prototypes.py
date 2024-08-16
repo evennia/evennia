@@ -12,7 +12,6 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils.translation import gettext as _
-
 from evennia.locks.lockhandler import check_lockstring, validate_lockstring
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripts import DefaultScript
@@ -104,6 +103,7 @@ def homogenize_prototype(prototype, custom_keys=None):
                 prototype[protkey] = ""
 
     homogenized = {}
+    homogenized_aliases = []
     homogenized_tags = []
     homogenized_attrs = []
     homogenized_parents = []
@@ -111,7 +111,10 @@ def homogenize_prototype(prototype, custom_keys=None):
     for key, val in prototype.items():
         if key in reserved:
             # check all reserved keys
-            if key == "tags":
+            if key == "aliases":
+                # make sure aliases are always in a list even if given as a single string
+                homogenized_aliases = make_iter(val)
+            elif key == "tags":
                 # tags must be on form [(tag, category, data), ...]
                 tags = make_iter(prototype.get("tags", []))
                 for tag in tags:
@@ -160,13 +163,14 @@ def homogenize_prototype(prototype, custom_keys=None):
                     else:
                         # normal prototype-parent names are added as-is
                         homogenized_parents.append(parent)
-
             else:
                 # another reserved key
                 homogenized[key] = val
         else:
             # unreserved keys -> attrs
             homogenized_attrs.append((key, val, None, ""))
+    if homogenized_aliases:
+        homogenized["aliases"] = homogenized_aliases
     if homogenized_attrs:
         homogenized["attrs"] = homogenized_attrs
     if homogenized_tags:

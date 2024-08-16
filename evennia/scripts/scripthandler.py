@@ -7,7 +7,6 @@ added to all game objects. You access it through the property
 """
 
 from django.utils.translation import gettext as _
-
 from evennia.scripts.models import ScriptDB
 from evennia.utils import create, logger
 
@@ -73,18 +72,27 @@ class ScriptHandler(object):
             Script: The newly created Script.
 
         """
-        if self.obj.__dbclass__.__name__ == "AccountDB":
-            # we add to an Account, not an Object
-            script = create.create_script(
-                scriptclass, key=key, account=self.obj, autostart=autostart
-            )
-        elif isinstance(scriptclass, str) or callable(scriptclass):
+        if isinstance(scriptclass, str) or callable(scriptclass):
             # a str or class to use create before adding to an Object. We wait to autostart
             # so we can differentiate a failing creation from a script that immediately starts/stops.
-            script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=False)
+            if self.obj.__dbclass__.__name__ == "AccountDB":
+                # we add to an Account, not an Object
+                script = create.create_script(
+                    scriptclass, key=key, account=self.obj, autostart=False
+                )
+            else:
+                script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=False)
         else:
             # already an instantiated class
             script = scriptclass
+            if script.db_obj and script.db_obj != self.obj:
+                logger.log_err(
+                    f"Script instance {script} already belongs to "
+                    f"another object: {script.db_obj}."
+                )
+                return None
+            script.db_obj = self.obj
+            script.save()
 
         if not script:
             logger.log_err(f"Script {scriptclass} failed to be created.")

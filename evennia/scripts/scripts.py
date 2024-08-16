@@ -6,13 +6,12 @@ ability to run timers.
 """
 
 from django.utils.translation import gettext as _
-from twisted.internet.defer import Deferred, maybeDeferred
-from twisted.internet.task import LoopingCall
-
 from evennia.scripts.manager import ScriptManager
 from evennia.scripts.models import ScriptDB
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import create, logger
+from twisted.internet.defer import Deferred, maybeDeferred
+from twisted.internet.task import LoopingCall
 
 __all__ = ["DefaultScript", "DoNothing", "Store"]
 
@@ -423,7 +422,12 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             updates = []
             if not cdict.get("key"):
                 if not self.db_key:
-                    self.db_key = "#%i" % self.dbid
+                    if hasattr(self, "key"):
+                        # take key from the object typeclass
+                        self.db_key = self.key
+                    else:
+                        # no key set anywhere, use class+dbid as key
+                        self.db_key = f"{self.__class__.__name__}(#{self.dbid})"
                     updates.append("db_key")
             elif self.db_key != cdict["key"]:
                 self.db_key = cdict["key"]

@@ -6,8 +6,6 @@ Unit tests for the scripts package
 from collections import defaultdict
 from unittest import TestCase, mock
 
-from parameterized import parameterized
-
 from evennia import DefaultScript
 from evennia.objects.objects import DefaultObject
 from evennia.scripts.manager import ScriptDBManager
@@ -19,6 +17,7 @@ from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.create import create_script
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
+from parameterized import parameterized
 
 
 class TestScript(BaseEvenniaTest):
@@ -104,6 +103,15 @@ class TestScriptHandler(BaseEvenniaTest):
         "Checks that Scripthandler get function returns correct script"
         script = self.obj.scripts.get("interval_test")
         self.assertTrue(bool(script))
+
+    def test_add_already_existing_script(self):
+        "Checks that Scripthandler add function adds script correctly"
+
+        # make a new script with no obj connection
+        script = create_script(TestingListIntervalScript, key="interval_test2")
+        self.obj.scripts.add(script)
+        self.assertEqual([script], list(self.obj.scripts.get("interval_test2")))
+        self.assertTrue(bool(self.obj.scripts.get("interval_test")))
 
 
 class TestScriptDB(TestCase):

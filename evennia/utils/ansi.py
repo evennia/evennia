@@ -67,7 +67,6 @@ import re
 from collections import OrderedDict
 
 from django.conf import settings
-
 from evennia.utils import logger, utils
 from evennia.utils.hex_colors import HexColors
 from evennia.utils.utils import to_str
@@ -84,6 +83,11 @@ ANSI_ESCAPE = "\033"
 ANSI_NORMAL = "\033[0m"
 
 ANSI_UNDERLINE = "\033[4m"
+ANSI_UNDERLINE_RESET = "\033[24m"
+ANSI_ITALIC = "\033[3m"
+ANSI_ITALIC_RESET = "\033[23m"
+ANSI_STRIKE = "\033[9m"
+ANSI_STRIKE_RESET = "\033[29m"
 ANSI_HILITE = "\033[1m"
 ANSI_UNHILITE = "\033[22m"
 ANSI_BLINK = "\033[5m"
@@ -119,7 +123,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
+ANSI_ESCAPES = ("{{", r"\\", r"\|\|")
 
 _PARSE_CACHE = OrderedDict()
 _PARSE_CACHE_SIZE = 10000
@@ -149,6 +153,11 @@ class ANSIParser(object):
         (r"|*", ANSI_INVERSE),  # invert
         (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
         (r"|u", ANSI_UNDERLINE),  # underline
+        (r"|U", ANSI_UNDERLINE_RESET),  # underline reset
+        (r"|i", ANSI_ITALIC),  # italic
+        (r"|I", ANSI_ITALIC_RESET),  # italic reset
+        (r"|s", ANSI_STRIKE),  # strikethrough
+        (r"|S", ANSI_STRIKE_RESET),  # strikethrough reset
         (r"|r", ANSI_HILITE + ANSI_RED),
         (r"|g", ANSI_HILITE + ANSI_GREEN),
         (r"|y", ANSI_HILITE + ANSI_YELLOW),
@@ -812,7 +821,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         if not decoded:
             # Completely new ANSI String
             clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=MXP_ENABLED)
-            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED)
+            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED, truecolor=True)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass

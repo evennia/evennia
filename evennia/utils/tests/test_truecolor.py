@@ -15,57 +15,77 @@ class TestANSIStringHex(TestCase):
     def setUp(self):
         self.str = "test "
         self.output1 = "\x1b[38;5;16mtest \x1b[0m"
+        self.output1_truecolor = "\x1b[38;2;0;0;0mtest \x1b[0m"
         self.output2 = "\x1b[48;5;16mtest \x1b[0m"
+        self.output2_truecolor = "\x1b[48;2;0;0;0mtest \x1b[0m"
         self.output3 = "\x1b[38;5;46mtest \x1b[0m"
+        self.output3_truecolor = "\x1b[38;2;0;255;0mtest \x1b[0m"
         self.output4 = "\x1b[48;5;46mtest \x1b[0m"
+        self.output4_truecolor = "\x1b[48;2;0;255;0mtest \x1b[0m"
 
     def test_long_grayscale_fg(self):
         raw = f"|#000000{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output1, "Output")
+        self.assertEqual(ansi.raw(), self.output1_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output1, "Output xterm256")
 
     def test_long_grayscale_bg(self):
         raw = f"|[#000000{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output2, "Output")
+        self.assertEqual(ansi.raw(), self.output2_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output2, "Output xterm256")
 
     def test_short_grayscale_fg(self):
         raw = f"|#000{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output1, "Output")
+        self.assertEqual(ansi.raw(), self.output1_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output1, "Output xterm256")
 
     def test_short_grayscale_bg(self):
         raw = f"|[#000{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output2, "Output")
+        self.assertEqual(ansi.raw(), self.output2_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output2, "Output xterm256")
 
     def test_short_color_fg(self):
         raw = f"|#0F0{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output3, "Output")
+        self.assertEqual(ansi.raw(), self.output3_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output3, "Output xterm256")
 
     def test_short_color_bg(self):
         raw = f"|[#0f0{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output4, "Output")
+        self.assertEqual(ansi.raw(), self.output4_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output4, "Output xterm256")
 
     def test_long_color_fg(self):
         raw = f"|#00ff00{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output3, "Output")
+        self.assertEqual(ansi.raw(), self.output3_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output3, "Output xterm256")
 
     def test_long_color_bg(self):
         raw = f"|[#00FF00{self.str}|n"
         ansi = AN(raw)
+        ansi_256 = parser(raw, xterm256=True)
         self.assertEqual(ansi.clean(), self.str, "Cleaned")
-        self.assertEqual(ansi.raw(), self.output4, "Output")
+        self.assertEqual(ansi.raw(), self.output4_truecolor, "Output truecolor")
+        self.assertEqual(ansi_256, self.output4, "Output xterm256")
 
 
 class TestANSIParser(TestCase):
