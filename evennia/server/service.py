@@ -284,9 +284,10 @@ class EvenniaServerService(MultiService):
         ):
             cursor = connection.cursor()
             cursor.execute("PRAGMA cache_size=10000")
-            cursor.execute("PRAGMA synchronous=OFF")
+            cursor.execute("PRAGMA synchronous=1")
             cursor.execute("PRAGMA count_changes=OFF")
             cursor.execute("PRAGMA temp_store=2")
+            cursor.execute("PRAGMA journal_mode=WAL")
 
     def update_defaults(self):
         """
