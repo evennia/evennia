@@ -9,7 +9,7 @@ but the professional edition has integrated support for Django which can help.
 
 ## From an existing project
 
-First, ensure you have completed the steps outlined [here](https://www.evennia.com/docs/latest/Setup/Installation.html#requirements)
+First, ensure you have completed the steps outlined [here](https://www.evennia.com/docs/latest/Setup/Installation.html#requirements).
 Especially the virtualenv part, this will make setting the IDE up much easier.
 
 1. Open Pycharm and click on the open button, open your root folder corresponding to `mygame/`.
@@ -76,7 +76,7 @@ This configuration allows you to launch Evennia from inside PyCharm. Besides con
 #### On Windows
 1. Go to `Run > Edit Configutations...`
 2. Click the plus-symbol to add a new configuration and choose Python
-3. Add the script: `\<yourprojectfolder>\.venv\Scripts\evennia_launcher.py` (substitute your virtualenv if it's not named `evenv`)
+3. Add the script: `\<yourprojectfolder>\.evenv\Scripts\evennia_launcher.py` (substitute your virtualenv if it's not named `evenv`)
 4. Set script parameters to: `start -l` (-l enables console logging)
 5. Ensure the chosen interpreter is your virtualenv
 6. Set Working directory to your `mygame` folder (not your project folder nor evennia)
@@ -88,8 +88,8 @@ Select it start and press the debug icon to begin debugging.
 #### On Linux
 1. Go to `Run > Edit Configutations...`
 2. Click the plus-symbol to add a new configuration and choose Python
-3. Add the script: `/<yourprojectfolder>/.venv/bin/twistd` (substitute your virtualenv if it's not named `evenv`)
-4. Set script parameters to: `--python=/<yourprojectfolder>/.venv/lib/python3.11/site-packages/evennia/server/server.py --logger=evennia.utils.logger.GetServerLogObserver --pidfile=/<yourprojectfolder>/<yourgamefolder>/server/server.pid --nodaemon`
+3. Add the script: `/<yourprojectfolder>/.evenv/bin/twistd` (substitute your virtualenv if it's not named `evenv`)
+4. Set script parameters to: `--python=/<yourprojectfolder>/.evenv/lib/python3.11/site-packages/evennia/server/server.py --logger=evennia.utils.logger.GetServerLogObserver --pidfile=/<yourprojectfolder>/<yourgamefolder>/server/server.pid --nodaemon`
 5. Add an environment variable `DJANGO_SETTINGS_MODULE=server.conf.settings`
 6. Ensure the chosen interpreter is your virtualenv
 7. Set Working directory to your game folder (not your project folder nor evennia)
