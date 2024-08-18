@@ -425,6 +425,16 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
         <span class="s2">&quot;PORT&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">}</span>
+<span class="c1"># PRAGMA (directives) for the default Sqlite3 database operations. This can be used to tweak</span>
+<span class="c1"># performance for your setup. Don&#39;t change this unless you know what # you are doing.</span>
+<span class="n">SQLITE3_PRAGMAS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;PRAGMA cache_size=10000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRAGMA synchronous=1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRAGMA count_changes=OFF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRAGMA temp_store=2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRAGMA journal_mode=WAL&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="c1"># How long the django-database connection should be kept open, in seconds.</span>
 <span class="c1"># If you get errors about the database having gone away after long idle</span>
 <span class="c1"># periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)</span>
