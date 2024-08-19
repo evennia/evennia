@@ -433,7 +433,6 @@ class EvenniaCommandTestMixin:
         cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + input_args
         cmdobj.obj = obj or (caller if caller else self.char1)
         inputs = inputs or []
-
         # set up receivers
         receiver_mapping = {}
         if isinstance(msg, dict):
@@ -453,37 +452,34 @@ class EvenniaCommandTestMixin:
             unmocked_msg_methods[receiver] = receiver.msg
             # replace normal `.msg` with a mock
             receiver.msg = Mock()
-
         # Run the methods of the Command. This mimics what happens in the
         # cmdhandler. This will have the mocked .msg be called as part of the
         # execution. Mocks remembers what was sent to them so we will be able
         # to retrieve what was sent later.
         try:
-            if cmdobj.at_pre_cmd():
-                return
-            cmdobj.parse()
-            ret = cmdobj.func()
-
-            # handle func's with yield in them (making them generators)
-            if isinstance(ret, types.GeneratorType):
-                while True:
-                    try:
-                        inp = inputs.pop() if inputs else None
-                        if inp:
-                            try:
-                                # this mimics a user's reply to a prompt
-                                ret.send(inp)
-                            except TypeError:
+            if not cmdobj.at_pre_cmd():
+                cmdobj.parse()
+                ret = cmdobj.func()
+                # handle func's with yield in them (making them generators)
+                if isinstance(ret, types.GeneratorType):
+                    while True:
+                        try:
+                            inp = inputs.pop() if inputs else None
+                            if inp:
+                                try:
+                                    # this mimics a user's reply to a prompt
+                                    ret.send(inp)
+                                except TypeError:
+                                    next(ret)
+                                    ret = ret.send(inp)
+                            else:
+                                # non-input yield, like yield(10). We don't pause
+                                # but fire it immediately.
                                 next(ret)
-                                ret = ret.send(inp)
-                        else:
-                            # non-input yield, like yield(10). We don't pause
-                            # but fire it immediately.
-                            next(ret)
-                    except StopIteration:
-                        break
+                        except StopIteration:
+                            break
 
-            cmdobj.at_post_cmd()
+                cmdobj.at_post_cmd()
         except StopIteration:
             pass
         except InterruptCommand:
