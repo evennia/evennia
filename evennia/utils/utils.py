@@ -473,7 +473,7 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
 list_to_string = iter_to_str
 iter_to_string = iter_to_str
 
-re_empty = re.compile("\n\s*\n")
+re_empty = re.compile("\n\\s*\n")
 
 
 def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
@@ -494,7 +494,7 @@ def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     # this allows the blank-line compression to eliminate them if needed
     text = re_empty.sub("\n\n", text)
     # replace groups of extra spaces with the maximum number of spaces
-    text = re.sub(f"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
+    text = re.sub(fr"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
     # replace groups of extra newlines with the maximum number of newlines
     text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
     return text
@@ -2397,28 +2397,35 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 query=query
             )
 
-        for num, result in enumerate(matches):
-            # we need to consider that result could be a Command, where .aliases
-            # is a list of strings
-            if hasattr(result.aliases, "all"):
-                # result is a typeclassed entity where `.aliases` is an AliasHandler.
-                aliases = result.aliases.all(return_objs=True)
-                # remove pluralization aliases
-                aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
-            else:
-                # result is likely a Command, where `.aliases` is a list of strings.
-                aliases = result.aliases
-
-            error += _MULTIMATCH_TEMPLATE.format(
-                number=num + 1,
-                name=(
-                    result.get_display_name(caller)
-                    if hasattr(result, "get_display_name")
+        # group results by display name to properly disambiguate
+        grouped_matches = defaultdict(list)
+        for item in matches:
+            group_key = (
+                    item.get_display_name(caller)
+                    if hasattr(item, "get_display_name")
                     else query
-                ),
-                aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
-                info=result.get_extra_info(caller),
-            )
+                )
+            grouped_matches[group_key].append(item)
+
+        for key, match_list in grouped_matches.items():
+            for num, result in enumerate(match_list):
+                # we need to consider that result could be a Command, where .aliases
+                # is a list of strings
+                if hasattr(result.aliases, "all"):
+                    # result is a typeclassed entity where `.aliases` is an AliasHandler.
+                    aliases = result.aliases.all(return_objs=True)
+                    # remove pluralization aliases
+                    aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
+                else:
+                    # result is likely a Command, where `.aliases` is a list of strings.
+                    aliases = result.aliases
+
+                error += _MULTIMATCH_TEMPLATE.format(
+                    number=num + 1,
+                    name=key,
+                    aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
+                    info=result.get_extra_info(caller),
+                )
         matches = None
     else:
         # exactly one match

@@ -15,6 +15,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+
 from evennia.help.manager import HelpEntryManager
 from evennia.locks.lockhandler import LockHandler
 from evennia.typeclasses.models import AliasHandler, Tag, TagHandler

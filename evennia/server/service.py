@@ -8,19 +8,18 @@ import time
 import traceback
 
 import django
+import evennia
 from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
+from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
-
-import evennia
-from evennia.utils import logger
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
@@ -282,11 +281,10 @@ class EvenniaServerService(MultiService):
             and settings.DATABASES.get("default", {}).get("ENGINE", None)
             == "django.db.backends.sqlite3"
         ):
+            # sqlite3 database pragmas (directives)
             cursor = connection.cursor()
-            cursor.execute("PRAGMA cache_size=10000")
-            cursor.execute("PRAGMA synchronous=OFF")
-            cursor.execute("PRAGMA count_changes=OFF")
-            cursor.execute("PRAGMA temp_store=2")
+            for pragma in settings.SQLITE3_PRAGMAS:
+                cursor.execute(pragma)
 
     def update_defaults(self):
         """

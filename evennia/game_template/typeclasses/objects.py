@@ -1,13 +1,10 @@
 """
 Object
 
-The Object is the "naked" base class for things in the game world.
+The Object is the class for general items in the game world.
 
-Note that the default Character, Room and Exit does not inherit from
-this Object, but from their respective default implementations in the
-evennia library. If you want to use this class as a parent to change
-the other types, you can do so by adding this as a multiple
-inheritance.
+Use the ObjectParent class to implement common features for *all* entities
+with a location in the game world (like Characters, Rooms, Exits).
 
 """
 
@@ -28,20 +25,18 @@ class ObjectParent:
 
 class Object(ObjectParent, DefaultObject):
     """
-    This is the root typeclass object, implementing an in-game Evennia
-    game object, such as having a location, being able to be
-    manipulated or looked at, etc. If you create a new typeclass, it
-    must always inherit from this object (or any of the other objects
-    in this file, since they all actually inherit from BaseObject, as
-    seen in src.object.objects).
+    This is the root Object typeclass, representing all entities that
+    have an actual presence in-game. DefaultObjects generally have a
+    location. They can also be manipulated and looked at. Game
+    entities you define should inherit from DefaultObject at some distance.
 
-    The BaseObject class implements several hooks tying into the game
-    engine. By re-implementing these hooks you can control the
-    system. You should never need to re-implement special Python
-    methods, such as __init__ and especially never __getattribute__ and
-    __setattr__ since these are used heavily by the typeclass system
-    of Evennia and messing with them might well break things for you.
+    It is recommended to create children of this class using the
+    `evennia.create_object()` function rather than to initialize the class
+    directly - this will both set things up and efficiently save the object
+    without `obj.save()` having to be called explicitly.
 
+    Note: Check the autodocs for complete class members, this may not always
+    be up-to date.
 
     * Base properties defined/available on all Objects
 
@@ -58,12 +53,16 @@ class Object(ObjectParent, DefaultObject):
      location (Object) - current location. Is None if this is a room
      home (Object) - safety start-location
      has_account (bool, read-only)- will only return *connected* accounts
-     contents (list of Objects, read-only) - returns all objects inside this
-                       object (including exits)
+     contents (list, read only) - returns all objects inside this object
      exits (list of Objects, read-only) - returns all exits from this
                        object, if any
      destination (Object) - only set if this object is an exit.
      is_superuser (bool, read-only) - True/False if this user is a superuser
+     is_connected (bool, read-only) - True if this object is associated with
+                            an Account with any connected sessions.
+     has_account (bool, read-only) - True is this object has an associated account.
+     is_superuser (bool, read-only): True if this object has an account and that
+                        account is a superuser.
 
     * Handlers available
 
@@ -84,18 +83,49 @@ class Object(ObjectParent, DefaultObject):
 
     * Helper methods (see src.objects.objects.py for full headers)
 
-     search(ostring, global_search=False, attribute_name=None,
-             use_nicks=False, location=None, ignore_errors=False, account=False)
-     execute_cmd(raw_string)
-     msg(text=None, **kwargs)
-     msg_contents(message, exclude=None, from_obj=None, **kwargs)
+     get_search_query_replacement(searchdata, **kwargs)
+     get_search_direct_match(searchdata, **kwargs)
+     get_search_candidates(searchdata, **kwargs)
+     get_search_result(searchdata, attribute_name=None, typeclass=None,
+                       candidates=None, exact=False, use_dbref=None, tags=None, **kwargs)
+     get_stacked_result(results, **kwargs)
+     handle_search_results(searchdata, results, **kwargs)
+     search(searchdata, global_search=False, use_nicks=True, typeclass=None,
+            location=None, attribute_name=None, quiet=False, exact=False,
+            candidates=None, use_locks=True, nofound_string=None,
+            multimatch_string=None, use_dbref=None, tags=None, stacked=0)
+     search_account(searchdata, quiet=False)
+     execute_cmd(raw_string, session=None, **kwargs))
+     msg(text=None, from_obj=None, session=None, options=None, **kwargs)
+     for_contents(func, exclude=None, **kwargs)
+     msg_contents(message, exclude=None, from_obj=None, mapping=None,
+                  raise_funcparse_errors=False, **kwargs)
      move_to(destination, quiet=False, emit_to_obj=None, use_destination=True)
+     clear_contents()
+     create(key, account, caller, method, **kwargs)
      copy(new_key=None)
+     at_object_post_copy(new_obj, **kwargs)
      delete()
      is_typeclass(typeclass, exact=False)
      swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
+     access(accessing_obj, access_type='read', default=False,
+            no_superuser_bypass=False, **kwargs)
+     filter_visible(obj_list, looker, **kwargs)
+     get_default_lockstring()
+     get_cmdsets(caller, current, **kwargs)
      check_permstring(permstring)
+     get_cmdset_providers()
+     get_display_name(looker=None, **kwargs)
+     get_extra_display_name_info(looker=None, **kwargs)
+     get_numbered_name(count, looker, **kwargs)
+     get_display_header(looker, **kwargs)
+     get_display_desc(looker, **kwargs)
+     get_display_exits(looker, **kwargs)
+     get_display_characters(looker, **kwargs)
+     get_display_things(looker, **kwargs)
+     get_display_footer(looker, **kwargs)
+     format_appearance(appearance, looker, **kwargs)
+     return_apperance(looker, **kwargs)
 
     * Hooks (these are class methods, so args should start with self):
 
@@ -113,6 +143,7 @@ class Object(ObjectParent, DefaultObject):
 
      at_init()            - called whenever typeclass is cached from memory,
                             at least once every server restart/reload
+     at_first_save()
      at_cmdset_get(**kwargs) - this is called just before the command handler
                             requests a cmdset from this object. The kwargs are
                             not normally used unless the cmdset is created
@@ -140,12 +171,16 @@ class Object(ObjectParent, DefaultObject):
                         after move, if obj.move_to() has quiet=False
      at_post_move(source_location)          - always called after a move has
                         been successfully performed.
+     at_pre_object_leave(leaving_object, destination, **kwargs)
+     at_object_leave(obj, target_location, move_type="move", **kwargs)
      at_object_leave(obj, target_location)   - called when an object leaves
                         this object in any fashion
-     at_object_receive(obj, source_location) - called when this object receives
+     at_pre_object_receive(obj, source_location)
+     at_object_receive(obj, source_location, move_type="move", **kwargs) - called when this object receives
                         another object
+     at_post_move(source_location, move_type="move", **kwargs)
 
-     at_traverse(traversing_object, source_loc) - (exit-objects only)
+     at_traverse(traversing_object, target_location, **kwargs) - (exit-objects only)
                               handles all moving across the exit, including
                               calling the other exit hooks. Use super() to retain
                               the default functionality.
@@ -164,11 +199,18 @@ class Object(ObjectParent, DefaultObject):
                                  command by default
      at_desc(looker=None)      - called by 'look' whenever the
                                  appearance is requested.
+     at_pre_get(getter, **kwargs)
      at_get(getter)            - called after object has been picked up.
                                  Does not stop pickup.
-     at_drop(dropper)          - called when this object has been dropped.
-     at_say(speaker, message)  - by default, called if an object inside this
-                                 object speaks
+     at_pre_give(giver, getter, **kwargs)
+     at_give(giver, getter, **kwargs)
+     at_pre_drop(dropper, **kwargs)
+     at_drop(dropper, **kwargs)          - called when this object has been dropped.
+     at_pre_say(speaker, message, **kwargs)
+     at_say(message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs)
+
+     at_look(target, **kwargs)
+     at_desc(looker=None)
 
     """
 

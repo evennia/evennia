@@ -1,5 +1,7 @@
-from evennia.utils.test_resources import BaseEvenniaTest, BaseEvenniaCommandTest
 from mock import patch
+
+from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest
+
 from . import achievements
 
 _dummy_achievements = {

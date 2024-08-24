@@ -19,6 +19,7 @@ evennia.contrib.base\_systems
    evennia.contrib.base_systems.email_login
    evennia.contrib.base_systems.godotwebsocket
    evennia.contrib.base_systems.ingame_python
+   evennia.contrib.base_systems.ingame_reports
    evennia.contrib.base_systems.menu_login
    evennia.contrib.base_systems.mux_comms_cmds
    evennia.contrib.base_systems.unixcommand

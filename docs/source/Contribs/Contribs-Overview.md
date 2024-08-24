@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **50** contribs currently included
+This page is auto-generated and summarizes all **51** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -34,11 +34,12 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [color_markups](#color_markups) | [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) |
 | [custom_gametime](#custom_gametime) | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) |
 | [extended_room](#extended_room) | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) |
-| [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [llm](#llm) | [mail](#mail) |
-| [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) |
-| [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) |
-| [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) |
-| [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
+| [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [ingame_reports](#ingame_reports) | [llm](#llm) |
+| [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) |
+| [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) |
+| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) |
+| [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) |
+| [xyzgrid](#xyzgrid) |
 
 
 
@@ -64,6 +65,7 @@ Contrib-Custom-Gametime.md
 Contrib-Email-Login.md
 Contrib-Godotwebsocket.md
 Contrib-Ingame-Python.md
+Contrib-Ingame-Reports.md
 Contrib-Menu-Login.md
 Contrib-Mux-Comms-Cmds.md
 Contrib-Unixcommand.md
@@ -170,6 +172,16 @@ security concerns (you must trust your builders deeply), so read the warnings in
 this module carefully before continuing.
 
 [Read the documentation](./Contrib-Ingame-Python.md) - [Browse the Code](evennia.contrib.base_systems.ingame_python)
+
+
+
+### `ingame_reports`
+
+_Contrib by InspectorCaracal, 2024_
+
+This contrib provides an in-game reports system, handling bug reports, player reports, and idea submissions by default. It also supports adding your own types of reports, or removing any of the default report types.
+
+[Read the documentation](./Contrib-Ingame-Reports.md) - [Browse the Code](evennia.contrib.base_systems.ingame_reports)
 
 
 
@@ -642,7 +654,7 @@ _Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs,
 
 A `Trait` represents a modifiable property on (usually) a Character. They can
 be used to represent everything from attributes (str, agi etc) to skills
-(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc. 
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.
 Traits differ from normal Attributes in that they track their changes and limit
 themselves to particular value-ranges. One can add/subtract from them easily and
 they can even change dynamically at a particular rate (like you being poisoned or

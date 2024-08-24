@@ -26,7 +26,6 @@ these to create custom managers.
 
 """
 
-import evennia
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -37,21 +36,30 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
+
+import evennia
 from evennia.locks.lockhandler import LockHandler
 from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
 from evennia.typeclasses import managers
-from evennia.typeclasses.attributes import (Attribute, AttributeHandler,
-                                            AttributeProperty, DbHolder,
-                                            InMemoryAttributeBackend,
-                                            ModelAttributeBackend)
-from evennia.typeclasses.tags import (AliasHandler, PermissionHandler, Tag,
-                                      TagCategoryProperty, TagHandler,
-                                      TagProperty)
-from evennia.utils.idmapper.models import (SharedMemoryModel,
-                                           SharedMemoryModelBase)
+from evennia.typeclasses.attributes import (
+    Attribute,
+    AttributeHandler,
+    AttributeProperty,
+    DbHolder,
+    InMemoryAttributeBackend,
+    ModelAttributeBackend,
+)
+from evennia.typeclasses.tags import (
+    AliasHandler,
+    PermissionHandler,
+    Tag,
+    TagCategoryProperty,
+    TagHandler,
+    TagProperty,
+)
+from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import (class_from_module, inherits_from, is_iter,
-                                 lazy_property)
+from evennia.utils.utils import class_from_module, inherits_from, is_iter, lazy_property
 
 __all__ = ("TypedObject",)
 

@@ -73,8 +73,14 @@ class Room(ContribRPRoom):
     # ...
 
 ```
+You need to set up Evennia to use the RPsystem's form to separate
+between sdescs (`3-tall`) to make it compatible with how the rest of Evennia
+separates between other multi-matches of searches/commands:
 
-You will then need to reload the server and potentially force-reload
+    SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>[^-]*)(?P<args>.*)"
+    SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
+
+Finally, you will then need to reload the server and potentially force-reload
 your objects, if you originally created them without this.
 
 Example for your character:

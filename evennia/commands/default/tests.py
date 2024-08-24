@@ -14,13 +14,10 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
+import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from parameterized import parameterized
-from twisted.internet import task
-
-import evennia
 from evennia import (
     DefaultCharacter,
     DefaultExit,
@@ -32,14 +29,7 @@ from evennia import (
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import (
-    account,
-    admin,
-    batchprocess,
-    building,
-    comms,
-    general,
-)
+from evennia.commands.default import account, admin, batchprocess, building, comms, general
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -48,6 +38,8 @@ from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
+from parameterized import parameterized
+from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -446,7 +438,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         args = f"/pause {self.task.get_id()}"
         wanted_msg = "Pause task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         self.assertTrue(self.task.paused)
         self.task_handler.clock.advance(self.timedelay + 1)
@@ -455,7 +447,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.assertTrue(self.task.exists())
         wanted_msg = "Unpause task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         # verify task continues after unpause
         self.task_handler.clock.advance(1)
@@ -465,7 +457,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         args = f"/do_task {self.task.get_id()}"
         wanted_msg = "Do_task task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         self.assertFalse(self.task.exists())
 
@@ -473,7 +465,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         args = f"/remove {self.task.get_id()}"
         wanted_msg = "Remove task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         self.assertFalse(self.task.exists())
 
@@ -481,7 +473,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         args = f"/call {self.task.get_id()}"
         wanted_msg = "Call task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         # make certain the task is still active
         self.assertTrue(self.task.active())
@@ -493,7 +485,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         args = f"/cancel {self.task.get_id()}"
         wanted_msg = "Cancel task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.assertRegex(cmd_result, r" \(func_test_cmd_tasks\) ")
         self.char1.execute_cmd("y")
         self.assertTrue(self.task.exists())
         self.assertFalse(self.task.active())
@@ -797,13 +789,20 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdExamine(),
             "self/test2",
-            "Attribute Char/test2 [category=None]:\n\nthis is a \$random() value.",
+            "Attribute Char/test2 [category=None]:\n\nthis is a \\$random() value.",
         )
 
         self.room1.scripts.add(self.script.__class__)
         self.call(building.CmdExamine(), "")
         self.account.scripts.add(self.script.__class__)
         self.call(building.CmdExamine(), "*TestAccount")
+
+        self.char1.attributes.add("strattr", "testval", strattr=True)
+        self.call(
+            building.CmdExamine(),
+            "self/strattr",
+            "Attribute Char/strattr [category=None] [strvalue]:\n\ntestval",
+        )
 
     def test_set_obj_alias(self):
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
@@ -1654,17 +1653,17 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
 
     def test_script_multi_delete(self):
-        script1 = create.create_script()
-        script2 = create.create_script()
-        script3 = create.create_script()
+        script1 = create.create_script(key="script1")
+        script2 = create.create_script(key="script2")
+        script3 = create.create_script(key="script3")
 
         self.call(
             building.CmdScripts(),
             "/delete #{}-#{}".format(script1.id, script3.id),
             (
-                f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
-                f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
-                f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)"
+                f"Global Script Deleted - script1 (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - script2 (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - script3 (evennia.scripts.scripts.DefaultScript)"
             ),
             inputs=["y"],
         )
