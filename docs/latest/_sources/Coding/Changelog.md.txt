@@ -6,6 +6,7 @@
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (0xDEADFED5)
 - Feat: Make Sqlite3 PRAGMAs configurable via settings (Griatch)
+- [Fix][pull3494]: Update/clean some Evennia dependencies (0xDEADFED5)
 - [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
@@ -13,6 +14,8 @@ Attribute values (Griatch)
 defined explicitly to be restarted/recrated in settings.py (Griatch)
 - Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
 did not add it to the handler's object (Griatch)
+- [Fix](pull3533): Fix Lunr search issues preventing finding help entries with similar
+  names (chiizyjin)
 [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 - Docs: Tutorial fixes (Griatch)
 
@@ -21,6 +24,8 @@ did not add it to the handler's object (Griatch)
 [issue3556]: https://github.com/evennia/evennia/issues/3556
 [issue3519]: https://github.com/evennia/evennia/issues/3519
 [pull3595]: https://github.com/evennia/evennia/pull/3595
+[pull3533]: https://github.com/evennia/evennia/pull/3533
+[pull3594]: https://github.com/evennia/evennia/pull/3594
 
 
 ## Evennia 4.3.0
