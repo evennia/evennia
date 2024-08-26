@@ -310,7 +310,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                             False, deletion is aborted. Note that all objects
                             inside a deleted object are automatically moved
                             to their <home>, they don't need to be removed here.
-     at_object_spawn()    - called when object is spawned from a prototype or updated
+     at_object_post_spawn() - called when object is spawned from a prototype or updated
                             by the spawner to apply prototype changes.
      at_init()            - called whenever typeclass is cached from memory,
                             at least once every server restart/reload
@@ -2050,10 +2050,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return True
 
-    def at_object_spawn(self):
+    def at_object_post_spawn(self, prototype=None):
         """
         Called when this object is spawned or updated from a prototype, after all other
         hooks have been run.
+        
+        Keyword Args:
+            prototype (dict):  The prototype that was used to spawn or update this object.
         """
         pass
 
