@@ -37,7 +37,7 @@ from evennia.utils.utils import make_iter
 
 DEFAULT_LLM_HOST = "http://127.0.0.1:5000"
 DEFAULT_LLM_PATH = "/api/v1/generate"
-DEFAULT_LLM_HEADERS = {"Content-Type": "application/json"}
+DEFAULT_LLM_HEADERS = {"Content-Type": ["application/json"]}
 DEFAULT_LLM_PROMPT_KEYNAME = "prompt"
 DEFAULT_LLM_API_TYPE = ""  # or openai
 DEFAULT_LLM_REQUEST_BODY = {
