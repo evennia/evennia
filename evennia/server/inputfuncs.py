@@ -674,9 +674,9 @@ def is_typing_send_update():
 
             payload = []
             # Get potentials
-            potentials = DefaultCharacter.objects.filter_family(db_location=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.location).exclude(db_key=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.key)
+            potentials = (DefaultCharacter.objects.filter_family(db_location=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.location)
+                          .exclude(db_key=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.key))
 
-            # if len(potentials) > 0:
             for puppet in potentials:
 
                 # We're only interested in sending updates if they're capable of receiving them
