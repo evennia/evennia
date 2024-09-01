@@ -25,10 +25,9 @@ from codecs import lookup as codecs_lookup
 
 from django.conf import settings
 
-from evennia import DefaultCharacter, TASK_HANDLER
+from evennia import DefaultCharacter
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.default.general import CmdSay
-from evennia.utils.ansi import strip_mxp
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str, delay
 from evennia.scripts.tickerhandler import TICKER_HANDLER
@@ -188,6 +187,7 @@ _CLIENT_OPTIONS = (
     "NOCOLOR",
     "NOGOAHEAD",
     "LOCALECHO",
+    "ISTYPING"
 )
 
 
@@ -214,6 +214,7 @@ def client_options(session, *args, **kwargs):
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
         localecho (bool): Turn on server-side echo (for clients not supporting it)
+        istyping (bool): Turn off OOB typing notifications (currently only used by the webclient)
 
     """
     old_flags = session.protocol_flags
@@ -277,6 +278,8 @@ def client_options(session, *args, **kwargs):
             flags["NOGOAHEAD"] = validate_bool(value)
         elif key == "localecho":
             flags["LOCALECHO"] = validate_bool(value)
+        elif key == "istyping":
+            flags["ISTYPING"] = validate_bool(value)
         elif key in (
             "Char 1",
             "Char.Skills 1",
@@ -671,8 +674,7 @@ def is_typing_send_update():
 
             payload = []
             # Get potentials
-            # TODO: exclude the speaking character
-            potentials = DefaultCharacter.objects.filter_family(db_location=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.location)
+            potentials = DefaultCharacter.objects.filter_family(db_location=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.location).exclude(db_key=_IS_TYPING_PARTICIPANTS[participant]["session"].puppet.key)
 
             # if len(potentials) > 0:
             for puppet in potentials:
@@ -708,6 +710,12 @@ def is_typing_get_aliases(session, *args, **kwargs):
     Returns:
 
     """
+    options = session.protocol_flags
+    istyping = options.get("ISTYPING", True)
+
+    if not istyping:
+        return
+
     # Add the participant to the list.
     _IS_TYPING_PARTICIPANTS[str(session.sessid)] = {
         "state": False,
@@ -732,6 +740,13 @@ def is_typing_update_participant(session, *args, **kwargs):
     Returns:
 
     """
+    options = session.protocol_flags
+    istyping = options.get("ISTYPING", True)
+
+    if not istyping:
+        is_typing_remove_participant(session)
+        return
+
     # If the session isn't found then server restarted
     if _IS_TYPING_PARTICIPANTS.get(session.sessid) is None:
         _IS_TYPING_PARTICIPANTS[str(session.sessid)] = {
@@ -756,7 +771,8 @@ def is_typing_remove_participant(session, *args, **kwargs):
     Returns:
 
     """
-    del _IS_TYPING_PARTICIPANTS[str(session.sessid)]
+    if _IS_TYPING_PARTICIPANTS.get(str(session.sessid)) is not None:
+        del _IS_TYPING_PARTICIPANTS[str(session.sessid)]
 
 
 # client specific

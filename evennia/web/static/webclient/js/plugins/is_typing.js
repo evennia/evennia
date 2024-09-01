@@ -124,7 +124,7 @@ let is_typing = (function () {
     state.typing_players.forEach((player, index) => {
       if (player.timeout < now) {
         timedOut.push(index);
-        $(`#istyping-${player}`).remove();
+        $(`#istyping-${player.name}`).remove();
       }
     });
 
@@ -208,7 +208,6 @@ let is_typing = (function () {
     Evennia.emitter.on("is_typing", is_typing);
 
     createDialog();
-
     console.log("Is Typing plugin initialized");
   };
 
