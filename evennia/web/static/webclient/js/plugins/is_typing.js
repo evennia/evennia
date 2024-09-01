@@ -36,6 +36,8 @@ let is_typing = (function () {
     state.timeout = Date.now() + timeout;
     clearTimeout(state.callback);
     state.callback = setTimeout(stoppedTyping, timeout);
+
+    sendIsTyping();
   };
 
   const stoppedTyping = function () {
@@ -111,7 +113,7 @@ let is_typing = (function () {
     }
 
     if (state.cleanup_callback) {
-      clearInterval(state.cleanup_callback);
+      clearTimeout(state.cleanup_callback);
     }
 
     Evennia.msg("is_typing_remove_participant");
@@ -133,7 +135,7 @@ let is_typing = (function () {
       .forEach((index) => state.typing_players.splice(index, 1));
 
     if (state.typing_players.length === 0) {
-      clearInterval(state.cleanup_callback);
+      clearTimeout(state.cleanup_callback);
       $("#istyping").hide();
     }
   };
@@ -164,7 +166,9 @@ let is_typing = (function () {
 
               // Existing talker is still going
             } else if (updated.state && player.length > 0) {
-              player[0].timeout = Date.now() + timeout;
+              if (Date.now() - 1000 >= player.timeout) {
+                stillTyping();
+              }
 
               // They're done talking
             } else {
@@ -176,7 +180,7 @@ let is_typing = (function () {
           });
 
           if (state.typing_players.length > 0 && !state.cleanup_callback) {
-            state.cleanup_callback = setInterval(cleanupTimedOutPlayers, 100);
+            state.cleanup_callback = setTimeout(cleanupTimedOutPlayers, 100);
             $("#istyping").show();
           } else if (
             state.typing_players.length === 0 &&
