@@ -339,7 +339,7 @@ Here the `caller` is the one sending the message and `receiver` the one to see i
 - `$You([key])` - same as `$you` but always capitalized.
 - `$conj(verb [,key])` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb
   between 2nd person presence to 3rd person presence depending on who
-  sees the string. For example `p".` will show as "You smile." and "Tom smiles." depending
+  sees the string. For example `"$You() $conj(smiles)".` will show as "You smile." and "Tom smiles." depending
   on who sees it. This makes use of the tools in [evennia.utils.verb_conjugation](evennia.utils.verb_conjugation)
   to do this, and only works for English verbs.
 - `$pron(pronoun [,options] [,key])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically
