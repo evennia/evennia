@@ -85,10 +85,7 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         )
 
         # Test remove command.
-        # NOTE: commenting out due to failing via the search refactor - however, this command 
-        # SHOULD be providing standard wrong-args feedback, like CmdWear.
-        # this will be fixed and the test amended in a separate PR
-        # self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.wearer)
+        self.call(clothing.CmdRemove(), "", "Usage: remove <worn clothing object>", caller=self.wearer)
         self.call(
             clothing.CmdRemove(),
             "hat",
