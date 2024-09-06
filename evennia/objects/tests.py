@@ -250,11 +250,10 @@ class TestObjectManager(BaseEvenniaTest):
     def test_get_objs_with_key_or_alias(self):
         query = ObjectDB.objects.get_objs_with_key_or_alias("Char")
         self.assertEqual(list(query), [self.char1])
-        self.assertEqual(list(query), [self.char1])
         query = ObjectDB.objects.get_objs_with_key_or_alias(
             "Char", typeclasses="evennia.objects.objects.DefaultObject"
         )
-        self.assertFalse(query)
+        self.assertEqual(list(query), [])
         query = ObjectDB.objects.get_objs_with_key_or_alias(
             "Char", candidates=[self.char1, self.char2]
         )

@@ -479,12 +479,7 @@ class ObjectDBManager(TypedObjectManager):
 
         # deal with result
         if match_number is not None:
-            # this indicates someone attempting to get a single match with a match-number
-            if match_number >= len(matches):
-                # the search attempted to target a higher match index than exists in the candidates.
-                # This leads to a no-match.
-                matches = self.none()
-            elif 0 <= match_number < len(matches):
+            if 0 <= match_number < len(matches):
                 # limit to one match (we still want a queryset back)
                 # NOTE: still haven't found a way to avoid a second lookup
                 matches = self.filter(id=matches[match_number].id)
