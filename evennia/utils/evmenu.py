@@ -1414,21 +1414,21 @@ def list_node(option_generator, select=None, pagesize=10):
                     {
                         "key": (_("|Wcurrent|n"), "c"),
                         "desc": "|W({}/{})|n".format(page_index + 1, npages),
-                        "goto": (lambda caller: None, {"optionpage_index": page_index}),
+                        "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index}),
                     }
                 )
                 if page_index > 0:
                     options.append(
                         {
                             "key": (_("|wp|Wrevious page|n"), "p"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index - 1}),
+                            "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index - 1}),
                         }
                     )
                 if page_index < npages - 1:
                     options.append(
                         {
                             "key": (_("|wn|Wext page|n"), "n"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index + 1}),
+                            "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index + 1}),
                         }
                     )
 
