@@ -6,6 +6,8 @@
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (0xDEADFED5)
 - Feat: Make Sqlite3 PRAGMAs configurable via settings (Griatch)
+- [Feat][pull3592]: Revised German locationlization ('Du' instead of 'Sie',
+  cleanup) (Drakon72)
 - [Fix][pull3494]: Update/clean some Evennia dependencies (0xDEADFED5)
 - [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
@@ -26,6 +28,7 @@ did not add it to the handler's object (Griatch)
 [pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
+[pull3592]: https://github.com/evennia/evennia/pull/3592
 
 
 ## Evennia 4.3.0
