@@ -543,7 +543,7 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.task_handler.clock.advance(self.timedelay + 1)
         self.assertFalse(self.task.exists())
-        self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
+        self.task = self.task_handler.add(self.timedelay + 1, func_test_cmd_tasks)
         self.assertTrue(self.task.get_id(), 1)
         self.char1.msg = Mock()
         self.char1.execute_cmd("y")
