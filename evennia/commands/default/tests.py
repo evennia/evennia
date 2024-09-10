@@ -543,6 +543,8 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.task_handler.clock.advance(self.timedelay + 1)
         self.assertFalse(self.task.exists())
+        # the +1 time delay is to fix a timing issue with the test on Windows
+        # (see https://github.com/evennia/evennia/issues/3596)
         self.task = self.task_handler.add(self.timedelay + 1, func_test_cmd_tasks)
         self.assertTrue(self.task.get_id(), 1)
         self.char1.msg = Mock()
