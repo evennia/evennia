@@ -67,8 +67,8 @@ def _get_report_hub(report_type):
     Note: If no matching valid script exists, this function will attempt to create it.
     """
     hub_key = f"{report_type}_reports"
-    # NOTE: due to a regression in GLOBAL_SCRIPTS, we use search_script instead of the container
-    if not (hub := search.search_script(hub_key)):
+    from evennia import GLOBAL_SCRIPTS
+    if not (hub := GLOBAL_SCRIPTS.get(hub_key)):
         hub = create.create_script(key=hub_key)
     return hub or None
 
