@@ -16,10 +16,16 @@ Attribute values (Griatch)
 defined explicitly to be restarted/recrated in settings.py (Griatch)
 - Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
 did not add it to the handler's object (Griatch)
-- [Fix](pull3533): Fix Lunr search issues preventing finding help entries with similar
+- [Fix][pull3533]: Fix Lunr search issues preventing finding help entries with similar
   names (chiizyjin)
-[Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
-- Docs: Tutorial fixes (Griatch)
+- [Fix][pull3603]: Fix of client header for LLM contrib for remote APIs (InspectorCaracal)
+- [Fix][pull3605]: Correctly pass node kwargs through `@list_node` decorated evmenu nodes
+  (InspectorCaracal)
+- [Fix][pull3597]: Address timing issue for testing `new_task_waiting_input `on
+  Windows (0xDEADFED5)
+- [Fix][pull3611]: Fix and update for Reports contrib (InspectorCaracal)
+- [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
+- Docs: Tutorial fixes (Griatch, aMiss-aWry)
 
 [issue3591]: https://github.com/evennia/evennia/issues/3591
 [issue3590]: https://github.com/evennia/evennia/issues/3590
@@ -29,6 +35,10 @@ did not add it to the handler's object (Griatch)
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
 [pull3592]: https://github.com/evennia/evennia/pull/3592
+[pull3603]: https://github.com/evennia/evennia/pull/3603
+[pull3605]: https://github.com/evennia/evennia/pull/3605
+[pull3597]: https://github.com/evennia/evennia/pull/3597
+[pull3611]: https://github.com/evennia/evennia/pull/3611
 
 
 ## Evennia 4.3.0
