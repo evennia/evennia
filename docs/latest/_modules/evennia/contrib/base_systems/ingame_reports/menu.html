@@ -116,11 +116,6 @@
 <div class="viewcode-block" id="menunode_list_reports"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_list_reports">[docs]</a><span class="k">def</span> <span class="nf">menunode_list_reports</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Paginates and lists out reports for the provided hub&quot;&quot;&quot;</span>
     <span class="n">hub</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">hub</span>
-
-    <span class="n">page</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="n">page</span> <span class="o">*</span> <span class="n">_REPORTS_PER_PAGE</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">_REPORTS_PER_PAGE</span>
-    <span class="n">report_slice</span> <span class="o">=</span> <span class="n">report_list</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
     <span class="n">hub_name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hub</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
     <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Managing </span><span class="si">{</span><span class="n">hub_name</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -145,6 +140,11 @@
     <span class="c1"># this will catch both no reports filed and no permissions</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">report_list</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;There is nothing there for you to manage.&quot;</span><span class="p">,</span> <span class="p">{}</span>
+
+    <span class="n">page</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">page</span> <span class="o">*</span> <span class="n">_REPORTS_PER_PAGE</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">_REPORTS_PER_PAGE</span>
+    <span class="n">report_slice</span> <span class="o">=</span> <span class="n">report_list</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span>

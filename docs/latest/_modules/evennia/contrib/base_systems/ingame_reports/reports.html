@@ -159,8 +159,8 @@
 <span class="sd">    Note: If no matching valid script exists, this function will attempt to create it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hub_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">_reports&quot;</span>
-    <span class="c1"># NOTE: due to a regression in GLOBAL_SCRIPTS, we use search_script instead of the container</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">hub</span> <span class="o">:=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="n">hub_key</span><span class="p">)):</span>
+    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">hub</span> <span class="o">:=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hub_key</span><span class="p">)):</span>
         <span class="n">hub</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">hub_key</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hub</span> <span class="ow">or</span> <span class="kc">None</span>
 
