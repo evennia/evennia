@@ -2831,7 +2831,7 @@ class CmdExamine(ObjManipCommand):
 
         key, category, value = attr.db_key, attr.db_category, attr.value
         valuetype = ""
-        if value is None and attr.strvalue is not None:
+        if value is None and getattr(attr, "strvalue", None) is not None:
             value = attr.strvalue
             valuetype = " |B[strvalue]|n"
         typ = self._get_attribute_value_type(value)
@@ -2850,7 +2850,7 @@ class CmdExamine(ObjManipCommand):
 
         key, category, value = attr.db_key, attr.db_category, attr.value
         valuetype = ""
-        if value is None and attr.strvalue is not None:
+        if value is None and getattr(attr, "strvalue", None) is not None:
             value = attr.strvalue
             valuetype = " |B[strvalue]|n"
         typ = self._get_attribute_value_type(value)
