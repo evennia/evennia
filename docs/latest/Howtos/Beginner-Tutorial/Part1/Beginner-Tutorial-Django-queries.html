@@ -142,7 +142,7 @@ But sometimes you need to be more specific:</p>
 <ul class="simple">
 <li><p>You want to find all <code class="docutils literal notranslate"><span class="pre">Characters</span></code> …</p></li>
 <li><p>… who are in Rooms tagged as <code class="docutils literal notranslate"><span class="pre">moonlit</span></code> …</p></li>
-<li><p>… <em>and</em> who has the Attribute <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> with a level higher than 2 …</p></li>
+<li><p>… <em>and</em> who has the Attribute <code class="docutils literal notranslate"><span class="pre">lycanthropy</span></code> with a level equal to 2 …</p></li>
 <li><p>… because they should immediately transform to werewolves!</p></li>
 </ul>
 <p>In principle you could achieve this with the existing search functions combined with a lot of loops
@@ -266,7 +266,7 @@ this is how we have identified mages:</p>
 of this lesson.</p>
 <p>Firstly, we make ourselves and our current location match the criteria, so we can test:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py here.tags.add(&quot;moonlit&quot;)
-&gt; py me.db.lycantrophy = 3
+&gt; py me.db.lycanthropy = 2
 </pre></div>
 </div>
 <p>This is an example of a more complex query. We’ll consider it an example of what is
@@ -286,7 +286,7 @@ possible.</p>
 <span class="hll">    <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>
 </span>    <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
 <span class="hll">        <span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">,</span>
-</span><span class="hll">        <span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span>
+</span><span class="hll">        <span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span>
 </span><span class="hll">        <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span>
 </span>    <span class="p">)</span>
 <span class="p">)</span>
@@ -307,12 +307,12 @@ that we can treat like an object for this purpose; it references all Tags on the
 <li><p>… and from those <code class="docutils literal notranslate"><span class="pre">Tags</span></code>, we looking for <code class="docutils literal notranslate"><span class="pre">Tags</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is “monlit” (non-case sensitive).</p></li>
 </ul>
 </li>
-<li><p><strong>Line 7</strong>: … We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycantrophy&quot;</span></code></p></li>
+<li><p><strong>Line 7</strong>: … We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycanthropy&quot;</span></code></p></li>
 <li><p><strong>Line 8</strong> :… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is exactly 2.</p></li>
 </ul>
 </li>
 </ul>
-<p>Running this query makes our newly lycantrophic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code> so we know to transform it. Success!</p>
+<p>Running this query makes our newly lycanthropic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code> so we know to transform it. Success!</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>You can’t query for an Attribute <code class="docutils literal notranslate"><span class="pre">db_value</span></code> quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as <em>strings</em> on the database side. So while you can use <code class="docutils literal notranslate"><span class="pre">__eq=2</span></code> in the above example, you will not be able to <code class="docutils literal notranslate"><span class="pre">__gt=2</span></code> or <code class="docutils literal notranslate"><span class="pre">__lt=2</span></code> because these operations don’t make sense for strings. See <a class="reference internal" href="../../../Components/Attributes.html#querying-by-attribute"><span class="std std-doc">Attributes</span></a> for more information on dealing with Attributes.</p>
@@ -321,7 +321,7 @@ that we can treat like an object for this purpose; it references all Tags on the
 <section id="queries-with-or-or-not">
 <h2><span class="section-number">12.3. </span>Queries with OR or NOT<a class="headerlink" href="#queries-with-or-or-not" title="Permalink to this headline">¶</a></h2>
 <p>All examples so far used <code class="docutils literal notranslate"><span class="pre">AND</span></code> relations. The arguments to <code class="docutils literal notranslate"><span class="pre">.filter</span></code> are added together with <code class="docutils literal notranslate"><span class="pre">AND</span></code>
-(“we want tag room to be “monlit” <em>and</em> lycantrhopy be &gt; 2”).</p>
+(“we want tag room to be “monlit” <em>and</em> lycanthropy be &gt; 2”).</p>
 <p>For queries using <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> we need Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/#complex-lookups-with-q-objects">Q object</a>. It is imported from Django directly:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from django.db.models import Q
 </pre></div>
@@ -346,7 +346,7 @@ Character.objects.filter(q1 | ~q2)
 </div>
 <p>Would get all Characters that are either named “Dalton” <em>or</em> which is <em>not</em> in prison. The result is a mix
 of Daltons and non-prisoners.</p>
-<p>Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room with a certain level of <code class="docutils literal notranslate"><span class="pre">lycanthrophy</span></code> - we decide that if they have been <em>newly bitten</em>, they should also turn, <em>regardless</em> of their lycantrophy level (more dramatic that way!).</p>
+<p>Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room with a certain level of <code class="docutils literal notranslate"><span class="pre">lycanthropy</span></code> - we decide that if they have been <em>newly bitten</em>, they should also turn, <em>regardless</em> of their lycanthropy level (more dramatic that way!).</p>
 <p>Let’s say that getting bitten means that you’ll get assigned a Tag <code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code>.</p>
 <p>This is how we’d change our query:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
@@ -356,7 +356,7 @@ of Daltons and non-prisoners.</p>
     <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
         <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
         <span class="o">&amp;</span> <span class="p">(</span>
-          <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span>
+          <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span>
             <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
           <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
         <span class="p">))</span>
@@ -368,12 +368,12 @@ of Daltons and non-prisoners.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 
 <span class="n">q_moonlit</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
-<span class="n">q_lycantropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">q_lycanthropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">q_recently_bitten</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
 
 <span class="n">will_transform</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>
-    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">q_moonlit</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">q_lycantropic</span> <span class="o">|</span> <span class="n">q_recently_bitten</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">q_moonlit</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">q_lycanthropic</span> <span class="o">|</span> <span class="n">q_recently_bitten</span><span class="p">))</span>
     <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
 <span class="p">)</span>
 </pre></div>
@@ -386,7 +386,7 @@ joined with <code class="docutils literal notranslate"><span class="pre">LEFT</s
 the same object with different relations.</p>
 </aside>
 <p>This reads as “Find all Characters in a moonlit room that either has the
-Attribute <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> higher than two, <em>or</em> which has the Tag
+Attribute <code class="docutils literal notranslate"><span class="pre">lycanthropy</span></code> equal to two, <em>or</em> which has the Tag
 <code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code>”. With an OR-query like this it’s possible to find the same
 Character via different paths, so we add <code class="docutils literal notranslate"><span class="pre">.distinct()</span></code> at the end. This makes
 sure that there is only one instance of each Character in the result.</p>

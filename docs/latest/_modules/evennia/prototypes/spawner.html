@@ -895,6 +895,8 @@
         <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
             <span class="n">changed</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">spawn_hook</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;at_object_post_spawn&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">spawn_hook</span><span class="p">(</span><span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">changed</span></div>
 
@@ -961,6 +963,9 @@
         <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">objparam</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
                 <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{</span><span class="s2">&quot;evennia&quot;</span><span class="p">:</span> <span class="n">evennia</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="p">})</span>
+        <span class="c1"># run the spawned hook</span>
+        <span class="k">if</span> <span class="n">spawn_hook</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;at_object_post_spawn&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">spawn_hook</span><span class="p">()</span>
         <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 

@@ -396,11 +396,14 @@
 
 <span class="sd">     at_object_creation() - only called once, when object is first created.</span>
 <span class="sd">                            Object customizations go here.</span>
+<span class="sd">     at_object_post_creation() - only called once, when object is first created.</span>
+<span class="sd">                            Additional setup involving e.g. prototype-set attributes can go here.</span>
 <span class="sd">     at_object_delete() - called just before deleting an object. If returning</span>
 <span class="sd">                            False, deletion is aborted. Note that all objects</span>
 <span class="sd">                            inside a deleted object are automatically moved</span>
 <span class="sd">                            to their &lt;home&gt;, they don&#39;t need to be removed here.</span>
-
+<span class="sd">     at_object_post_spawn() - called when object is spawned from a prototype or updated</span>
+<span class="sd">                            by the spawner to apply prototype changes.</span>
 <span class="sd">     at_init()            - called whenever typeclass is cached from memory,</span>
 <span class="sd">                            at least once every server restart/reload</span>
 <span class="sd">     at_first_save()</span>
@@ -2016,9 +2019,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_evennia_properties</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_createdict&quot;</span><span class="p">):</span>
-            <span class="c1"># this will only be set if the utils.create function</span>
-            <span class="c1"># was used to create the object. We want the create</span>
-            <span class="c1"># call&#39;s kwargs to override the values set by hooks.</span>
+            <span class="c1"># this will be set if the object was created by the utils.create function</span>
+            <span class="c1"># or the spawner. We want these kwargs to override the values set by </span>
+            <span class="c1"># the initial hooks.</span>
             <span class="n">cdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_createdict</span>
             <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">):</span>
@@ -2061,6 +2064,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_createdict</span>
+        
+        <span class="c1"># run the post-setup hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_object_post_creation</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">basetype_posthook_setup</span><span class="p">()</span></div>
 
@@ -2119,6 +2125,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
+<div class="viewcode-block" id="DefaultObject.at_object_post_creation"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_post_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once, when this object is first created and after any attributes, tags, etc.</span>
+<span class="sd">        that were passed to the `create_object` function or defined in a prototype have been</span>
+<span class="sd">        applied.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
 <div class="viewcode-block" id="DefaultObject.at_object_delete"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before the database object is persistently</span>
@@ -2127,6 +2142,16 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultObject.at_object_post_spawn"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_spawn">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_post_spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when this object is spawned or updated from a prototype, after all other</span>
+<span class="sd">        hooks have been run.</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            prototype (dict):  The prototype that was used to spawn or update this object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DefaultObject.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

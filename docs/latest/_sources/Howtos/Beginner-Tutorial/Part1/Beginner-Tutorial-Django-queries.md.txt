@@ -14,7 +14,7 @@ But sometimes you need to be more specific:
 
 - You want to find all `Characters` ...
 - ... who are in Rooms tagged as `moonlit` ...
-- ... _and_ who has the Attribute `lycantrophy` with a level higher than 2 ...
+- ... _and_ who has the Attribute `lycanthropy` with a level equal to 2 ...
 - ... because they should immediately transform to werewolves!
 
 In principle you could achieve this with the existing search functions combined with a lot of loops
@@ -159,7 +159,7 @@ of this lesson.
 Firstly, we make ourselves and our current location match the criteria, so we can test:
 
     > py here.tags.add("moonlit")
-    > py me.db.lycantrophy = 3
+    > py me.db.lycanthropy = 2
 
 This is an example of a more complex query. We'll consider it an example of what is
 possible.
@@ -174,7 +174,7 @@ will_transform = (
     Character.objects
     .filter(
         db_location__db_tags__db_key__iexact="moonlit",
-        db_attributes__db_key="lycantrophy",
+        db_attributes__db_key="lycanthropy",
         db_attributes__db_value__eq=2
     )
 )
@@ -189,10 +189,10 @@ Don't confuse database fields with [Attributes](../../../Components/Attributes.m
 	    - ... and on that location, we get the value of `db_tags` (this is a _many-to-many_ database field
         that we can treat like an object for this purpose; it references all Tags on the location)
 	    - ... and from those `Tags`, we looking for `Tags` whose `db_key` is "monlit" (non-case sensitive).
-     - **Line 7**: ... We also want only Characters with `Attributes` whose `db_key` is exactly `"lycantrophy"`
+     - **Line 7**: ... We also want only Characters with `Attributes` whose `db_key` is exactly `"lycanthropy"`
     - **Line 8** :... at the same time as the `Attribute`'s `db_value` is exactly 2.
 
-Running this query makes our newly lycantrophic Character appear in `will_transform` so we know to transform it. Success!
+Running this query makes our newly lycanthropic Character appear in `will_transform` so we know to transform it. Success!
 
 ```{important}
 You can't query for an Attribute `db_value` quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as _strings_ on the database side. So while you can use `__eq=2` in the above example, you will not be able to `__gt=2` or `__lt=2` because these operations don't make sense for strings. See [Attributes](../../../Components/Attributes.md#querying-by-attribute) for more information on dealing with Attributes.
@@ -201,7 +201,7 @@ You can't query for an Attribute `db_value` quite as freely as other data-types.
 ## Queries with OR or NOT 
 
 All examples so far used `AND` relations. The arguments to `.filter` are added together with `AND`
-("we want tag room to be "monlit" _and_ lycantrhopy be > 2").
+("we want tag room to be "monlit" _and_ lycanthropy be > 2").
 
 For queries using `OR` and `NOT` we need Django's [Q object](https://docs.djangoproject.com/en/4.1/topics/db/queries/#complex-lookups-with-q-objects). It is imported from Django directly:
 
@@ -228,7 +228,7 @@ works like `NOT`.
 Would get all Characters that are either named "Dalton" _or_ which is _not_ in prison. The result is a mix
 of Daltons and non-prisoners.
 
-Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room with a certain level of `lycanthrophy` - we decide that if they have been _newly bitten_, they should also turn, _regardless_ of their lycantrophy level (more dramatic that way!).
+Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room with a certain level of `lycanthropy` - we decide that if they have been _newly bitten_, they should also turn, _regardless_ of their lycanthropy level (more dramatic that way!).
 
 Let's say that getting bitten means that you'll get assigned a Tag `recently_bitten`.
 
@@ -242,7 +242,7 @@ will_transform = (
     .filter(
         Q(db_location__db_tags__db_key__iexact="moonlit")
         & (
-          Q(db_attributes__db_key="lycantrophy",
+          Q(db_attributes__db_key="lycanthropy",
             db_attributes__db_value__eq=2)
           | Q(db_tags__db_key__iexact="recently_bitten")
         ))
@@ -256,12 +256,12 @@ That's quite compact. It may be easier to see what's going on if written this wa
 from django.db.models import Q
 
 q_moonlit = Q(db_location__db_tags__db_key__iexact="moonlit")
-q_lycantropic = Q(db_attributes__db_key="lycantrophy", db_attributes__db_value__eq=2)
+q_lycanthropic = Q(db_attributes__db_key="lycanthropy", db_attributes__db_value__eq=2)
 q_recently_bitten = Q(db_tags__db_key__iexact="recently_bitten")
 
 will_transform = (
     Character.objects
-    .filter(q_moonlit & (q_lycantropic | q_recently_bitten))
+    .filter(q_moonlit & (q_lycanthropic | q_recently_bitten))
     .distinct()
 )
 ```
@@ -276,7 +276,7 @@ the same object with different relations.
 ```
 
 This reads as "Find all Characters in a moonlit room that either has the
-Attribute `lycantrophy` higher than two, _or_ which has the Tag
+Attribute `lycanthropy` equal to two, _or_ which has the Tag
 `recently_bitten`". With an OR-query like this it's possible to find the same
 Character via different paths, so we add `.distinct()` at the end. This makes
 sure that there is only one instance of each Character in the result.
