@@ -38,6 +38,8 @@ did not add it to the handler's object (Griatch)
 - [Fix][issue3615]: Using `print()` in `py` caused an infinite loop (Griatch)
 - [Fix][issue3620]: Better handle TaskHandler running against an attribute that
   was removed since last reload (Griatch)
+- [Fix][issue3616]: The `color ansi` command output was broken (Griatch)
+- Fix: Extended the `color truecolor` display with usage examples. Also updated docs (Griatch)
 - [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 - Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)
 
@@ -49,6 +51,7 @@ did not add it to the handler's object (Griatch)
 [issue3624]: https://github.com/evennia/evennia/issues/3624
 [issue3615]: https://github.com/evennia/evennia/issues/3615
 [issue3620]: https://github.com/evennia/evennia/issues/3620
+[issue3616]: https://github.com/evennia/evennia/issues/3616
 [pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594

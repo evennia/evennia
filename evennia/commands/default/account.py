@@ -931,14 +931,17 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
 
         elif self.args.startswith("t"):
             # show abbreviated truecolor sample (16.7 million colors in truecolor)
-            string = ""
+            string = (
+                "\n"
+                "True Colors (if this is not a smooth rainbow transition, your client might not "
+                "report that it can handle truecolor): \n"
+            )
             for i in range(76):
                 string += f"|[{self.make_hex_color_from_column(i)} |n"
 
             string += (
-                "\n"
-                + "some of the truecolor colors (if not all hues show, your client might not report that it can"
-                " handle trucolor.):"
+                "\n|nfg: |#FF0000||#FF0000|n (|#F00||#F00|n) to |#0000FF||#0000FF|n (|#00F||#00F|n)"
+                "\n|nbg: |[#FF0000||[#FF0000|n (|[#F00||[#F00|n) to |n|[#0000FF||[#0000FF |n(|[#00F||[#00F|n)"
             )
 
             self.msg(string)

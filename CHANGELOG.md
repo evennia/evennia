@@ -39,6 +39,7 @@ did not add it to the handler's object (Griatch)
 - [Fix][issue3620]: Better handle TaskHandler running against an attribute that
   was removed since last reload (Griatch)
 - [Fix][issue3616]: The `color ansi` command output was broken (Griatch)
+- Fix: Extended the `color truecolor` display with usage examples. Also updated docs (Griatch)
 - [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 - Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)
 
