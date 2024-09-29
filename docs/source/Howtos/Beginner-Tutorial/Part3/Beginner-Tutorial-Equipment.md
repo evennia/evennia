@@ -407,13 +407,14 @@ class EquipmentHandler:
        
         for to_backpack_obj in to_backpack:
             # put stuff in backpack
-            slots[WieldLocation.BACKPACK].append(to_backpack_obj)
+            if to_backpack_obj:
+                slots[WieldLocation.BACKPACK].append(to_backpack_obj)
        
         # store new state
         self._save() 
 ``` 
 
-Here we remember that every `EvAdventureObject` has an `inventory_use_slot` property that tells us where it goes. So we just need to move the object to that slot, replacing whatever is in that place from before. Anything we replace goes back to the backpack. 
+Here we remember that every `EvAdventureObject` has an `inventory_use_slot` property that tells us where it goes. So we just need to move the object to that slot, replacing whatever is in that place from before. Anything we replace goes back to the backpack, as long as it's actually an item and not `None`, in the case where we are moving an item into an empty slot.
 
 ## Get everything 
 
