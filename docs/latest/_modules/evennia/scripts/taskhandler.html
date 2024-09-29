@@ -97,13 +97,12 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">PickleError</span>
 
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">CancelledError</span> <span class="k">as</span> <span class="n">DefCancelledError</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_err</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">CancelledError</span> <span class="k">as</span> <span class="n">DefCancelledError</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
 
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -343,7 +342,12 @@
                     <span class="n">to_save</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">continue</span>
 
-                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TaskHandler: Unable to load task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> (disabling it): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">to_save</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stale_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># cleanup stale tasks.</span>
