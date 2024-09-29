@@ -5,13 +5,12 @@ Module containing the task handler for Evennia deferred tasks, persistent or not
 from datetime import datetime, timedelta
 from pickle import PickleError
 
-from twisted.internet import reactor
-from twisted.internet.defer import CancelledError as DefCancelledError
-from twisted.internet.task import deferLater
-
 from evennia.server.models import ServerConfig
 from evennia.utils.dbserialize import dbserialize, dbunserialize
 from evennia.utils.logger import log_err
+from twisted.internet import reactor
+from twisted.internet.defer import CancelledError as DefCancelledError
+from twisted.internet.task import deferLater
 
 TASK_HANDLER = None
 
@@ -251,7 +250,12 @@ class TaskHandler:
                     to_save = True
                     continue
 
-                callback = getattr(obj, method)
+                try:
+                    callback = getattr(obj, method)
+                except Exception as e:
+                    log_err(f"TaskHandler: Unable to load task {task_id} (disabling it): {e}")
+                    to_save = True
+                    continue
             self.tasks[task_id] = (date, callback, args, kwargs, True, None)
 
         if self.stale_timeout > 0:  # cleanup stale tasks.
