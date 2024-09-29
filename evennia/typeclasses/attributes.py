@@ -62,7 +62,7 @@ class IAttribute:
         return LockHandler(self)
 
     key = property(lambda self: self.db_key)
-    strvalue = property(lambda self: self.db_strvalue)
+    strvalue = property(lambda self: getattr(self, 'db_strvalue', None))
     category = property(lambda self: self.db_category)
     model = property(lambda self: self.db_model)
     attrtype = property(lambda self: self.db_attrtype)
