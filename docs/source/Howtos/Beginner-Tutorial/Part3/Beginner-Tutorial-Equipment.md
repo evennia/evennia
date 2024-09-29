@@ -402,7 +402,7 @@ class EquipmentHandler:
             to_backpack = [obj]
         else:
             # for others (body, head), just replace whatever's there
-            replaced = [obj]
+            to_backpack = [slots[use_slot]]
             slots[use_slot] = obj
        
         for to_backpack_obj in to_backpack:
