@@ -104,10 +104,9 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TaskHandlerTask</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
@@ -138,6 +137,11 @@
     <span class="s2">&quot;CmdTasks&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdTickers&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PrintRecursionError</span><span class="p">(</span><span class="ne">RecursionError</span><span class="p">):</span>
+    <span class="c1"># custom error for recursion in print</span>
+    <span class="k">pass</span>
 
 
 <div class="viewcode-block" id="CmdReload"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReload">[docs]</a><span class="k">class</span> <span class="nc">CmdReload</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -295,7 +299,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
 
             <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}))</span>
+                <span class="k">except</span> <span class="ne">RecursionError</span><span class="p">:</span>
+                    <span class="n">tb</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_tb</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;print(&quot;</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">line</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">tb</span><span class="p">):</span>
+                        <span class="c1"># We are in a print loop (likely because msg() contains a print),</span>
+                        <span class="c1"># exit the stdout reroute prematurely</span>
+                        <span class="k">raise</span> <span class="n">PrintRecursionError</span>
 
         <span class="n">fake_std</span> <span class="o">=</span> <span class="n">FakeStd</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">fake_std</span>
@@ -317,6 +328,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">pycode_compiled</span><span class="p">,</span> <span class="p">{},</span> <span class="n">available_vars</span><span class="p">)</span>
 
+    <span class="k">except</span> <span class="n">PrintRecursionError</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;&lt;&lt;&lt; Error: Recursive print() found (probably in custom msg()). &quot;</span>
+            <span class="s2">&quot;Since `py` reroutes `print` to `msg()`, this causes a loop. Remove `print()` &quot;</span>
+            <span class="s2">&quot;from msg-related code to resolve.&quot;</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">errlist</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">errlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>

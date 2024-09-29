@@ -207,6 +207,11 @@ with dynamic keys (rather than just relying on typeclass’ key) (Griatch)</p></
 <li><p>Feat: Make Sqlite3 PRAGMAs configurable via settings (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3592">Feat</a>: Revised German locationlization (‘Du’ instead of ‘Sie’,
 cleanup) (Drakon72)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3541">Feat</a>: Rework main Object searching to respect partial matches, empty
+search now partial matching all candidates, overall cleanup (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3588">Feat</a>: New <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> hooks: <code class="docutils literal notranslate"><span class="pre">at_object_post_creation</span></code>, called once after
+first creation but after any prototypes have been applied, and
+<code class="docutils literal notranslate"><span class="pre">at_object_post_spawn(prototype)</span></code>, called only after creation/update with a prototype (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3494">Fix</a>: Update/clean some Evennia dependencies (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3556">Fix</a>: Better error if trying to treat ObjectDB as a typeclass (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3590">Fix</a>: Make <code class="docutils literal notranslate"><span class="pre">examine</span></code> command properly show <code class="docutils literal notranslate"><span class="pre">strattr</span></code> type
@@ -223,8 +228,15 @@ names (chiizyjin)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3597">Fix</a>: Address timing issue for testing <code class="docutils literal notranslate"><span class="pre">new_task_waiting_input</span> </code>on
 Windows (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3611">Fix</a>: Fix and update for Reports contrib (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3625">Fix</a>: Lycanthropy tutorial page had some issues (feyrkh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3622">Fix</a>: Fix for examine command tracebacking with strvalue error
+(aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3612">Fix</a>: Make sure help entries’ <code class="docutils literal notranslate"><span class="pre">subtopic_separator_char</span></code> is
+respected (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3624">Fix</a>: Setting tags with integer names caused errors on postgres (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3615">Fix</a>: Using <code class="docutils literal notranslate"><span class="pre">print()</span></code> in <code class="docutils literal notranslate"><span class="pre">py</span></code> caused an infinite loop (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3591">Docs</a>: Fix of NPC reaction tutorial code (Griatch)</p></li>
-<li><p>Docs: Tutorial fixes (Griatch, aMiss-aWry)</p></li>
+<li><p>Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)</p></li>
 </ul>
 </section>
 <section id="evennia-4-3-0">

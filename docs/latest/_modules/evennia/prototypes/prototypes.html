@@ -719,6 +719,7 @@
 
         <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
             <span class="c1"># exact or partial match on key</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="n">exact_match</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">exact_match</span> <span class="ow">and</span> <span class="n">fuzzy_matching</span><span class="p">:</span>
                 <span class="c1"># try with partial match instead</span>

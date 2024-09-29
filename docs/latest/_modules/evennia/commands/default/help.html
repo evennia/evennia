@@ -105,7 +105,6 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.help.filehelp</span> <span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
 <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
 <span class="kn">from</span> <span class="nn">evennia.help.utils</span> <span class="kn">import</span> <span class="n">help_search_with_index</span><span class="p">,</span> <span class="n">parse_entry_for_subcategories</span>
@@ -113,13 +112,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">class_from_module</span><span class="p">,</span>
-    <span class="n">dedent</span><span class="p">,</span>
-    <span class="n">format_grid</span><span class="p">,</span>
-    <span class="n">inherits_from</span><span class="p">,</span>
-    <span class="n">pad</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">format_grid</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">pad</span>
 
 <span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
@@ -569,6 +562,7 @@
 <span class="sd">            tuple: A tuple (match, suggestions).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">strip_prefix</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">query</span> <span class="ow">and</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -834,7 +828,7 @@
 
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">fuzzy_match</span><span class="p">:</span>
                         <span class="c1"># no match found - give up</span>
-                        <span class="n">checked_topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">subtopic_query</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">checked_topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subtopic_separator_char</span><span class="si">}{</span><span class="n">subtopic_query</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
                             <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
                             <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;No help entry found for &#39;</span><span class="si">{</span><span class="n">checked_topic</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
@@ -849,7 +843,7 @@
                 <span class="n">subtopic_map</span> <span class="o">=</span> <span class="n">subtopic_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">subtopic_query</span><span class="p">)</span>
                 <span class="n">subtopic_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">subtopic</span> <span class="k">for</span> <span class="n">subtopic</span> <span class="ow">in</span> <span class="n">subtopic_map</span> <span class="k">if</span> <span class="n">subtopic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
                 <span class="c1"># keep stepping down into the tree, append path to show position</span>
-                <span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">subtopic_query</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subtopic_separator_char</span><span class="si">}{</span><span class="n">subtopic_query</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="c1"># we reached the bottom of the topic tree</span>
             <span class="n">help_text</span> <span class="o">=</span> <span class="n">subtopic_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
