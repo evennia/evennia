@@ -619,6 +619,9 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
 <div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: remove &lt;worn clothing object&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
         <span class="n">clothing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">clothing</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have anything like that.&quot;</span><span class="p">)</span>

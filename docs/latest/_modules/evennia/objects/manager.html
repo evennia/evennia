@@ -373,8 +373,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            ostring (str): A search criterion.</span>
 <span class="sd">            exact (bool, optional): Require exact match of ostring</span>
-<span class="sd">                (still case-insensitive). If `False`, will do fuzzy matching</span>
-<span class="sd">                using `evennia.utils.utils.string_partial_matching` algorithm.</span>
+<span class="sd">                (still case-insensitive). If `False`, will do fuzzy matching with a regex filter.</span>
 <span class="sd">            candidates (list): Only match among these candidates.</span>
 <span class="sd">            typeclasses (list): Only match objects with typeclasses having thess path strings.</span>
 
@@ -397,7 +396,7 @@
         <span class="n">cand_restriction</span> <span class="o">=</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="n">candidates_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
         <span class="n">type_restriction</span> <span class="o">=</span> <span class="n">typeclasses</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">))</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
-            <span class="c1"># exact match - do direct search</span>
+            <span class="c1"># exact matches only</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
@@ -413,50 +412,26 @@
                 <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
                 <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">candidates</span><span class="p">:</span>
-            <span class="c1"># fuzzy with candidates</span>
-            <span class="n">search_candidates</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">type_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># fuzzy without supplied candidates - we select our own candidates</span>
-            <span class="n">search_candidates</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">type_restriction</span>
-                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span> <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__icontains</span><span class="o">=</span><span class="n">ostring</span><span class="p">))</span>
-                <span class="p">)</span>
-                <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="c1"># fuzzy matching</span>
-        <span class="n">key_strings</span> <span class="o">=</span> <span class="n">search_candidates</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
 
-        <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">index_matches</span> <span class="o">=</span> <span class="n">string_partial_matching</span><span class="p">(</span><span class="n">key_strings</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">index_matches</span><span class="p">:</span>
-            <span class="c1"># a match by key</span>
-            <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">search_candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">index_matches</span>
-            <span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># match by alias rather than by key</span>
-            <span class="n">search_candidates</span> <span class="o">=</span> <span class="n">search_candidates</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">db_tags__db_key__icontains</span><span class="o">=</span><span class="n">ostring</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
-            <span class="n">alias_strings</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">alias_candidates</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="c1"># TODO create the alias_strings and alias_candidates lists more efficiently?</span>
-            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">search_candidates</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">candidate</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-                    <span class="n">alias_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
-                    <span class="n">alias_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
-            <span class="n">index_matches</span> <span class="o">=</span> <span class="n">string_partial_matching</span><span class="p">(</span><span class="n">alias_strings</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">index_matches</span><span class="p">:</span>
-                <span class="c1"># it&#39;s possible to have multiple matches to the same Object, we must weed those out</span>
-                <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias_candidates</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">]</span>
-        <span class="c1"># TODO - not ideal to have to do a second lookup here, but we want to return a queryset</span>
-        <span class="c1"># rather than a list ... maybe the above queries can be improved.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">match_ids</span><span class="p">)</span></div>
+        <span class="c1"># convert search term to partial-match regex</span>
+        <span class="n">search_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">ostring</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;.*&#39;</span>
+
+        <span class="c1"># do the fuzzy search and return whatever it matches</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">cand_restriction</span>
+                    <span class="o">&amp;</span> <span class="n">type_restriction</span>
+                    <span class="o">&amp;</span> <span class="p">(</span>
+                        <span class="n">Q</span><span class="p">(</span><span class="n">db_key__iregex</span><span class="o">=</span><span class="n">search_regex</span><span class="p">)</span>
+                        <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iregex</span><span class="o">=</span><span class="n">search_regex</span><span class="p">)</span>
+                        <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
     <span class="c1"># main search methods and helper functions</span>
 
@@ -472,14 +447,13 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search as an object globally or in a list of candidates and</span>
-<span class="sd">        return results. The result is always an Object. Always returns</span>
-<span class="sd">        a list.</span>
+<span class="sd">        return results. Always returns a QuerySet of Objects.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            searchdata (str or Object): The entity to match for. This is</span>
 <span class="sd">                usually a key string but may also be an object itself.</span>
 <span class="sd">                By default (if no `attribute_name` is set), this will</span>
-<span class="sd">                search `object.key` and `object.aliases` in order.</span>
+<span class="sd">                search `object.key` and `object.aliases`.</span>
 <span class="sd">                Can also be on the form #dbref, which will (if</span>
 <span class="sd">                `exact=True`) be matched against primary key.</span>
 <span class="sd">            attribute_name (str): Use this named Attribute to</span>
@@ -509,63 +483,43 @@
 <span class="sd">                a match.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            matches (list): Matching objects</span>
+<span class="sd">            matches (QuerySet): Matching objects</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Helper method for searching objects. `typeclass` is only used</span>
-<span class="sd">            for global searching (no candidates)</span>
+<span class="sd">            Helper method for searching objects.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">attribute_name</span><span class="p">:</span>
                 <span class="c1"># attribute/property search (always exact).</span>
                 <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_db_property_value</span><span class="p">(</span>
                     <span class="n">attribute_name</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
                 <span class="p">)</span>
-                <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">matches</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_attr_value</span><span class="p">(</span>
-                    <span class="n">attribute_name</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_attr_value</span><span class="p">(</span>
+                        <span class="n">attribute_name</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># normal key/alias search</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
                     <span class="n">searchdata</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
                 <span class="p">)</span>
+            <span class="k">if</span> <span class="n">matches</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="c1"># additionally filter matches by tags</span>
+                <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcategory</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                    <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="n">db_tags__db_key</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">tagcategory</span>
+                    <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_search_by_tag</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcategory</span> <span class="ow">in</span> <span class="n">taglist</span><span class="p">:</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">tagcategory</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">query</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">searchdata</span> <span class="ow">and</span> <span class="n">searchdata</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">_search_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
-            <span class="c1"># typeclass may also be a list</span>
-            <span class="n">typeclasses</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">typeclass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
-                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typeclass</span>
-            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclasses</span>
+            <span class="k">return</span> <span class="n">matches</span>
 
         <span class="k">if</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
-                <span class="c1"># candidates is the empty list. This should mean no matches can ever be acquired.</span>
-                <span class="k">return</span> <span class="p">[]</span>
+                <span class="c1"># candidates is an empty list. This should mean no matches can ever be acquired.</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
             <span class="c1"># Convenience check to make sure candidates are really dbobjs</span>
             <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">cand</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">cand</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
-                <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">cand</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="n">cand</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">typeclass</span>
-                <span class="p">]</span>
 
         <span class="n">dbref</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">attribute_name</span> <span class="ow">and</span> <span class="n">exact</span> <span class="ow">and</span> <span class="n">use_dbref</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
@@ -578,51 +532,54 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
+            <span class="c1"># typeclass may be a string, a typeclass, or a list</span>
+            <span class="n">typeclasses</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">typeclass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
+                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typeclass</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclasses</span>
+
         <span class="c1"># Search through all possibilities.</span>
         <span class="n">match_number</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># always run first check exact - we don&#39;t want partial matches</span>
         <span class="c1"># if on the form of 1-keyword etc.</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+        <span class="n">stripped_searchdata</span> <span class="o">=</span> <span class="n">searchdata</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
             <span class="c1"># no matches found - check if we are dealing with N-keyword</span>
             <span class="c1"># query - if so, strip it.</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">_MULTIMATCH_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">searchdata</span><span class="p">))</span>
+            <span class="n">match_data</span> <span class="o">=</span> <span class="n">_MULTIMATCH_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">searchdata</span><span class="p">))</span>
             <span class="n">match_number</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">stripped_searchdata</span> <span class="o">=</span> <span class="n">searchdata</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">match_data</span><span class="p">:</span>
                 <span class="c1"># strips the number</span>
-                <span class="n">match_number</span><span class="p">,</span> <span class="n">stripped_searchdata</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+                <span class="n">match_number</span><span class="p">,</span> <span class="n">stripped_searchdata</span> <span class="o">=</span> <span class="n">match_data</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">match_data</span><span class="o">.</span><span class="n">group</span><span class="p">(</span>
+                    <span class="s2">&quot;name&quot;</span>
+                <span class="p">)</span>
                 <span class="n">match_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_number</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># run search against the stripped data</span>
                 <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">stripped_searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
-                    <span class="c1"># final chance to get a looser match against the number-strippped query</span>
-                    <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">stripped_searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
-                <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="n">_search_by_tag</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
+        <span class="c1"># at this point, if there are no matches, we give it a chance to find fuzzy matches</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="c1"># we use stripped_searchdata in case a match number was included</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">stripped_searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># deal with result</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># this indicates trying to get a single match with a match-number</span>
-            <span class="c1"># targeting some higher-number match (like 2-box when there is only</span>
-            <span class="c1"># one box in the room). This leads to a no-match.</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># multiple matches, but a number was given to separate them</span>
+        <span class="k">if</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">match_number</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
                 <span class="c1"># limit to one match (we still want a queryset back)</span>
-                <span class="c1"># TODO: Can we do this some other way and avoid a second lookup?</span>
+                <span class="c1"># NOTE: still haven&#39;t found a way to avoid a second lookup</span>
                 <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">matches</span><span class="p">[</span><span class="n">match_number</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># a number was given outside of range. This means a no-match.</span>
                 <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
 
-        <span class="c1"># return a list (possibly empty)</span>
+        <span class="c1"># return a QuerySet (possibly empty)</span>
         <span class="k">return</span> <span class="n">matches</span></div>
 
     <span class="c1"># alias for backwards compatibility</span>
