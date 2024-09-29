@@ -247,6 +247,50 @@ class TestObjectManager(BaseEvenniaTest):
         )
         self.assertEqual(list(query), [self.char1])
 
+    def test_get_objs_with_key_or_alias(self):
+        query = ObjectDB.objects.get_objs_with_key_or_alias("Char")
+        self.assertEqual(list(query), [self.char1])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", typeclasses="evennia.objects.objects.DefaultObject"
+        )
+        self.assertEqual(list(query), [])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", candidates=[self.char1, self.char2]
+        )
+        self.assertEqual(list(query), [self.char1])
+
+        self.char1.aliases.add("test alias")
+        query = ObjectDB.objects.get_objs_with_key_or_alias("test alias")
+        self.assertEqual(list(query), [self.char1])
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias("")
+        self.assertFalse(query)
+        query = ObjectDB.objects.get_objs_with_key_or_alias("", exact=False)
+        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by('id')))
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "", exact=False, typeclasses="evennia.objects.objects.DefaultCharacter"
+        )
+        self.assertEqual(list(query), [self.char1, self.char2])
+
+    def test_search_object(self):
+        self.char1.tags.add("test tag")
+        self.obj1.tags.add("test tag")
+
+        query = ObjectDB.objects.search_object("", exact=False, tags=[("test tag", None)])
+        self.assertEqual(list(query), [self.obj1, self.char1])
+
+        query = ObjectDB.objects.search_object("Char", tags=[("invalid tag", None)])
+        self.assertFalse(query)
+
+        query = ObjectDB.objects.search_object(
+            "",
+            exact=False,
+            tags=[("test tag", None)],
+            typeclass="evennia.objects.objects.DefaultCharacter",
+        )
+        self.assertEqual(list(query), [self.char1])
+
     def test_get_objs_with_attr(self):
         self.obj1.db.testattr = "testval1"
         query = ObjectDB.objects.get_objs_with_attr("testattr")

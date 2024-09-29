@@ -281,8 +281,7 @@ class ObjectDBManager(TypedObjectManager):
         Args:
             ostring (str): A search criterion.
             exact (bool, optional): Require exact match of ostring
-                (still case-insensitive). If `False`, will do fuzzy matching
-                using `evennia.utils.utils.string_partial_matching` algorithm.
+                (still case-insensitive). If `False`, will do fuzzy matching with a regex filter.
             candidates (list): Only match among these candidates.
             typeclasses (list): Only match objects with typeclasses having thess path strings.
 
@@ -305,7 +304,7 @@ class ObjectDBManager(TypedObjectManager):
         cand_restriction = candidates is not None and Q(pk__in=candidates_id) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
-            # exact match - do direct search
+            # exact matches only
             return (
                 (
                     self.filter(
@@ -321,50 +320,26 @@ class ObjectDBManager(TypedObjectManager):
                 .distinct()
                 .order_by("id")
             )
-        elif candidates:
-            # fuzzy with candidates
-            search_candidates = (
-                self.filter(cand_restriction & type_restriction).distinct().order_by("id")
-            )
-        else:
-            # fuzzy without supplied candidates - we select our own candidates
-            search_candidates = (
-                self.filter(
-                    type_restriction
-                    & (Q(db_key__icontains=ostring) | Q(db_tags__db_key__icontains=ostring))
-                )
-                .distinct()
-                .order_by("id")
-            )
-        # fuzzy matching
-        key_strings = search_candidates.values_list("db_key", flat=True).order_by("id")
 
-        match_ids = []
-        index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
-        if index_matches:
-            # a match by key
-            match_ids = [
-                obj.id for ind, obj in enumerate(search_candidates) if ind in index_matches
-            ]
-        else:
-            # match by alias rather than by key
-            search_candidates = search_candidates.filter(
-                db_tags__db_tagtype__iexact="alias", db_tags__db_key__icontains=ostring
-            ).distinct()
-            alias_strings = []
-            alias_candidates = []
-            # TODO create the alias_strings and alias_candidates lists more efficiently?
-            for candidate in search_candidates:
-                for alias in candidate.aliases.all():
-                    alias_strings.append(alias)
-                    alias_candidates.append(candidate)
-            index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
-            if index_matches:
-                # it's possible to have multiple matches to the same Object, we must weed those out
-                match_ids = [alias_candidates[ind].id for ind in index_matches]
-        # TODO - not ideal to have to do a second lookup here, but we want to return a queryset
-        # rather than a list ... maybe the above queries can be improved.
-        return self.filter(id__in=match_ids)
+        # convert search term to partial-match regex
+        search_regex = r".* ".join(re.escape(word) for word in ostring.split()) + r'.*'
+
+        # do the fuzzy search and return whatever it matches
+        return (
+            (
+                self.filter(
+                    cand_restriction
+                    & type_restriction
+                    & (
+                        Q(db_key__iregex=search_regex)
+                        | Q(db_tags__db_key__iregex=search_regex)
+                        & Q(db_tags__db_tagtype__iexact="alias")
+                    )
+                )
+            )
+            .distinct()
+            .order_by("id")
+        )
 
     # main search methods and helper functions
 
@@ -380,14 +355,13 @@ class ObjectDBManager(TypedObjectManager):
     ):
         """
         Search as an object globally or in a list of candidates and
-        return results. The result is always an Object. Always returns
-        a list.
+        return results. Always returns a QuerySet of Objects.
 
         Args:
             searchdata (str or Object): The entity to match for. This is
                 usually a key string but may also be an object itself.
                 By default (if no `attribute_name` is set), this will
-                search `object.key` and `object.aliases` in order.
+                search `object.key` and `object.aliases`.
                 Can also be on the form #dbref, which will (if
                 `exact=True`) be matched against primary key.
             attribute_name (str): Use this named Attribute to
@@ -417,63 +391,43 @@ class ObjectDBManager(TypedObjectManager):
                 a match.
 
         Returns:
-            matches (list): Matching objects
+            matches (QuerySet): Matching objects
 
         """
 
         def _searcher(searchdata, candidates, typeclass, exact=False):
             """
-            Helper method for searching objects. `typeclass` is only used
-            for global searching (no candidates)
+            Helper method for searching objects.
             """
             if attribute_name:
                 # attribute/property search (always exact).
                 matches = self.get_objs_with_db_property_value(
                     attribute_name, searchdata, candidates=candidates, typeclasses=typeclass
                 )
-                if matches:
-                    return matches
-                return self.get_objs_with_attr_value(
-                    attribute_name, searchdata, candidates=candidates, typeclasses=typeclass
-                )
+                if not matches:
+                    matches = self.get_objs_with_attr_value(
+                        attribute_name, searchdata, candidates=candidates, typeclasses=typeclass
+                    )
             else:
                 # normal key/alias search
-                return self.get_objs_with_key_or_alias(
+                matches = self.get_objs_with_key_or_alias(
                     searchdata, exact=exact, candidates=candidates, typeclasses=typeclass
                 )
+            if matches and tags:
+                # additionally filter matches by tags
+                for tagkey, tagcategory in tags:
+                    matches = matches.filter(
+                        db_tags__db_key=tagkey, db_tags__db_category=tagcategory
+                    )
 
-        def _search_by_tag(query, taglist):
-            for tagkey, tagcategory in taglist:
-                query = query.filter(db_tags__db_key=tagkey, db_tags__db_category=tagcategory)
-
-            return query
-
-        if not searchdata and searchdata != 0:
-            if tags:
-                return _search_by_tag(self.all(), make_iter(tags))
-
-            return self.none()
-
-        if typeclass:
-            # typeclass may also be a list
-            typeclasses = make_iter(typeclass)
-            for i, typeclass in enumerate(make_iter(typeclasses)):
-                if callable(typeclass):
-                    typeclasses[i] = "%s.%s" % (typeclass.__module__, typeclass.__name__)
-                else:
-                    typeclasses[i] = "%s" % typeclass
-            typeclass = typeclasses
+            return matches
 
         if candidates is not None:
             if not candidates:
-                # candidates is the empty list. This should mean no matches can ever be acquired.
-                return []
+                # candidates is an empty list. This should mean no matches can ever be acquired.
+                return self.none()
             # Convenience check to make sure candidates are really dbobjs
             candidates = [cand for cand in make_iter(candidates) if cand]
-            if typeclass:
-                candidates = [
-                    cand for cand in candidates if _GA(cand, "db_typeclass_path") in typeclass
-                ]
 
         dbref = not attribute_name and exact and use_dbref and self.dbref(searchdata)
         if dbref:
@@ -486,51 +440,54 @@ class ObjectDBManager(TypedObjectManager):
                 else:
                     return self.none()
 
+        if typeclass:
+            # typeclass may be a string, a typeclass, or a list
+            typeclasses = make_iter(typeclass)
+            for i, typeclass in enumerate(make_iter(typeclasses)):
+                if callable(typeclass):
+                    typeclasses[i] = "%s.%s" % (typeclass.__module__, typeclass.__name__)
+                else:
+                    typeclasses[i] = "%s" % typeclass
+            typeclass = typeclasses
+
         # Search through all possibilities.
         match_number = None
         # always run first check exact - we don't want partial matches
         # if on the form of 1-keyword etc.
         matches = _searcher(searchdata, candidates, typeclass, exact=True)
 
+        stripped_searchdata = searchdata
         if not matches:
             # no matches found - check if we are dealing with N-keyword
             # query - if so, strip it.
-            match = _MULTIMATCH_REGEX.match(str(searchdata))
+            match_data = _MULTIMATCH_REGEX.match(str(searchdata))
             match_number = None
-            stripped_searchdata = searchdata
-            if match:
+            if match_data:
                 # strips the number
-                match_number, stripped_searchdata = match.group("number"), match.group("name")
+                match_number, stripped_searchdata = match_data.group("number"), match_data.group(
+                    "name"
+                )
                 match_number = int(match_number) - 1
             if match_number is not None:
                 # run search against the stripped data
                 matches = _searcher(stripped_searchdata, candidates, typeclass, exact=True)
-                if not matches:
-                    # final chance to get a looser match against the number-strippped query
-                    matches = _searcher(stripped_searchdata, candidates, typeclass, exact=False)
-            elif not exact:
-                matches = _searcher(searchdata, candidates, typeclass, exact=False)
 
-        if tags:
-            matches = _search_by_tag(matches, make_iter(tags))
+        # at this point, if there are no matches, we give it a chance to find fuzzy matches
+        if not exact and not matches:
+            # we use stripped_searchdata in case a match number was included
+            matches = _searcher(stripped_searchdata, candidates, typeclass, exact=False)
 
         # deal with result
-        if len(matches) == 1 and match_number is not None and match_number != 0:
-            # this indicates trying to get a single match with a match-number
-            # targeting some higher-number match (like 2-box when there is only
-            # one box in the room). This leads to a no-match.
-            matches = self.none()
-        elif len(matches) > 1 and match_number is not None:
-            # multiple matches, but a number was given to separate them
+        if match_number is not None:
             if 0 <= match_number < len(matches):
                 # limit to one match (we still want a queryset back)
-                # TODO: Can we do this some other way and avoid a second lookup?
+                # NOTE: still haven't found a way to avoid a second lookup
                 matches = self.filter(id=matches[match_number].id)
             else:
                 # a number was given outside of range. This means a no-match.
                 matches = self.none()
 
-        # return a list (possibly empty)
+        # return a QuerySet (possibly empty)
         return matches
 
     # alias for backwards compatibility
