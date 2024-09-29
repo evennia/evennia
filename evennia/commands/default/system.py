@@ -12,10 +12,9 @@ import time
 import traceback
 
 import django
+import evennia
 import twisted
 from django.conf import settings
-
-import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils
@@ -46,6 +45,11 @@ __all__ = (
     "CmdTasks",
     "CmdTickers",
 )
+
+
+class PrintRecursionError(RecursionError):
+    # custom error for recursion in print
+    pass
 
 
 class CmdReload(COMMAND_DEFAULT_CLASS):
@@ -203,7 +207,14 @@ def _run_code_snippet(
                 self.caller = caller
 
             def write(self, string):
-                self.caller.msg(text=(string.rstrip("\n"), {"type": "py_output"}))
+                try:
+                    self.caller.msg(text=(string.rstrip("\n"), {"type": "py_output"}))
+                except RecursionError:
+                    tb = traceback.extract_tb(sys.exc_info()[2])
+                    if any("print(" in frame.line for frame in tb):
+                        # We are in a print loop (likely because msg() contains a print),
+                        # exit the stdout reroute prematurely
+                        raise PrintRecursionError
 
         fake_std = FakeStd(caller)
         sys.stdout = fake_std
@@ -225,6 +236,12 @@ def _run_code_snippet(
         else:
             ret = eval(pycode_compiled, {}, available_vars)
 
+    except PrintRecursionError:
+        ret = (
+            "<<< Error: Recursive print() found (probably in custom msg()). "
+            "Since `py` reroutes `print` to `msg()`, this causes a loop. Remove `print()` "
+            "from msg-related code to resolve."
+        )
     except Exception:
         errlist = traceback.format_exc().split("\n")
         if len(errlist) > 4:

@@ -35,6 +35,7 @@ did not add it to the handler's object (Griatch)
 - [Fix][issue3612]: Make sure help entries' `subtopic_separator_char` is
   respected (Griatch)
 - [Fix][issue3624]: Setting tags with integer names caused errors on postgres (Griatch)
+- [Fix][issue3615]: Using `print()` in `py` caused an infinite loop (Griatch)
 - [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 - Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)
 
@@ -44,6 +45,7 @@ did not add it to the handler's object (Griatch)
 [issue3519]: https://github.com/evennia/evennia/issues/3519
 [issue3612]: https://github.com/evennia/evennia/issues/3612
 [issue3624]: https://github.com/evennia/evennia/issues/3624
+[issue3615]: https://github.com/evennia/evennia/issues/3615
 [pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
