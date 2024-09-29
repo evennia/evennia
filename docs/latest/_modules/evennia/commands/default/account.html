@@ -930,10 +930,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">ftable</span></div>
 
-<div class="viewcode-block" id="CmdColorTest.make_hex_color_from_column"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.make_hex_color_from_column">[docs]</a>    <span class="k">def</span> <span class="nf">make_hex_color_from_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_number</span><span class="p">):</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">76</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">510</span> <span class="o">/</span> <span class="mi">76</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">76</span>
+<div class="viewcode-block" id="CmdColorTest.make_hex_color_from_column"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.make_hex_color_from_column">[docs]</a>    <span class="k">def</span> <span class="nf">make_hex_color_from_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_number</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="n">count</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">510</span> <span class="o">/</span> <span class="n">count</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">column_number</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="n">count</span>
 
         <span class="k">if</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">:</span>
             <span class="n">g</span> <span class="o">=</span> <span class="mi">510</span> <span class="o">-</span> <span class="n">g</span>
@@ -1023,14 +1023,25 @@
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">):</span>
             <span class="c1"># show abbreviated truecolor sample (16.7 million colors in truecolor)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">76</span><span class="p">):</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;|[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">make_hex_color_from_column</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2"> |n&quot;</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;True Colors (if this is not a smooth rainbow transition, your client might not &quot;</span>
+                <span class="s2">&quot;report that it can handle truecolor): </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">display_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()</span>
+            <span class="n">num_colors</span> <span class="o">=</span> <span class="n">display_width</span> <span class="o">*</span> <span class="mi">1</span>
+            <span class="n">color_block</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;|[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">make_hex_color_from_column</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">num_colors</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_colors</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">color_block</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">color_block</span><span class="p">[</span><span class="n">iline</span> <span class="p">:</span> <span class="n">iline</span> <span class="o">+</span> <span class="n">display_width</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">iline</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_colors</span><span class="p">,</span> <span class="n">display_width</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">color_block</span><span class="p">)</span>
 
             <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;some of the truecolor colors (if not all hues show, your client might not report that it can&quot;</span>
-                <span class="s2">&quot; handle trucolor.):&quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|nfg: |#FF0000||#FF0000|n (|#F00||#F00|n) to |#0000FF||#0000FF|n (|#00F||#00F|n)&quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|nbg: |[#FF0000||[#FF0000|n (|[#F00||[#F00|n) to |n|[#0000FF||[#0000FF |n(|[#00F||[#00F|n)&quot;</span>
             <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>

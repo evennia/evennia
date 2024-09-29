@@ -5,25 +5,19 @@
 Color can be a very useful tool for your game. It can be used to increase readability and make your
 game more appealing visually.
 
-Remember however that, with the exception of the webclient, you generally don't control the client
-used to connect to the game.  There is, for example, one special tag meaning "yellow". But exactly
-*which* hue of yellow is actually displayed on the user's screen depends on the settings of their
-particular mud client. They could even swap the colours around or turn them off altogether if so
-desired. Some clients don't even support color - text games are also played with special reading
-equipment by people who are blind or have otherwise diminished eyesight.
+Remember however that, with the exception of the webclient, you generally don't control the client used to connect to the game.  There is, for example, one special tag meaning "yellow". But exactly *which* hue of yellow is actually displayed on the user's screen depends on the settings of their particular mud client. They could even swap the colours around or turn them off altogether if so desired. Some clients don't even support color - text games are also played with special reading equipment by people who are blind or have otherwise diminished eyesight.
 
 So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display
-critical information. If you are coding the game, you can add functionality to let users disable
-colours as they please, as described [here](../Howtos/Manually-Configuring-Color.md).
+critical information. The default `screenreader` command will automatically turn off all color for a user (as well as clean up many line decorations etc). Make sure your game is still playable and understandable with this active.
 
 Evennia supports two color standards: 
 
 - `ANSI` - 16 foreground colors + 8  background colors. Widely supported. 
-- `Xterm256` - 128 RGB colors, 32 greyscales. Not always supported in old clients.
+- `Xterm256` - 128 RGB colors, 32 greyscales. Not always supported in old clients. Falls back to ANSI.
+- `Truecolor` - 24B RGB colors using hex notation. Not supported by many clients. Falls back to `XTerm256`.
 
 To see which colours your client support, use the default `color` command. This will list all
-available colours for ANSI and Xterm256 along with the codes you use for them. The 
-central ansi/xterm256 parser is located in  [evennia/utils/ansi.py](evennia.utils.ansi).
+available colours for ANSI and Xterm256, as well as a selection of True color codes along with the codes you use for them. The central ansi/xterm256 parser is located in  [evennia/utils/ansi.py](evennia.utils.ansi), the true color one in [evennia/utils/true/hex_colors.py](evennia.utils.hex_colors).
 
 ## ANSI colours and symbols
 
@@ -187,10 +181,8 @@ See the [Wikipedia entry on web colors](https://en.wikipedia.org/wiki/Web_colors
 ```
 
 Some clients support 24-bit colors. This is also called [true color](https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)).
-Not all clients support true color, they will instead see the closest equivalent. It's important to bear in mind that things may look quite
-different from what you intended if you use subtle gradations in true color and it's viewed with a client that doesn't support true color.
+Not all clients support true color, they will instead see the closest equivalent. It's important to bear in mind that things may look quite different from what you intended if you use subtle gradations in true color and it's viewed with a client that doesn't support true color.
 The hexadecimal color codes used here are the same ones used in web design.
-
 
 | Tag | Effect | 
 | -------- | ---- | 
