@@ -25,7 +25,7 @@ To see which colours your client support, use the default `color` command. This 
 available colours for ANSI and Xterm256 along with the codes you use for them. The 
 central ansi/xterm256 parser is located in  [evennia/utils/ansi.py](evennia.utils.ansi).
 
-## ANSI colours
+## ANSI colours and symbols
 
 Evennia supports the `ANSI` standard for text. This is by far the most supported MUD-color standard, available in all but the most ancient mud clients. 
 
@@ -35,39 +35,39 @@ will see the text in the specified colour, otherwise the tags will be stripped (
 
 For the webclient, Evennia will translate the codes to CSS tags.
 
-| Tag | Effect | 
-| ----  | ----- | 
-| \|n | end all color formatting, including background colors. |
-|\|r | bright red foreground color |
-|\|g | bright green foreground color |
-|\|y | bright yellow foreground color |
-|\|b | bright blue foreground color |
-|\|m | bright magentaforeground color |
-|\|c | bright cyan foreground color |
-|\|w | bright white foreground color |
-|\|x | bright black (dark grey) foreground color |
-|\|R | normal red foreground color |
-|\|G | normal green foreground color |
-|\|Y | normal yellow foreground color |
-|\|B | normal blue foreground color |
-|\|M | normal magentaforeground color |
-|\|C | normal cyan foreground color |
-|\|W | normal white (light grey) foreground color |
-|\|X | normal black foreground color |
-| \|\[# | background colours, e.g. \|\[c for bright cyan background and \|\[C a normal cyan background. |
-| \|!# | foreground color that inherits brightness from previous tags. Always uppcase, like \|!R |
-| \|h | make any following foreground ANSI colors bright (for Xterm256/true color makes the font bold if client supports it). Use with \|!#. Technically, \|h\|G == \|g. |
-| \|H  | negates the effects of \|h | 
-| \|u  | underline font if client supports it | 
-| \|U  | negates the effects of \|u | 
-| \|i  | italic font if client supports it | 
-| \|I  | negates the effects of \|i | 
-| \|s  | strikethrough font if client supports it | 
-| \|S  | negates the effects of \|s | 
-| \|/ | line break. Use instead of Python \\n when adding strings from in-game. |
-| \|- | tab character when adding strings in-game. Can vay per client, so usually better with spaces. |
-| \|_ | a space. Only needed to avoid auto-cropping at the end of a in-game input | 
-| \|* | invert the current text/background colours, like a marker. See note below. |  
+| Tag   | Effect                                                                                                                                                           |     |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| \|n   | end all color formatting, including background colors.                                                                                                           |     |
+| \|r   | bright red foreground color                                                                                                                                      |     |
+| \|g   | bright green foreground color                                                                                                                                    |     |
+| \|y   | bright yellow foreground color                                                                                                                                   |     |
+| \|b   | bright blue foreground color                                                                                                                                     |     |
+| \|m   | bright magentaforeground color                                                                                                                                   |     |
+| \|c   | bright cyan foreground color                                                                                                                                     |     |
+| \|w   | bright white foreground color                                                                                                                                    |     |
+| \|x   | bright black (dark grey) foreground color                                                                                                                        |     |
+| \|R   | normal red foreground color                                                                                                                                      |     |
+| \|G   | normal green foreground color                                                                                                                                    |     |
+| \|Y   | normal yellow foreground color                                                                                                                                   |     |
+| \|B   | normal blue foreground color                                                                                                                                     |     |
+| \|M   | normal magentaforeground color                                                                                                                                   |     |
+| \|C   | normal cyan foreground color                                                                                                                                     |     |
+| \|W   | normal white (light grey) foreground color                                                                                                                       |     |
+| \|X   | normal black foreground color                                                                                                                                    |     |
+| \|\[# | background colours, e.g. \|\[c for bright cyan background and \|\[C a normal cyan background.                                                                    |     |
+| \|!#  | foreground color that inherits brightness from previous tags. Always uppcase, like \|!R                                                                          |     |
+| \|h   | make any following foreground ANSI colors bright (for Xterm256/true color makes the font bold if client supports it). Use with \|!#. Technically, \|h\|G == \|g. |     |
+| \|H   | negates the effects of \|h                                                                                                                                       |     |
+| \|u   | underline font (not supported in Evennia webclient)                                                                                                              |     |
+| \|U   | negates the effects of \|u                                                                                                                                       |     |
+| \|i   | italic font (not supported in Evennia webclient)                                                                                                                 |     |
+| \|I   | negates the effects of \|i                                                                                                                                       |     |
+| \|s   | strikethrough font (not supported in Evennia webclient)                                                                                                          |     |
+| \|S   | negates the effects of \|s                                                                                                                                       |     |
+| \|/   | line break. Use instead of Python \\n when adding strings from in-game.                                                                                          |     |
+| \|-   | tab character when adding strings in-game. Can vay per client, so usually better with spaces.                                                                    |     |
+| \|_   | a space. Only needed to avoid auto-cropping at the end of a in-game input                                                                                        |     |
+| \|*   | invert the current text/background colours, like a marker. See note below.                                                                                       |     |
 
 Here is an example of the tags in action:
 
