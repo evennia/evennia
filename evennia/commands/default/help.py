@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from itertools import chain
 
 from django.conf import settings
-
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
@@ -21,13 +20,7 @@ from evennia.locks.lockhandler import LockException
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.utils import (
-    class_from_module,
-    dedent,
-    format_grid,
-    inherits_from,
-    pad,
-)
+from evennia.utils.utils import class_from_module, dedent, format_grid, inherits_from, pad
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -477,6 +470,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             tuple: A tuple (match, suggestions).
 
         """
+
         def strip_prefix(query):
             if query and query[0] in settings.CMD_IGNORE_PREFIXES:
                 return query[1:]
@@ -742,7 +736,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                     if not fuzzy_match:
                         # no match found - give up
-                        checked_topic = topic + f"/{subtopic_query}"
+                        checked_topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
                         output = self.format_help_entry(
                             topic=topic,
                             help_text=f"No help entry found for '{checked_topic}'",
@@ -757,7 +751,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 subtopic_map = subtopic_map.pop(subtopic_query)
                 subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
                 # keep stepping down into the tree, append path to show position
-                topic = topic + f"/{subtopic_query}"
+                topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
 
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]

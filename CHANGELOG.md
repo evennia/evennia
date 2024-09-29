@@ -32,6 +32,8 @@ did not add it to the handler's object (Griatch)
 - [Fix][pull3625]: Lycanthropy tutorial page had some issues (feyrkh)
 - [Fix][pull3622]: Fix for examine command tracebacking with strvalue error
   (aMiss-aWry)
+- [Fix][issue3612]: Make sure help entries' `subtopic_separator_char` is
+  respected (Griatch)
 - [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
 - Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)
 
@@ -39,6 +41,7 @@ did not add it to the handler's object (Griatch)
 [issue3590]: https://github.com/evennia/evennia/issues/3590
 [issue3556]: https://github.com/evennia/evennia/issues/3556
 [issue3519]: https://github.com/evennia/evennia/issues/3519
+[issue3612]: https://github.com/evennia/evennia/issues/3612
 [pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
