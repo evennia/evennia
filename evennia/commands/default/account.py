@@ -22,9 +22,8 @@ method. Otherwise all text will be returned to all connected sessions.
 import time
 from codecs import lookup as codecs_lookup
 
-from django.conf import settings
-
 import evennia
+from django.conf import settings
 from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -814,8 +813,8 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     # the slices of the ANSI_PARSER lists to use for retrieving the
     # relevant color tags to display. Replace if using another schema.
     # This command can only show one set of markup.
-    slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
-    slice_dark_fg = slice(15, 23)  # from ANSI_PARSER.ansi_map
+    slice_bright_fg = slice(13, 21)  # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(21, 29)  # from ANSI_PARSER.ansi_map
     slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
     slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
 
