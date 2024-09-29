@@ -838,10 +838,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             )
         return ftable
 
-    def make_hex_color_from_column(self, column_number):
-        r = 255 - column_number * 255 / 76
-        g = column_number * 510 / 76
-        b = column_number * 255 / 76
+    def make_hex_color_from_column(self, column_number, count):
+        r = 255 - column_number * 255 / count
+        g = column_number * 510 / count
+        b = column_number * 255 / count
 
         if g > 255:
             g = 510 - g
@@ -936,8 +936,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                 "True Colors (if this is not a smooth rainbow transition, your client might not "
                 "report that it can handle truecolor): \n"
             )
-            for i in range(76):
-                string += f"|[{self.make_hex_color_from_column(i)} |n"
+            display_width = self.client_width()
+            num_colors = display_width * 1
+            color_block = [
+                f"|[{self.make_hex_color_from_column(i, num_colors)} " for i in range(num_colors)
+            ]
+            color_block = [
+                "".join(color_block[iline : iline + display_width])
+                for iline in range(0, num_colors, display_width)
+            ]
+            string += "\n".join(color_block)
 
             string += (
                 "\n|nfg: |#FF0000||#FF0000|n (|#F00||#F00|n) to |#0000FF||#0000FF|n (|#00F||#00F|n)"
