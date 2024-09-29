@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 4.4.0
+
+Sep 29, 2024
 
 - Feat: Support `scripts key:typeclass` to create global scripts
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)
