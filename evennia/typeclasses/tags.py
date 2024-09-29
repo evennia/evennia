@@ -14,7 +14,6 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
-
 from evennia.locks.lockfuncs import perm as perm_lockfunc
 from evennia.utils.utils import make_iter, to_str
 
@@ -592,8 +591,10 @@ class TagHandler(object):
 
         """
         ret = []
+        category = category.strip().lower() if category is not None else None
         for keystr in make_iter(key):
             # note - the _getcache call removes case sensitivity for us
+            keystr = str(keystr).strip().lower()
             ret.extend(
                 [
                     tag if return_tagobj else to_str(tag.db_key)
@@ -632,7 +633,7 @@ class TagHandler(object):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
             tagstr = str(key).strip().lower()
-            category = category.strip().lower() if category else category
+            category = str(category).strip().lower() if category else category
 
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (but how to check)?
@@ -662,7 +663,7 @@ class TagHandler(object):
             "tag__db_tagtype": self._tagtype,
         }
         if category:
-            query["tag__db_category"] = category.strip().lower()
+            query["tag__db_category"] = str(category).strip().lower()
         getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query).delete()
         self._cache = {}
         self._catcache = {}
@@ -727,7 +728,7 @@ class TagHandler(object):
                 keys[tup[1]].append(tup[0])
                 data[tup[1]] = tup[2]  # overwrite previous
         for category, key in keys.items():
-            self.add(key=key, category=category, data=data.get(category, None))
+            self.add(key=str(key).strip().lower(), category=category, data=data.get(category, None))
 
     def batch_remove(self, *args):
         """
@@ -748,7 +749,9 @@ class TagHandler(object):
             elif nlen > 1:
                 keys[tup[1]].append(tup[0])
         for category, key in keys.items():
-            self.remove(key=key, category=category, data=data.get(category, None))
+            self.remove(
+                key=str(key).strip().lower(), category=category, data=data.get(category, None)
+            )
 
     def __str__(self):
         return ",".join(self.all())

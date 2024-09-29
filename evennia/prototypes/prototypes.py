@@ -627,6 +627,7 @@ def search_prototype(
 
         if key:
             # exact or partial match on key
+            key = str(key).strip().lower()
             exact_match = query.filter(Q(db_key__iexact=key))
             if not exact_match and fuzzy_matching:
                 # try with partial match instead
