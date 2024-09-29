@@ -407,7 +407,7 @@ class EquipmentHandler:
        
         for to_backpack_obj in to_backpack:
             # put stuff in backpack
-            slots[use_slot].append(to_backpack_obj)
+            slots[WieldLocation.BACKPACK].append(to_backpack_obj)
        
         # store new state
         self._save() 
