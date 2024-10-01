@@ -320,13 +320,13 @@ DATABASES = {
     }
 }
 # PRAGMA (directives) for the default Sqlite3 database operations. This can be used to tweak
-# performance for your setup. Don't change this unless you know what # you are doing.
+# performance for your setup. Don't change this unless you know what you are doing. Also
+# be careful to change for an already populated database.
 SQLITE3_PRAGMAS = (
     "PRAGMA cache_size=10000",
-    "PRAGMA synchronous=1",
+    "PRAGMA synchronous=OFF",
     "PRAGMA count_changes=OFF",
     "PRAGMA temp_store=2",
-    "PRAGMA journal_mode=WAL",
 )
 
 # How long the django-database connection should be kept open, in seconds.
