@@ -426,13 +426,13 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="p">}</span>
 <span class="p">}</span>
 <span class="c1"># PRAGMA (directives) for the default Sqlite3 database operations. This can be used to tweak</span>
-<span class="c1"># performance for your setup. Don&#39;t change this unless you know what # you are doing.</span>
+<span class="c1"># performance for your setup. Don&#39;t change this unless you know what you are doing. Also</span>
+<span class="c1"># be careful to change for an already populated database.</span>
 <span class="n">SQLITE3_PRAGMAS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;PRAGMA cache_size=10000&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PRAGMA synchronous=1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRAGMA synchronous=OFF&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PRAGMA count_changes=OFF&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PRAGMA temp_store=2&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PRAGMA journal_mode=WAL&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># How long the django-database connection should be kept open, in seconds.</span>
