@@ -9,18 +9,21 @@ but the professional edition has integrated support for Django which can help.
 
 ## From an existing project
 
+Use this if you want to use PyCharm with an already existing Evennia game.
 First, ensure you have completed the steps outlined [here](https://www.evennia.com/docs/latest/Setup/Installation.html#requirements).
 Especially the virtualenv part, this will make setting the IDE up much easier.
 
 1. Open Pycharm and click on the open button, open your root folder corresponding to `mygame/`.
 2. Click on File -> Settings -> Project -> Python Interpreter -> Add Interpreter -> Add Local Interpreter
 ![Example](https://imgur.com/QRo8O1C.png)
-3. Click on VirtualEnv -> Existing Interpreter -> Select your existing `evenv` folder and click ok
+3. Click on VirtualEnv -> Existing Interpreter -> Select your existing virtualenv folder, 
+   should be `evenv` if you followed the default installation.
+
 ![Example](https://imgur.com/XDmgjTw.png)
 
 ## From a new project
 
-
+Use this if you are starting from scratch or want to make a new Evennia game.
 1. Click on the new project button.
 2. Select the location for your project.
 You should create two new folders, one for the root of your project and one
@@ -71,7 +74,10 @@ or runner for some reason (or just learn how they work!), see Run Configuration 
 
 ### Run Evennia with a Run/Debug Configuration
 
-This configuration allows you to launch Evennia from inside PyCharm. Besides convenience, it also allows suspending and debugging the evennia_launcher or evennia_runner at points earlier than you could by running them externally and attaching. In fact by the time the server and/or portal are running the launcher will have exited already.
+This configuration allows you to launch Evennia from inside PyCharm. 
+Besides convenience, it also allows suspending and debugging the evennia_launcher or evennia_runner
+at points earlier than you could by running them externally and attaching.
+In fact by the time the server and/or portal are running the launcher will have exited already.
 
 #### On Windows
 1. Go to `Run > Edit Configutations...`
@@ -93,39 +99,27 @@ Select it start and press the debug icon to begin debugging.
 5. Add an environment variable `DJANGO_SETTINGS_MODULE=server.conf.settings`
 6. Ensure the chosen interpreter is your virtualenv
 7. Set Working directory to your game folder (not your project folder nor evennia)
-8. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD start" or similar).
+8. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD Server" or similar).
 
 A dropdown box holding your new configurations should appear next to your PyCharm run button. 
 Select it start and press the debug icon to begin debugging.
-Note that this only starts the server process, you will still need to start the portal
-using evennia start AFTER launching the server process.
+Note that this only starts the server process, you can either start the portal manually or set up
+the configuration for the portal. The steps are very similar to the ones above.
 
-### Alternative config - utilizing logfiles as source of data
+1. Go to `Run > Edit Configutations...`
+2. Click the plus-symbol to add a new configuration and choose Python
+3. Add the script: `/<yourprojectfolder>/.evenv/bin/twistd` (substitute your virtualenv if it's not named `evenv`)
+4. Set script parameters to: `--python=/<yourprojectfolder>/.evenv/lib/python3.11/site-packages/evennia/server/portal/portal.py --logger=evennia.utils.logger.GetServerLogObserver --pidfile=/<yourprojectfolder>/<yourgamefolder>/server/portal.pid --nodaemon`
+5. Add an environment variable `DJANGO_SETTINGS_MODULE=server.conf.settings`
+6. Ensure the chosen interpreter is your virtualenv
+7. Set Working directory to your game folder (not your project folder nor evennia)
+8. You can refer to the PyCharm documentation for general info, but you'll want to set at least a config name (like "MyMUD Portal" or similar).
 
-This configuration takes a bit different approach as instead of focusing on getting the data back through logfiles. Reason for that is this way you can easily separate data streams, for example you rarely want to follow both server and portal at the same time, and this will allow it. This will also make sure to stop the evennia before starting it, essentially working as reload command (it will also include instructions how to disable that part of functionality). We will start by defining a configuration that will stop evennia. This assumes that `upfire` is your pycharm project name, and also the game name, hence the `upfire/upfire` path.
+You should now be able to start both modes and get full debugging.
+If you want to go one step further, you can add another config to automatically start both.
 
-1. Go to `Run > Edit Configutations...`\
-1. Click the plus-symbol to add a new configuration and choose the python interpreter to use (should be project default)
-1. Name the configuration as "stop evennia" and fill rest of the fields accordingly to the image:
-![Stop run configuration](https://i.imgur.com/gbkXhlG.png)
-1. Press `Apply`
+1. Go to `Run > Edit Configutations...`
+2. Click the plus-symbol to add a new configuration and choose Compound
+3. Add your two previous configurations, name it appropriately and press Ok.
 
-Now we will define the start/reload command that will make sure that evennia is not running already, and then start the server in one go.
-1. Go to `Run > Edit Configutations...`\
-1. Click the plus-symbol to add a new configuration and choose the python interpreter to use (should be project default)
-1. Name the configuration as "start evennia" and fill rest of the fields accordingly to the image:
-![Start run configuration](https://i.imgur.com/5YEjeHq.png)
-1. Navigate to the `Logs` tab and add the log files you would like to follow. The picture shows
-adding `portal.log` which will show itself in `portal` tab when running:
-![Configuring logs following](https://i.imgur.com/gWYuOWl.png)
-1. Skip the following steps if you don't want the launcher to stop evennia before starting.
-1. Head back to `Configuration` tab and press the `+` sign at the bottom, under `Before launch....`
-and select `Run another configuration` from the submenu that will pop up.
-1. Click `stop evennia` and make sure that it's added to the list like on the image above.
-1. Click `Apply` and close the run configuration window.
-
-You are now ready to go, and if you will fire up `start evennia` configuration you should see
-following in the bottom panel:
-![Example of running alternative configuration](https://i.imgur.com/nTfpC04.png)
-and you can click through the tabs to check appropriate logs, or even the console output as it is
-still running in interactive mode.
+You can now start your game with one click with full debugging active.
