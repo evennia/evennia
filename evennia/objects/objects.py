@@ -397,6 +397,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     objects = ObjectManager()
 
+    # Used by get_display_desc when self.db.desc is None
+    default_description = _("You see nothing special.")
+
     # populated by `return_appearance`
     appearance_template = """
 {header}
@@ -1464,10 +1467,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if account:
                 obj.db.creator_id = account.id
 
-            # Set description if there is none, or update it if provided
-            if description or not obj.db.desc:
-                desc = description if description else "You see nothing special."
-                obj.db.desc = desc
+            # Set description if provided
+            if description:
+                obj.db.desc = description
 
         except Exception as e:
             errors.append(f"An error occurred while creating this '{key}' object: {e}")
@@ -1746,7 +1748,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The desc display string.
 
         """
-        return self.db.desc or "You see nothing special."
+        return self.db.desc or self.default_description
 
     def get_display_exits(self, looker, **kwargs):
         """
@@ -3004,6 +3006,9 @@ class DefaultCharacter(DefaultObject):
         "edit:pid({account_id}) or perm(Admin)"
     )
 
+    # Used by get_display_desc when self.db.desc is None
+    default_description = _("This is a character.")
+
     @classmethod
     def get_default_lockstring(
         cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
@@ -3117,9 +3122,9 @@ class DefaultCharacter(DefaultObject):
             if locks:
                 obj.locks.add(locks)
 
-            # If no description is set, set a default description
-            if description or not obj.db.desc:
-                obj.db.desc = description if description else _("This is a character.")
+            # Set description if provided
+            if description:
+                obj.db.desc = description
 
         except Exception as e:
             errors.append(f"An error occurred while creating object '{key} object: {e}")
@@ -3330,6 +3335,9 @@ class DefaultRoom(DefaultObject):
     # Generally, a room isn't expected to HAVE a location, but maybe in some games?
     _content_types = ("room",)
 
+    # Used by get_display_desc when self.db.desc is None
+    default_description = _("This is a room.")
+
     @classmethod
     def create(
         cls,
@@ -3400,9 +3408,9 @@ class DefaultRoom(DefaultObject):
             if account:
                 obj.db.creator_id = account.id
 
-            # If no description is set, set a default description
-            if description or not obj.db.desc:
-                obj.db.desc = description if description else _("This is a room.")
+            # Set description if provided
+            if description:
+                obj.db.desc = description
 
         except Exception as e:
             errors.append(f"An error occurred while creating this '{key}' object: {e}")
@@ -3494,6 +3502,9 @@ class DefaultExit(DefaultObject):
     _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
+
+    # Used by get_display_desc when self.db.desc is None
+    default_description = _("This is an exit.")
 
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
@@ -3609,9 +3620,9 @@ class DefaultExit(DefaultObject):
             if account:
                 obj.db.creator_id = account.id
 
-            # If no description is set, set a default description
-            if description or not obj.db.desc:
-                obj.db.desc = description if description else _("This is an exit.")
+            # Set description if provided
+            if description:
+                obj.db.desc = description
 
         except Exception as e:
             errors.append(f"An error occurred while creating this '{key}' object: {e}")

@@ -693,6 +693,7 @@ class CmdCreate(ObjManipCommand):
             )
             if errors:
                 self.msg(errors)
+                
             if not obj:
                 continue
 
@@ -702,9 +703,7 @@ class CmdCreate(ObjManipCommand):
                 )
             else:
                 string = f"You create a new {obj.typename}: {obj.name}."
-            # set a default desc
-            if not obj.db.desc:
-                obj.db.desc = "You see nothing special."
+
             if "drop" in self.switches:
                 if caller.location:
                     obj.home = caller.location
