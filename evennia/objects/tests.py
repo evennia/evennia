@@ -30,6 +30,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(obj.db.creator_ip, self.ip)
         self.assertEqual(obj.db_home, self.room1)
 
+    def test_object_default_description(self):
+        obj, errors = DefaultObject.create("void")
+        self.assertTrue(obj,errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj)) 
+            
     def test_character_create(self):
         description = "A furry green monster, reeking of garbage."
         home = self.room1.dbref
@@ -57,6 +64,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(obj.name, "SigurXurXorarinsson")
 
+    def test_character_default_description(self):
+        obj, errors = DefaultCharacter.create("dementor")
+        self.assertTrue(obj,errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj)) 
+
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
         obj, errors = DefaultRoom.create("alley", self.account, description=description, ip=self.ip)
@@ -64,6 +78,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+
+    def test_room_default_description(self):
+        obj, errors = DefaultRoom.create("black hole")
+        self.assertTrue(obj,errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_create(self):
         description = (
@@ -77,6 +98,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+    
+    def test_exit_default_description(self):
+        obj, errors = DefaultExit.create("the nothing")
+        self.assertTrue(obj,errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_get_return_exit(self):
         ex1, _ = DefaultExit.create("north", self.room1, self.room2, account=self.account)
