@@ -1930,7 +1930,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if hasattr(self, "_createdict"):
             # this will be set if the object was created by the utils.create function
-            # or the spawner. We want these kwargs to override the values set by 
+            # or the spawner. We want these kwargs to override the values set by
             # the initial hooks.
             cdict = self._createdict
             updates = []
@@ -1974,7 +1974,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     self.nattributes.add(key, value)
 
             del self._createdict
-        
+
         # run the post-setup hook
         self.at_object_post_creation()
 
@@ -2057,7 +2057,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Called when this object is spawned or updated from a prototype, after all other
         hooks have been run.
-        
+
         Keyword Args:
             prototype (dict):  The prototype that was used to spawn or update this object.
         """

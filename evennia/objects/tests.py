@@ -32,11 +32,11 @@ class DefaultObjectTest(BaseEvenniaTest):
 
     def test_object_default_description(self):
         obj, errors = DefaultObject.create("void")
-        self.assertTrue(obj,errors)
+        self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertIsNone(obj.db.desc)
-        self.assertEqual(obj.default_description, obj.get_display_desc(obj)) 
-            
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
+
     def test_character_create(self):
         description = "A furry green monster, reeking of garbage."
         home = self.room1.dbref
@@ -66,10 +66,10 @@ class DefaultObjectTest(BaseEvenniaTest):
 
     def test_character_default_description(self):
         obj, errors = DefaultCharacter.create("dementor")
-        self.assertTrue(obj,errors)
+        self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertIsNone(obj.db.desc)
-        self.assertEqual(obj.default_description, obj.get_display_desc(obj)) 
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
@@ -81,7 +81,7 @@ class DefaultObjectTest(BaseEvenniaTest):
 
     def test_room_default_description(self):
         obj, errors = DefaultRoom.create("black hole")
-        self.assertTrue(obj,errors)
+        self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertIsNone(obj.db.desc)
         self.assertEqual(obj.default_description, obj.get_display_desc(obj))
@@ -98,10 +98,10 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
-    
+
     def test_exit_default_description(self):
         obj, errors = DefaultExit.create("the nothing")
-        self.assertTrue(obj,errors)
+        self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertIsNone(obj.db.desc)
         self.assertEqual(obj.default_description, obj.get_display_desc(obj))
@@ -294,7 +294,7 @@ class TestObjectManager(BaseEvenniaTest):
         query = ObjectDB.objects.get_objs_with_key_or_alias("")
         self.assertFalse(query)
         query = ObjectDB.objects.get_objs_with_key_or_alias("", exact=False)
-        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by('id')))
+        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by("id")))
 
         query = ObjectDB.objects.get_objs_with_key_or_alias(
             "", exact=False, typeclasses="evennia.objects.objects.DefaultCharacter"
