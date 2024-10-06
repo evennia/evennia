@@ -44,7 +44,7 @@ class TestStorage(BaseEvenniaCommandTest):
             caller=self.char1,
         )
 
-    def test_store_retrieve_while_not_in_storage(self):
+    def test_store_retrieve_while_not_in_storeroom(self):
         self.char2.location = self.char1
         self.call(storage.CmdStore(), "obj", "You cannot store anything here.", caller=self.char2)
         self.call(
@@ -94,7 +94,6 @@ class TestStorage(BaseEvenniaCommandTest):
             f"You store {self.obj1.get_display_name(self.char1)} here.",
             caller=self.char1,
         )
-
         self.assertEqual(self.obj1.location, None)
         self.call(
             storage.CmdStorage(),
@@ -103,3 +102,21 @@ class TestStorage(BaseEvenniaCommandTest):
             caller=self.char1,
         )
         self.assertEqual(self.obj1.location, self.room1)
+        self.call(
+            storage.CmdStorage(),
+            "",
+            f"This is now a storage location with id: {self.room1.id}.",
+            caller=self.char1,
+        )
+        self.call(
+            storage.CmdStorage(),
+            "/delete",
+            "You remove the storage capabilities of the room.",
+            caller=self.char1,
+        )
+        self.call(
+            storage.CmdStorage(),
+            "/shared",
+            f"This is now a storage location with id: shared_{self.room1.id}.",
+            caller=self.char1,
+        )
