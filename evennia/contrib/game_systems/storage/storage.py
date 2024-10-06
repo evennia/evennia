@@ -168,10 +168,9 @@ class CmdStorage(MuxCommand):
         caller.msg(f"This is now a storage location with id: {new_storage_id}.")
 
 
-# CmdSet for easily install all commands
 class StorageCmdSet(CmdSet):
     """
-    The git command.
+    CmdSet for all storage-related commands
     """
 
     def at_cmdset_creation(self):
