@@ -26,6 +26,7 @@ This implements the following telnet OOB communication protocols:
 
 import json
 import re
+import weakref
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
@@ -84,16 +85,16 @@ class TelnetOOB:
             protocol (Protocol): The active protocol.
 
         """
-        self.protocol = protocol
-        self.protocol.protocol_flags["OOB"] = False
+        self.protocol = weakref.ref(protocol)
+        self.protocol().protocol_flags["OOB"] = False
         self.MSDP = False
         self.GMCP = False
         # ask for the available protocols and assign decoders
         # (note that handshake_done() will be called twice!)
-        self.protocol.negotiationMap[MSDP] = self.decode_msdp
-        self.protocol.negotiationMap[GMCP] = self.decode_gmcp
-        self.protocol.will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
-        self.protocol.will(GMCP).addCallbacks(self.do_gmcp, self.no_gmcp)
+        self.protocol().negotiationMap[MSDP] = self.decode_msdp
+        self.protocol().negotiationMap[GMCP] = self.decode_gmcp
+        self.protocol().will(MSDP).addCallbacks(self.do_msdp, self.no_msdp)
+        self.protocol().will(GMCP).addCallbacks(self.do_gmcp, self.no_gmcp)
         self.oob_reported = {}
 
     def no_msdp(self, option):
@@ -105,7 +106,7 @@ class TelnetOOB:
 
         """
         # no msdp, check GMCP
-        self.protocol.handshake_done()
+        self.protocol().handshake_done()
 
     def do_msdp(self, option):
         """
@@ -116,8 +117,8 @@ class TelnetOOB:
 
         """
         self.MSDP = True
-        self.protocol.protocol_flags["OOB"] = True
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["OOB"] = True
+        self.protocol().handshake_done()
 
     def no_gmcp(self, option):
         """
@@ -128,7 +129,7 @@ class TelnetOOB:
             option (Option): Not used.
 
         """
-        self.protocol.handshake_done()
+        self.protocol().handshake_done()
 
     def do_gmcp(self, option):
         """
@@ -139,8 +140,8 @@ class TelnetOOB:
 
         """
         self.GMCP = True
-        self.protocol.protocol_flags["OOB"] = True
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["OOB"] = True
+        self.protocol().handshake_done()
 
     # encoders
 
@@ -375,7 +376,7 @@ class TelnetOOB:
                 cmds["msdp_{}".format(remap)] = cmds.pop(lower_case[remap])
 
         # print("msdp data in:", cmds)  # DEBUG
-        self.protocol.data_in(**cmds)
+        self.protocol().data_in(**cmds)
 
     def decode_gmcp(self, data):
         """
@@ -424,7 +425,7 @@ class TelnetOOB:
             if cmdname.lower().startswith(b"core_"):
                 # if Core.cmdname, then use cmdname
                 cmdname = cmdname[5:]
-            self.protocol.data_in(**{cmdname.lower().decode(): [args, kwargs]})
+            self.protocol().data_in(**{cmdname.lower().decode(): [args, kwargs]})
 
     # access methods
 
@@ -441,8 +442,8 @@ class TelnetOOB:
 
         if self.MSDP:
             encoded_oob = self.encode_msdp(cmdname, *args, **kwargs)
-            self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
+            self.protocol()._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
 
         if self.GMCP:
             encoded_oob = self.encode_gmcp(cmdname, *args, **kwargs)
-            self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)
+            self.protocol()._write(IAC + SB + GMCP + encoded_oob + IAC + SE)
