@@ -1,5 +1,16 @@
 # Changelog
 
+
+## Main branch
+
+- [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
+- [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
+- Docs updates: feykrh
+
+[pull3626]: https://github.com/evennia/evennia/pull/3626
+[pull3676]: https://github.com/evennia/evennia/pull/3676
+[doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
+
 ## Evennia 4.4.1
 
 Oct 1, 2024

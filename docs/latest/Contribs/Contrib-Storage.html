@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Puzzles System &#8212; Evennia latest documentation</title>
+    <title>Item Storage &#8212; Evennia latest documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Item Storage" href="Contrib-Storage.html" />
-    <link rel="prev" title="Evennia Multidescer" href="Contrib-Multidescer.html" /> 
+    <link rel="next" title="Turn based battle system framework" href="Contrib-Turnbattle.html" />
+    <link rel="prev" title="Puzzles System" href="Contrib-Puzzles.html" /> 
   </head><body>
 
      
@@ -34,14 +34,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Contrib-Storage.html" title="Item Storage"
+          <a href="Contrib-Turnbattle.html" title="Turn based battle system framework"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Contrib-Multidescer.html" title="Evennia Multidescer"
+          <a href="Contrib-Puzzles.html" title="Puzzles System"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Puzzles System</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Item Storage</a></li> 
       </ul>
     </div>  
 
@@ -65,24 +65,24 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Puzzles System</a><ul>
+<li><a class="reference internal" href="#">Item Storage</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#details">Details</a></li>
+<li><a class="reference internal" href="#technical-info">Technical info</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Contrib-Multidescer.html"
-                        title="previous chapter">Evennia Multidescer</a></p>
+  <p class="topless"><a href="Contrib-Puzzles.html"
+                        title="previous chapter">Puzzles System</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Contrib-Storage.html"
-                        title="next chapter">Item Storage</a></p>
+  <p class="topless"><a href="Contrib-Turnbattle.html"
+                        title="next chapter">Turn based battle system framework</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Contribs/Contrib-Puzzles.md.txt"
+      <li><a href="../_sources/Contribs/Contrib-Storage.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -100,7 +100,7 @@
 <h3>Doc Versions</h3>
 <ul>
   
-    <li><a href="Contrib-Puzzles.html">latest (main branch)</a></li>
+    <li><a href="Contrib-Storage.html">latest (main branch)</a></li>
 
     <li><a href="../4.x/index.html">v4.0.0 branch (outdated)</a></li>
   
@@ -120,75 +120,38 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="puzzles-system">
-<h1>Puzzles System<a class="headerlink" href="#puzzles-system" title="Permalink to this headline">¶</a></h1>
-<p>Contribution by Henddher 2018</p>
-<p>Intended for adventure-game style combination puzzles, such as combining fruits
-and a blender to create a smoothie. Provides a typeclass and commands for objects
-that can be combined (i.e. used together). Unlike the <code class="docutils literal notranslate"><span class="pre">crafting</span></code> contrib, each
-puzzle is built from unique objects rather than using tags and a builder can create
-the puzzle entirely from in-game.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">Puzzle</span></code> is a recipe of what objects (aka parts) must be combined by a player so
-a new set of objects (aka results) are automatically created.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="item-storage">
+<h1>Item Storage<a class="headerlink" href="#item-storage" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by helpme (2024)</p>
+<p>This module allows certain rooms to be marked as storage locations.</p>
+<p>In those rooms, players can <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">store</span></code>, and <code class="docutils literal notranslate"><span class="pre">retrieve</span></code> items. Storages can be shared or individual.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Add the <code class="docutils literal notranslate"><span class="pre">PuzzleSystemCmdSet</span></code> to all players (e.g. in their Character typeclass).</p>
-<p>Alternatively (for quick testing):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py self.cmdset.add(&#39;evennia.contrib.game_systems.puzzles.PuzzleSystemCmdSet&#39;)
+<p>This utility adds the storage-related commands. Import the module into your commands and add it to your command set to make it available.</p>
+<p>Specifically, in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.storage</span> <span class="kn">import</span> <span class="n">StorageCmdSet</span>   <span class="c1"># &lt;---</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">Character_CmdSet</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">StorageCmdSet</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
+
 </pre></div>
 </div>
+<p>Then <code class="docutils literal notranslate"><span class="pre">reload</span></code> to make the <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">retrieve</span></code>, <code class="docutils literal notranslate"><span class="pre">store</span></code>, and <code class="docutils literal notranslate"><span class="pre">storage</span></code> commands available.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>Consider this simple Puzzle:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>orange, mango, yogurt, blender = fruit smoothie
-</pre></div>
-</div>
-<p>As a Builder:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop orange
-create/drop mango
-create/drop yogurt
-create/drop blender
-create/drop fruit smoothie
-
-puzzle smoothie, orange, mango, yogurt, blender = fruit smoothie
-...
-Puzzle smoothie(#1234) created successfuly.
-
-destroy/force orange, mango, yogurt, blender, fruit smoothie
-
-armpuzzle #1234
-Part orange is spawned at ...
-Part mango is spawned at ...
-....
-Puzzle smoothie(#1234) has been armed successfully
-</pre></div>
-</div>
-<p>As Player:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>use orange, mango, yogurt, blender
-...
-Genius, you blended all fruits to create a fruit smoothie!
-</pre></div>
-</div>
+<p>To mark a location as having item storage, use the <code class="docutils literal notranslate"><span class="pre">storage</span></code> command. By default this is a builder-level command. Storage can be shared, which means everyone using the storage can access all items stored there, or individual, which means only the person who stores an item can retrieve it. See <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">storage</span></code> for further details.</p>
 </section>
-<section id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
-<p>Puzzles are created from existing objects. The given
-objects are introspected to create prototypes for the
-puzzle parts and results. These prototypes become the
-puzzle recipe. (See PuzzleRecipe and <code class="docutils literal notranslate"><span class="pre">puzzle</span></code>
-command). Once the recipe is created, all parts and result
-can be disposed (i.e. destroyed).</p>
-<p>At a later time, a Builder or a Script can arm the puzzle
-and spawn all puzzle parts in their respective
-locations (See armpuzzle).</p>
-<p>A regular player can collect the puzzle parts and combine
-them (See use command). If player has specified
-all pieces, the puzzle is considered solved and all
-its puzzle parts are destroyed while the puzzle results
-are spawened on their corresponding location.</p>
+<section id="technical-info">
+<h2>Technical info<a class="headerlink" href="#technical-info" title="Permalink to this headline">¶</a></h2>
+<p>This is a tag-based system. Rooms set as storage rooms are tagged with an identifier marking them as shared or not. Items stored in those rooms are tagged with the storage room identifier and, if the storage room is not shared, the character identifier, and then they are removed from the grid i.e. their location is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>. Upon retrieval, items are untagged and moved back to character inventories.</p>
+<p>When a room is unmarked as storage with the <code class="docutils literal notranslate"><span class="pre">storage</span></code> command, all stored objects are untagged and dropped to the room. You should use the <code class="docutils literal notranslate"><span class="pre">storage</span></code> command to create and remove storages, as otherwise stored objects may become lost.</p>
 <hr class="docutils" />
-<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/puzzles/README.md</span></code>. Changes to this
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/storage/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
 </section>
 </section>
@@ -209,14 +172,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Contrib-Storage.html" title="Item Storage"
+          <a href="Contrib-Turnbattle.html" title="Turn based battle system framework"
              >next</a> |</li>
         <li class="right" >
-          <a href="Contrib-Multidescer.html" title="Evennia Multidescer"
+          <a href="Contrib-Puzzles.html" title="Puzzles System"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Puzzles System</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Item Storage</a></li> 
       </ul>
     </div>
 
