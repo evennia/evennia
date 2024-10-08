@@ -3,12 +3,14 @@
 
 ## Main branch
 
+- [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
 - Docs updates: feykrh
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
 [pull3676]: https://github.com/evennia/evennia/pull/3676
+[pull3634]: https://github.com/evennia/evennia/pull/3634
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
 
 ## Evennia 4.4.1
