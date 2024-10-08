@@ -503,18 +503,19 @@ double-check we can actually fit the thing, then we add the item to the backpack
             <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># for others (body, head), just replace whatever&#39;s there</span>
-            <span class="n">replaced</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+            <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[</span><span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]]</span>
             <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
        
         <span class="k">for</span> <span class="n">to_backpack_obj</span> <span class="ow">in</span> <span class="n">to_backpack</span><span class="p">:</span>
             <span class="c1"># put stuff in backpack</span>
-            <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_backpack_obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">to_backpack_obj</span><span class="p">:</span>
+                <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_backpack_obj</span><span class="p">)</span>
        
         <span class="c1"># store new state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span> 
 </pre></div>
 </div>
-<p>Here we remember that every <code class="docutils literal notranslate"><span class="pre">EvAdventureObject</span></code> has an <code class="docutils literal notranslate"><span class="pre">inventory_use_slot</span></code> property that tells us where it goes. So we just need to move the object to that slot, replacing whatever is in that place from before. Anything we replace goes back to the backpack.</p>
+<p>Here we remember that every <code class="docutils literal notranslate"><span class="pre">EvAdventureObject</span></code> has an <code class="docutils literal notranslate"><span class="pre">inventory_use_slot</span></code> property that tells us where it goes. So we just need to move the object to that slot, replacing whatever is in that place from before. Anything we replace goes back to the backpack, as long as it’s actually an item and not <code class="docutils literal notranslate"><span class="pre">None</span></code>, in the case where we are moving an item into an empty slot.</p>
 </section>
 <section id="get-everything">
 <h2><span class="section-number">5.7. </span>Get everything<a class="headerlink" href="#get-everything" title="Permalink to this headline">¶</a></h2>
