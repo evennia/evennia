@@ -7,7 +7,6 @@ from . import storage
 class TestStorage(BaseEvenniaCommandTest):
     def setUp(self):
         super().setUp()
-        self.char1.location = self.room1
         self.obj1.location = self.char1
         self.room1.tags.add("storage_1", "storage_location")
         self.room2.tags.add("shared_storage_2", "storage_location")
@@ -117,6 +116,6 @@ class TestStorage(BaseEvenniaCommandTest):
         self.call(
             storage.CmdStorage(),
             "/shared",
-            f"This is now a storage location with id: shared_{self.room1.id}.",
+            f"This is now a storage location with id: shared{self.room1.id}.",
             caller=self.char1,
         )

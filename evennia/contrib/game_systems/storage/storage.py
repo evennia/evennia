@@ -3,6 +3,8 @@ from evennia.utils import list_to_string
 from evennia.utils.search import search_object_by_tag
 from evennia.commands.default.muxcommand import MuxCommand
 
+SHARED_TAG_PREFIX = "shared"
+
 
 class StorageCommand(MuxCommand):
     """
@@ -13,20 +15,26 @@ class StorageCommand(MuxCommand):
         """
         Check if the current location is tagged as a storage location
         Every stored object is tagged on storage, and untagged on retrieval
+
+        Returns:
+            bool: True if the command is to be stopped here
         """
-        success = super().at_pre_cmd()
+        if super().at_pre_cmd():
+            return True
+
         self.storage_location_id = self.caller.location.tags.get(category="storage_location")
         if not self.storage_location_id:
             self.caller.msg(f"You cannot {self.cmdstring} anything here.")
             return True
 
         self.object_tag = (
-            "shared" if self.storage_location_id.startswith("shared_") else self.caller.pk
+            SHARED_TAG_PREFIX
+            if self.storage_location_id.startswith(SHARED_TAG_PREFIX)
+            else self.caller.pk
         )
         self.currently_stored = search_object_by_tag(
             self.object_tag, category=self.storage_location_id
         )
-        return success
 
 
 class CmdStore(StorageCommand):
@@ -163,7 +171,9 @@ class CmdStorage(MuxCommand):
             caller.msg("This is already a storage location: |wstorage/delete|n to remove the tag.")
             return
 
-        new_storage_id = f"{'shared_' if 'shared' in self.switches else ''}{storage_id}"
+        new_storage_id = (
+            f"{SHARED_TAG_PREFIX if SHARED_TAG_PREFIX in self.switches else ''}{storage_id}"
+        )
         location.tags.add(new_storage_id, category="storage_location")
         caller.msg(f"This is now a storage location with id: {new_storage_id}.")
 
