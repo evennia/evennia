@@ -445,10 +445,10 @@ class CmdCpAttr(ObjManipCommand):
     copy attributes between objects
 
     Usage:
-      cpattr[/switch] <obj>/<attr>[:category] = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      cpattr[/switch] <obj>/<attr>[:category] = <obj1> [,<obj2>,<obj3>,...]
-      cpattr[/switch] <attr>[:category] = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      cpattr[/switch] <attr>[:category] = <obj1>[,<obj2>,<obj3>,...]
+      cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      cpattr[/switch] <attr>[:category] = <obj1>/<attr1>[:category] [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
       move - delete the attribute from the source object after copying.
@@ -458,6 +458,11 @@ class CmdCpAttr(ObjManipCommand):
       ->
       copies the coolness attribute (defined on yourself), to attributes
       on Anna and Tom.
+
+      cpattr box/width:dimension = tube/width:dimension
+      ->
+      copies the box's width attribute in the dimension category, to be the
+      tube's width attribute in the dimension category
 
     Copy the attribute one object to one or more attributes on another object.
     If you don't supply a source object, yourself is used.
