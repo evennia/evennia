@@ -532,6 +532,7 @@ class CmdCpAttr(ObjManipCommand):
         from_obj_name = lhs_objattr[0]["name"]
         from_obj_attrs = lhs_objattr[0]["attrs"]
         from_obj_category = lhs_objattr[0]["category"]  # None if unset
+        from_obj_category_str = f"[{from_obj_category}]" if from_obj_category else ""
 
         if not from_obj_attrs:
             # this means the from_obj_name is actually an attribute
@@ -566,6 +567,7 @@ class CmdCpAttr(ObjManipCommand):
             to_obj_name = to_obj["name"]
             to_obj_attrs = to_obj["attrs"]
             to_obj_category = to_obj.get("category")
+            to_obj_category_str = f"[{to_obj_category}]" if to_obj_category else ""
             to_obj = caller.search(to_obj_name)
             if not to_obj:
                 result.append(f"\nCould not find object '{to_obj_name}'")
@@ -584,12 +586,12 @@ class CmdCpAttr(ObjManipCommand):
                 if clear and not (from_obj == to_obj and from_attr == to_attr):
                     from_obj.attributes.remove(from_attr, category=from_obj_category)
                     result.append(
-                        f"\nMoved {from_obj.name}.{from_attr} -> {to_obj_name}.{to_attr}. (value:"
+                        f"\nMoved {from_obj.name}.{from_attr}{from_obj_category_str} -> {to_obj_name}.{to_attr}{to_obj_category_str}. (value:"
                         f" {repr(value)})"
                     )
                 else:
                     result.append(
-                        f"\nCopied {from_obj.name}.{from_attr} -> {to_obj.name}.{to_attr}. (value:"
+                        f"\nCopied {from_obj.name}.{from_attr}{from_obj_category_str} -> {to_obj.name}.{to_attr}{to_obj_category_str}. (value:"
                         f" {repr(value)})"
                     )
         caller.msg("".join(result))
