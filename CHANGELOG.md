@@ -1,5 +1,29 @@
 # Changelog
 
+
+## Main branch
+
+- [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
+- [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
+- [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
+- Docs updates: feykrh
+
+[pull3626]: https://github.com/evennia/evennia/pull/3626
+[pull3676]: https://github.com/evennia/evennia/pull/3676
+[pull3634]: https://github.com/evennia/evennia/pull/3634
+[doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
+
+## Evennia 4.4.1
+
+Oct 1, 2024
+
+- [Fix][issue3629]: Reverting change of default Sqlite3 PRAGMA settings, changing them for
+  existing database caused corruption of db. For empty db, can still change in
+  `SQLITE3_PRAGMAS` settings. (Griatch)
+
+[issue3629]: https://github.com/evennia/evennia/issues/3629
+
+
 ## Evennia 4.4.0
 
 Sep 29, 2024
@@ -15,7 +39,7 @@ with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Feat][pull3588]: New `DefaultObject` hooks: `at_object_post_creation`, called once after
   first creation but after any prototypes have been applied, and
 `at_object_post_spawn(prototype)`, called only after creation/update with a prototype (InspectorCaracal)
-- [Fix][pull3494]: Update/clean some Evennia dependencies (0xDEADFED5)
+- [Fix][pull3594]: Update/clean some Evennia dependencies (0xDEADFED5)
 - [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
@@ -54,6 +78,7 @@ did not add it to the handler's object (Griatch)
 [issue3615]: https://github.com/evennia/evennia/issues/3615
 [issue3620]: https://github.com/evennia/evennia/issues/3620
 [issue3616]: https://github.com/evennia/evennia/issues/3616
+[pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
