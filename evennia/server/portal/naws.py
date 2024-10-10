@@ -46,7 +46,7 @@ class Naws:
         self.protocol().protocol_flags["SCREENWIDTH"] = {
             0: DEFAULT_WIDTH
         }  # windowID (0 is root):width
-        self.protocol.protocol_flags["SCREENHEIGHT"] = {0: DEFAULT_HEIGHT}  # windowID:width
+        self.protocol().protocol_flags["SCREENHEIGHT"] = {0: DEFAULT_HEIGHT}  # windowID:width
         self.protocol().negotiationMap[NAWS] = self.negotiate_sizes
         self.protocol().do(NAWS).addCallbacks(self.do_naws, self.no_naws)
 

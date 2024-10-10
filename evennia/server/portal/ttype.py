@@ -93,7 +93,7 @@ class Ttype:
             stored on protocol.protocol_flags under the TTYPE key.
 
         """
-        options = self.protocol.protocol_flags
+        options = self.protocol().protocol_flags
 
         if options and options.get("TTYPE", False) or self.ttype_step > 3:
             return
