@@ -30,6 +30,17 @@ class DatabaseBackupScript(DefaultScript):
         self.desc = "Database backups"
         self.persistent = True
 
+    def log(self, message):
+        global _MUDINFO_CHANNEL
+        if not _MUDINFO_CHANNEL and settings.CHANNEL_MUDINFO:
+            channels = search.search_channel(settings.CHANNEL_MUDINFO["key"])
+            if channels:
+                _MUDINFO_CHANNEL = channels[0]
+
+        if _MUDINFO_CHANNEL:
+            _MUDINFO_CHANNEL.msg(message)
+        logger.log_sec(message)
+
     def backup_postgres(self, db_name, db_user, output_file_path):
         """
         Run `pg_dump` on the postgreSQL database and save the output.
@@ -44,7 +55,7 @@ class DatabaseBackupScript(DefaultScript):
             stdout=open(output_file_path, "w"),
             check=True,
         )
-        return f"|wPostgreSQL db backed up in: {BACKUP_FOLDER}|n"
+        self.log(f"|wpostgresql db backed up in: {BACKUP_FOLDER}|n")
 
     def backup_sqlite3(self, db_name, output_file_path):
         """
@@ -57,14 +68,9 @@ class DatabaseBackupScript(DefaultScript):
         output_file_path += ".db3"
         os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
         shutil.copy(db_name, output_file_path)
-        return f"|wsqlite3 db backed up in {BACKUP_FOLDER}|n"
+        self.log(f"|wsqlite3 db backed up in: {BACKUP_FOLDER}|n")
 
     def at_repeat(self):
-        global _MUDINFO_CHANNEL
-        if not _MUDINFO_CHANNEL:
-            if settings.CHANNEL_MUDINFO:
-                _MUDINFO_CHANNEL = ChannelDB.objects.get(db_key=settings.CHANNEL_MUDINFO["key"])
-
         databases = settings.DATABASES
         db = databases["default"]
         engine = db.get("ENGINE")
@@ -78,13 +84,10 @@ class DatabaseBackupScript(DefaultScript):
             output_file_path = os.path.join(BACKUP_FOLDER, output_file)
 
             if "postgres" in engine:
-                message = self.backup_postgres(db_name, db_user, output_file_path)
+                self.backup_postgres(db_name, db_user, output_file_path)
             elif "sqlite3" in engine:
-                message = self.backup_sqlite3(db_name, output_file_path)
+                self.backup_sqlite3(db_name, output_file_path)
 
-            logger.log_sec(message)
-            if _MUDINFO_CHANNEL:
-                _MUDINFO_CHANNEL.msg(message)
         except Exception as e:
             logger.log_err("Backup failed: {}".format(e))
 
