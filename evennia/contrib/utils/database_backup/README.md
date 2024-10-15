@@ -2,9 +2,9 @@
 
 Contribution by helpme (2024)
 
-This module helps backup and restore your game world from database, as well as scheduling backups in-game. Backups are saved in your game's `server` folder. Database backups are *not* automatically uploaded to any cloud service, it is left to you to decide what to do with them (i.e. pushed to git, uploaded to a cloud service, downloaded to hard drive).
+This module schedules backups in-game, which saves a copy of your database to your game's `server/backups` folder. Database backups are *not* automatically uploaded to any cloud service, it is left to you to decide what to do with them (i.e. pushed to git, uploaded to the ether, downloaded to a hard drive).
 
-Backups can take place at any time, while restoring the game world from backup has to take place outside of game commands, during downtime, as documented below.
+Backups can take place at any time. Restoring the game world from backup takes place during downtime, as documented below.
 
 Currently, the sqlite3 (the evennia default) and postgresql databases are supported. Others are welcome to add more.
 
