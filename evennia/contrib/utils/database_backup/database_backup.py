@@ -44,9 +44,6 @@ class DatabaseBackupScript(DefaultScript):
     def backup_postgres(self, db_name, db_user, output_file_path):
         """
         Run `pg_dump` on the postgreSQL database and save the output.
-
-        Returns:
-            str: Success message
         """
 
         output_file_path += ".sql"
@@ -60,9 +57,6 @@ class DatabaseBackupScript(DefaultScript):
     def backup_sqlite3(self, db_name, output_file_path):
         """
         Copy the sqlite3 db.
-
-        Returns:
-            str: Success message
         """
 
         output_file_path += ".db3"
@@ -107,6 +101,10 @@ class CmdBackup(MuxCommand):
     locks = "cmd:pperm(Developer)"
 
     def get_latest_backup(self):
+        """
+        Returns:
+            str: Name of the most recent backup
+        """
         try:
             files = os.listdir(BACKUP_FOLDER)
             paths = [os.path.join(BACKUP_FOLDER, basename) for basename in files]
