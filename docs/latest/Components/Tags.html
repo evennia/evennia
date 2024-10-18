@@ -128,6 +128,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="tags">
 <h1>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h1>
+<p><em>Tags</em> are short text lables one can ‘attach’ to objects in order to organize, group and quickly find out their properties, similarly to how you attach labels to your luggage.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">In game</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tag</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">tagname</span>
@@ -158,7 +159,7 @@
 </pre></div>
 </div>
 </div>
-<p>In-game, tags are controlled <code class="docutils literal notranslate"><span class="pre">tag</span></code> command:</p>
+<p>In-game, tags are controlled by the default  <code class="docutils literal notranslate"><span class="pre">tag</span></code> command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; tag Chair = furniture
  &gt; tag Chair = furniture
  &gt; tag Table = furniture
@@ -167,10 +168,10 @@
  Chair, Sofa, Table
 </pre></div>
 </div>
-<p><em>Tags</em> are short text lables one can ‘hang’ on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> since on the database-side, Tags are <em>shared</em> between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity</p>
-<p>You manage Tags using the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) on typeclassed entities. You can also assign Tags on the class level through the <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code> (one tag, one category per line) or the <code class="docutils literal notranslate"><span class="pre">TagCategoryProperty</span></code> (one category, multiple tags per line). Both of these use the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> under the hood, they are just convenient ways to add tags already when you define your class.</p>
+<p>An Evennia entity can be tagged by any number of tags. Tags are more efficient than <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> since on the database-side, Tags are <em>shared</em> between all objects with that particular tag. A tag does not carry a value in itself; rather the existence of the tag itself is what is checked - a given object either has a given tag or not.</p>
+<p>In code, you manage Tags using the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) on typeclassed entities. You can also assign Tags on the class level through the <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code> (one tag, one category per line) or the <code class="docutils literal notranslate"><span class="pre">TagCategoryProperty</span></code> (one category, multiple tags per line). Both of these use the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> under the hood, they are just convenient ways to add tags already when you define your class.</p>
 <p>Above, the tags inform us that the <code class="docutils literal notranslate"><span class="pre">Sword</span></code> is both sharp and can be wielded. If that’s all they do, they could just be a normal Python flag. When tags become important is if there are a lot of objects with different combinations of tags. Maybe you have a magical spell that dulls <em>all</em> sharp-edged objects in the castle - whether sword, dagger, spear or kitchen knife! You can then just grab all objects with the <code class="docutils literal notranslate"><span class="pre">has_sharp_edge</span></code> tag.
-Another example would be a weather script affecting all rooms tagged as <code class="docutils literal notranslate"><span class="pre">outdoors</span></code> or finding all characters tagged with <code class="docutils literal notranslate"><span class="pre">belongs_to_fighter_guild</span></code>.</p>
+Another example would be a weather script affecting all rooms tagged as <code class="docutils literal notranslate"><span class="pre">outdoors</span></code> or finding all characters tagged with the <code class="docutils literal notranslate"><span class="pre">belongs_to_fighter_guild</span></code> tag.</p>
 <p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects) and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
 <section id="working-with-tags">
 <h2>Working with Tags<a class="headerlink" href="#working-with-tags" title="Permalink to this headline">¶</a></h2>
