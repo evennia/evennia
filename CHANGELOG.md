@@ -6,7 +6,7 @@
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
-- Docs updates: feykrh
+- Docs updates: feykrh, Griatch
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
 [pull3676]: https://github.com/evennia/evennia/pull/3676
