@@ -60,7 +60,7 @@ class ContentsHandler:
         Returns:
             Objects (list of ObjectDB)
         """
-        return list(self.obj.locations_set.all())
+        return list(obj for obj in self.obj.locations_set.all() if obj.pk)
 
     def init(self):
         """
@@ -68,6 +68,7 @@ class ContentsHandler:
 
         """
         objects = self.load()
+        self._typecache = defaultdict(dict)
         self._pkcache = {obj.pk: True for obj in objects}
         for obj in objects:
             try:
