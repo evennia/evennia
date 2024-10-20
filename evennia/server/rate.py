@@ -125,8 +125,6 @@ class Limiter:
         """
 
         _, tokens = self.advance(t)
-        # tokens += self.tokens
-        # tokens = min(float(self.burst), tokens)
         
         return tokens >= count
 
