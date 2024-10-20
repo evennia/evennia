@@ -273,10 +273,7 @@ class TestLimiter(TestCase):
         from evennia.server.rate import RateLimitException
 
         for run in range(10):
-            print(f"RUN #{run}")
-            print("-===========================-")
             self.assertTrue(self.limiter.ok())
-            print(f"test_ok Tokens: {self.limiter.tokens}")
         with self.assertRaises(RateLimitException):
             self.limiter.ok()
 
