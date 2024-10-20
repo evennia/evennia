@@ -60,7 +60,7 @@ class ContentsHandler:
         Returns:
             Objects (list of ObjectDB)
         """
-        return list(obj for obj in self.obj.locations_set.all() if obj.pk)
+        return list(self.obj.locations_set.all())
 
     def init(self):
         """
