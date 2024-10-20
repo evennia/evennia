@@ -1,5 +1,6 @@
 """
 Rate limiting module for Evennia.
+whitenoise, 2024
 
 Usage example:
     from evennia.server.rate import Limiter, RateLimitException
