@@ -939,7 +939,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # parse inputs
         character_key = kwargs.pop("key", self.key)
         character_ip = kwargs.pop("ip", self.db.creator_ip)
-        character_permissions = kwargs.pop("permissions", self.permissions)
+        character_permissions = kwargs.pop("permissions", self.permissions.all())
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", self.default_character_typeclass)
