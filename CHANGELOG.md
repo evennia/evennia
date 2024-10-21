@@ -44,6 +44,10 @@ Oct 1, 2024
 
 Sep 29, 2024
 
+> WARNING: Due to a bug in the default Sqlite3 PRAGMA settings, it is
+> recommended to not upgrade to this version if you are using Sqlite3.
+> Use `4.4.1` or higher instead.
+
 - Feat: Support `scripts key:typeclass` to create global scripts
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (0xDEADFED5)
