@@ -14,6 +14,7 @@
 - [Fix][pull3645]: Correct `character_creator` contrib's error return (InspectorCaracal)
 - [Fix][pull3640]: Typo fixes for conjugate verbs (aMiss-aWry)
 - [Fix][pull3647]: Contents cache didn't reset internal typecache on use of `init` hook (InspectorCaracal)
+- [Fix][issue3627]: Traceback from contrib `in-game reports` `help manage` command (Griatch)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
 - Docs updates: feykrh, Griatch
 
@@ -27,6 +28,7 @@
 [pull3640]: https://github.com/evennia/evennia/pull/3640
 [pull3647]: https://github.com/evennia/evennia/pull/3647
 [pull3635]: https://github.com/evennia/evennia/pull/3635
+[issue3627]: https://github.com/evennia/evennia/issues/3627
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
 
 ## Evennia 4.4.1
