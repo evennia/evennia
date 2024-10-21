@@ -115,7 +115,7 @@
 
 <span class="sd">The contrib provides three commands by default and their associated report types: `CmdBug`, `CmdIdea`,</span>
 <span class="sd">and `CmdReport` (which is for reporting other players).</span>
-<span class="sd">            </span>
+
 <span class="sd">The `ReportCmdBase` class holds most of the functionality for creating new reports, providing a</span>
 <span class="sd">convenient parent class for adding your own categories of reports.</span>
 
@@ -124,12 +124,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">datetime_format</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">datetime_format</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">menu</span>
 
@@ -160,6 +159,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hub_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">_reports&quot;</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">hub</span> <span class="o">:=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hub_key</span><span class="p">)):</span>
         <span class="n">hub</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">hub_key</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hub</span> <span class="ow">or</span> <span class="kc">None</span>
@@ -184,7 +184,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;manage </span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">report_type</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(Admin)&quot;</span>
 
-<div class="viewcode-block" id="CmdManageReports.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdManageReports.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdManageReports.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdManageReports.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a help string containing the configured available report types&quot;&quot;&quot;</span>
 
         <span class="n">report_types</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_REPORT_TYPES</span><span class="p">))</span>
@@ -194,7 +194,7 @@
 
 <span class="s2">Usage:</span>
 <span class="s2">    manage [report type]</span>
-<span class="s2">        </span>
+
 <span class="s2">Available report types:</span>
 <span class="s2">    </span><span class="si">{</span><span class="n">report_types</span><span class="si">}</span>
 
@@ -249,7 +249,7 @@
 <div class="viewcode-block" id="ReportCmdBase.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the target and message out of the arguments.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Override if you want different syntax, but make sure to assign `report_message` and `target_str`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># do the base MuxCommand parsing first</span>
@@ -304,7 +304,11 @@
             <span class="n">receivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_report</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">report_locks</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;report&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_message</span><span class="p">,</span>
+            <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">report_locks</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;report&quot;</span><span class="p">],</span>
         <span class="p">):</span>
             <span class="c1"># the report Msg was successfully created</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_msg</span><span class="p">)</span>
