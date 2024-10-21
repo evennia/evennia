@@ -14,6 +14,8 @@ http://www.faqs.org/rfcs/rfc858.html
 
 """
 
+import weakref
+
 SUPPRESS_GA = bytes([3])  # b"\x03"
 
 # default taken from telnet specification
@@ -36,14 +38,14 @@ class SuppressGA:
             protocol (Protocol): The active protocol instance.
 
         """
-        self.protocol = protocol
+        self.protocol = weakref.ref(protocol)
 
-        self.protocol.protocol_flags["NOGOAHEAD"] = True
-        self.protocol.protocol_flags["NOPROMPTGOAHEAD"] = (
+        self.protocol().protocol_flags["NOGOAHEAD"] = True
+        self.protocol().protocol_flags["NOPROMPTGOAHEAD"] = (
             True  # Used to send a GA after a prompt line only, set in TTYPE (per client)
         )
         # tell the client that we prefer to suppress GA ...
-        self.protocol.will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
+        self.protocol().will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
 
     def wont_suppress_ga(self, option):
         """
@@ -53,8 +55,8 @@ class SuppressGA:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["NOGOAHEAD"] = False
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["NOGOAHEAD"] = False
+        self.protocol().handshake_done()
 
     def will_suppress_ga(self, option):
         """
@@ -64,5 +66,5 @@ class SuppressGA:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["NOGOAHEAD"] = True
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["NOGOAHEAD"] = True
+        self.protocol().handshake_done()
