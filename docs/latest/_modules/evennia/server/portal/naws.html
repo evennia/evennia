@@ -103,6 +103,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -133,13 +134,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">naws_step</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="mi">0</span><span class="p">:</span> <span class="n">DEFAULT_WIDTH</span>
         <span class="p">}</span>  <span class="c1"># windowID (0 is root):width</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">DEFAULT_HEIGHT</span><span class="p">}</span>  <span class="c1"># windowID:width</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">negotiationMap</span><span class="p">[</span><span class="n">NAWS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiate_sizes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">NAWS</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_naws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_naws</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">DEFAULT_HEIGHT</span><span class="p">}</span>  <span class="c1"># windowID:width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">negotiationMap</span><span class="p">[</span><span class="n">NAWS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiate_sizes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">NAWS</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_naws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_naws</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Naws.no_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.no_naws">[docs]</a>    <span class="k">def</span> <span class="nf">no_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -150,8 +151,8 @@
 <span class="sd">            option (Option): Not used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Naws.do_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.do_naws">[docs]</a>    <span class="k">def</span> <span class="nf">do_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -161,8 +162,8 @@
 <span class="sd">            option (Option): Not used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Naws.negotiate_sizes"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.negotiate_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">negotiate_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -175,9 +176,9 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
             <span class="c1"># NAWS is negotiated with 16bit words</span>
             <span class="n">width</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
             <span class="n">height</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

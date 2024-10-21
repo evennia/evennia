@@ -107,6 +107,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -153,10 +154,10 @@
 <span class="sd">            protocol (Protocol): The active protocol instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">MXP_ENABLED</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">MXP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_mxp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_mxp</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">MXP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_mxp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_mxp</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mxp.no_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.no_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">no_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -166,8 +167,8 @@
 <span class="sd">            option (Option): Not used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Mxp.do_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.do_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">do_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -178,11 +179,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">MXP_ENABLED</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">requestNegotiation</span><span class="p">(</span><span class="n">MXP</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">requestNegotiation</span><span class="p">(</span><span class="n">MXP</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">wont</span><span class="p">(</span><span class="n">MXP</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">wont</span><span class="p">(</span><span class="n">MXP</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
 </pre></div>
 
           </div>

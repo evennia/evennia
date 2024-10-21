@@ -106,6 +106,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">weakref</span>
+
 <span class="n">SUPPRESS_GA</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># b&quot;\x03&quot;</span>
 
 <span class="c1"># default taken from telnet specification</span>
@@ -128,14 +130,14 @@
 <span class="sd">            protocol (Protocol): The active protocol instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">True</span>  <span class="c1"># Used to send a GA after a prompt line only, set in TTYPE (per client)</span>
         <span class="p">)</span>
         <span class="c1"># tell the client that we prefer to suppress GA ...</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SuppressGA.wont_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">wont_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -145,8 +147,8 @@
 <span class="sd">            option (Option): Not used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SuppressGA.will_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">will_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -156,8 +158,8 @@
 <span class="sd">            option (Option): Not used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
 </pre></div>
 
           </div>

@@ -4,13 +4,29 @@
 ## Main branch
 
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
+- [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
+- [Fix][pull3635]: Fix memory leak in Portal Telnet connections, force weak
+  references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)
 - [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
+- [Fix][pull3632]: Made fallback permissions on be set correctly (InspectorCaracal)
+- [Fix][pull3639]: Fix `system` command when environment uses a language with
+  commas for decimal points (aMiss-aWry)
+- [Fix][pull3645]: Correct `character_creator` contrib's error return (InspectorCaracal)
+- [Fix][pull3640]: Typo fixes for conjugate verbs (aMiss-aWry)
+- [Fix][pull3647]: Contents cache didn't reset internal typecache on use of `init` hook (InspectorCaracal)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
 - Docs updates: feykrh, Griatch
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
 [pull3676]: https://github.com/evennia/evennia/pull/3676
 [pull3634]: https://github.com/evennia/evennia/pull/3634
+[pull3632]: https://github.com/evennia/evennia/pull/3632
+[pull3636]: https://github.com/evennia/evennia/pull/3636
+[pull3639]: https://github.com/evennia/evennia/pull/3639
+[pull3645]: https://github.com/evennia/evennia/pull/3645
+[pull3640]: https://github.com/evennia/evennia/pull/3640
+[pull3647]: https://github.com/evennia/evennia/pull/3647
+[pull3635]: https://github.com/evennia/evennia/pull/3635
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
 
 ## Evennia 4.4.1
@@ -27,6 +43,10 @@ Oct 1, 2024
 ## Evennia 4.4.0
 
 Sep 29, 2024
+
+> WARNING: Due to a bug in the default Sqlite3 PRAGMA settings, it is
+> recommended to not upgrade to this version if you are using Sqlite3.
+> Use `4.4.1` or higher instead.
 
 - Feat: Support `scripts key:typeclass` to create global scripts
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)

@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.game_systems.storage.storage &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.storage.tests" href="evennia.contrib.game_systems.storage.tests.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.storage" href="evennia.contrib.game_systems.storage.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.tests.html" title="evennia.contrib.game_systems.storage.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.html" title="evennia.contrib.game_systems.storage"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.storage.html" accesskey="U">evennia.contrib.game_systems.storage</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.storage.storage</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.storage.html"
+                        title="previous chapter">evennia.contrib.game_systems.storage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.storage.tests.html"
+                        title="next chapter">evennia.contrib.game_systems.storage.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.storage.storage.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="evennia.contrib.game_systems.storage.storage.html">latest (main branch)</a></li>
+
+    <li><a href="../4.x/index.html">v4.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../3.x/index.html">v3.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../2.x/index.html">v2.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../1.x/index.html">v1.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../0.x/index.html">v0.9.5 branch (outdated)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.storage.storage">
+<span id="evennia-contrib-game-systems-storage-storage"></span><h1>evennia.contrib.game_systems.storage.storage<a class="headerlink" href="#module-evennia.contrib.game_systems.storage.storage" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">StorageCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#StorageCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Shared functionality for storage-related commands</p>
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.at_pre_cmd">
+<code class="sig-name descname">at_pre_cmd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#StorageCommand.at_pre_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.at_pre_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the current location is tagged as a storage location
+Every stored object is tagged on storage, and untagged on retrieval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>bool</em> – True if the command is to be stopped here</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Shared functionality for storage-related commands\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">CmdStore</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdStore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.storage.storage.StorageCommand" title="evennia.contrib.game_systems.storage.storage.StorageCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.storage.storage.StorageCommand</span></code></a></p>
+<p>Store something in a storage location.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>store &lt;obj&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.key">
+<code class="sig-name descname">key</code><em class="property"> = 'store'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'storage'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdStore.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the item in question to store, then store it</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStore.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'storage', 'key': 'store', 'no_prefix': ' ', 'tags': '', 'text': '\n    Store something in a storage location.\n\n    Usage:\n      store &lt;obj&gt;\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">CmdRetrieve</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdRetrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.storage.storage.StorageCommand" title="evennia.contrib.game_systems.storage.storage.StorageCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.storage.storage.StorageCommand</span></code></a></p>
+<p>Retrieve something from a storage location.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>retrieve &lt;obj&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.key">
+<code class="sig-name descname">key</code><em class="property"> = 'retrieve'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'storage'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdRetrieve.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the item in question if possible</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdRetrieve.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'storage', 'key': 'retrieve', 'no_prefix': ' ', 'tags': '', 'text': '\n    Retrieve something from a storage location.\n\n    Usage:\n      retrieve &lt;obj&gt;\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdRetrieve.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">CmdList</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.storage.storage.StorageCommand" title="evennia.contrib.game_systems.storage.storage.StorageCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.storage.storage.StorageCommand</span></code></a></p>
+<p>List items in the storage location.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>list</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.key">
+<code class="sig-name descname">key</code><em class="property"> = 'list'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'storage'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdList.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>List items in the storage</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdList.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'storage', 'key': 'list', 'no_prefix': ' ', 'tags': '', 'text': '\n    List items in the storage location.\n\n    Usage:\n      list\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdList.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">CmdStorage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Make the current location a storage room, or delete it as a storage and move all stored objects into the room contents.</p>
+<p>Shared storage locations can be used by all interchangeably.</p>
+<p>The default storage identifier will be its primary key in the database, but you can supply a new one in case you want linked storages.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>storage [= [storage identifier]]
+storage/shared [= [storage identifier]]
+storage/delete</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;storage'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#CmdStorage.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the storage location.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.CmdStorage.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '&#64;storage', 'no_prefix': 'storage ', 'tags': '', 'text': '\n    Make the current location a storage room, or delete it as a storage and move all stored objects into the room contents.\n\n    Shared storage locations can be used by all interchangeably.\n\n    The default storage identifier will be its primary key in the database, but you can supply a new one in case you want linked storages.\n\n    Usage:\n      storage [= [storage identifier]]\n      storage/shared [= [storage identifier]]\n      storage/delete\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.CmdStorage.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.storage.storage.</code><code class="sig-name descname">StorageCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#StorageCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>CmdSet for all storage-related commands</p>
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/storage/storage.html#StorageCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.storage.storage.StorageCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.storage.storage.StorageCmdSet'</em><a class="headerlink" href="#evennia.contrib.game_systems.storage.storage.StorageCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.tests.html" title="evennia.contrib.game_systems.storage.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.html" title="evennia.contrib.game_systems.storage"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.storage.html" >evennia.contrib.game_systems.storage</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.storage.storage</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

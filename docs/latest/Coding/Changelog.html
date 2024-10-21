@@ -204,7 +204,16 @@
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3634">Feat</a>: New contrib for in-game <code class="docutils literal notranslate"><span class="pre">storage</span></code> of items in rooms (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3636">Feat</a>: Make <code class="docutils literal notranslate"><span class="pre">cpattr</span></code> command also support Attribute categories (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3635">Fix</a>: Fix memory leak in Portal Telnet connections, force weak
+references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3626">Fix</a>: Typo in <code class="docutils literal notranslate"><span class="pre">defense_type</span></code> in evadventure tutorial (feyrkh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3632">Fix</a>: Made fallback permissions on be set correctly (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3639">Fix</a>: Fix <code class="docutils literal notranslate"><span class="pre">system</span></code> command when environment uses a language with
+commas for decimal points (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3645">Fix</a>: Correct <code class="docutils literal notranslate"><span class="pre">character_creator</span></code> contrib’s error return (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3640">Fix</a>: Typo fixes for conjugate verbs (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3647">Fix</a>: Contents cache didn’t reset internal typecache on use of <code class="docutils literal notranslate"><span class="pre">init</span></code> hook (InspectorCaracal)</p></li>
 <li><p>[Docs][pull3576]: Rework doc for <a class="reference external" href="https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html">Pycharm howto</a></p></li>
 <li><p>Docs updates: feykrh, Griatch</p></li>
 </ul>
@@ -221,6 +230,11 @@ existing database caused corruption of db. For empty db, can still change in
 <section id="evennia-4-4-0">
 <h2>Evennia 4.4.0<a class="headerlink" href="#evennia-4-4-0" title="Permalink to this headline">¶</a></h2>
 <p>Sep 29, 2024</p>
+<blockquote>
+<div><p>WARNING: Due to a bug in the default Sqlite3 PRAGMA settings, it is
+recommended to not upgrade to this version if you are using Sqlite3.
+Use <code class="docutils literal notranslate"><span class="pre">4.4.1</span></code> or higher instead.</p>
+</div></blockquote>
 <ul class="simple">
 <li><p>Feat: Support <code class="docutils literal notranslate"><span class="pre">scripts</span> <span class="pre">key:typeclass</span></code> to create global scripts
 with dynamic keys (rather than just relying on typeclass’ key) (Griatch)</p></li>
