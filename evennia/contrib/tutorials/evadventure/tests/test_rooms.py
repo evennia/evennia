@@ -43,7 +43,7 @@ class EvAdventureRoomTest(EvenniaTestCase):
    /|\
   o o o
 room_center
-You see nothing special.
+This is a room.
 Exits: north, northeast, east, southeast, south, southwest, west, and northwest"""
 
         result = "\n".join(part.rstrip() for part in strip_ansi(desc).split("\n"))
