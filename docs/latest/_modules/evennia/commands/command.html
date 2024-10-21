@@ -104,13 +104,13 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">fill</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
 
 <span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
+<span class="n">_RE_CMD_LOCKFUNC_IN_LOCKSTRING</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(^|;|\s)cmd\:\w+&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="InterruptCommand"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.InterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">InterruptCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -166,7 +166,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;locks&quot;</span><span class="p">):</span>
         <span class="c1"># default if one forgets to define completely</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;cmd:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_RE_CMD_LOCKFUNC_IN_LOCKSTRING</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">locks</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();&quot;</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span>
     <span class="k">for</span> <span class="n">lockstring</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">lockstring</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lockstring</span><span class="p">:</span>
@@ -667,7 +667,7 @@
 
 <span class="sd">        ex.</span>
 <span class="sd">        ::</span>
-<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\\w\\d\\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
 <span class="sd">                CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
