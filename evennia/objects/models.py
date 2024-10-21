@@ -68,6 +68,7 @@ class ContentsHandler:
 
         """
         objects = self.load()
+        self._typecache = defaultdict(dict)
         self._pkcache = {obj.pk: True for obj in objects}
         for obj in objects:
             try:
