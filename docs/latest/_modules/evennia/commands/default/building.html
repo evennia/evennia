@@ -259,7 +259,7 @@
                     <span class="n">attrs</span> <span class="o">=</span> <span class="n">_attrs</span>
                 <span class="c1"># store data</span>
                 <span class="n">obj_defs</span><span class="p">[</span><span class="n">iside</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">objdef</span><span class="p">,</span> <span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="n">option</span><span class="p">,</span> <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="n">aliases</span><span class="p">})</span>
-                <span class="n">obj_attrs</span><span class="p">[</span><span class="n">iside</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">objdef</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span> <span class="n">attrs</span><span class="p">})</span>
+                <span class="n">obj_attrs</span><span class="p">[</span><span class="n">iside</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">objdef</span><span class="p">,</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span> <span class="n">attrs</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">option</span><span class="p">})</span>
 
         <span class="c1"># store for future access</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span> <span class="o">=</span> <span class="n">obj_defs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -539,7 +539,7 @@
 <span class="sd">    Usage:</span>
 <span class="sd">      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
 <span class="sd">      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]</span>
-<span class="sd">      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
+<span class="sd">      cpattr[/switch] &lt;attr&gt;[:category] = &lt;obj1&gt;/&lt;attr1&gt;[:category] [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
 <span class="sd">      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]</span>
 
 <span class="sd">    Switches:</span>
@@ -551,6 +551,11 @@
 <span class="sd">      copies the coolness attribute (defined on yourself), to attributes</span>
 <span class="sd">      on Anna and Tom.</span>
 
+<span class="sd">      cpattr box/width:dimension = tube/width:dimension</span>
+<span class="sd">      -&gt;</span>
+<span class="sd">      copies the box&#39;s width attribute in the dimension category, to be the</span>
+<span class="sd">      tube&#39;s width attribute in the dimension category</span>
+
 <span class="sd">    Copy the attribute one object to one or more attributes on another object.</span>
 <span class="sd">    If you don&#39;t supply a source object, yourself is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -560,7 +565,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(cpattr) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-<div class="viewcode-block" id="CmdCpAttr.check_from_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_from_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_from_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCpAttr.check_from_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_from_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_from_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Checks to make sure a</span>
 <span class="sd">        caller can copy the attr from the object in question. If not, return a</span>
@@ -571,7 +576,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="CmdCpAttr.check_to_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_to_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_to_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCpAttr.check_to_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_to_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_to_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Checks to make sure a</span>
 <span class="sd">        caller can write to the specified attribute on the specified object.</span>
@@ -580,22 +585,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="CmdCpAttr.check_has_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_has_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_has_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCpAttr.check_has_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_has_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_has_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Do any preprocessing</span>
 <span class="sd">        required and verify an object has an attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t have an attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t have an attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39;[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">]&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">category</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="CmdCpAttr.get_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.get_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCpAttr.get_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.get_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Do any preprocessing</span>
 <span class="sd">        required and get the attribute from the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdCpAttr.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -605,7 +612,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage:</span>
-<span class="s2">            cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
+<span class="s2">            cpattr[/switch] &lt;obj&gt;/&lt;attr&gt;[:category] = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
 <span class="s2">            cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]</span>
 <span class="s2">            cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]</span>
 <span class="s2">            cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]&quot;&quot;&quot;</span>
@@ -616,6 +623,8 @@
         <span class="n">to_objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_objattr</span>
         <span class="n">from_obj_name</span> <span class="o">=</span> <span class="n">lhs_objattr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="n">from_obj_attrs</span> <span class="o">=</span> <span class="n">lhs_objattr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
+        <span class="n">from_obj_category</span> <span class="o">=</span> <span class="n">lhs_objattr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">]</span>  <span class="c1"># None if unset</span>
+        <span class="n">from_obj_category_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">from_obj_category</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">from_obj_category</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">from_obj_attrs</span><span class="p">:</span>
             <span class="c1"># this means the from_obj_name is actually an attribute</span>
@@ -632,11 +641,13 @@
             <span class="n">clear</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">clear</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_from_attr</span><span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">from_obj_attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">clear</span><span class="o">=</span><span class="n">clear</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_from_attr</span><span class="p">(</span>
+            <span class="n">from_obj</span><span class="p">,</span> <span class="n">from_obj_attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">clear</span><span class="o">=</span><span class="n">clear</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">from_obj_category</span>
+        <span class="p">):</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">from_obj_attrs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_has_attr</span><span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_has_attr</span><span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">from_obj_category</span><span class="p">):</span>
                 <span class="k">return</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">from_obj_attrs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">from_obj_attrs</span><span class="p">)))</span> <span class="ow">and</span> <span class="n">clear</span><span class="p">:</span>
@@ -644,10 +655,11 @@
             <span class="k">return</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="k">for</span> <span class="n">to_obj</span> <span class="ow">in</span> <span class="n">to_objs</span><span class="p">:</span>
             <span class="n">to_obj_name</span> <span class="o">=</span> <span class="n">to_obj</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
             <span class="n">to_obj_attrs</span> <span class="o">=</span> <span class="n">to_obj</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
+            <span class="n">to_obj_category</span> <span class="o">=</span> <span class="n">to_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+            <span class="n">to_obj_category_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">to_obj_category</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">to_obj_category</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
             <span class="n">to_obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">to_obj_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">to_obj</span><span class="p">:</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Could not find object &#39;</span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
@@ -659,19 +671,19 @@
                     <span class="c1"># if there are too few attributes given</span>
                     <span class="c1"># on the to_obj, we copy the original name instead.</span>
                     <span class="n">to_attr</span> <span class="o">=</span> <span class="n">from_attr</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_to_attr</span><span class="p">(</span><span class="n">to_obj</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_to_attr</span><span class="p">(</span><span class="n">to_obj</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">,</span> <span class="n">to_obj_category</span><span class="p">):</span>
                     <span class="k">continue</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">from_attr</span><span class="p">)</span>
-                <span class="n">to_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">to_attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">from_attr</span><span class="p">,</span> <span class="n">from_obj_category</span><span class="p">)</span>
+                <span class="n">to_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">to_attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">to_obj_category</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">clear</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">from_obj</span> <span class="o">==</span> <span class="n">to_obj</span> <span class="ow">and</span> <span class="n">from_attr</span> <span class="o">==</span> <span class="n">to_attr</span><span class="p">):</span>
-                    <span class="n">from_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_attr</span><span class="p">)</span>
+                    <span class="n">from_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_attr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">from_obj_category</span><span class="p">)</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Moved </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Moved </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}{</span><span class="n">from_obj_category_str</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}{</span><span class="n">to_obj_category_str</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
                         <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Copied </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Copied </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}{</span><span class="n">from_obj_category_str</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}{</span><span class="n">to_obj_category_str</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
                         <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div></div>

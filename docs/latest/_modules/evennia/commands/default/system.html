@@ -105,6 +105,7 @@
 
 <span class="kn">import</span> <span class="nn">django</span>
 <span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
@@ -954,16 +955,26 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_RESOURCE</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">resource</span> <span class="k">as</span> <span class="nn">_RESOURCE</span>
 
+            <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">env</span><span class="p">[</span><span class="s2">&quot;LC_NUMERIC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>  <span class="c1"># use default locale instead of system locale</span>
             <span class="n">loadavg</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getloadavg</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">rmem</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">float</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ps -p </span><span class="si">%d</span><span class="s2"> -o </span><span class="si">%s</span><span class="s2"> | tail -1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="s2">&quot;rss&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="o">/</span> <span class="mf">1000.0</span>
-            <span class="p">)</span>  <span class="c1"># resident memory</span>
-            <span class="n">vmem</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">float</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ps -p </span><span class="si">%d</span><span class="s2"> -o </span><span class="si">%s</span><span class="s2"> | tail -1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="s2">&quot;vsz&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="o">/</span> <span class="mf">1000.0</span>
-            <span class="p">)</span>  <span class="c1"># virtual memory</span>
-            <span class="n">pmem</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ps -p </span><span class="si">%d</span><span class="s2"> -o </span><span class="si">%s</span><span class="s2"> | tail -1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="s2">&quot;%mem&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="p">)</span>  <span class="c1"># % of resident memory to total</span>
+
+            <span class="c1"># Helper function to run the ps command with a modified environment</span>
+            <span class="k">def</span> <span class="nf">run_ps_command</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># Resident memory</span>
+            <span class="n">rmem</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">run_ps_command</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ps -p </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2"> -o rss | tail -1&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mf">1000.0</span>
+
+            <span class="c1"># Virtual memory</span>
+            <span class="n">vmem</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">run_ps_command</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ps -p </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2"> -o vsz | tail -1&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mf">1000.0</span>
+
+            <span class="c1"># Percentage of resident memory to total</span>
+            <span class="n">pmem</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">run_ps_command</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ps -p </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2"> -o %mem | tail -1&quot;</span><span class="p">))</span>
+
             <span class="n">rusage</span> <span class="o">=</span> <span class="n">_RESOURCE</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">_RESOURCE</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="s2">&quot;mem&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>

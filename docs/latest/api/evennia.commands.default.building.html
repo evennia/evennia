@@ -340,7 +340,7 @@ one exact copy of the original object will be created with the name <a href="#id
 <dl class="simple">
 <dt>Usage:</dt><dd><p>cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
 cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,…]
-cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
+cpattr[/switch] &lt;attr&gt;[:category] = &lt;obj1&gt;/&lt;attr1&gt;[:category] [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
 cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,…]</p>
 </dd>
 <dt>Switches:</dt><dd><p>move - delete the attribute from the source object after copying.</p>
@@ -351,6 +351,10 @@ cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,…]</p>
 -&gt;
 copies the coolness attribute (defined on yourself), to attributes
 on Anna and Tom.</p>
+<p>cpattr box/width:dimension = tube/width:dimension
+-&gt;
+copies the box’s width attribute in the dimension category, to be the
+tube’s width attribute in the dimension category</p>
 <p>Copy the attribute one object to one or more attributes on another object.
 If you don’t supply a source object, yourself is used.</p>
 <dl class="py attribute">
@@ -375,7 +379,7 @@ If you don’t supply a source object, yourself is used.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.default.building.CmdCpAttr.check_from_attr">
-<code class="sig-name descname">check_from_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">clear</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_from_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_from_attr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_from_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clear</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_from_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_from_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for overriding on subclassed commands. Checks to make sure a
 caller can copy the attr from the object in question. If not, return a
 false value and the command will abort. An error message should be
@@ -385,7 +389,7 @@ provided by this function.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.default.building.CmdCpAttr.check_to_attr">
-<code class="sig-name descname">check_to_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_to_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_to_attr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_to_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_to_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_to_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for overriding on subclassed commands. Checks to make sure a
 caller can write to the specified attribute on the specified object.
 If not, return a false value and the attribute will be skipped. An
@@ -394,14 +398,14 @@ error message should be provided by this function.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.default.building.CmdCpAttr.check_has_attr">
-<code class="sig-name descname">check_has_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_has_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_has_attr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_has_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_has_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_has_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for overriding on subclassed commands. Do any preprocessing
 required and verify an object has an attribute.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.commands.default.building.CmdCpAttr.get_attr">
-<code class="sig-name descname">get_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.get_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.get_attr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.get_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.get_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for overriding on subclassed commands. Do any preprocessing
 required and get the attribute from the object.</p>
 </dd></dl>
@@ -424,7 +428,7 @@ required and get the attribute from the object.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdCpAttr.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;cpattr', 'no_prefix': 'cpattr ', 'tags': '', 'text': &quot;\n    copy attributes between objects\n\n    Usage:\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]\n      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]\n\n    Switches:\n      move - delete the attribute from the source object after copying.\n\n    Example:\n      cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety\n      -&gt;\n      copies the coolness attribute (defined on yourself), to attributes\n      on Anna and Tom.\n\n    Copy the attribute one object to one or more attributes on another object.\n    If you don't supply a source object, yourself is used.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;cpattr', 'no_prefix': 'cpattr ', 'tags': '', 'text': &quot;\n    copy attributes between objects\n\n    Usage:\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]\n      cpattr[/switch] &lt;attr&gt;[:category] = &lt;obj1&gt;/&lt;attr1&gt;[:category] [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]\n\n    Switches:\n      move - delete the attribute from the source object after copying.\n\n    Example:\n      cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety\n      -&gt;\n      copies the coolness attribute (defined on yourself), to attributes\n      on Anna and Tom.\n\n      cpattr box/width:dimension = tube/width:dimension\n      -&gt;\n      copies the box's width attribute in the dimension category, to be the\n      tube's width attribute in the dimension category\n\n    Copy the attribute one object to one or more attributes on another object.\n    If you don't supply a source object, yourself is used.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1415,7 +1419,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;typeclasses', '&#64;swap', '&#64;type', '&#64;update', '&#64;parent']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;swap', '&#64;typeclasses', '&#64;update', '&#64;parent', '&#64;type']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1446,7 +1450,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;typeclasses &#64;swap &#64;type &#64;update &#64;parent', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass typeclasses swap type update parent', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;swap &#64;typeclasses &#64;update &#64;parent &#64;type', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass swap typeclasses update parent type', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1601,7 +1605,7 @@ If object is not specified, the current location is examined.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;exam', '&#64;ex']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;ex', '&#64;exam']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1874,7 +1878,7 @@ the cases, see the module doc.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;exam &#64;ex', 'category': 'building', 'key': '&#64;examine', 'no_prefix': 'examine exam ex', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n      script - examine a Script\n      channel - examine a Channel\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;ex &#64;exam', 'category': 'building', 'key': '&#64;examine', 'no_prefix': 'examine ex exam', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n      script - examine a Script\n      channel - examine a Channel\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
