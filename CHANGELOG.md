@@ -17,6 +17,8 @@
 - [Fix][issue3627]: Traceback from contrib `in-game reports` `help manage` command (Griatch)
 - [Fix][issue3643]: Fix for Commands metaclass interpreting e.g. `usercmd:false()` locks as
   a `cmd:` type lock for the purposes of default access fallbacks (Griatch).
+- [Fix][issue3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
+  was documented (willmofield)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
 - Docs updates: feykrh, Griatch
 
@@ -30,6 +32,7 @@
 [pull3640]: https://github.com/evennia/evennia/pull/3640
 [pull3647]: https://github.com/evennia/evennia/pull/3647
 [pull3635]: https://github.com/evennia/evennia/pull/3635
+[pull3651]: https://github.com/evennia/evennia/pull/3651
 [issue3627]: https://github.com/evennia/evennia/issues/3627
 [issue3643]: https://github.com/evennia/evennia/issues/3643
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
