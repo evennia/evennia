@@ -16,4 +16,4 @@ jobs:
           # URL of the project to add issues to
           project-url: https://github.com/orgs/evennia/projects/1
           # A GitHub personal access token with write access to the project
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.EVENNIA_TICKET_TO_PROJECT }}
