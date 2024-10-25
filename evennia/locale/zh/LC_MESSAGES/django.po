@@ -13,7 +13,7 @@ msgstr "|c{key}|R 已被另一个帐户使用。"
 
 #: accounts/accounts.py:361
 msgid "You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
-msgstr "您无法再使用更多实体（最多 {_MAX_NR_SIMULTANEOUS_PUPPETS} 个）"
+msgstr "您无法再操作更多实体（最多{_MAX_NR_SIMULTANEOUS_PUPPETS}个）"
 
 #: accounts/accounts.py:555
 msgid "Too many login failures; please try again in a few minutes."
@@ -133,6 +133,7 @@ msgid ""
 "please file a bug report with the Evennia project, including the\n"
 "traceback and steps to reproduce.\n"
 msgstr ""
+"\n"
 "发生命令处理程序错误。\n"
 "如果这不是由于本地更改造成的， 请向 Evennia官方提交错误报告，\n"
 "包括回溯和重现步骤。\n"
@@ -281,7 +282,7 @@ msgstr "未找到默认位置‘(#{dbid})’。"
 
 #: objects/objects.py:992
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
-msgstr "发生了意外！您进入了不应该出现的地点。请联系管理员处理。"
+msgstr "发生了意外！您目前处于不恰当的地点。请联系管理员处理。"
 
 #: objects/objects.py:1145
 msgid "Your character {key} has been destroyed."
@@ -391,7 +392,7 @@ msgstr "原型 {protkey} 需要'typeclass'或'prototype_parent'。"
 
 #: prototypes/prototypes.py:832
 msgid "Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' or 'prototype_parent' keys."
-msgstr "原型 {protkey} 由于缺少 'typeclass'或 'prototype_parent'键，只能作为混合元素使用。"
+msgstr "原型 {protkey} 由于缺少 'typeclass'或 'prototype_parent'键，只能作为混合元素(mixin)使用。"
 
 #: prototypes/prototypes.py:843
 msgid "{err}: Prototype {protkey} is based on typeclass {typeclass}, which could not be imported!"
@@ -444,10 +445,10 @@ msgstr ""
 "\n"
 "--欢迎来到基于|wEvennia|n的新游戏！\n"
 "如果您需要帮助，或是想贡献自己的力量、报告问题或只是想加入社区，\n"
-"请访问 https://www.evennia.com if you need。\n"
+"请访问 https://www.evennia.com\n"
 "\n"
 "作为超级用户，输入|wbatchcommand tutorial_world.build|n来构建教程内容。\n"
-"构建完成后，请尝试使用 |wintro|n 启动帮助，使用 |wtutorial|n 玩演示游戏。\n"
+"构建完成后，请尝试使用 |wintro|n 启动帮助，随后使用 |wtutorial|n 玩演示游戏。\n"
 
 #: server/initial_setup.py:108
 msgid "This is User #1."
@@ -455,7 +456,7 @@ msgstr "这是首个用户。"
 
 #: server/initial_setup.py:128
 msgid "Limbo"
-msgstr "边境"
+msgstr "Limbo"
 
 #: server/portal/portalsessionhandler.py:41
 msgid "{servername} DoS protection is active.You are queued to connect in {num} seconds ..."
