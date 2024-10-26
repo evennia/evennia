@@ -276,4 +276,4 @@ If you want to reset your MySQL/MariaDB datbase, see [here](./Updating-Evennia.m
 
 ## Other databases
 
-No testing has been performed with Oracle, but it is also supported through Django. There are community maintained drivers for [MS SQL](https://code.google.com/p/django-mssql/) and possibly a few others. If you try other databases out, consider contributing to this page with instructions. 
+No testing has been performed with Oracle, but it is also supported through Django. There are community maintained drivers for [MS SQL](https://code.google.com/p/django-mssql/) and possibly a few others. If you try other databases out, consider contributing to this page with instructions.
