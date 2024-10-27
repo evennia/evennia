@@ -120,6 +120,9 @@ class FileHelpEntry:
     def __repr__(self):
         return f"<FileHelpEntry {self.key}>"
 
+    def __hash__(self):
+        return hash((self.key, self.help_category, self.lock_storage))
+
     @lazy_property
     def locks(self):
         return LockHandler(self)
