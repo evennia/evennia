@@ -193,9 +193,9 @@ move help_system web  (windows)
 </div></blockquote>
 <section id="create-a-view">
 <h3>Create a view<a class="headerlink" href="#create-a-view" title="Permalink to this headline">¶</a></h3>
-<p>A <em>view</em> in Django is a simple Python function placed in the “<a class="reference external" href="http://views.py">views.py</a>” file in your app.  It will
+<p>A <em>view</em> in Django is a simple Python function placed in the <code class="docutils literal notranslate"><span class="pre">views.py</span></code> file in your app.  It will
 handle the behavior that is triggered when a user asks for this information by entering a <em>URL</em> (the connection between <em>views</em> and <em>URLs</em> will be discussed later).</p>
-<p>So let’s create our view.  You can open the “web/help_system/views.py” file and paste the following lines:</p>
+<p>So let’s create our view.  You can open the <code class="docutils literal notranslate"><span class="pre">web/help_system/views.py</span></code> file and paste the following lines:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
 <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -235,7 +235,7 @@ handle the behavior that is triggered when a user asks for this information by e
 </section>
 <section id="create-a-new-url">
 <h3>Create a new URL<a class="headerlink" href="#create-a-new-url" title="Permalink to this headline">¶</a></h3>
-<p>Last step to add our page: we need to add a <em>URL</em> leading to it… otherwise users won’t be able to access it.  The URLs of our apps are stored in the app’s directory “<a class="reference external" href="http://urls.py">urls.py</a>” file.</p>
+<p>Last step to add our page: we need to add a <em>URL</em> leading to it… otherwise users won’t be able to access it.  The URLs of our apps are stored in the app’s directory <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file.</p>
 <p>Open the <code class="docutils literal notranslate"><span class="pre">web/help_system/urls.py</span></code> file (you might have to create it) and make it look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the help_system app</span>
 

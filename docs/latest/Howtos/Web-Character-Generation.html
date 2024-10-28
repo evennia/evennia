@@ -200,7 +200,7 @@ evennia startapp chargen
 <h3>Installing - Checkpoint:<a class="headerlink" href="#installing-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>you should have a folder named <code class="docutils literal notranslate"><span class="pre">chargen</span></code> or whatever you chose in your mygame/web/ directory</p></li>
-<li><p>you should have your application name added to your INSTALLED_APPS in <a class="reference external" href="http://settings.py">settings.py</a></p></li>
+<li><p>you should have your application name added to your INSTALLED_APPS in <code class="docutils literal notranslate"><span class="pre">settings.py</span></code></p></li>
 </ul>
 </section>
 </section>
@@ -485,7 +485,7 @@ specific web page. We will use three views and three pages here:</p>
 <section id="urls-checkpoint">
 <h3>URLs - Checkpoint:<a class="headerlink" href="#urls-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>You’ve created a <a class="reference external" href="http://urls.py">urls.py</a> file in the <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen</span></code> directory</p></li>
+<li><p>You’ve created a <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file in the <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen</span></code> directory</p></li>
 <li><p>You have edited the main <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code> file to include urls to the <code class="docutils literal notranslate"><span class="pre">chargen</span></code> directory.</p></li>
 </ul>
 </section>
@@ -547,7 +547,7 @@ specific web page. We will use three views and three pages here:</p>
 </section>
 <section id="create-html">
 <h3>create.html<a class="headerlink" href="#create-html" title="Permalink to this headline">¶</a></h3>
-<p>Our create HTML template will use the Django form we defined back in <a class="reference external" href="http://views.py/forms.py">views.py/forms.py</a> to drive the majority of the application process. There will be a form input for every field we defined in <a class="reference external" href="http://forms.py">forms.py</a>, which is handy. We have used POST as our method because we are sending information to the server that will update the database. As an alternative, GET would be much less secure. You can read up on documentation elsewhere on the web for GET vs. POST.</p>
+<p>Our create HTML template will use the Django form we defined back in <a class="reference external" href="http://views.py/forms.py">views.py/forms.py</a> to drive the majority of the application process. There will be a form input for every field we defined in <code class="docutils literal notranslate"><span class="pre">forms.py</span></code>, which is handy. We have used POST as our method because we are sending information to the server that will update the database. As an alternative, GET would be much less secure. You can read up on documentation elsewhere on the web for GET vs. POST.</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- file mygame/web/chargen/templates/chargen/create.html--&gt;</span>
 
 {% extends &quot;base.html&quot; %}

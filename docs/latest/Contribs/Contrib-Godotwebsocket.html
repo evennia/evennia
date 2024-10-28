@@ -129,7 +129,7 @@ and display regular text with color in Godot’s RichTextLabel using BBCode.
 You can use Godot to provide advanced functionality with proper Evennia support.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>You need to add the following settings in your <a class="reference external" href="http://settings.py">settings.py</a> and restart evennia.</p>
+<p>You need to add the following settings in your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> and restart evennia.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;evennia.contrib.base_systems.godotwebsocket.webclient&#39;</span><span class="p">)</span>
 <span class="n">GODOT_CLIENT_WEBSOCKET_PORT</span> <span class="o">=</span> <span class="mi">4008</span>
 <span class="n">GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>

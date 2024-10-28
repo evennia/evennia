@@ -231,7 +231,7 @@ fetch those separately before displaying it to the user.</p></li>
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Game folders created with older versions of Evennia will lack most of this
 convenient <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> layout. If you use a game dir from an older version,
 you should copy over the missing <code class="docutils literal notranslate"><span class="pre">evennia/game_template/web/</span></code> folders from
-there, as well as the main <a class="reference external" href="http://urls.py">urls.py</a> file.</p>
+there, as well as the main <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file.</p>
 </div>
 <p>As you can see, the <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> folder is a copy of the <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code> folder structure except the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folders are mostly empty.</p>
 <p>For static- and template-files, Evennia will <em>first</em> look in <code class="docutils literal notranslate"><span class="pre">mygame/static</span></code> and <code class="docutils literal notranslate"><span class="pre">mygame/templates</span></code> before going to the default locations in <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code>.  So override these resources, you just need to put a file with the same name in the right spot under <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> (and then reload the server). Easiest is often to copy the original over and modify it.</p>

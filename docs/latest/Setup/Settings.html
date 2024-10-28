@@ -169,8 +169,8 @@ It may be tempting to copy <em>everything</em> from <code class="docutils litera
 </ul>
 <p>Some other Evennia systems can be customized by plugin modules but has no explicit template in <code class="docutils literal notranslate"><span class="pre">conf/</span></code>:</p>
 <ul class="simple">
-<li><p><em><a class="reference external" href="http://cmdparser.py">cmdparser.py</a></em> - a custom module can be used to totally replace Evennia’s default command parser. All this does is to split the incoming string into “command name” and “the rest”. It also handles things like error messages for no-matches and multiple-matches among other things that makes this more complex than it sounds. The default parser is <em>very</em> generic, so you are most often best served by modifying things further down the line (on the command parse level) than here.</p></li>
-<li><p><em>at_search.py</em> - this allows for replacing the way Evennia handles search results. It allows to change how errors are echoed and how multi-matches are resolved and reported (like how the default understands that “2-ball” should match the second “ball” object if there are two of them in the room).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdparser.py</span></code> - a custom module can be used to totally replace Evennia’s default command parser. All this does is to split the incoming string into “command name” and “the rest”. It also handles things like error messages for no-matches and multiple-matches among other things that makes this more complex than it sounds. The default parser is <em>very</em> generic, so you are most often best served by modifying things further down the line (on the command parse level) than here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_search.py</span></code> - this allows for replacing the way Evennia handles search results. It allows to change how errors are echoed and how multi-matches are resolved and reported (like how the default understands that “2-ball” should match the second “ball” object if there are two of them in the room).</p></li>
 </ul>
 </section>
 </section>
