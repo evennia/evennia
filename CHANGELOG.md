@@ -5,6 +5,7 @@
 
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
+- [Feat][pull3653]: Updated Chinese translation.
 - [Fix][pull3635]: Fix memory leak in Portal Telnet connections, force weak
   references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)
 - [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
@@ -19,8 +20,12 @@
   a `cmd:` type lock for the purposes of default access fallbacks (Griatch).
 - [Fix][issue3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
   was documented (willmofield)
+- [Fix][issue3657]: Fix error in `do_search` that caused `FileHelpEntries` to
+  traceback (a-rodian-jedi)
+- [Docs][pull3655]: Fixed many erroneously created links on `file.py` names in
+  the docs (marado)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
-- Docs updates: feykrh, Griatch
+- Docs updates: feykrh, Griatch, marado
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
 [pull3676]: https://github.com/evennia/evennia/pull/3676
@@ -33,6 +38,9 @@
 [pull3647]: https://github.com/evennia/evennia/pull/3647
 [pull3635]: https://github.com/evennia/evennia/pull/3635
 [pull3651]: https://github.com/evennia/evennia/pull/3651
+[pull3655]: https://github.com/evennia/evennia/pull/3655
+[pull3657]: https://github.com/evennia/evennia/pull/3657
+[pull3653]: https://github.com/evennia/evennia/pull/3653
 [issue3627]: https://github.com/evennia/evennia/issues/3627
 [issue3643]: https://github.com/evennia/evennia/issues/3643
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
