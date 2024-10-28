@@ -94,7 +94,7 @@ We create a database user 'evennia' and a new database named `evennia` (you can 
 
 ### Evennia PostgreSQL configuration
 
-Edit `mygame/server/conf/secret_settings.py and add the following section:
+Edit `mygame/server/conf/secret_settings.py` and add the following section:
 
 ```python
 #

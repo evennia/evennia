@@ -72,7 +72,7 @@ with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
 - [Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
-defined explicitly to be restarted/recrated in settings.py (Griatch)
+defined explicitly to be restarted/recrated in `settings.py` (Griatch)
 - Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
 did not add it to the handler's object (Griatch)
 - [Fix][pull3533]: Fix Lunr search issues preventing finding help entries with similar
@@ -142,7 +142,7 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 - [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
 - [Fix][pull3571]: Issue disambiguating between certain partial multimatches
   (InspectorCaracal)
-- [Fix][pull3589]: Fix regex escaping in utils.py for future Python versions (hhsiao)
+- [Fix][pull3589]: Fix regex escaping in `utils.py` for future Python versions (hhsiao)
 - [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
 - [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
 
@@ -1496,7 +1496,7 @@ base-modules where removed from game/gamesrc. Instead admins are
 encouraged to explicitly create new modules under game/gamesrc/ when
 they want to implement their game - gamesrc/ is empty by default
 except for the example folders that contain template files to use for
-this purpose. We also added the ev.py file, implementing a new, flat
+this purpose. We also added the `ev.py` file, implementing a new, flat
 API.  Work is ongoing to add support for mud-specific telnet
 extensions, notably the MSDP and GMCP out-of-band extensions.  On the
 community side, evennia's dev blog was started and linked on planet

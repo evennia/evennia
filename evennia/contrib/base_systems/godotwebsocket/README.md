@@ -9,7 +9,7 @@ You can use Godot to provide advanced functionality with proper Evennia support.
 
 ## Installation
 
-You need to add the following settings in your settings.py and restart evennia.
+You need to add the following settings in your `settings.py` and restart evennia.
 
 ```python
 PORTAL_SERVICES_PLUGIN_MODULES.append('evennia.contrib.base_systems.godotwebsocket.webclient')

@@ -17,6 +17,8 @@
 - [Fix][issue3627]: Traceback from contrib `in-game reports` `help manage` command (Griatch)
 - [Fix][issue3643]: Fix for Commands metaclass interpreting e.g. `usercmd:false()` locks as
   a `cmd:` type lock for the purposes of default access fallbacks (Griatch).
+- [Fix][issue3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
+  was documented (willmofield)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
 - Docs updates: feykrh, Griatch
 
@@ -30,6 +32,7 @@
 [pull3640]: https://github.com/evennia/evennia/pull/3640
 [pull3647]: https://github.com/evennia/evennia/pull/3647
 [pull3635]: https://github.com/evennia/evennia/pull/3635
+[pull3651]: https://github.com/evennia/evennia/pull/3651
 [issue3627]: https://github.com/evennia/evennia/issues/3627
 [issue3643]: https://github.com/evennia/evennia/issues/3643
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
@@ -69,7 +72,7 @@ with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
 - [Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
-defined explicitly to be restarted/recrated in settings.py (Griatch)
+defined explicitly to be restarted/recrated in `settings.py` (Griatch)
 - Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
 did not add it to the handler's object (Griatch)
 - [Fix][pull3533]: Fix Lunr search issues preventing finding help entries with similar
@@ -139,7 +142,7 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 - [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
 - [Fix][pull3571]: Issue disambiguating between certain partial multimatches
   (InspectorCaracal)
-- [Fix][pull3589]: Fix regex escaping in utils.py for future Python versions (hhsiao)
+- [Fix][pull3589]: Fix regex escaping in `utils.py` for future Python versions (hhsiao)
 - [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
 - [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
 
@@ -1493,7 +1496,7 @@ base-modules where removed from game/gamesrc. Instead admins are
 encouraged to explicitly create new modules under game/gamesrc/ when
 they want to implement their game - gamesrc/ is empty by default
 except for the example folders that contain template files to use for
-this purpose. We also added the ev.py file, implementing a new, flat
+this purpose. We also added the `ev.py` file, implementing a new, flat
 API.  Work is ongoing to add support for mud-specific telnet
 extensions, notably the MSDP and GMCP out-of-band extensions.  On the
 community side, evennia's dev blog was started and linked on planet
