@@ -121,7 +121,7 @@ class FileHelpEntry:
         return f"<FileHelpEntry {self.key}>"
 
     def __hash__(self):
-        return hash((self.key, self.help_category, self.lock_storage))
+        return hash(self.key)
 
     @lazy_property
     def locks(self):
