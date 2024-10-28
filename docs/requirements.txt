@@ -5,7 +5,7 @@ myst-parser==0.15.2
 myst-parser[linkify]==0.15.2
 Jinja2 < 3.1
 
-# pinned to allow for sphinx 3.x to still work, latest requried 5+
+# pinned to allow for sphinx 3.x to still work, latest required 5+
 alabaster==0.7.13
 sphinxcontrib-applehelp<1.0.7
 sphinxcontrib-devhelp<1.0.6
