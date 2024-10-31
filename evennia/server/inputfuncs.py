@@ -96,10 +96,10 @@ def text(session, *args, **kwargs):
         # nick replacement
         puppet = session.puppet
         if puppet:
-            txt = puppet.nicks.nickreplace(txt, categories=("inputline"), include_account=True)
+            txt = puppet.nicks.nickreplace(txt, categories=("inputline", "channel"), include_account=True)
         else:
             txt = session.account.nicks.nickreplace(
-                txt, categories=("inputline"), include_account=False
+                txt, categories=("inputline", "channel"), include_account=False
             )
     kwargs.pop("options", None)
     cmdhandler(session, txt, callertype="session", session=session, **kwargs)
