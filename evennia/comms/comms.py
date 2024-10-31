@@ -550,7 +550,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         user.nicks.add(
             msg_nick_pattern,
             msg_nick_replacement,
-            category="inputline",
+            category="channel",
             pattern_is_regex=True,
             **kwargs,
         )
