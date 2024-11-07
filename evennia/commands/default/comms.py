@@ -1389,11 +1389,11 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                         targets = [target_obj[0]]
                         message = message[0].strip()
                     else:
-                        # a message with a space in it - put it back together
-                        message = target + " " + (message[0] if message else "")
+                        # a message with a space in it - use the original args
+                        message = self.args.strip()
                 else:
-                    # a single-word message
-                    message = target.strip()
+                    # a single-word message - use the original args
+                    message = self.args.strip()
 
         pages = list(pages_we_sent) + list(pages_we_got)
         pages = sorted(pages, key=lambda page: page.date_created)
