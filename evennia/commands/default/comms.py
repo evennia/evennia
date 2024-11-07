@@ -1382,7 +1382,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 if target and target.isnumeric():
                     # a number to specify a historic page
                     number = int(target)
-                elif target:
+                elif message:
                     target_obj = self.caller.search(target, quiet=True)
                     if target_obj:
                         # a proper target
@@ -1393,7 +1393,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                         message = target + " " + (message[0] if message else "")
                 else:
                     # a single-word message
-                    message = message[0].strip()
+                    message = target.strip()
 
         pages = list(pages_we_sent) + list(pages_we_got)
         pages = sorted(pages, key=lambda page: page.date_created)
