@@ -231,6 +231,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
      has_account (bool, read-only) - True is this object has an associated account.
      is_superuser (bool, read-only): True if this object has an account and that
                         account is a superuser.
+     plural_category (string) - Alias category for the plural strings of this object
 
     * Handlers available
 
@@ -382,6 +383,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
      at_look(target, **kwargs)
      at_desc(looker=None)
+     at_rename(oldname, newname)
 
 
     """
@@ -407,6 +409,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 {things}
 {footer}
     """
+
+    plural_category = "plural_key"
     # on-object properties
 
     @lazy_property
@@ -1693,7 +1697,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.get_numbered_name(1, looker, key="Foobert", return_string=True, no_article=True)
                   -> "Foobert"
         """
-        plural_category = "plural_key"
         key = kwargs.get("key", self.get_display_name(looker))
         raw_key = self.name
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
@@ -1704,13 +1707,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # this is raised by inflect if the input is not a proper noun
             plural = key
         singular = _INFLECT.an(key)
-        if not self.aliases.get(plural, category=plural_category):
+        if not self.aliases.get(plural, category=self.plural_category):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
-            self.aliases.clear(category=plural_category)
-            self.aliases.add(plural, category=plural_category)
+            self.aliases.clear(category=self.plural_category)
+            self.aliases.add(plural, category=self.plural_category)
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
-            self.aliases.add(singular, category=plural_category)
+            self.aliases.add(singular, category=self.plural_category)
 
         if kwargs.get("no_article") and count == 1:
             if kwargs.get("return_string"):
@@ -1928,7 +1931,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if hasattr(self, "_createdict"):
             # this will be set if the object was created by the utils.create function
-            # or the spawner. We want these kwargs to override the values set by 
+            # or the spawner. We want these kwargs to override the values set by
             # the initial hooks.
             cdict = self._createdict
             updates = []
@@ -1972,7 +1975,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     self.nattributes.add(key, value)
 
             del self._createdict
-        
+
         # run the post-setup hook
         self.at_object_post_creation()
 
@@ -2055,7 +2058,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Called when this object is spawned or updated from a prototype, after all other
         hooks have been run.
-        
+
         Keyword Args:
             prototype (dict):  The prototype that was used to spawn or update this object.
         """
@@ -2979,6 +2982,19 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 exclude=exclude,
                 mapping=location_mapping,
             )
+
+    def at_rename(self, oldname, newname):
+        """
+        This Hook is called by @name on a successful rename.
+
+        Args:
+            oldname (str): The instance's original name.
+            newname (str): The new name for the instance.
+
+        """
+
+        # Clear plural aliases set by DefaultObject.get_numbered_name
+        self.aliases.clear(category=self.plural_category)
 
 
 #

@@ -1267,6 +1267,15 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
         self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
 
+    def test_name_clears_plural(self):
+        box, _ = DefaultObject.create("Opened Box", location=self.char1)
+
+        # Force update of plural aliases (set in get_numbered_name)
+        self.char1.execute_cmd("inventory")
+        self.assertIn("one opened box", box.aliases.get(category=box.plural_category))
+        self.char1.execute_cmd("@name box=closed box")
+        self.assertIsNone(box.aliases.get(category=box.plural_category))
+
     def test_desc(self):
         oid = self.obj2.id
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2.")
