@@ -79,7 +79,7 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and inherits_from(self.caller, evennia.DefaultObject):
+        if not more and hasattr(self.caller, 'account') and self.caller.account:
             more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
@@ -111,9 +111,13 @@ class CmdMoreExit(Command):
     def func(self):
         """
         Exit pager and re-fire the failed command.
-
         """
         more = self.caller.ndb._more
+        if not more and hasattr(self.caller, 'account') and self.caller.account:
+            more = self.caller.account.ndb._more
+        if not more:
+            self.caller.msg("Error in exiting the pager. Contact an admin.")
+            return
         more.page_quit()
 
         # re-fire the command (in new cmdset)
