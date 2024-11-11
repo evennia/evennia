@@ -253,9 +253,6 @@
             <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">uaccount</span> <span class="o">=</span> <span class="n">account</span>
-            <span class="n">uaccount</span><span class="o">.</span><span class="n">last_login</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-            <span class="n">uaccount</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
             <span class="c1"># calling account hook</span>
             <span class="n">account</span><span class="o">.</span><span class="n">at_disconnect</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="o">=</span> <span class="kc">False</span>

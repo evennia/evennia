@@ -259,6 +259,7 @@ is_superuser (bool, read-only): True if this object has an account and that</p>
 <blockquote>
 <div><p>account is a superuser.</p>
 </div></blockquote>
+<p>plural_category (string) - Alias category for the plural strings of this object</p>
 </div></blockquote>
 <ul class="simple">
 <li><p>Handlers available</p></li>
@@ -440,7 +441,8 @@ at_drop(dropper, <a href="#id77"><span class="problematic" id="id78">**</span></
 at_pre_say(speaker, message, <a href="#id79"><span class="problematic" id="id80">**</span></a>kwargs)
 at_say(message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, <a href="#id81"><span class="problematic" id="id82">**</span></a>kwargs)</p>
 <p>at_look(target, <a href="#id83"><span class="problematic" id="id84">**</span></a>kwargs)
-at_desc(looker=None)</p>
+at_desc(looker=None)
+at_rename(oldname, newname)</p>
 </div></blockquote>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.cmdset_provider_order">
@@ -465,6 +467,11 @@ at_desc(looker=None)</p>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.appearance_template">
 <code class="sig-name descname">appearance_template</code><em class="property"> = '\n{header}\n|c{name}{extra_name_info}|n\n{desc}\n{exits}\n{characters}\n{things}\n{footer}\n    '</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.appearance_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.objects.objects.DefaultObject.plural_category">
+<code class="sig-name descname">plural_category</code><em class="property"> = 'plural_key'</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.plural_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2420,6 +2427,20 @@ receiver (otherwise ‘None’).</p></li>
 if more than one, otherwise same as receiver</p></li>
 <li><p>{location}: the location where object is.</p></li>
 </ul>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_rename">
+<code class="sig-name descname">at_rename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oldname</span></em>, <em class="sig-param"><span class="n">newname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Hook is called by &#64;name on a successful rename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oldname</strong> (<em>str</em>) – The instance’s original name.</p></li>
+<li><p><strong>newname</strong> (<em>str</em>) – The new name for the instance.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py exception">

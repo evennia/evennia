@@ -323,6 +323,7 @@
 <span class="sd">     has_account (bool, read-only) - True is this object has an associated account.</span>
 <span class="sd">     is_superuser (bool, read-only): True if this object has an account and that</span>
 <span class="sd">                        account is a superuser.</span>
+<span class="sd">     plural_category (string) - Alias category for the plural strings of this object</span>
 
 <span class="sd">    * Handlers available</span>
 
@@ -474,6 +475,7 @@
 
 <span class="sd">     at_look(target, **kwargs)</span>
 <span class="sd">     at_desc(looker=None)</span>
+<span class="sd">     at_rename(oldname, newname)</span>
 
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -499,6 +501,8 @@
 <span class="si">{things}</span>
 <span class="si">{footer}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">plural_category</span> <span class="o">=</span> <span class="s2">&quot;plural_key&quot;</span>
     <span class="c1"># on-object properties</span>
 
 <div class="viewcode-block" id="DefaultObject.cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
@@ -1785,7 +1789,6 @@
 <span class="sd">            obj.get_numbered_name(1, looker, key=&quot;Foobert&quot;, return_string=True, no_article=True)</span>
 <span class="sd">                  -&gt; &quot;Foobert&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">plural_category</span> <span class="o">=</span> <span class="s2">&quot;plural_key&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">))</span>
         <span class="n">raw_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># this is needed to allow inflection of colored names</span>
@@ -1796,13 +1799,13 @@
             <span class="c1"># this is raised by inflect if the input is not a proper noun</span>
             <span class="n">plural</span> <span class="o">=</span> <span class="n">key</span>
         <span class="n">singular</span> <span class="o">=</span> <span class="n">_INFLECT</span><span class="o">.</span><span class="n">an</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plural</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plural</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plural_category</span><span class="p">):</span>
             <span class="c1"># we need to wipe any old plurals/an/a in case key changed in the interrim</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">plural</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plural_category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">plural</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plural_category</span><span class="p">)</span>
             <span class="c1"># save the singular form as an alias here too so we can display &quot;an egg&quot; and also</span>
             <span class="c1"># look at &#39;an egg&#39;.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">plural_category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plural_category</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_article&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_string&quot;</span><span class="p">):</span>
@@ -2020,7 +2023,7 @@
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_createdict&quot;</span><span class="p">):</span>
             <span class="c1"># this will be set if the object was created by the utils.create function</span>
-            <span class="c1"># or the spawner. We want these kwargs to override the values set by </span>
+            <span class="c1"># or the spawner. We want these kwargs to override the values set by</span>
             <span class="c1"># the initial hooks.</span>
             <span class="n">cdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_createdict</span>
             <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2064,7 +2067,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_createdict</span>
-        
+
         <span class="c1"># run the post-setup hook</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_object_post_creation</span><span class="p">()</span>
 
@@ -2147,7 +2150,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this object is spawned or updated from a prototype, after all other</span>
 <span class="sd">        hooks have been run.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            prototype (dict):  The prototype that was used to spawn or update this object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3070,7 +3073,20 @@
                 <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
                 <span class="n">mapping</span><span class="o">=</span><span class="n">location_mapping</span><span class="p">,</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObject.at_rename"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_rename">[docs]</a>    <span class="k">def</span> <span class="nf">at_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">,</span> <span class="n">newname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This Hook is called by @name on a successful rename.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            oldname (str): The instance&#39;s original name.</span>
+<span class="sd">            newname (str): The new name for the instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Clear plural aliases set by DefaultObject.get_numbered_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plural_category</span><span class="p">)</span></div></div>
 
 
 <span class="c1">#</span>
