@@ -1,7 +1,6 @@
 # Changelog
 
-
-## Main branch
+## Evennia 4.5.0
 
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
