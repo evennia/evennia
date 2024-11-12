@@ -2,9 +2,11 @@
 
 ## Evennia 4.5.0
 
+Nov 12, 2024
+
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
-- [Feat][pull3653]: Updated Chinese translation.
+- [Feat][pull3653]: Updated Chinese translation (Pridell).
 - [Fix][pull3635]: Fix memory leak in Portal Telnet connections, force weak
   references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)
 - [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
@@ -17,18 +19,18 @@
 - [Fix][issue3627]: Traceback from contrib `in-game reports` `help manage` command (Griatch)
 - [Fix][issue3643]: Fix for Commands metaclass interpreting e.g. `usercmd:false()` locks as
   a `cmd:` type lock for the purposes of default access fallbacks (Griatch).
-- [Fix][issue3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
+- [Fix][pull3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
   was documented (willmofield)
-- [Fix][issue3657]: Fix error in `do_search` that caused `FileHelpEntries` to
+- [Fix][pull3657]: Fix error in `do_search` that caused `FileHelpEntries` to
   traceback (a-rodian-jedi)
-- [Fix][issue3660]: Numbered aliases didn't refresh after a object rename unless
+- [Fix][pull3660]: Numbered aliases didn't refresh after a object rename unless
   the endpoint hook was re-called; now triggers the call autiomatically (count-infinity)
-- [Fix][issue3664]: The `Account.last_login` field was updated also when user
+- [Fix][pull3664]: The `Account.last_login` field was updated also when user
   disconnected, which is not useful (InspectorCaracal)
-- [Fix][issue3665]: Remove faulty verb conjugation exceptions for 'offer',
+- [Fix][pull3665]: Remove faulty verb conjugation exceptions for 'offer',
   'hinder' and 'alter' in automatic verb-conjugation engine (aMiss-aWry)
-- [Fix][issue3669]: The `page` command tracebacked for some input combinations (InspectorCaracal)
-- [Fix][issue3642]: Give friendlier error if EvMore object is not available
+- [Fix][pull3669]: The `page` command tracebacked for some input combinations (InspectorCaracal)
+- [Fix][pull3642]: Give friendlier error if EvMore object is not available
   neither on Object, nor on account fallback. (InspectorCaracal)
 - [Docs][pull3655]: Fixed many erroneously created links on `file.py` names in
   the docs (marado)
@@ -54,6 +56,7 @@
 [pull3665]: https://github.com/evennia/evennia/pull/3665
 [pull3669]: https://github.com/evennia/evennia/pull/3669
 [pull3642]: https://github.com/evennia/evennia/pull/3642
+[pull3576]: https://github.com/evennia/evennia/pull/3576
 [issue3627]: https://github.com/evennia/evennia/issues/3627
 [issue3643]: https://github.com/evennia/evennia/issues/3643
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
