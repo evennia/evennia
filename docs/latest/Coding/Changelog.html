@@ -66,7 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main-branch">Main branch</a></li>
+<li><a class="reference internal" href="#evennia-4-5-0">Evennia 4.5.0</a></li>
 <li><a class="reference internal" href="#evennia-4-4-1">Evennia 4.4.1</a></li>
 <li><a class="reference internal" href="#evennia-4-4-0">Evennia 4.4.0</a></li>
 <li><a class="reference internal" href="#evennia-4-3-0">Evennia 4.3.0</a></li>
@@ -200,8 +200,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main-branch">
-<h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-4-5-0">
+<h2>Evennia 4.5.0<a class="headerlink" href="#evennia-4-5-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3634">Feat</a>: New contrib for in-game <code class="docutils literal notranslate"><span class="pre">storage</span></code> of items in rooms (aMiss-aWry)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3636">Feat</a>: Make <code class="docutils literal notranslate"><span class="pre">cpattr</span></code> command also support Attribute categories (aMiss-aWry)</p></li>
@@ -222,10 +222,19 @@ a <code class="docutils literal notranslate"><span class="pre">cmd:</span></code
 was documented (willmofield)</p></li>
 <li><p>[Fix][issue3657]: Fix error in <code class="docutils literal notranslate"><span class="pre">do_search</span></code> that caused <code class="docutils literal notranslate"><span class="pre">FileHelpEntries</span></code> to
 traceback (a-rodian-jedi)</p></li>
+<li><p>[Fix][issue3660]: Numbered aliases didn’t refresh after a object rename unless
+the endpoint hook was re-called; now triggers the call autiomatically (count-infinity)</p></li>
+<li><p>[Fix][issue3664]: The <code class="docutils literal notranslate"><span class="pre">Account.last_login</span></code> field was updated also when user
+disconnected, which is not useful (InspectorCaracal)</p></li>
+<li><p>[Fix][issue3665]: Remove faulty verb conjugation exceptions for ‘offer’,
+‘hinder’ and ‘alter’ in automatic verb-conjugation engine (aMiss-aWry)</p></li>
+<li><p>[Fix][issue3669]: The <code class="docutils literal notranslate"><span class="pre">page</span></code> command tracebacked for some input combinations (InspectorCaracal)</p></li>
+<li><p>[Fix][issue3642]: Give friendlier error if EvMore object is not available
+neither on Object, nor on account fallback. (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3655">Docs</a>: Fixed many erroneously created links on <code class="docutils literal notranslate"><span class="pre">file.py</span></code> names in
 the docs (marado)</p></li>
 <li><p>[Docs][pull3576]: Rework doc for <a class="reference external" href="https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html">Pycharm howto</a></p></li>
-<li><p>Docs updates: feykrh, Griatch, marado</p></li>
+<li><p>Docs updates: feykrh, Griatch, marado, jaborsh</p></li>
 </ul>
 </section>
 <section id="evennia-4-4-1">

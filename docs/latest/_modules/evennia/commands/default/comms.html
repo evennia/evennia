@@ -1474,18 +1474,18 @@
                 <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                     <span class="c1"># a number to specify a historic page</span>
                     <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">message</span><span class="p">:</span>
                     <span class="n">target_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">target_obj</span><span class="p">:</span>
                         <span class="c1"># a proper target</span>
                         <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># a message with a space in it - put it back together</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="n">target</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">message</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                        <span class="c1"># a message with a space in it - use the original args</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># a single-word message</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="c1"># a single-word message - use the original args</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="n">pages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pages_we_sent</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">pages_we_got</span><span class="p">)</span>
         <span class="n">pages</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">page</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">date_created</span><span class="p">)</span>

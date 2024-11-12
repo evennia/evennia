@@ -1,7 +1,6 @@
 # Changelog
 
-
-## Main branch
+## Evennia 4.5.0
 
 - [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
 - [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
@@ -22,10 +21,19 @@
   was documented (willmofield)
 - [Fix][issue3657]: Fix error in `do_search` that caused `FileHelpEntries` to
   traceback (a-rodian-jedi)
+- [Fix][issue3660]: Numbered aliases didn't refresh after a object rename unless
+  the endpoint hook was re-called; now triggers the call autiomatically (count-infinity)
+- [Fix][issue3664]: The `Account.last_login` field was updated also when user
+  disconnected, which is not useful (InspectorCaracal)
+- [Fix][issue3665]: Remove faulty verb conjugation exceptions for 'offer',
+  'hinder' and 'alter' in automatic verb-conjugation engine (aMiss-aWry)
+- [Fix][issue3669]: The `page` command tracebacked for some input combinations (InspectorCaracal)
+- [Fix][issue3642]: Give friendlier error if EvMore object is not available
+  neither on Object, nor on account fallback. (InspectorCaracal)
 - [Docs][pull3655]: Fixed many erroneously created links on `file.py` names in
   the docs (marado)
 - [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
-- Docs updates: feykrh, Griatch, marado
+- Docs updates: feykrh, Griatch, marado, jaborsh
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
 [pull3676]: https://github.com/evennia/evennia/pull/3676
@@ -41,6 +49,11 @@
 [pull3655]: https://github.com/evennia/evennia/pull/3655
 [pull3657]: https://github.com/evennia/evennia/pull/3657
 [pull3653]: https://github.com/evennia/evennia/pull/3653
+[pull3660]: https://github.com/evennia/evennia/pull/3660
+[pull3664]: https://github.com/evennia/evennia/pull/3664
+[pull3665]: https://github.com/evennia/evennia/pull/3665
+[pull3669]: https://github.com/evennia/evennia/pull/3669
+[pull3642]: https://github.com/evennia/evennia/pull/3642
 [issue3627]: https://github.com/evennia/evennia/issues/3627
 [issue3643]: https://github.com/evennia/evennia/issues/3643
 [doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
