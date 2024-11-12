@@ -202,10 +202,11 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <section id="evennia-4-5-0">
 <h2>Evennia 4.5.0<a class="headerlink" href="#evennia-4-5-0" title="Permalink to this headline">¶</a></h2>
+<p>Nov 12, 2024</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3634">Feat</a>: New contrib for in-game <code class="docutils literal notranslate"><span class="pre">storage</span></code> of items in rooms (aMiss-aWry)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3636">Feat</a>: Make <code class="docutils literal notranslate"><span class="pre">cpattr</span></code> command also support Attribute categories (aMiss-aWry)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3653">Feat</a>: Updated Chinese translation.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3653">Feat</a>: Updated Chinese translation (Pridell).</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3635">Fix</a>: Fix memory leak in Portal Telnet connections, force weak
 references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3626">Fix</a>: Typo in <code class="docutils literal notranslate"><span class="pre">defense_type</span></code> in evadventure tutorial (feyrkh)</p></li>
@@ -218,22 +219,22 @@ commas for decimal points (aMiss-aWry)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3627">Fix</a>: Traceback from contrib <code class="docutils literal notranslate"><span class="pre">in-game</span> <span class="pre">reports</span></code> <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">manage</span></code> command (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3643">Fix</a>: Fix for Commands metaclass interpreting e.g. <code class="docutils literal notranslate"><span class="pre">usercmd:false()</span></code> locks as
 a <code class="docutils literal notranslate"><span class="pre">cmd:</span></code> type lock for the purposes of default access fallbacks (Griatch).</p></li>
-<li><p>[Fix][issue3651]: EvEditor <code class="docutils literal notranslate"><span class="pre">:j</span></code> defaulted to ‘full’ justify instead of ‘left’ as
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3651">Fix</a>: EvEditor <code class="docutils literal notranslate"><span class="pre">:j</span></code> defaulted to ‘full’ justify instead of ‘left’ as
 was documented (willmofield)</p></li>
-<li><p>[Fix][issue3657]: Fix error in <code class="docutils literal notranslate"><span class="pre">do_search</span></code> that caused <code class="docutils literal notranslate"><span class="pre">FileHelpEntries</span></code> to
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3657">Fix</a>: Fix error in <code class="docutils literal notranslate"><span class="pre">do_search</span></code> that caused <code class="docutils literal notranslate"><span class="pre">FileHelpEntries</span></code> to
 traceback (a-rodian-jedi)</p></li>
-<li><p>[Fix][issue3660]: Numbered aliases didn’t refresh after a object rename unless
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3660">Fix</a>: Numbered aliases didn’t refresh after a object rename unless
 the endpoint hook was re-called; now triggers the call autiomatically (count-infinity)</p></li>
-<li><p>[Fix][issue3664]: The <code class="docutils literal notranslate"><span class="pre">Account.last_login</span></code> field was updated also when user
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3664">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">Account.last_login</span></code> field was updated also when user
 disconnected, which is not useful (InspectorCaracal)</p></li>
-<li><p>[Fix][issue3665]: Remove faulty verb conjugation exceptions for ‘offer’,
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3665">Fix</a>: Remove faulty verb conjugation exceptions for ‘offer’,
 ‘hinder’ and ‘alter’ in automatic verb-conjugation engine (aMiss-aWry)</p></li>
-<li><p>[Fix][issue3669]: The <code class="docutils literal notranslate"><span class="pre">page</span></code> command tracebacked for some input combinations (InspectorCaracal)</p></li>
-<li><p>[Fix][issue3642]: Give friendlier error if EvMore object is not available
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3669">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">page</span></code> command tracebacked for some input combinations (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3642">Fix</a>: Give friendlier error if EvMore object is not available
 neither on Object, nor on account fallback. (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3655">Docs</a>: Fixed many erroneously created links on <code class="docutils literal notranslate"><span class="pre">file.py</span></code> names in
 the docs (marado)</p></li>
-<li><p>[Docs][pull3576]: Rework doc for <a class="reference external" href="https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html">Pycharm howto</a></p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3576">Docs</a>: Rework doc for <a class="reference external" href="https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html">Pycharm howto</a></p></li>
 <li><p>Docs updates: feykrh, Griatch, marado, jaborsh</p></li>
 </ul>
 </section>
