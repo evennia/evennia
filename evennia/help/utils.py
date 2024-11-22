@@ -9,32 +9,131 @@ This is used primarily by the default `help` command.
 import re
 
 from django.conf import settings
+from lunr.stemmer import stemmer
 
-# these are words that Lunr normally ignores but which we want to find
-# since we use them (e.g. as command names).
-# Lunr's default ignore-word list is found here:
-# https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
-_LUNR_STOP_WORD_FILTER_EXCEPTIONS = [
-    "about",
-    "might",
-    "get",
-    "who",
-    "say",
-    "where",
-] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
-
-
-_LUNR = None
-_LUNR_EXCEPTION = None
-
-_LUNR_GET_BUILDER = None
-_LUNR_BUILDER_PIPELINE = None
 
 _RE_HELP_SUBTOPICS_START = re.compile(r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
 _RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$", re.M + re.I)
 _RE_HELP_SUBTOPIC_PARSE = re.compile(r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
 
 MAX_SUBTOPIC_NESTING = 5
+
+
+def wildcard_stemmer(token, i, tokens):
+    """
+    Custom LUNR stemmer that returns both the original and stemmed token
+    if the token contains a leading wildcard (*).
+
+    Args:
+        token (str): The input token to be stemmed
+        i (int): Index of current token.  Unused here but required by LUNR.
+        tokens (list): List of tokens being processed.  Unused here but required by LUNR.
+
+    Returns:
+        list: A list containing the stemmed tokens and original token if it has leading '*'.
+    """
+
+    original_token = token.clone()
+    # Then apply the standard Lunr stemmer
+    stemmed_token = stemmer(token)
+
+    if original_token.string.startswith("*"):
+        # Return both tokens
+        return [original_token, stemmed_token]
+    return stemmed_token
+
+
+class LunrSearch:
+    """
+    Singleton class for managing Lunr search index configuration and initialization.
+    """
+
+    # these are words that Lunr normally ignores but which we want to find
+    # since we use them (e.g. as command names).
+    # Lunr's default ignore-word list is found here:
+    # https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
+    _LUNR_STOP_WORD_FILTER_EXCEPTIONS = [
+        "about",
+        "might",
+        "get",
+        "who",
+        "say",
+        "where",
+    ] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
+
+    _instance = None
+
+    def __new__(cls):
+        """
+        Ensure only one instance of the class is created (Singleton)
+        """
+        if not cls._instance:
+            cls._instance = super(LunrSearch, cls).__new__(cls)
+            cls._instance._initialize()
+        return cls._instance
+
+    def _initialize(self):
+        """
+        Lazy load Lunr libraries and set up custom configuration
+
+        we have to delay-load lunr because it messes with logging if it's imported
+        before twisted's logging has been set up
+        """
+        # Lunr-related imports
+        from lunr import get_default_builder
+        from lunr import lunr
+        from lunr import stop_word_filter
+        from lunr.exceptions import QueryParseError
+        from lunr.stemmer import stemmer
+        from lunr.pipeline import Pipeline
+
+        # Store imported modules as instance attributes
+        self.get_default_builder = get_default_builder
+        self.lunr = lunr
+        self.stop_word_filter = stop_word_filter
+        self.QueryParseError = QueryParseError
+        self.default_stemmer = stemmer
+
+        self._setup_stop_words_filter()
+        self.custom_builder_pipeline = (self.custom_stop_words_filter, wildcard_stemmer)
+
+        # Register custom stemmer if we want to serialize.
+        Pipeline.register_function(wildcard_stemmer, "wildcard_stemmer")
+
+    def _setup_stop_words_filter(self):
+        """
+        Create a custom stop words filter, removing specified exceptions
+        """
+        stop_words = self.stop_word_filter.WORDS.copy()
+
+        for ignore_word in self._LUNR_STOP_WORD_FILTER_EXCEPTIONS:
+            try:
+                stop_words.remove(ignore_word)
+            except ValueError:
+                pass
+
+        self.custom_stop_words_filter = self.stop_word_filter.generate_stop_word_filter(stop_words)
+
+    def index(self, ref, fields, documents):
+        """
+        Creates a Lunr searchable index.
+
+        Args:
+            ref (str): Unique identifier field within a document
+            fields (list): A list of Lunr field mappings
+              ``{"field_name": str, "boost": int}``. See the Lunr documentation
+              for more details.
+            documents (list[dict]): This is the body of possible entities to search.
+              Each dict should have all keys in the `fields` arg.
+        Returns: A lunr.Index object
+        """
+
+        # Create and configure builder
+        builder = self.get_default_builder()
+        builder.pipeline.reset()
+        builder.pipeline.add(*self.custom_builder_pipeline)
+
+        return self.lunr(ref, fields, documents, builder=builder)
 
 
 def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields=None):
@@ -57,31 +156,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
             how many suggestions are included.
 
     """
-    global _LUNR, _LUNR_EXCEPTION, _LUNR_BUILDER_PIPELINE, _LUNR_GET_BUILDER
-    if not _LUNR:
-        # we have to delay-load lunr because it messes with logging if it's imported
-        # before twisted's logging has been set up
-        from lunr import get_default_builder as _LUNR_GET_BUILDER
-        from lunr import lunr as _LUNR
-        from lunr import stop_word_filter
-        from lunr.exceptions import QueryParseError as _LUNR_EXCEPTION
-        from lunr.stemmer import stemmer
-
-        # from lunr.trimmer import trimmer
-        # pre-create a lunr index-builder pipeline where we've removed some of
-        # the stop-words from the default in lunr.
-
-        stop_words = stop_word_filter.WORDS
-
-        for ignore_word in _LUNR_STOP_WORD_FILTER_EXCEPTIONS:
-            try:
-                stop_words.remove(ignore_word)
-            except ValueError:
-                pass
-
-        custom_stop_words_filter = stop_word_filter.generate_stop_word_filter(stop_words)
-        # _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
-        _LUNR_BUILDER_PIPELINE = (custom_stop_words_filter, stemmer)
+    from lunr.exceptions import QueryParseError
 
     indx = [cnd.search_index_entry for cnd in candidate_entries]
     mapping = {indx[ix]["key"]: cand for ix, cand in enumerate(candidate_entries)}
@@ -94,16 +169,13 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
             {"field_name": "tags", "boost": 5},
         ]
 
-    # build the search index
-    builder = _LUNR_GET_BUILDER()
-    builder.pipeline.reset()
-    builder.pipeline.add(*_LUNR_BUILDER_PIPELINE)
+    lunr_search = LunrSearch()
 
-    search_index = _LUNR(ref="key", fields=fields, documents=indx, builder=builder)
+    search_index = lunr_search.index(ref="key", fields=fields, documents=indx)
 
     try:
         matches = search_index.search(query)[:suggestion_maxnum]
-    except _LUNR_EXCEPTION:
+    except QueryParseError:
         # this is a user-input problem
         matches = []
 

@@ -5,6 +5,7 @@ command test-suite).
 """
 
 from unittest import mock
+from parameterized import parameterized
 
 from evennia.help import filehelp
 from evennia.help import utils as help_utils
@@ -140,3 +141,56 @@ class TestFileHelp(TestCase):
             self.assertEqual(HELP_ENTRY_DICTS[inum].get("aliases", []), helpentry.aliases)
             self.assertEqual(HELP_ENTRY_DICTS[inum]["category"].lower(), helpentry.help_category)
             self.assertEqual(HELP_ENTRY_DICTS[inum]["text"], helpentry.entrytext)
+
+
+class HelpUtils(TestCase):
+
+    def setUp(self):
+        self.candidate_entries = [
+            filehelp.FileHelpEntry(
+                key="*examine",
+                aliases=["*exam", "*ex", "@examine"],
+                help_category="building",
+                entrytext="Lorem ipsum examine",
+                lock_storage="",
+            ),
+            filehelp.FileHelpEntry(
+                key="inventory",
+                aliases=[],
+                help_category="general",
+                entrytext="A character's inventory",
+                lock_storage="",
+            ),
+            filehelp.FileHelpEntry(
+                key="userpassword",
+                aliases=[],
+                help_category="admin",
+                entrytext="change the password of an account",
+                lock_storage="",
+            ),
+        ]
+
+    @parameterized.expand(
+        [
+            ("*examine", "*examine", "Leading wildcard should return exact matches."),
+            ("@examine", "*examine", "Aliases should return an entry."),
+            ("inventory", "inventory", "It should return exact matches."),
+            ("inv*", "inventory", "Trailing wildcard search should return an entry."),
+            ("userpaZZword~2", "userpassword", "Fuzzy matching should return an entry."),
+            (
+                "*word",
+                "userpassword",
+                "Leading wildcard should return an entry when no exact match.",
+            ),
+        ]
+    )
+    def test_help_search_with_index(self, search_term, expected_entry_key, error_msg):
+        """Test search terms return correct entries"""
+
+        expected_entry = [
+            entry for entry in self.candidate_entries if entry.key == expected_entry_key
+        ]
+
+        entries, _ = help_utils.help_search_with_index(search_term, self.candidate_entries)
+
+        self.assertEqual(entries, expected_entry, error_msg)
