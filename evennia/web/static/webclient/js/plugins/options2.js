@@ -148,8 +148,7 @@ let options2 = (function () {
 
         // don't claim this Prompt as completed.
         return false;
-    }   
-
+    }
     //
     //
     var init = function() {
@@ -181,7 +180,7 @@ let options2 = (function () {
         onOptionsUI: onOptionsUI,
         onPrompt: onPrompt,
         onOptionCheckboxChanged: onOptionCheckboxChanged,
-        onOpenCloseOptions: onOpenCloseOptions
+        onOpenCloseOptions: onOpenCloseOptions,
     }
 })();
 window.plugin_handler.add("options2", options2);
