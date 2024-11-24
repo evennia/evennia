@@ -75,14 +75,12 @@ let options2 = (function () {
                     .click( function () {
                         optionsContainer = null;
                         tab.contentItem.remove();
-                        window.plugins["default_in"].setKeydownFocus(true);
                     });
                     optionsContainer = tab.contentItem;
                 }
             });
             main.parent.addChild( optionsComponent );
 
-            window.plugins["default_in"].setKeydownFocus(false);
         } else {
             optionsContainer.remove();
             optionsContainer = null;
@@ -150,7 +148,7 @@ let options2 = (function () {
 
         // don't claim this Prompt as completed.
         return false;
-    }
+    }   
 
     //
     //
@@ -183,7 +181,7 @@ let options2 = (function () {
         onOptionsUI: onOptionsUI,
         onPrompt: onPrompt,
         onOptionCheckboxChanged: onOptionCheckboxChanged,
-        onOpenCloseOptions: onOpenCloseOptions,
+        onOpenCloseOptions: onOpenCloseOptions
     }
 })();
 window.plugin_handler.add("options2", options2);
