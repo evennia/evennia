@@ -549,12 +549,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         if isinstance(searchdata, str):
-            candidates = kwargs.get("candidates", [])
+            candidates = kwargs.get("candidates") or []
+            global_search = kwargs.get("global_search", False)
             match searchdata.lower():
                 case "me" | "self":
-                    return self in candidates, self
+                    return global_search or self in candidates, self
                 case "here":
-                    return self.location in candidates, self.location
+                    return global_search or self.location in candidates, self.location
         return False, searchdata
 
     def get_search_candidates(self, searchdata, **kwargs):
