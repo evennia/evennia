@@ -549,11 +549,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         if isinstance(searchdata, str):
+            candidates = kwargs.get("candidates", [])
             match searchdata.lower():
                 case "me" | "self":
-                    return True, self
+                    return self in candidates, self
                 case "here":
-                    return True, self.location
+                    return self.location in candidates, self.location
         return False, searchdata
 
     def get_search_candidates(self, searchdata, **kwargs):
@@ -833,8 +834,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # replace incoming searchdata string with a potentially modified version
         searchdata = self.get_search_query_replacement(searchdata, **input_kwargs)
 
+        # get candidates
+        candidates = self.get_search_candidates(searchdata, **input_kwargs)
+
         # handle special input strings, like "me" or "here".
-        should_return, searchdata = self.get_search_direct_match(searchdata, **input_kwargs)
+        # we also want to include the identified candidates here instead of input, to account for defaults
+        should_return, searchdata = self.get_search_direct_match(
+            searchdata, **(input_kwargs | {"candidates": candidates})
+        )
         if should_return:
             # we got an actual result, return it immediately
             return [searchdata] if quiet else searchdata
@@ -853,9 +860,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # always use exact match for dbref/global searches
         exact = True if global_search or dbref(searchdata) else exact
-
-        # get candidates
-        candidates = self.get_search_candidates(searchdata, **input_kwargs)
 
         # do the actual search
         results = self.get_search_result(
