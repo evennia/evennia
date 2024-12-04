@@ -671,6 +671,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "FORCEDENDLINE": validate_bool,
             "LOCALECHO": validate_bool,
             "TRUECOLOR": validate_bool,
+            "ISTYPING": validate_bool
         }
 
         name = self.lhs.upper()
