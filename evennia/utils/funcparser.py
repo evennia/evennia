@@ -339,6 +339,7 @@ class FuncParser:
                 # always store escaped characters verbatim
                 if curr_func:
                     infuncstr += char
+                    curr_func.rawstr += char
                 else:
                     fullstr += char
                 escaped = False
@@ -372,7 +373,8 @@ class FuncParser:
                         curr_func.open_lsquare = open_lsquare
                         curr_func.open_lcurly = open_lcurly
                         # we must strip the remaining funcstr so it's not counted twice
-                        curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
+                        if len(infuncstr) > 0:
+                            curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
                         current_kwarg = ""
                         infuncstr = ""
                         double_quoted = -1
