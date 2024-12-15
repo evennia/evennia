@@ -300,6 +300,14 @@ let goldenlayout = (function () {
         let typelist   = document.getElementById("typelist");
         let updatelist = document.getElementById("updatelist");
 
+        if(tab?.componentName !== 'options')
+        {
+            window.plugins["default_in"].setKeydownFocus(true);
+        }
+        else {
+            window.plugins["default_in"].setKeydownFocus(false);
+        }
+
         if( renamebox ) {
             closeRenameDropdown();
         }
