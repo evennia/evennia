@@ -797,6 +797,7 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+                
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">continue</span>
 
@@ -806,9 +807,7 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You create a new </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="c1"># set a default desc</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You see nothing special.&quot;</span>
+
             <span class="k">if</span> <span class="s2">&quot;drop&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>

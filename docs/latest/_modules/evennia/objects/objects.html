@@ -491,6 +491,9 @@
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectManager</span><span class="p">()</span>
 
+    <span class="c1"># Used by get_display_desc when self.db.desc is None</span>
+    <span class="n">default_description</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You see nothing special.&quot;</span><span class="p">)</span>
+
     <span class="c1"># populated by `return_appearance`</span>
     <span class="n">appearance_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{header}</span>
@@ -1560,10 +1563,9 @@
             <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
 
-            <span class="c1"># Set description if there is none, or update it if provided</span>
-            <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;You see nothing special.&quot;</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+            <span class="c1"># Set description if provided</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1841,7 +1843,7 @@
 <span class="sd">            str: The desc display string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;You see nothing special.&quot;</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_description</span></div>
 
 <div class="viewcode-block" id="DefaultObject.get_display_exits"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_exits">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3112,6 +3114,9 @@
         <span class="s2">&quot;edit:pid(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
     <span class="p">)</span>
 
+    <span class="c1"># Used by get_display_desc when self.db.desc is None</span>
+    <span class="n">default_description</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a character.&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="DefaultCharacter.get_default_lockstring"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.get_default_lockstring">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_default_lockstring</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="s2">&quot;DefaultAccount&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="p">:</span> <span class="s2">&quot;DefaultObject&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -3225,9 +3230,9 @@
             <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
-            <span class="c1"># If no description is set, set a default description</span>
-            <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a character.&quot;</span><span class="p">)</span>
+            <span class="c1"># Set description if provided</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating object &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -3438,6 +3443,9 @@
     <span class="c1"># Generally, a room isn&#39;t expected to HAVE a location, but maybe in some games?</span>
     <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;room&quot;</span><span class="p">,)</span>
 
+    <span class="c1"># Used by get_display_desc when self.db.desc is None</span>
+    <span class="n">default_description</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a room.&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="DefaultRoom.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -3508,9 +3516,9 @@
             <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
 
-            <span class="c1"># If no description is set, set a default description</span>
-            <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a room.&quot;</span><span class="p">)</span>
+            <span class="c1"># Set description if provided</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -3602,6 +3610,9 @@
     <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,)</span>
     <span class="n">exit_command</span> <span class="o">=</span> <span class="n">ExitCommand</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">101</span>
+
+    <span class="c1"># Used by get_display_desc when self.db.desc is None</span>
+    <span class="n">default_description</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is an exit.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Helper classes and methods to implement the Exit. These need not</span>
     <span class="c1"># be overloaded unless one want to change the foundation for how</span>
@@ -3717,9 +3728,9 @@
             <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
 
-            <span class="c1"># If no description is set, set a default description</span>
-            <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is an exit.&quot;</span><span class="p">)</span>
+            <span class="c1"># Set description if provided</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
