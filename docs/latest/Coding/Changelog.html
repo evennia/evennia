@@ -66,6 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#main-branch">Main branch</a></li>
 <li><a class="reference internal" href="#evennia-4-5-0">Evennia 4.5.0</a></li>
 <li><a class="reference internal" href="#evennia-4-4-1">Evennia 4.4.1</a></li>
 <li><a class="reference internal" href="#evennia-4-4-0">Evennia 4.4.0</a></li>
@@ -200,6 +201,24 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<section id="main-branch">
+<h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3633">Feat</a>: Default object’s default descs are now taken from a <code class="docutils literal notranslate"><span class="pre">default_description</span></code>
+class variable instead of the <code class="docutils literal notranslate"><span class="pre">desc</span></code> Attribute always being set (count-infinity)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3677">Fix</a>: Make sure that <code class="docutils literal notranslate"><span class="pre">DefaultAccount.create</span></code> normalizes to empty
+strings instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if no name is provided, also enforce string type (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3682">Fix</a>: Allow in-game help searching for commands natively starting
+with <code class="docutils literal notranslate"><span class="pre">*</span></code> (which is the Lunr search wildcard) (count-infinity)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3684">Fix</a>: Web client stopped auto-focusing the input box after opening
+settings (count-infinity)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3689">Fix</a>: Partial matching fix in default search, makes sure e.g. <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">sw</span></code> uniquely
+finds <code class="docutils literal notranslate"><span class="pre">big</span> <span class="pre">sword</span></code> even if another type of sword is around (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3690">Fix</a>: In searches, allow special ‘here’ and ‘me’ keywords only be valid queries
+unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)</p></li>
+<li><p>[Docs]: Fixes from InspectorCaracal</p></li>
+</ul>
+</section>
 <section id="evennia-4-5-0">
 <h2>Evennia 4.5.0<a class="headerlink" href="#evennia-4-5-0" title="Permalink to this headline">¶</a></h2>
 <p>Nov 12, 2024</p>
