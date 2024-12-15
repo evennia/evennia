@@ -194,7 +194,8 @@ villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not
 
 <span class="c1"># if you wanted to authenticated to some external service, you could</span>
 <span class="c1"># add an Authenticate header here with a token</span>
-<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+<span class="c1"># note that the content of each header must be an iterable</span>
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/json&quot;</span><span class="p">]}</span>
 
 <span class="c1"># this key will be inserted in the request, with your user-input</span>
 <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
@@ -205,7 +206,7 @@ villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not
     <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="c1"># 0-2. higher=more random, lower=predictable</span>
 <span class="p">}</span>
 <span class="c1"># helps guide the NPC AI. See the LLNPC section.</span>
-<span class="n">LLM_PROMPT_PREFIx</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">LLM_PROMPT_PREFIX</span> <span class="o">=</span> <span class="p">(</span>
   <span class="s2">&quot;You are roleplaying as </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
   <span class="s2">&quot;Answer with short sentences. Only respond as </span><span class="si">{name}</span><span class="s2"> would. &quot;</span>
   <span class="s2">&quot;From here on, the conversation between </span><span class="si">{name}</span><span class="s2"> and </span><span class="si">{character}</span><span class="s2"> begins.&quot;</span>
@@ -282,8 +283,8 @@ TheBloke/StableBeluga-13B-GPTQ
 <p>Here is an untested example of the Evennia setting for calling <a class="reference external" href="https://platform.openai.com/docs/api-reference/completions">OpenAI’s v1/completions API</a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;https://api.openai.com&quot;</span>
 <span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/v1/completions&quot;</span>
-<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_OPENAI_API_KEY&quot;</span><span class="p">}</span>
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;application/json&quot;</span><span class="p">],</span>
+               <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Bearer YOUR_OPENAI_API_KEY&quot;</span><span class="p">]}</span>
 <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
 <span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>

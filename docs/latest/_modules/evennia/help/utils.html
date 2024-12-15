@@ -101,32 +101,131 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">lunr.stemmer</span> <span class="kn">import</span> <span class="n">stemmer</span>
 
-<span class="c1"># these are words that Lunr normally ignores but which we want to find</span>
-<span class="c1"># since we use them (e.g. as command names).</span>
-<span class="c1"># Lunr&#39;s default ignore-word list is found here:</span>
-<span class="c1"># https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py</span>
-<span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;about&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;might&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;who&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;say&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;where&quot;</span><span class="p">,</span>
-<span class="p">]</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span>
-
-
-<span class="n">_LUNR</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_LUNR_EXCEPTION</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="n">_LUNR_GET_BUILDER</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_LUNR_BUILDER_PIPELINE</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">_RE_HELP_SUBTOPICS_START</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*?#\s*?subtopics\s*?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
 <span class="n">_RE_HELP_SUBTOPIC_SPLIT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
 <span class="n">_RE_HELP_SUBTOPIC_PARSE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(?P&lt;nesting&gt;\#{2,6})\s*?(?P&lt;name&gt;.*?)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
 
 <span class="n">MAX_SUBTOPIC_NESTING</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="wildcard_stemmer"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.wildcard_stemmer">[docs]</a><span class="k">def</span> <span class="nf">wildcard_stemmer</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom LUNR stemmer that returns both the original and stemmed token</span>
+<span class="sd">    if the token contains a leading wildcard (*).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token (str): The input token to be stemmed</span>
+<span class="sd">        i (int): Index of current token.  Unused here but required by LUNR.</span>
+<span class="sd">        tokens (list): List of tokens being processed.  Unused here but required by LUNR.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list containing the stemmed tokens and original token if it has leading &#39;*&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">original_token</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="c1"># Then apply the standard Lunr stemmer</span>
+    <span class="n">stemmed_token</span> <span class="o">=</span> <span class="n">stemmer</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">original_token</span><span class="o">.</span><span class="n">string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+        <span class="c1"># Return both tokens</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">original_token</span><span class="p">,</span> <span class="n">stemmed_token</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">stemmed_token</span></div>
+
+
+<div class="viewcode-block" id="LunrSearch"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch">[docs]</a><span class="k">class</span> <span class="nc">LunrSearch</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Singleton class for managing Lunr search index configuration and initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># these are words that Lunr normally ignores but which we want to find</span>
+    <span class="c1"># since we use them (e.g. as command names).</span>
+    <span class="c1"># Lunr&#39;s default ignore-word list is found here:</span>
+    <span class="c1"># https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py</span>
+    <span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;about&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;might&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;get&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;who&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;say&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;where&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span>
+
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure only one instance of the class is created (Singleton)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LunrSearch</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lazy load Lunr libraries and set up custom configuration</span>
+
+<span class="sd">        we have to delay-load lunr because it messes with logging if it&#39;s imported</span>
+<span class="sd">        before twisted&#39;s logging has been set up</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Lunr-related imports</span>
+        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">get_default_builder</span>
+        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">lunr</span>
+        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">stop_word_filter</span>
+        <span class="kn">from</span> <span class="nn">lunr.exceptions</span> <span class="kn">import</span> <span class="n">QueryParseError</span>
+        <span class="kn">from</span> <span class="nn">lunr.stemmer</span> <span class="kn">import</span> <span class="n">stemmer</span>
+        <span class="kn">from</span> <span class="nn">lunr.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+
+        <span class="c1"># Store imported modules as instance attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_default_builder</span> <span class="o">=</span> <span class="n">get_default_builder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lunr</span> <span class="o">=</span> <span class="n">lunr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_word_filter</span> <span class="o">=</span> <span class="n">stop_word_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">QueryParseError</span> <span class="o">=</span> <span class="n">QueryParseError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_stemmer</span> <span class="o">=</span> <span class="n">stemmer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_stop_words_filter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_builder_pipeline</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_stop_words_filter</span><span class="p">,</span> <span class="n">wildcard_stemmer</span><span class="p">)</span>
+
+        <span class="c1"># Register custom stemmer if we want to serialize.</span>
+        <span class="n">Pipeline</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">wildcard_stemmer</span><span class="p">,</span> <span class="s2">&quot;wildcard_stemmer&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_stop_words_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a custom stop words filter, removing specified exceptions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stop_words</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_word_filter</span><span class="o">.</span><span class="n">WORDS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">ignore_word</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">stop_words</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ignore_word</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_stop_words_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_word_filter</span><span class="o">.</span><span class="n">generate_stop_word_filter</span><span class="p">(</span><span class="n">stop_words</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LunrSearch.index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Lunr searchable index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ref (str): Unique identifier field within a document</span>
+<span class="sd">            fields (list): A list of Lunr field mappings</span>
+<span class="sd">              ``{&quot;field_name&quot;: str, &quot;boost&quot;: int}``. See the Lunr documentation</span>
+<span class="sd">              for more details.</span>
+<span class="sd">            documents (list[dict]): This is the body of possible entities to search.</span>
+<span class="sd">              Each dict should have all keys in the `fields` arg.</span>
+<span class="sd">        Returns: A lunr.Index object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create and configure builder</span>
+        <span class="n">builder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_builder</span><span class="p">()</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_builder_pipeline</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lunr</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="p">,</span> <span class="n">builder</span><span class="o">=</span><span class="n">builder</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="help_search_with_index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.help_search_with_index">[docs]</a><span class="k">def</span> <span class="nf">help_search_with_index</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">candidate_entries</span><span class="p">,</span> <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -149,31 +248,7 @@
 <span class="sd">            how many suggestions are included.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">_LUNR</span><span class="p">,</span> <span class="n">_LUNR_EXCEPTION</span><span class="p">,</span> <span class="n">_LUNR_BUILDER_PIPELINE</span><span class="p">,</span> <span class="n">_LUNR_GET_BUILDER</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LUNR</span><span class="p">:</span>
-        <span class="c1"># we have to delay-load lunr because it messes with logging if it&#39;s imported</span>
-        <span class="c1"># before twisted&#39;s logging has been set up</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">get_default_builder</span> <span class="k">as</span> <span class="n">_LUNR_GET_BUILDER</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">lunr</span> <span class="k">as</span> <span class="n">_LUNR</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">stop_word_filter</span>
-        <span class="kn">from</span> <span class="nn">lunr.exceptions</span> <span class="kn">import</span> <span class="n">QueryParseError</span> <span class="k">as</span> <span class="n">_LUNR_EXCEPTION</span>
-        <span class="kn">from</span> <span class="nn">lunr.stemmer</span> <span class="kn">import</span> <span class="n">stemmer</span>
-
-        <span class="c1"># from lunr.trimmer import trimmer</span>
-        <span class="c1"># pre-create a lunr index-builder pipeline where we&#39;ve removed some of</span>
-        <span class="c1"># the stop-words from the default in lunr.</span>
-
-        <span class="n">stop_words</span> <span class="o">=</span> <span class="n">stop_word_filter</span><span class="o">.</span><span class="n">WORDS</span>
-
-        <span class="k">for</span> <span class="n">ignore_word</span> <span class="ow">in</span> <span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">stop_words</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ignore_word</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="n">custom_stop_words_filter</span> <span class="o">=</span> <span class="n">stop_word_filter</span><span class="o">.</span><span class="n">generate_stop_word_filter</span><span class="p">(</span><span class="n">stop_words</span><span class="p">)</span>
-        <span class="c1"># _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)</span>
-        <span class="n">_LUNR_BUILDER_PIPELINE</span> <span class="o">=</span> <span class="p">(</span><span class="n">custom_stop_words_filter</span><span class="p">,</span> <span class="n">stemmer</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">lunr.exceptions</span> <span class="kn">import</span> <span class="n">QueryParseError</span>
 
     <span class="n">indx</span> <span class="o">=</span> <span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">search_index_entry</span> <span class="k">for</span> <span class="n">cnd</span> <span class="ow">in</span> <span class="n">candidate_entries</span><span class="p">]</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">indx</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">cand</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">cand</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate_entries</span><span class="p">)}</span>
@@ -186,16 +261,13 @@
             <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
         <span class="p">]</span>
 
-    <span class="c1"># build the search index</span>
-    <span class="n">builder</span> <span class="o">=</span> <span class="n">_LUNR_GET_BUILDER</span><span class="p">()</span>
-    <span class="n">builder</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-    <span class="n">builder</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">_LUNR_BUILDER_PIPELINE</span><span class="p">)</span>
+    <span class="n">lunr_search</span> <span class="o">=</span> <span class="n">LunrSearch</span><span class="p">()</span>
 
-    <span class="n">search_index</span> <span class="o">=</span> <span class="n">_LUNR</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">indx</span><span class="p">,</span> <span class="n">builder</span><span class="o">=</span><span class="n">builder</span><span class="p">)</span>
+    <span class="n">search_index</span> <span class="o">=</span> <span class="n">lunr_search</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">indx</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">search_index</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)[:</span><span class="n">suggestion_maxnum</span><span class="p">]</span>
-    <span class="k">except</span> <span class="n">_LUNR_EXCEPTION</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">QueryParseError</span><span class="p">:</span>
         <span class="c1"># this is a user-input problem</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
 
