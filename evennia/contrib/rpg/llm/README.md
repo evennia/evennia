@@ -66,7 +66,8 @@ LLM_PATH = "/api/v1/generate"
 
 # if you wanted to authenticated to some external service, you could
 # add an Authenticate header here with a token
-LLM_HEADERS = {"Content-Type": "application/json"}
+# note that the content of each header must be an iterable
+LLM_HEADERS = {"Content-Type": ["application/json"]}
 
 # this key will be inserted in the request, with your user-input
 LLM_PROMPT_KEYNAME = "prompt"
@@ -77,7 +78,7 @@ LLM_REQUEST_BODY = {
     "temperature": 0.7, # 0-2. higher=more random, lower=predictable
 }
 # helps guide the NPC AI. See the LLNPC section.
-LLM_PROMPT_PREFIx = (
+LLM_PROMPT_PREFIX = (
   "You are roleplaying as {name}, a {desc} existing in {location}. "
   "Answer with short sentences. Only respond as {name} would. "
   "From here on, the conversation between {name} and {character} begins."
@@ -148,8 +149,8 @@ Here is an untested example of the Evennia setting for calling [OpenAI's v1/comp
 ```python
 LLM_HOST = "https://api.openai.com"
 LLM_PATH = "/v1/completions"
-LLM_HEADERS = {"Content-Type": "application/json",
-               "Authorization": "Bearer YOUR_OPENAI_API_KEY"}
+LLM_HEADERS = {"Content-Type": ["application/json"],
+               "Authorization": ["Bearer YOUR_OPENAI_API_KEY"]}
 LLM_PROMPT_KEYNAME = "prompt"
 LLM_REQUEST_BODY = {
                         "model": "gpt-3.5-turbo",
