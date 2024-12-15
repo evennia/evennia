@@ -301,6 +301,30 @@ class TestObjectManager(BaseEvenniaTest):
         )
         self.assertEqual(list(query), [self.char1, self.char2])
 
+    def test_key_alias_search_partial_match(self):
+        """
+        verify that get_objs_with_key_or_alias will partial match the first part of
+        any words in the name, when given in the correct order
+        """
+        self.obj1.key = "big sword"
+        self.obj2.key = "shiny sword"
+
+        # beginning of "sword", should match both
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw", exact=False)
+        self.assertEqual(list(query), [self.obj1, self.obj2])
+
+        # middle of "sword", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("wor", exact=False)
+        self.assertEqual(list(query), [])
+
+        # beginning of "big" then "sword", should match obj1
+        query = ObjectDB.objects.get_objs_with_key_or_alias("b sw", exact=False)
+        self.assertEqual(list(query), [self.obj1])
+
+        # beginning of "sword" then "big", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw b", exact=False)
+        self.assertEqual(list(query), [])
+
     def test_search_object(self):
         self.char1.tags.add("test tag")
         self.obj1.tags.add("test tag")
