@@ -1,5 +1,29 @@
 # Changelog
 
+## Main branch
+
+- [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
+    class variable instead of the `desc` Attribute always being set (count-infinity)
+- [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
+  strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
+- [Fix][pull3682]: Allow in-game help searching for commands natively starting
+  with `*` (which is the Lunr search wildcard) (count-infinity)
+- [Fix][pull3684]: Web client stopped auto-focusing the input box after opening
+  settings (count-infinity)
+- [Fix][pull3689]: Partial matching fix in default search, makes sure e.g. `b sw` uniquely
+  finds `big sword` even if another type of sword is around (InspectorCaracal)
+- [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
+  unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
+- [Docs]: Fixes from InspectorCaracal
+
+
+[pull3633]: https://github.com/evennia/evennia/pull/3633
+[pull3677]: https://github.com/evennia/evennia/pull/3677
+[pull3682]: https://github.com/evennia/evennia/pull/3682
+[pull3684]: https://github.com/evennia/evennia/pull/3684
+[pull3689]: https://github.com/evennia/evennia/pull/3689
+[pull3690]: https://github.com/evennia/evennia/pull/3690
+
 ## Evennia 4.5.0
 
 Nov 12, 2024
