@@ -620,6 +620,7 @@ def search_prototype(
         if tags:
             # exact match on tag(s)
             tags = make_iter(tags)
+            tags = [str(tag) for tag in tags]
             tag_categories = ["db_prototype" for _ in tags]
             query = DbPrototype.objects.get_by_tag(tags, tag_categories)
         else:
