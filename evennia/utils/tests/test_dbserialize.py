@@ -26,7 +26,6 @@ class TestDbSerialize(TestCase):
             foo = auto()
         bar = TestFlag.foo
         self.obj.db.test = bar
-        self.assertEqual(self.obj.db.test, bar)
         self.assertEqual(self.obj.db.test, TestFlag.foo)
 
     def test_constants(self):
