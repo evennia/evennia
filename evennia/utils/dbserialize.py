@@ -35,7 +35,6 @@ from django.utils.safestring import SafeString
 import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
-from enum import EnumType
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
