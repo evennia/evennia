@@ -14,7 +14,7 @@
   finds `big sword` even if another type of sword is around (InspectorCaracal)
 - [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
   unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
-- [Docs]: Fixes from InspectorCaracal
+- [Docs]: Fixes from InspectorCaracal, Griatch
 
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
