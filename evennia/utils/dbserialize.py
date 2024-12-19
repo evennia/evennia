@@ -35,6 +35,7 @@ from django.utils.safestring import SafeString
 import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
+from enum import EnumMeta
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
@@ -672,7 +673,7 @@ def to_pickle(data):
 
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
-        elif str(dtype).startswith("<flag"):
+        elif type(dtype) == EnumMeta and hasattr(item, "bit_count") or str(dtype).startswith("<flag"): # detect IntFlag in Python 3.10 and 3.11+
             return item.value
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
