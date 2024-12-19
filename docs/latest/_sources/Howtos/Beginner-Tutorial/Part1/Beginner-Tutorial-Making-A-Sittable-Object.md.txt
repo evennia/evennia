@@ -386,7 +386,7 @@ We don't need a new CmdSet for this, instead we will add this to the default Cha
 # ...
 from commands import sittables
 
-class CharacterCmdSet(CmdSet):
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
     (docstring)
     """
