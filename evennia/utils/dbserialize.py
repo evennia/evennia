@@ -673,7 +673,7 @@ def to_pickle(data):
 
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
-        elif type(dtype) == EnumMeta or str(dtype).startswith("<flag"):
+        elif str(dtype).startswith("<flag"):
             return item.value
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
