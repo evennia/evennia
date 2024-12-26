@@ -24,8 +24,7 @@ class TestDbSerialize(TestCase):
     def test_intflag(self):
         class TestFlag(IntFlag):
             foo = auto()
-        bar = TestFlag.foo
-        self.obj.db.test = bar
+        self.obj.db.test = TestFlag.foo
         self.assertEqual(self.obj.db.test, TestFlag.foo)
 
     def test_constants(self):
