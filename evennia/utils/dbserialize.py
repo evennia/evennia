@@ -35,6 +35,7 @@ from django.utils.safestring import SafeString
 import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
+from enum import IntFlag
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
@@ -672,6 +673,8 @@ def to_pickle(data):
 
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
+        elif isinstance(item, IntFlag):
+            return item.value
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype in (list, _SaverList):
