@@ -1,105 +1,89 @@
-# #The Simplified Korean translation for the Evennia server.
-# #Copyright (C) 2019 Ethan Kwon
-# #This file is distributed under the same license as the Evennia package.
-# #FIRST AUTHOR: Ethan Kwon , 2019-
-# #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-29 18:53+0000\n"
-"PO-Revision-Date: 2019-09-21 05:00+0900\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Evennia\n"
+"Language: ko\n"
 
 #: accounts/accounts.py:341
-#, python-brace-format
 msgid "|c{key}|R is already puppeted by another Account."
-msgstr ""
+msgstr "|c{key}|R은 이미 다른 계정에서 사용 중입니다."
 
 #: accounts/accounts.py:361
-#, python-brace-format
-msgid ""
-"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
-msgstr ""
+msgid "You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
+msgstr "더 이상 조종할 수 있는 퍼펫이 없습니다 (최대 {_MAX_NR_SIMULTANEOUS_PUPPETS}개)."
 
 #: accounts/accounts.py:555
 msgid "Too many login failures; please try again in a few minutes."
-msgstr ""
+msgstr "로그인 실패 횟수가 너무 많습니다. 몇 분 후에 다시 시도해 주십시오."
 
 #: accounts/accounts.py:568 accounts/accounts.py:832
-msgid ""
-"|rYou have been banned and cannot continue from here.\n"
+msgid "|rYou have been banned and cannot continue from here.\n"
 "If you feel this ban is in error, please email an admin.|x"
-msgstr ""
+msgstr "|r귀하는 차단되었으므로 여기에서 계속할 수 없습니다.\n"
+"만약 이 차단이 잘못되었다고 생각하시면, 관리자에게 이메일을 보내주십시오.|x"
 
 #: accounts/accounts.py:580
 msgid "Username and/or password is incorrect."
-msgstr ""
+msgstr "사용자 이름 또는 암호가 올바르지 않습니다."
 
 #: accounts/accounts.py:587
 msgid "Too many authentication failures."
-msgstr ""
+msgstr "인증 실패 횟수가 너무 많습니다."
 
 #: accounts/accounts.py:803
-msgid ""
-"You are creating too many accounts. Please log into an existing account."
-msgstr ""
+msgid "You are creating too many accounts. Please log into an existing account."
+msgstr "계정을 너무 많이 만들고 있습니다. 기존 계정으로 로그인해 주십시오."
 
 #: accounts/accounts.py:849
-msgid ""
-"There was an error creating the Account. If this problem persists, contact "
-"an admin."
-msgstr ""
+msgid "There was an error creating the Account. If this problem persists, contact an admin."
+msgstr "계정 생성 중 오류가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오."
 
 #: accounts/accounts.py:885 accounts/accounts.py:1801
 msgid "An error occurred. Please e-mail an admin if the problem persists."
-msgstr ""
+msgstr "오류가 발생했습니다. 문제가 지속되면 관리자에게 이메일을 보내주십시오."
 
 #: accounts/accounts.py:918
 msgid "Account being deleted."
-msgstr "계정이 삭제되었습니다."
+msgstr "계정을 삭제하는 중입니다."
 
 #: accounts/accounts.py:1475 accounts/accounts.py:1819
-#, python-brace-format
 msgid "|G{key} connected|n"
-msgstr ""
+msgstr "|G{key} 연결됨|n"
 
 #: accounts/accounts.py:1481
-#, fuzzy
-#| msgid "The destination doesn't exist."
 msgid "The Character does not exist."
-msgstr "The destination doesn't exist."
+msgstr "해당 캐릭터가 존재하지 않습니다."
 
 #: accounts/accounts.py:1520
-#, python-brace-format
 msgid "|R{key} disconnected{reason}|n"
-msgstr ""
+msgstr "|R{key} 연결 해제됨{reason}|n"
 
 #: accounts/accounts.py:1754
 msgid "Guest accounts are not enabled on this server."
-msgstr ""
+msgstr "이 서버에서는 게스트 계정을 사용할 수 없습니다."
 
 #: accounts/accounts.py:1764
 msgid "All guest accounts are in use. Please try again later."
-msgstr ""
+msgstr "모든 게스트 계정이 사용 중입니다. 나중에 다시 시도해 주십시오."
 
 #: commands/cmdhandler.py:84
 msgid ""
 "\n"
 "An untrapped error occurred.\n"
 msgstr ""
+"\n"
+"잡히지 않은 오류가 발생했습니다.\n"
 
 #: commands/cmdhandler.py:89
 msgid ""
 "\n"
-"An untrapped error occurred. Please file a bug report detailing the steps to "
-"reproduce.\n"
+"An untrapped error occurred. Please file a bug report detailing the steps to reproduce.\n"
 msgstr ""
+"\n"
+"잡히지 않은 오류가 발생했습니다. 재현 단계를 자세히 기록하여 버그 보고서를 제출해 주십시오.\n"
 
 #: commands/cmdhandler.py:97
 msgid ""
@@ -107,6 +91,8 @@ msgid ""
 "A cmdset merger-error occurred. This is often due to a syntax\n"
 "error in one of the cmdsets to merge.\n"
 msgstr ""
+"\n"
+"cmdset 병합 오류가 발생했습니다. 이는 종종 병합할 cmdset 중 하나에 구문 오류가 있기 때문입니다.\n"
 
 #: commands/cmdhandler.py:103
 msgid ""
@@ -114,6 +100,9 @@ msgid ""
 "A cmdset merger-error occurred. Please file a bug report detailing the\n"
 "steps to reproduce.\n"
 msgstr ""
+"\n"
+"cmdset 병합 오류가 발생했습니다.\n"
+"재현 단계를 자세히 기록하여 버그 보고서를 제출해 주십시오.\n"
 
 #: commands/cmdhandler.py:112
 msgid ""
@@ -121,6 +110,8 @@ msgid ""
 "No command sets found! This is a critical bug that can have\n"
 "multiple causes.\n"
 msgstr ""
+"\n"
+"명령 세트가 없습니다! 이는 여러 가지 원인이 있을 수 있는 심각한 버그입니다.\n"
 
 #: commands/cmdhandler.py:118
 msgid ""
@@ -129,6 +120,9 @@ msgid ""
 "disconnecting/reconnecting doesn't\" solve the problem, try to contact\n"
 "the server admin through\" some other means for assistance.\n"
 msgstr ""
+"\n"
+"명령 세트가 없습니다! 이는 심각한 버그의 신호입니다. \n"
+"연결을 끊었다가 다시 연결해도 문제가 해결되지 않으면 다른 방법으로 서버 관리자에게 도움을 요청해 주십시오.\n"
 
 #: commands/cmdhandler.py:128
 msgid ""
@@ -137,6 +131,9 @@ msgid ""
 "please file a bug report with the Evennia project, including the\n"
 "traceback and steps to reproduce.\n"
 msgstr ""
+"\n"
+"명령 처리기 버그가 발생했습니다. 로컬 변경으로 인한 것이 아니라면,\n"
+"트레이스백과 재현 단계를 포함하여 Evennia 프로젝트에 버그 보고서를 제출해 주십시오.\n"
 
 #: commands/cmdhandler.py:135
 msgid ""
@@ -144,44 +141,32 @@ msgid ""
 "A command handler bug occurred. Please notify staff - they should\n"
 "likely file a bug report with the Evennia project.\n"
 msgstr ""
+"\n"
+"명령 처리기 버그가 발생했습니다. 스태프에게 알려주십시오. 스태프는 Evennia 프로젝트에 버그 보고서를 제출해야 할 것입니다.\n"
 
 #: commands/cmdhandler.py:143
-#, python-brace-format
-msgid ""
-"Command recursion limit ({recursion_limit}) reached for "
-"'{raw_cmdname}' ({cmdclass})."
-msgstr ""
+msgid "Command recursion limit ({recursion_limit}) reached for '{raw_cmdname}' ({cmdclass})."
+msgstr "'{raw_cmdname}' ({cmdclass})에 대한 명령 재귀 제한({recursion_limit})에 도달했습니다."
 
 #: commands/cmdhandler.py:165
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "{traceback}\n"
-#| "Error loading cmdset '{path}'\n"
-#| "(Traceback was logged {timestamp})"
-msgid ""
-"{traceback}\n"
+msgid "{traceback}\n"
 "{errmsg}\n"
 "(Traceback was logged {timestamp})."
-msgstr ""
-"{traceback}\n"
-"Error loading cmdset '{path}'\n"
-"Traceback was logged {timestamp})"
+msgstr "{traceback}\n"
+"오류: {errmsg} \n"
+"(트레이스백이 {timestamp}에 기록되었습니다.)"
 
 #: commands/cmdhandler.py:715
 msgid "There were multiple matches."
-msgstr "여러 개의 일치 항목을 찾았습니다."
+msgstr "여러 항목이 일치했습니다."
 
 #: commands/cmdhandler.py:740
-#, fuzzy, python-brace-format
-#| msgid "Command '%s' is not available."
 msgid "Command '{command}' is not available."
-msgstr "'%s' 명령은 사용할 수 없습니다."
+msgstr "명령 '{command}'을 사용할 수 없습니다."
 
 #: commands/cmdhandler.py:750
-#, fuzzy, python-brace-format
-#| msgid " Maybe you meant %s?"
 msgid " Maybe you meant {command}?"
-msgstr "'%s'이 맞습니까?"
+msgstr " 혹시 {command}을(를) 말씀하시려던 건가요?"
 
 #: commands/cmdhandler.py:751
 msgid "or"
@@ -189,441 +174,326 @@ msgstr "또는"
 
 #: commands/cmdhandler.py:754
 msgid " Type \"help\" for help."
-msgstr " 도음말은 \"help\"를 입력하세요."
+msgstr " 도움말을 보려면 \"help\"를 입력하십시오."
 
 #: commands/cmdsethandler.py:89
-#, python-brace-format
-msgid ""
-"{traceback}\n"
+msgid "{traceback}\n"
 "Error loading cmdset '{path}'\n"
 "(Traceback was logged {timestamp})"
-msgstr ""
-"{traceback}\n"
-"Error loading cmdset '{path}'\n"
-"Traceback was logged {timestamp})"
+msgstr "{traceback}\n"
+"CmdSet '{path}' 로드 중 오류 발생 \n"
+"(트레이스백이 {timestamp}에 기록되었습니다)"
 
 #: commands/cmdsethandler.py:95
-#, python-brace-format
-msgid ""
-"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+msgid "Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
 "(Traceback was logged {timestamp})"
-msgstr ""
-"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
-"(Traceback was logged {timestamp})"
+msgstr "cmdset 로드 오류: '{path}'에서 cmdset 클래스 '{classname}'을(를) 찾을 수 없습니다.\n"
+"(트레이스백이 {timestamp}에 기록되었습니다)"
 
 #: commands/cmdsethandler.py:100
-#, python-brace-format
-msgid ""
-"{traceback}\n"
+msgid "{traceback}\n"
 "SyntaxError encountered when loading cmdset '{path}'.\n"
 "(Traceback was logged {timestamp})"
-msgstr ""
-"{traceback}\n"
-"SyntaxError encountered when loading cmdset '{path}'.\n"
-"(Traceback was logged {timestamp})"
+msgstr "{traceback}\n"
+"cmdset '{path}' 로드 중 구문 오류 발생\n"
+"(트레이스백이 {timestamp}에 기록되었습니다)"
 
 #: commands/cmdsethandler.py:106
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "{traceback}\n"
-#| "Compile/Run error when loading cmdset '{path}'.\",\n"
-#| "(Traceback was logged {timestamp})"
-msgid ""
-"{traceback}\n"
+msgid "{traceback}\n"
 "Compile/Run error when loading cmdset '{path}'.\n"
 "(Traceback was logged {timestamp})"
-msgstr ""
-"{traceback}\n"
-"Compile/Run error when loading cmdset '{path}'.\",\n"
-"(Traceback was logged {timestamp})"
+msgstr "{traceback}\n"
+"cmdset '{path}' 로드 중 컴파일/실행 오류 발생\n"
+"(트레이스백이 {timestamp}에 기록되었습니다)"
 
 #: commands/cmdsethandler.py:112
-#, python-brace-format
 msgid ""
 "\n"
 "Error encountered for cmdset at path '{path}'.\n"
 "Replacing with fallback '{fallback_path}'.\n"
 msgstr ""
 "\n"
-"Error encountered for cmdset at path '{path}'.\n"
-"Replacing with fallback '{fallback_path}'.\n"
+"경로 '{path}'의 cmdset에서 오류가 발생했습니다.\n"
+"대체 '{fallback_path}'으로 대체합니다.\n"
 
 #: commands/cmdsethandler.py:118
-#, python-brace-format
 msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
-msgstr "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "대체 경로 '{fallback_path}'에서 cmdset을 생성하지 못했습니다."
 
 #: commands/cmdsethandler.py:188 commands/cmdsethandler.py:200
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "\n"
-#| "(Unsuccessfully tried '%s')."
 msgid ""
 "\n"
 "(Unsuccessfully tried '{path}')."
 msgstr ""
 "\n"
-"(Unsuccessfully tried '%s')."
+"('{path}'을(를) 시도했지만 실패했습니다')."
 
 #: commands/cmdsethandler.py:331
-#, python-brace-format
 msgid "custom {mergetype} on cmdset '{cmdset}'"
-msgstr "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "cmdset '{cmdset}'에 대한 사용자 정의 {mergetype}"
 
 #: commands/cmdsethandler.py:457
 msgid "Only CmdSets can be added to the cmdsethandler!"
-msgstr "Only CmdSets can be added to the cmdsethandler!"
+msgstr "CmdSet만 cmdsethandler에 추가할 수 있습니다!"
 
 #: locks/lockhandler.py:239
-#, fuzzy, python-brace-format
-#| msgid "Lock: lock-function '%s' is not available."
 msgid "Lock: lock-function '{lockfunc}' is not available."
-msgstr "Lock: lock-function '%s' is not available."
+msgstr "잠금: 잠금 함수 '{lockfunc}'을(를) 사용할 수 없습니다."
 
 #: locks/lockhandler.py:262
-#, fuzzy, python-brace-format
-#| msgid "Lock: definition '%s' has syntax errors."
 msgid "Lock: definition '{lock_string}' has syntax errors."
-msgstr "Lock: definition '%s' has syntax errors."
+msgstr "잠금: 정의 '{lock_string}'에 구문 오류가 있습니다."
 
 #: locks/lockhandler.py:271
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "LockHandler on %(obj)s: access type '%(access_type)s' changed from "
-#| "'%(source)s' to '%(goal)s' "
-msgid ""
-"LockHandler on {obj}: access type '{access_type}' changed from '{source}' to "
-"'{goal}' "
-msgstr ""
-"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
-"'%(source)s' to '%(goal)s' "
+msgid "LockHandler on {obj}: access type '{access_type}' changed from '{source}' to '{goal}' "
+msgstr "{obj}의 LockHandler: 액세스 유형 '{access_type}'이(가) '{source}'에서 '{goal}'(으)로 변경되었습니다."
 
 #: locks/lockhandler.py:347
-#, python-brace-format
 msgid "Lock: '{lockdef}' contains no colon (:)."
-msgstr "Lock: '{lockdef}' contains no colon (:)."
+msgstr "잠금: '{lockdef}'에 콜론(:)이 없습니다."
 
 #: locks/lockhandler.py:356
-#, python-brace-format
 msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
-msgstr "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "잠금: '{lockdef}'에 access_type이 없습니다(콜론의 왼쪽이 비어 있음)."
 
 #: locks/lockhandler.py:364
-#, python-brace-format
 msgid "Lock: '{lockdef}' has mismatched parentheses."
-msgstr "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "잠금: '{lockdef}'에 괄호가 일치하지 않습니다."
 
 #: locks/lockhandler.py:371
-#, python-brace-format
 msgid "Lock: '{lockdef}' has no valid lock functions."
-msgstr "Lock: '{lockdef}' has no valid lock functions."
+msgstr "잠금: '{lockdef}'에 유효한 잠금 함수가 없습니다."
 
 #: objects/objects.py:856
-#, fuzzy, python-brace-format
-#| msgid "Couldn't perform move ('%s'). Contact an admin."
 msgid "Couldn't perform move ({err}). Contact an admin."
-msgstr "Couldn't perform move ('%s'). 운영자에게 문의하세요."
+msgstr "이동을 수행할 수 없습니다({err}). 관리자에게 문의하십시오."
 
 #: objects/objects.py:866
 msgid "The destination doesn't exist."
-msgstr "The destination doesn't exist."
+msgstr "목적지가 존재하지 않습니다."
 
 #: objects/objects.py:978
-#, fuzzy, python-brace-format
-#| msgid "Could not find default home '(#%d)'."
 msgid "Could not find default home '(#{dbid})'."
-msgstr "Could not find default home '(#%d)'."
+msgstr "기본 홈 '(#{dbid})'을(를) 찾을 수 없습니다."
 
 #: objects/objects.py:992
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
-msgstr ""
-"Something went wrong! You are dumped into nowhere. 운영자에게 문의하세요."
+msgstr "오류가 발생했습니다! 갈 곳 없는 곳으로 이동되었습니다. 관리자에게 문의하십시오."
 
 #: objects/objects.py:1145
-#, fuzzy, python-brace-format
-#| msgid "Your character %s has been destroyed."
 msgid "Your character {key} has been destroyed."
-msgstr "%s 캐릭터가 삭제되었습니다."
+msgstr "귀하의 캐릭터 {key}이(가) 파괴되었습니다."
 
 #: objects/objects.py:1853
-#, python-brace-format
 msgid "You now have {name} in your possession."
-msgstr ""
+msgstr "이제 {name}을(를) 소유하게 되었습니다."
 
 #: objects/objects.py:1863
-#, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
-msgstr ""
+msgstr "{object}이(가) {origin}에서 {destination}에 도착합니다."
 
 #: objects/objects.py:1865
-#, python-brace-format
 msgid "{object} arrives to {destination}."
-msgstr ""
+msgstr "{object}이(가) {destination}에 도착합니다."
 
 #: objects/objects.py:2530
 msgid "Invalid character name."
-msgstr ""
+msgstr "잘못된 캐릭터 이름입니다."
 
 #: objects/objects.py:2549
 msgid "There are too many characters associated with this account."
-msgstr ""
+msgstr "이 계정과 연결된 캐릭터가 너무 많습니다."
 
 #: objects/objects.py:2575
-#, fuzzy
-#| msgid "This is User #1."
 msgid "This is a character."
-msgstr "This is User #1."
+msgstr "이것은 캐릭터입니다."
 
 #: objects/objects.py:2664
-#, python-brace-format
 msgid "|r{obj} has no location and no home is set.|n"
-msgstr ""
+msgstr "|r{obj}에 위치 정보가 없고 홈이 설정되어 있지 않습니다.|n"
 
 #: objects/objects.py:2682
-#, python-brace-format
 msgid ""
 "\n"
 "You become |c{name}|n.\n"
 msgstr ""
+"\n"
+"|c{name}|n이(가) 됩니다.\n"
 
 #: objects/objects.py:2687
-#, python-brace-format
 msgid "{name} has entered the game."
-msgstr ""
+msgstr "{name}이(가) 게임에 참여했습니다."
 
 #: objects/objects.py:2716
-#, python-brace-format
 msgid "{name} has left the game{reason}."
-msgstr ""
+msgstr "{name}이(가) 게임에서 나갔습니다{reason}."
 
 #: objects/objects.py:2838
-#, fuzzy
-#| msgid "This is User #1."
 msgid "This is a room."
-msgstr "This is User #1."
+msgstr "이것은 방입니다."
 
 #: objects/objects.py:3045
-#, fuzzy
-#| msgid "This is User #1."
 msgid "This is an exit."
-msgstr "This is User #1."
+msgstr "이것은 출구입니다."
 
 #: objects/objects.py:3142
 msgid "You cannot go there."
-msgstr ""
+msgstr "그곳으로 갈 수 없습니다."
 
 #: prototypes/prototypes.py:55
 msgid "Error"
-msgstr ""
+msgstr "오류"
 
 #: prototypes/prototypes.py:56
 msgid "Warning"
-msgstr ""
+msgstr "경고"
 
 #: prototypes/prototypes.py:389
 msgid "Prototype requires a prototype_key"
-msgstr ""
+msgstr "프로토타입에는 prototype_key가 필요합니다."
 
 #: prototypes/prototypes.py:397 prototypes/prototypes.py:466
 #: prototypes/prototypes.py:1092
-#, python-brace-format
 msgid "{protkey} is a read-only prototype (defined as code in {module})."
-msgstr ""
+msgstr "{protkey}은(는) 읽기 전용 프로토타입입니다({module}의 코드로 정의됨)."
 
 #: prototypes/prototypes.py:399 prototypes/prototypes.py:468
 #: prototypes/prototypes.py:1094
-#, python-brace-format
 msgid "{protkey} is a read-only prototype (passed directly as a dict)."
-msgstr ""
+msgstr "{protkey}은(는) 읽기 전용 프로토타입입니다(dict로 직접 전달됨)."
 
 #: prototypes/prototypes.py:475
-#, python-brace-format
 msgid "Prototype {prototype_key} was not found."
-msgstr ""
+msgstr "프로토타입 {prototype_key}을(를) 찾을 수 없습니다."
 
 #: prototypes/prototypes.py:483
-#, python-brace-format
-msgid ""
-"{caller} needs explicit 'edit' permissions to delete prototype "
-"{prototype_key}."
-msgstr ""
+msgid "{caller} needs explicit 'edit' permissions to delete prototype {prototype_key}."
+msgstr "{caller}은(는) 프로토타입 {prototype_key}을(를) 삭제하려면 명시적인 '편집' 권한이 필요합니다."
 
 #: prototypes/prototypes.py:605
-#, python-brace-format
 msgid "Found {num} matching prototypes among {module_prototypes}."
-msgstr ""
+msgstr "{module_prototypes} 중에서 {num}개의 일치하는 프로토타입을 찾았습니다."
 
 #: prototypes/prototypes.py:765
 msgid "No prototypes found."
-msgstr ""
+msgstr "프로토타입이 없습니다."
 
 #: prototypes/prototypes.py:816
 msgid "Prototype lacks a 'prototype_key'."
-msgstr ""
+msgstr "프로토타입에 'prototype_key'가 없습니다."
 
 #: prototypes/prototypes.py:825
-#, python-brace-format
 msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
-msgstr ""
+msgstr "프로토타입 {protkey}에는 `typeclass` 또는 'prototype_parent'가 필요합니다."
 
 #: prototypes/prototypes.py:832
-#, python-brace-format
-msgid ""
-"Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
-"or 'prototype_parent' keys."
-msgstr ""
+msgid "Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' or 'prototype_parent' keys."
+msgstr "프로토타입 {protkey}은(는) 'typeclass' 또는 'prototype_parent' 키가 없으므로 mixin으로만 사용할 수 있습니다."
 
 #: prototypes/prototypes.py:843
-#, python-brace-format
-msgid ""
-"{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
-"not be imported!"
-msgstr ""
+msgid "{err}: Prototype {protkey} is based on typeclass {typeclass}, which could not be imported!"
+msgstr "{err}: 프로토타입 {protkey}은(는) 가져올 수 없는 typeclass {typeclass}을(를) 기반으로 합니다!"
 
 #: prototypes/prototypes.py:862
-#, python-brace-format
 msgid "Prototype {protkey} tries to parent itself."
-msgstr ""
+msgstr "프로토타입 {protkey}이(가) 자체를 부모로 설정하려고 합니다."
 
 #: prototypes/prototypes.py:868
-#, python-brace-format
-msgid ""
-"Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
-msgstr ""
+msgid "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
+msgstr "프로토타입 {protkey}의 `prototype_parent` (이름: '{parent}')을(를) 찾을 수 없습니다."
 
 #: prototypes/prototypes.py:875
-#, python-brace-format
 msgid "{protkey} has infinite nesting of prototypes."
-msgstr ""
+msgstr "{protkey}에 프로토타입이 무한히 중첩되어 있습니다."
 
 #: prototypes/prototypes.py:900
-#, python-brace-format
-msgid ""
-"Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
-" chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype "
-"with a typeclass."
-msgstr ""
+msgid "Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
+" chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype with a typeclass."
+msgstr "프로토타입 {protkey}의 부모 체인 어디에도 `typeclass`가 정의되어 있지 않습니다.\n"
+"`typeclass`를 추가하거나 typeclass가 있는 프로토타입을 가리키는 `prototype_parent`를 추가하십시오."
 
 #: prototypes/spawner.py:495
-#, python-brace-format
-msgid ""
-"Diff contains non-dicts that are not on the form (old, new, action_to_take): "
-"{diffpart}"
-msgstr ""
+msgid "Diff contains non-dicts that are not on the form (old, new, action_to_take): {diffpart}"
+msgstr "Diff에 (old, new, action_to_take) 형식이 아닌 비-dict가 포함되어 있습니다. {diffpart}"
 
 #: scripts/scripthandler.py:51
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "\n"
-#| " '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
 msgid ""
 "\n"
 " '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}"
 msgstr ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+" '{key}' ({next_repeat}/{interval}, {repeats}회 반복): {desc}"
 
 #: scripts/scripts.py:344
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error "
-#| "'%(err)s'."
 msgid "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'."
-msgstr ""
-"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr "유형 '{name}'의 스크립트 {key}(#{dbid}): at_repeat() 오류 '{err}'."
 
 #: server/initial_setup.py:29
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com "
-#| "if you need\n"
-#| "help, want to contribute, report issues or just join the community.\n"
-#| "As Account #1 you can create a demo/tutorial area with |w@batchcommand "
-#| "tutorial_world.build|n.\n"
-#| "    "
 msgid ""
 "\n"
-"Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if "
-"you need\n"
+"Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need\n"
 "help, want to contribute, report issues or just join the community.\n"
 "\n"
 "As a privileged user, write |wbatchcommand tutorial_world.build|n to build\n"
-"tutorial content. Once built, try |wintro|n for starting help and |wtutorial|"
-"n to\n"
+"tutorial content. Once built, try |wintro|n for starting help and |wtutorial|n to\n"
 "play the demo game.\n"
 msgstr ""
 "\n"
-"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
-"you need\n"
-"help, want to contribute, report issues or just join the community.\n"
-"#1 유저(운영자)는 |w@batchcommand tutorial_world.build|n.명령을 사용하여\n"
-"데모겸 튜터리얼 월드를 생성할 수 있습니다.\n"
-"    "
+"새로운 |wEvennia|n 기반 게임에 오신 것을 환영합니다! 도움이 필요하거나, 기여하고 싶거나, 문제를 보고하거나 커뮤니티에 참여하고 싶다면 https://www.evennia.com을 방문해 주십시오.\n"
+"\n"
+"권한이 있는 사용자는 튜토리얼 콘텐츠를 빌드하려면 |wbatchcommand tutorial_world.build|n를 작성하십시오. 빌드가 완료되면 시작 도움말을 보려면 |wintro|n을(를) 시도하고 데모 게임을 플레이하려면 |wtutorial|n을(를) 시도해 보십시오.\n"
 
 #: server/initial_setup.py:108
 msgid "This is User #1."
-msgstr "This is User #1."
+msgstr "이것은 사용자 #1입니다."
 
 #: server/initial_setup.py:128
 msgid "Limbo"
 msgstr "림보"
 
 #: server/portal/portalsessionhandler.py:41
-#, python-brace-format
-msgid ""
-"{servername} DoS protection is active.You are queued to connect in {num} "
-"seconds ..."
-msgstr ""
+msgid "{servername} DoS protection is active.You are queued to connect in {num} seconds ..."
+msgstr "{servername} DoS 보호 기능이 활성화되었습니다. {num}초 후에 연결됩니다..."
 
 #: server/server.py:156
 msgid "idle timeout exceeded"
-msgstr "연결 시간 초과"
+msgstr "유휴 시간 초과"
 
 #: server/server.py:177
 msgid " (connection lost)"
-msgstr ""
+msgstr " (연결 끊김)"
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
-msgstr ""
+msgstr "클라이언트에서 잘못된 UTF-8 시퀀스를 보냈습니다."
 
 #: server/sessionhandler.py:410
 msgid " ... Server restarted."
-msgstr " ... 서버가 재가동되었습니다."
+msgstr " ... 서버가 재시작되었습니다."
 
 #: server/sessionhandler.py:634
 msgid "Logged in from elsewhere. Disconnecting."
-msgstr "어디에선가 로그인했습니다. 접속이 끊어집니다."
+msgstr "다른 곳에서 로그인했습니다. 연결을 끊습니다."
 
 #: server/sessionhandler.py:662
 msgid "Idle timeout exceeded, disconnecting."
-msgstr "연결 시간이 초과되었습니다. 접속이 끊어집니다."
+msgstr "유휴 시간 초과, 연결 해제 중입니다."
 
 #: server/throttle.py:21
-msgid ""
-"Too many failed attempts; you must wait a few minutes before trying again."
-msgstr ""
+msgid "Too many failed attempts; you must wait a few minutes before trying again."
+msgstr "실패한 시도가 너무 많습니다. 다시 시도하기 전에 몇 분 정도 기다려야 합니다."
 
 #: server/validators.py:31
 msgid "Sorry, that username is reserved."
-msgstr ""
+msgstr "죄송합니다. 해당 사용자 이름은 예약되어 있습니다."
 
 #: server/validators.py:38
 msgid "Sorry, that username is already taken."
-msgstr ""
+msgstr "죄송합니다. 해당 사용자 이름은 이미 사용 중입니다."
 
 #: server/validators.py:88
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "%s From a terminal client, you can also use a phrase of multiple words if "
-#| "you enclose the password in double quotes."
-msgid ""
-"{policy} From a terminal client, you can also use a phrase of multiple words "
-"if you enclose the password in double quotes."
-msgstr ""
-"%s 터미널 클라이언트에서 암호를 큰 따옴표로 묶으면 여러 단어로 된 암호를 사용"
-"할 수 있습니다."
+msgid "{policy} From a terminal client, you can also use a phrase of multiple words if you enclose the password in double quotes."
+msgstr "{policy} 터미널 클라이언트에서는 암호를 큰따옴표로 묶으면 여러 단어로 된 구문을 사용할 수도 있습니다."
 
 #: utils/eveditor.py:68
 msgid ""
@@ -650,23 +520,56 @@ msgid ""
 " :y  <l>        - yank (copy) line(s) <l> to the copy buffer\n"
 " :x  <l>        - cut line(s) <l> and store it in the copy buffer\n"
 " :p  <l>        - put (paste) previously copied line(s) directly after <l>\n"
-" :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move "
-"down\n"
+" :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down\n"
 " :r  <l> <txt>  - replace line <l> with text <txt>\n"
 " :I  <l> <txt>  - insert text at the beginning of line <l>\n"
 " :A  <l> <txt>  - append text after the end of line <l>\n"
 "\n"
-" :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line "
-"<l>\n"
+" :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>\n"
 "\n"
-" :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f "
-"(full)\n"
+" :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f (full)\n"
 " :f <l>     - flood-fill entire buffer or line <l>: Equivalent to :j left\n"
 " :fi <l>    - indent entire buffer or line <l>\n"
 " :fd <l>    - de-indent entire buffer or line <l>\n"
 "\n"
 " :echo - turn echoing of the input on/off (helpful for some clients)\n"
 msgstr ""
+"\n"
+" <txt> - 명령어가 아닌 모든 내용은 버퍼의 끝에 추가됩니다.\n"
+" :  <l> - 버퍼 또는 <l> 줄만 보기\n"
+" :: <l> - 원시 보기 버퍼 또는 <l> 줄만 보기\n"
+" :::    - 이스케이프 - ':'를 해당 줄의 유일한 문자로 입력합니다.\n"
+" :h     - 이 도움말입니다.\n"
+"\n"
+" :w     - 버퍼 저장(종료하지 않음)\n"
+" :wq    - 버퍼를 저장하고 종료\n"
+" :q     - 종료(버퍼가 변경된 경우 저장하라는 메시지가 표시됨)\n"
+" :q!    - 저장하지 않고 종료, 질문하지 않음\n"
+"\n"
+" :u     - (실행 취소) 실행 취소 기록에서 뒤로 이동\n"
+" :uu    - (다시 실행) 실행 취소 기록에서 앞으로 이동\n"
+" :UU    - 모든 변경 내용을 초기 상태로 되돌리기\n"
+"\n"
+" :dd <l>     - 마지막 줄 또는 <l> 줄 삭제\n"
+" :dw <l> <w> - 전체 버퍼 또는 <l> 줄에서 단어 또는 regex <w> 삭제\n"
+" :DD         - 전체 버퍼 지우기\n"
+"\n"
+" :y  <l>    - 복사 버퍼로 <l> 줄을 복사\n"
+" :x  <l>    - 복사 버퍼에 <l> 줄을 잘라내어 저장\n"
+" :p  <l>    - 이전에 복사한 <l> 줄을 바로 뒤에 붙여넣기\n"
+" :i  <l> <txt> - <l> 줄에 새 텍스트 <txt> 삽입. 이전 줄은 아래로 이동됨\n"
+" :r  <l> <txt> - <l> 줄을 텍스트 <txt>로 바꾸기\n"
+" :I  <l> <txt> - <l> 줄의 시작 부분에 텍스트 삽입\n"
+" :A  <l> <txt> - <l> 줄의 끝 뒤에 텍스트 추가\n"
+"\n"
+" :s <l> <w> <txt> - 버퍼 또는 <l> 줄에서 단어 또는 regex <w> 검색/바꾸기\n"
+"\n"
+" :j <l> <w> - 버퍼 또는 <l> 줄 정렬. <w>는 f, c, l 또는 r입니다. 기본값은 f(전체)입니다.\n"
+" :f <l>     - 전체 버퍼 또는 <l> 줄을 채우기: :j left와 동일\n"
+" :fi <l>    - 전체 버퍼 또는 <l> 줄 들여쓰기\n"
+" :fd <l>    - 전체 버퍼 또는 <l> 줄 들여쓰기 취소\n"
+"\n"
+" :echo - 입력의 에코 켜기/끄기(일부 클라이언트에게 유용함)\n"
 
 #: utils/eveditor.py:108
 msgid ""
@@ -676,6 +579,11 @@ msgid ""
 "    <w>   - a single word, or multiple words with quotes around them.\n"
 "    <txt> - longer string, usually not needing quotes.\n"
 msgstr ""
+"\n"
+"    범례:\n"
+"    <l>   - '5'와 같은 줄 번호 또는 '3:7'과 같은 범위.\n"
+"    <w>   - 단일 단어 또는 따옴표로 묶인 여러 단어.\n"
+"    <txt> - 일반적으로 따옴표가 필요하지 않은 긴 문자열.\n"
 
 #: utils/eveditor.py:117
 msgid ""
@@ -685,48 +593,61 @@ msgid ""
 " :>    - Increase the level of automatic indentation for the next lines\n"
 " :=    - Switch automatic indentation on/off\n"
 msgstr ""
+"\n"
+" :!    - 저장하지 않고 코드 버퍼 실행\n"
+" :<    - 다음 줄에 대한 자동 들여쓰기 수준 감소\n"
+" :>    - 다음 줄에 대한 자동 들여쓰기 수준 증가\n"
+" :=    - 자동 들여쓰기 켜기/끄기\n"
 
 #: utils/eveditor.py:128
-#, python-brace-format
 msgid ""
 "\n"
 "{error}\n"
 "\n"
 "|rBuffer load function error. Could not load initial data.|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r버퍼 로드 함수 오류. 초기 데이터를 로드할 수 없습니다.|n\n"
 
 #: utils/eveditor.py:136
-#, python-brace-format
 msgid ""
 "\n"
 "{error}\n"
 "\n"
 "|rSave function returned an error. Buffer not saved.|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r저장 함수가 오류를 반환했습니다. 버퍼가 저장되지 않았습니다.|n\n"
 
 #: utils/eveditor.py:143
 msgid "|rNo save function defined. Buffer cannot be saved.|n"
-msgstr ""
+msgstr "|r저장 함수가 정의되지 않았습니다. 버퍼를 저장할 수 없습니다.|n"
 
 #: utils/eveditor.py:145
 msgid "No changes need saving"
-msgstr ""
+msgstr "저장할 변경 내용이 없습니다."
 
 #: utils/eveditor.py:146
 msgid "Exited editor."
-msgstr ""
+msgstr "편집기를 종료했습니다."
 
 #: utils/eveditor.py:149
-#, python-brace-format
 msgid ""
 "\n"
 "{error}\n"
 "\n"
 "|rQuit function gave an error. Skipping.|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r종료 함수에서 오류가 발생했습니다. 건너뜁니다.|n\n"
 
 #: utils/eveditor.py:157
-#, python-brace-format
 msgid ""
 "\n"
 "{error}\n"
@@ -735,236 +656,204 @@ msgid ""
 "to non-persistent mode (which means the editor session won't survive\n"
 "an eventual server reload - so save often!)|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|r편집기 상태를 영구 모드로 저장할 수 없습니다. 비영구 모드로 전환합니다.\n"
+"(즉, 편집기 세션은 서버 재로드 후 유지되지 않습니다. 따라서 자주 저장하십시오!)|n\n"
 
 #: utils/eveditor.py:167
-msgid ""
-"EvEditor persistent-mode error. Commonly, this is because one or more of the "
-"EvEditor callbacks could not be pickled, for example because it's a class "
-"method or is defined inside another function."
-msgstr ""
+msgid "EvEditor persistent-mode error. Commonly, this is because one or more of the EvEditor callbacks could not be pickled, for example because it's a class method or is defined inside another function."
+msgstr "EvEditor 영구 모드 오류입니다. 일반적으로, 이는 클래스 메서드이거나 다른 함수 내부에 정의되어 있기 때문에 하나 이상의 EvEditor 콜백을 피클링할 수 없기 때문입니다."
 
 #: utils/eveditor.py:173
 msgid "Nothing to undo."
-msgstr ""
+msgstr "실행 취소할 항목이 없습니다."
 
 #: utils/eveditor.py:174
 msgid "Nothing to redo."
-msgstr ""
+msgstr "다시 실행할 항목이 없습니다."
 
 #: utils/eveditor.py:175
 msgid "Undid one step."
-msgstr ""
+msgstr "한 단계를 실행 취소했습니다."
 
 #: utils/eveditor.py:176
 msgid "Redid one step."
-msgstr ""
+msgstr "한 단계를 다시 실행했습니다."
 
 #: utils/eveditor.py:494
 msgid "Single ':' added to buffer."
-msgstr ""
+msgstr "단일 ':'이(가) 버퍼에 추가되었습니다."
 
 #: utils/eveditor.py:509
 msgid "Save before quitting?"
-msgstr ""
+msgstr "종료하기 전에 저장하시겠습니까?"
 
 #: utils/eveditor.py:524
 msgid "Reverted all changes to the buffer back to original state."
-msgstr ""
+msgstr "버퍼의 모든 변경 사항을 원래 상태로 되돌렸습니다."
 
 #: utils/eveditor.py:529
-#, python-brace-format
 msgid "Deleted {string}."
-msgstr ""
+msgstr "{string}을(를) 삭제했습니다."
 
 #: utils/eveditor.py:534
 msgid "You must give a search word to delete."
-msgstr ""
+msgstr "삭제할 검색어를 입력해야 합니다."
 
 #: utils/eveditor.py:540
-#, python-brace-format
 msgid "Removed {arg1} for lines {l1}-{l2}."
-msgstr ""
+msgstr "{l1}-{l2}행에서 {arg1}을(를) 제거했습니다."
 
 #: utils/eveditor.py:546
-#, python-brace-format
 msgid "Removed {arg1} for {line}."
-msgstr ""
+msgstr "{line}행에 대한 {arg1}을(를) 제거했습니다."
 
 #: utils/eveditor.py:562
-#, python-brace-format
 msgid "Cleared {nlines} lines from buffer."
-msgstr ""
+msgstr "버퍼에서 {nlines}줄을 지웠습니다."
 
 #: utils/eveditor.py:567
-#, python-brace-format
 msgid "{line}, {cbuf} yanked."
-msgstr ""
+msgstr "{line}, {cbuf} 복사됨."
 
 #: utils/eveditor.py:574
-#, python-brace-format
 msgid "{line}, {cbuf} cut."
-msgstr ""
+msgstr "{line}, {cbuf} 잘라냄."
 
 #: utils/eveditor.py:578
 msgid "Copy buffer is empty."
-msgstr ""
+msgstr "복사 버퍼가 비어 있습니다."
 
 #: utils/eveditor.py:583
-#, python-brace-format
 msgid "Pasted buffer {cbuf} to {line}."
-msgstr ""
+msgstr "버퍼 {cbuf}을(를) {line}에 붙여넣었습니다."
 
 #: utils/eveditor.py:591
 msgid "You need to enter a new line and where to insert it."
-msgstr ""
+msgstr "새 줄과 삽입 위치를 입력해야 합니다."
 
 #: utils/eveditor.py:596
-#, python-brace-format
 msgid "Inserted {num} new line(s) at {line}."
-msgstr ""
+msgstr "{line}에 {num}개의 새 줄을 삽입했습니다."
 
 #: utils/eveditor.py:604
 msgid "You need to enter a replacement string."
-msgstr ""
+msgstr "바꿀 문자열을 입력해야 합니다."
 
 #: utils/eveditor.py:609
-#, python-brace-format
 msgid "Replaced {num} line(s) at {line}."
-msgstr ""
+msgstr "{line}에서 {num}개의 줄을 바꿨습니다."
 
 #: utils/eveditor.py:616
 msgid "You need to enter text to insert."
-msgstr ""
+msgstr "삽입할 텍스트를 입력해야 합니다."
 
 #: utils/eveditor.py:624
-#, python-brace-format
 msgid "Inserted text at beginning of {line}."
-msgstr ""
+msgstr "{line}의 시작 부분에 텍스트를 삽입했습니다."
 
 #: utils/eveditor.py:628
 msgid "You need to enter text to append."
-msgstr ""
+msgstr "추가할 텍스트를 입력해야 합니다."
 
 #: utils/eveditor.py:636
-#, python-brace-format
 msgid "Appended text to end of {line}."
-msgstr ""
+msgstr "{line} 끝에 텍스트를 추가했습니다."
 
 #: utils/eveditor.py:641
 msgid "You must give a search word and something to replace it with."
-msgstr ""
+msgstr "검색어와 바꿀 내용을 입력해야 합니다."
 
 #: utils/eveditor.py:647
-#, python-brace-format
 msgid "Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}."
-msgstr ""
+msgstr "{l1}-{l2}행에서 {arg1}을(를) {arg2}로 검색하여 대체했습니다."
 
 #: utils/eveditor.py:653
-#, python-brace-format
 msgid "Search-replaced {arg1} -> {arg2} for {line}."
-msgstr ""
+msgstr "{line}행에서 {arg1}을(를) {arg2}로 검색하여 대체했습니다."
 
 #: utils/eveditor.py:677
-#, python-brace-format
 msgid "Flood filled lines {l1}-{l2}."
-msgstr ""
+msgstr "{l1}-{l2}줄을 채웠습니다."
 
 #: utils/eveditor.py:679
-#, python-brace-format
 msgid "Flood filled {line}."
-msgstr ""
+msgstr "{line}을(를) 채웠습니다."
 
 #: utils/eveditor.py:701
 msgid "Valid justifications are"
-msgstr ""
+msgstr "유효한 정렬은"
 
 #: utils/eveditor.py:710
-#, python-brace-format
 msgid "{align}-justified lines {l1}-{l2}."
-msgstr ""
+msgstr "{align} 정렬된 {l1}-{l2} 줄."
 
 #: utils/eveditor.py:716
-#, python-brace-format
 msgid "{align}-justified {line}."
-msgstr ""
+msgstr "{align} 정렬된 {line}."
 
 #: utils/eveditor.py:728
-#, python-brace-format
 msgid "Indented lines {l1}-{l2}."
-msgstr ""
+msgstr "{l1}-{l2}줄을 들여썼습니다."
 
 #: utils/eveditor.py:730
-#, python-brace-format
 msgid "Indented {line}."
-msgstr ""
+msgstr "{line}을(를) 들여썼습니다."
 
 #: utils/eveditor.py:740
-#, python-brace-format
 msgid "Removed left margin (dedented) lines {l1}-{l2}."
-msgstr ""
+msgstr "{l1}-{l2}줄의 들여쓰기를 제거했습니다."
 
 #: utils/eveditor.py:745
-#, python-brace-format
 msgid "Removed left margin (dedented) {line}."
-msgstr ""
+msgstr "{line}줄의 들여쓰기를 제거했습니다."
 
 #: utils/eveditor.py:753
-#, python-brace-format
 msgid "Echo mode set to {mode}"
-msgstr ""
+msgstr "에코 모드가 {mode}(으)로 설정되었습니다."
 
 #: utils/eveditor.py:758 utils/eveditor.py:773 utils/eveditor.py:788
 #: utils/eveditor.py:799
 msgid "This command is only available in code editor mode."
-msgstr ""
+msgstr "이 명령은 코드 편집기 모드에서만 사용할 수 있습니다."
 
 #: utils/eveditor.py:766
-#, python-brace-format
 msgid "Decreased indentation: new indentation is {indent}."
-msgstr ""
+msgstr "들여쓰기를 줄였습니다. 새 들여쓰기는 {indent}입니다."
 
 #: utils/eveditor.py:771 utils/eveditor.py:786
 msgid "|rManual indentation is OFF.|n Use := to turn it on."
-msgstr ""
+msgstr "|r수동 들여쓰기가 꺼져 있습니다.|n :=을(를) 사용하여 켜십시오."
 
 #: utils/eveditor.py:781
-#, python-brace-format
 msgid "Increased indentation: new indentation is {indent}."
-msgstr ""
+msgstr "들여쓰기를 늘렸습니다. 새 들여쓰기는 {indent}입니다."
 
 #: utils/eveditor.py:795
 msgid "Auto-indentation turned on."
-msgstr ""
+msgstr "자동 들여쓰기가 켜졌습니다."
 
 #: utils/eveditor.py:797
 msgid "Auto-indentation turned off."
-msgstr ""
+msgstr "자동 들여쓰기가 꺼졌습니다."
 
 #: utils/eveditor.py:1093
-#, python-brace-format
 msgid "Line Editor [{name}]"
-msgstr ""
+msgstr "줄 편집기 [{name}]"
 
 #: utils/eveditor.py:1101
 msgid "(:h for help)"
-msgstr ""
+msgstr "(:h 도움말)"
 
 #: utils/evmenu.py:302
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "Menu node '{nodename}' is either not implemented or caused an error. Make "
-#| "another choice."
-msgid ""
-"Menu node '{nodename}' is either not implemented or caused an error. Make "
-"another choice or try 'q' to abort."
-msgstr ""
-"Menu node '{nodename}'가 구현되지 않았거나 오류가 발생했습니다.다른 선택을 해"
-"보세요."
+msgid "Menu node '{nodename}' is either not implemented or caused an error. Make another choice or try 'q' to abort."
+msgstr "메뉴 노드 '{nodename}'이(가) 구현되지 않았거나 오류가 발생했습니다. 다른 선택을 하거나 'q'를 눌러 중단하십시오."
 
 #: utils/evmenu.py:305
-#, python-brace-format
 msgid "Error in menu node '{nodename}'."
-msgstr "Menu node '{nodename}'에서 오류가 발생했습니다."
+msgstr "메뉴 노드 '{nodename}'에 오류가 있습니다."
 
 #: utils/evmenu.py:306
 msgid "No description."
@@ -972,235 +861,179 @@ msgstr "설명이 없습니다."
 
 #: utils/evmenu.py:307
 msgid "Commands: <menu option>, help, quit"
-msgstr "명령: <menu option>, help, quit"
+msgstr "명령: <메뉴 옵션>, 도움말, 종료"
 
 #: utils/evmenu.py:308
 msgid "Commands: <menu option>, help"
-msgstr "명령： <menu option>, help"
+msgstr "명령: <메뉴 옵션>, help"
 
 #: utils/evmenu.py:309
 msgid "Commands: help, quit"
-msgstr "명령： help, quit"
+msgstr "명령: help, quit"
 
 #: utils/evmenu.py:310
 msgid "Commands: help"
-msgstr "명령： help"
+msgstr "명령: help"
 
 #: utils/evmenu.py:311 utils/evmenu.py:1850
 msgid "Choose an option or try 'help'."
-msgstr "다른 옵션을 선택하거나 'help'를 확인해보세요."
+msgstr "옵션을 선택하거나 'help'를 시도해 주십시오."
 
 #: utils/evmenu.py:1375
 msgid "|rInvalid choice.|n"
-msgstr ""
+msgstr "|r잘못된 선택입니다.|n"
 
 #: utils/evmenu.py:1439
 msgid "|Wcurrent|n"
-msgstr ""
+msgstr "|W현재|n"
 
 #: utils/evmenu.py:1447
 msgid "|wp|Wrevious page|n"
-msgstr ""
+msgstr "|wp|W이전 페이지|n"
 
 #: utils/evmenu.py:1454
 msgid "|wn|Wext page|n"
-msgstr ""
+msgstr "|wn|W다음 페이지|n"
 
 #: utils/evmenu.py:1689
 msgid "Aborted."
-msgstr ""
+msgstr "중단되었습니다."
 
 #: utils/evmenu.py:1712
 msgid "|rError in ask_yes_no. Choice not confirmed (report to admin)|n"
-msgstr ""
+msgstr "|rask_yes_no 오류입니다. 선택이 확인되지 않았습니다(관리자에게 보고하십시오).|n"
 
 #: utils/evmore.py:235
 msgid "|xExited pager.|n"
-msgstr ""
+msgstr "|x페이저를 종료했습니다.|n"
 
 #: utils/optionhandler.py:138 utils/optionhandler.py:162
 msgid "Option not found!"
-msgstr ""
+msgstr "옵션을 찾을 수 없습니다!"
 
 #: utils/optionhandler.py:159
 msgid "Option field blank!"
-msgstr ""
+msgstr "옵션 필드가 비어 있습니다!"
 
 #: utils/optionhandler.py:165
 #, fuzzy
-#| msgid "There were multiple matches."
 msgid "Multiple matches:"
-msgstr "여러 개의 일치 항목을 찾았습니다."
+msgstr "여러 항목이 일치했습니다."
 
 #: utils/optionhandler.py:165
 msgid "Please be more specific."
-msgstr ""
+msgstr "좀 더 구체적으로 입력해 주십시오."
 
 #: utils/utils.py:2127
-#, python-brace-format
-msgid ""
-"{obj}.{handlername} is a handler and can't be set directly. To add values, "
-"use `{obj}.{handlername}.add()` instead."
-msgstr ""
+msgid "{obj}.{handlername} is a handler and can't be set directly. To add values, use `{obj}.{handlername}.add()` instead."
+msgstr "{obj}.{handlername}은(는) 핸들러이므로 직접 설정할 수 없습니다. 값을 추가하려면 `{obj}.{handlername}.add()`를 대신 사용하십시오."
 
 #: utils/utils.py:2137
-#, python-brace-format
-msgid ""
-"{obj}.{handlername} is a handler and can't be deleted directly. To remove "
-"values, use `{obj}.{handlername}.remove()` instead."
-msgstr ""
+msgid "{obj}.{handlername} is a handler and can't be deleted directly. To remove values, use `{obj}.{handlername}.remove()` instead."
+msgstr "{obj}.{handlername}은(는) 핸들러이므로 직접 삭제할 수 없습니다. 값을 제거하려면 `{obj}.{handlername}.remove()`를 대신 사용하십시오."
 
 #: utils/utils.py:2278
-#, fuzzy, python-brace-format
-#| msgid "Could not find '%s'."
+#, fuzzy
 msgid "Could not find '{query}'."
-msgstr "'%s'를 찾을 수 없습니다."
+msgstr "'{query}'을 찾을 수 없습니다."
 
 #: utils/utils.py:2285
-#, fuzzy, python-brace-format
-#| msgid "More than one match for '%s' (please narrow target):\n"
+#, fuzzy
 msgid "More than one match for '{query}' (please narrow target):\n"
-msgstr "'%s'와 일치하는 항목을 여러 개 찾았습니다.：\n"
+msgstr "'{query}'에 대한 일치 항목이 여러 개입니다. (대상을 좁히십시오):\n"
 
 #: utils/validatorfuncs.py:25
-#, python-brace-format
 msgid "Input could not be converted to text ({err})"
-msgstr ""
+msgstr "입력을 텍스트로 변환할 수 없습니다({err})"
 
 #: utils/validatorfuncs.py:34
-#, python-brace-format
 msgid "Nothing entered for a {option_key}!"
-msgstr ""
+msgstr "{option_key}에 아무것도 입력하지 않았습니다!"
 
 #: utils/validatorfuncs.py:38
-#, python-brace-format
 msgid "'{entry}' is not a valid {option_key}."
-msgstr ""
+msgstr "'{entry}'은(는) 유효한 {option_key}이(가) 아닙니다."
 
 #: utils/validatorfuncs.py:63 utils/validatorfuncs.py:236
-#, python-brace-format
 msgid "No {option_key} entered!"
-msgstr ""
+msgstr "{option_key}을(를) 입력하지 않았습니다!"
 
 #: utils/validatorfuncs.py:72
-#, python-brace-format
 msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
-msgstr ""
+msgstr "표준 시간대 문자열 '{acct_tz}'이(가) 유효한 표준 시간대가 아닙니다({err})"
 
 #: utils/validatorfuncs.py:89 utils/validatorfuncs.py:97
-#, python-brace-format
 msgid "{option_key} must be entered in a 24-hour format such as: {timeformat}"
-msgstr ""
+msgstr "{option_key}은(는) {timeformat}과 같이 24시간 형식으로 입력해야 합니다."
 
 #: utils/validatorfuncs.py:141
-#, python-brace-format
 msgid "Could not convert section '{interval}' to a {option_key}."
-msgstr ""
+msgstr "섹션 '{interval}'을(를) {option_key}으로 변환할 수 없습니다."
 
 #: utils/validatorfuncs.py:153
-#, python-brace-format
 msgid "That {option_key} is in the past! Must give a Future datetime!"
-msgstr ""
+msgstr "해당 {option_key}은(는) 과거입니다! 미래의 날짜/시간을 지정해야 합니다!"
 
 #: utils/validatorfuncs.py:163
-#, python-brace-format
 msgid "Must enter a whole number for {option_key}!"
-msgstr ""
+msgstr "{option_key}에 대해 정수를 입력해야 합니다!"
 
 #: utils/validatorfuncs.py:169
-#, python-brace-format
 msgid "Could not convert '{entry}' to a whole number for {option_key}!"
-msgstr ""
+msgstr "{option_key}에 대해 '{entry}'을(를) 정수로 변환할 수 없습니다!"
 
 #: utils/validatorfuncs.py:180
-#, python-brace-format
 msgid "Must enter a whole number greater than 0 for {option_key}!"
-msgstr ""
+msgstr "{option_key}에 대해 0보다 큰 정수를 입력해야 합니다!"
 
 #: utils/validatorfuncs.py:191
-#, python-brace-format
 msgid "{option_key} must be a whole number greater than or equal to 0!"
-msgstr ""
+msgstr "{option_key}은(는) 0보다 크거나 같은 정수여야 합니다!"
 
 #: utils/validatorfuncs.py:210
-#, python-brace-format
 msgid "Must enter a true/false input for {option_key}. Accepts {alternatives}."
-msgstr ""
+msgstr "{option_key}에 대해 true/false 입력을 입력해야 합니다. {alternatives}을(를) 허용합니다."
 
 #: utils/validatorfuncs.py:240
-#, python-brace-format
 msgid "That matched: {matches}. Please be more specific!"
-msgstr ""
+msgstr "다음 항목과 일치합니다: {matches}. 좀 더 구체적으로 입력해 주십시오!"
 
 #: utils/validatorfuncs.py:247
-#, python-brace-format
 msgid "Could not find timezone '{entry}' for {option_key}!"
-msgstr ""
+msgstr "{option_key}에 대해 '{entry}' 표준 시간대를 찾을 수 없습니다!"
 
 #: utils/validatorfuncs.py:255
 msgid "Email address field empty!"
-msgstr ""
+msgstr "이메일 주소 필드가 비어 있습니다!"
 
 #: utils/validatorfuncs.py:258
-#, python-brace-format
 msgid "That isn't a valid {option_key}!"
-msgstr ""
+msgstr "유효한 {option_key}이(가) 아닙니다!"
 
 #: utils/validatorfuncs.py:265
-#, python-brace-format
 msgid "No {option_key} entered to set!"
-msgstr ""
+msgstr "설정할 {option_key}을(를) 입력하지 않았습니다!"
 
 #: utils/validatorfuncs.py:269
 msgid "Must enter an access type!"
-msgstr ""
+msgstr "액세스 유형을 입력해야 합니다!"
 
 #: utils/validatorfuncs.py:273
-#, python-brace-format
 msgid "Access type must be one of: {alternatives}"
-msgstr ""
+msgstr "액세스 유형은 다음 중 하나여야 합니다. {alternatives}"
 
 #: utils/validatorfuncs.py:278
 msgid "Lock func not entered."
-msgstr ""
+msgstr "잠금 함수를 입력하지 않았습니다."
 
 #: web/templates/admin/app_list.html:19
 msgid "Add"
-msgstr ""
+msgstr "추가"
 
 #: web/templates/admin/app_list.html:26
 msgid "View"
-msgstr ""
+msgstr "보기"
 
 #: web/templates/admin/app_list.html:28
 msgid "Change"
-msgstr ""
-
-#: web/templates/admin/app_list.html:39
-msgid "You don’t have permission to view or edit anything."
-msgstr ""
-
-#~ msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
-#~ msgstr " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
-
-#~ msgid ""
-#~ " <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
-#~ " {keylist}"
-#~ msgstr ""
-#~ " <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
-#~ " {keylist}"
-
-#~ msgid "Say what?"
-#~ msgstr "뭐라구요？"
-
-#~ msgid "Channel '%s' not found."
-#~ msgstr "'%s' 채널을 찾을 수 없습니다."
-
-#~ msgid "You are not connected to channel '%s'."
-#~ msgstr "'%s' 채널에 접속하고 있지 않습니다."
-
-#~ msgid "You are not permitted to send to channel '%s'."
-#~ msgstr "'%s' 채널에 보낼 수 없습니다."
-
-#~ msgid " (channel)"
-#~ msgstr " (채널)"
+msgstr "변경"
