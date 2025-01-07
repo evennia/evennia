@@ -697,8 +697,7 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
 
          |wHomepage|n https://evennia.com
          |wCode|n https://github.com/evennia/evennia
-         |wDemo|n https://demo.evennia.com
-         |wGame listing|n https://games.evennia.com
+         |wGame listing|n http://games.evennia.com
          |wChat|n https://discord.gg/AJJpcRUhtF
          |wForum|n https://github.com/evennia/evennia/discussions
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
