@@ -441,11 +441,11 @@ msgstr ""
 "\n"
 "새로운 |wEvennia|n 기반 게임에 오신 것을 환영합니다! 도움이 필요하거나, 기여하고 싶거나, 문제를 보고하거나 커뮤니티에 참여하고 싶다면 https://www.evennia.com을 방문해 주십시오.\n"
 "\n"
-"권한이 있는 사용자는 튜토리얼 콘텐츠를 빌드하려면 |wbatchcommand tutorial_world.build|n를 작성하십시오. 빌드가 완료되면 시작 도움말을 보려면 |wintro|n을(를) 시도하고 데모 게임을 플레이하려면 |wtutorial|n을(를) 시도해 보십시오.\n"
+"권한이 있는 사용자는 튜토리얼 콘텐츠를 빌드하려면 |wbatchcommand tutorial_world.build|n를 작성하십시오. 빌드가 완료되면 시작 도움말을 보려면 |wintro|n를 시도하고 데모 게임을 플레이하려면 |wtutorial|n을 시도해 보십시오.\n"
 
 #: server/initial_setup.py:108
 msgid "This is User #1."
-msgstr "이것은 사용자 #1입니다."
+msgstr "사용자 #1입니다."
 
 #: server/initial_setup.py:128
 msgid "Limbo"
