@@ -162,7 +162,7 @@ msgstr "여러 항목이 일치했습니다."
 
 #: commands/cmdhandler.py:740
 msgid "Command '{command}' is not available."
-msgstr "명령 '{command}'을 사용할 수 없습니다."
+msgstr "'{command}' 명령을 사용할 수 없습니다."
 
 #: commands/cmdhandler.py:750
 msgid " Maybe you meant {command}?"
