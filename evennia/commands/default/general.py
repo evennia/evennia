@@ -259,7 +259,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 nicktypes = ("object", "account", "inputline")
             for nicktype in nicktypes:
                 if nicktype == "account":
-                    obj = account
+                    obj = caller.account
                 else:
                     obj = caller
                 nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
@@ -280,7 +280,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 nicktypes = ("object", "account", "inputline")
             for nicktype in nicktypes:
                 if nicktype == "account":
-                    obj = account
+                    obj = caller.account
                 else:
                     obj = caller
                 nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
