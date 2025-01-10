@@ -322,11 +322,11 @@ msgstr ""
 
 #: objects/objects.py:2687
 msgid "{name} has entered the game."
-msgstr "{name}이(가) 게임에 참여했습니다."
+msgstr "{name}님이 접속 했습니다."
 
 #: objects/objects.py:2716
 msgid "{name} has left the game{reason}."
-msgstr "{name}이(가) 게임에서 나갔습니다{reason}."
+msgstr "{name}님이 종료 했습니다{reason}."
 
 #: objects/objects.py:2838
 msgid "This is a room."
