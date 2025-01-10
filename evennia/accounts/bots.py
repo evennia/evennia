@@ -555,24 +555,28 @@ class DiscordBot(Bot):
     """
 
     factory_path = "evennia.server.portal.discord.DiscordWebsocketServerFactory"
+    
+    def _load_channels(self):
+        self.ndb.ev_channels = {}
+        if channel_links := self.db.channels:
+            # this attribute contains a list of evennia<->discord links in the form
+            # of ("evennia_channel", "discord_chan_id")
+            # grab Evennia channels, cache and connect
+            channel_set = {evchan for evchan, dcid in channel_links}
+            for channel_name in list(channel_set):
+                channel = search.search_channel(channel_name)
+                if not channel:
+                    logger.log_err(f"Evennia Channel {channel_name} not found; skipping.")
+                    continue
+                channel = channel[0]
+                self.ndb.ev_channels[channel_name] = channel
 
     def at_init(self):
         """
         Load required channels back into memory
 
         """
-        if channel_links := self.db.channels:
-            # this attribute contains a list of evennia<->discord links in the form
-            # of ("evennia_channel", "discord_chan_id")
-            # grab Evennia channels, cache and connect
-            channel_set = {evchan for evchan, dcid in channel_links}
-            self.ndb.ev_channels = {}
-            for channel_name in list(channel_set):
-                channel = search.search_channel(channel_name)
-                if not channel:
-                    raise RuntimeError(f"Evennia Channel {channel_name} not found.")
-                channel = channel[0]
-                self.ndb.ev_channels[channel_name] = channel
+        self._load_channels()
 
     def start(self):
         """
@@ -583,27 +587,18 @@ class DiscordBot(Bot):
             self.delete()
             return
 
-        if self.ndb.ev_channels:
-            for channel in self.ndb.ev_channels.values():
-                channel.connect(self)
+        if not self.ndb.ev_channels:
+            self._load_channels()
 
-        elif channel_links := self.db.channels:
-            # this attribute contains a list of evennia<->discord links in the form
-            # of ("evennia_channel", "discord_chan_id")
-            # grab Evennia channels, cache and connect
-            channel_set = {evchan for evchan, dcid in channel_links}
-            self.ndb.ev_channels = {}
-            for channel_name in list(channel_set):
-                channel = search.search_channel(channel_name)
-                if not channel:
-                    raise RuntimeError(f"Evennia Channel {channel_name} not found.")
-                channel = channel[0]
-                self.ndb.ev_channels[channel_name] = channel
-                channel.connect(self)
+        for channel in self.ndb.ev_channels.values():
+            if not channel.connect(self):
+                logger.log_warn(f"{self} could not connect to Evennia channel {channel}.")
+            if not channel.access(self, "send"):
+                logger.log_warn(f"{self} doesn't have permission to send messages to Evennia channel {channel}.")
 
-        # connect
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid}
+        # finally, connect
         evennia.SESSION_HANDLER.start_bot_session(self.factory_path, configdict)
 
     def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
