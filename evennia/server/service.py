@@ -673,12 +673,6 @@ class EvenniaServerService(MultiService):
         shutdown or a reset.
 
         """
-        # We need to do this just in case the server was killed in a way where
-        # the normal cleanup operations did not have time to run.
-        from evennia.objects.models import ObjectDB
-
-        ObjectDB.objects.clear_all_sessids()
-
         # Remove non-persistent scripts
         from evennia.scripts.models import ScriptDB
 
