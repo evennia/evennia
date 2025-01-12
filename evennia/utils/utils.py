@@ -2299,7 +2299,22 @@ def calledby(callerdepth=1):
     return "\n".join(out[::-1])
 
 
-def m_len(target, use_display_len=False):
+from evennia.utils.ansi import raw as raw_ansi
+
+def get_real_width(text):
+    """Calculates the real display width of a string, handling CJK characters."""
+    text = raw_ansi(text)
+    width = 0
+    for char in text:
+        if 0x2E80 <= ord(char) <= 0x110000:
+            # East Asian characters(CJK) have double width
+            width += 2
+        elif char not in ['\n', '\t']: # newline and tab are excluded from calculations
+            width += 1
+    return width
+
+
+def m_len(target):
     """
     Provides length checking for strings with MXP patterns, and falls
     back to normal len for other objects.
@@ -2316,8 +2331,8 @@ def m_len(target, use_display_len=False):
     from evennia.utils.ansi import ANSI_PARSER
 
     if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
-    return len(target)
+        return get_real_width(ANSI_PARSER.strip_mxp(target))
+    return get_real_width(target)
 
 
 def display_len(target):
