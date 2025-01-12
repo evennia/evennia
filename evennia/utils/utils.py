@@ -2299,7 +2299,7 @@ def calledby(callerdepth=1):
     return "\n".join(out[::-1])
 
 
-def m_len(target):
+def m_len(target, use_display_len=False):
     """
     Provides length checking for strings with MXP patterns, and falls
     back to normal len for other objects.
