@@ -146,9 +146,9 @@ sent without any line breaks.</p>
 Attributes (like the character’s health). You could also make sure that attacking commands update
 the prompt when they cause a change in health, for example.</p>
 <p>Here is a simple example of the prompt sent/updated from a command class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-    <span class="k">class</span> <span class="nc">CmdDiagnose</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">CmdDiagnose</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        see how hurt your are</span>
 
@@ -160,7 +160,7 @@ the prompt when they cause a change in health, for example.</p>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;diagnose&quot;</span>
         
-        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
             <span class="k">else</span><span class="p">:</span>
@@ -187,11 +187,11 @@ the prompt when they cause a change in health, for example.</p>
 <h2>A prompt with every command<a class="headerlink" href="#a-prompt-with-every-command" title="Permalink to this headline">¶</a></h2>
 <p>The prompt sent as described above uses a standard telnet instruction (the Evennia web client gets a special flag). Most MUD telnet clients will understand and allow users to catch this and keep the prompt in place until it updates. So <em>in principle</em> you’d not need to update the prompt every command.</p>
 <p>However, with a varying user base it can be unclear which clients are used and which skill level the users have. So sending a prompt with every command is a safe catch-all. You don’t need to manually go in and edit every command you have though. Instead you edit the base command class for your custom commands (like <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> in your <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> folder) and overload the <code class="docutils literal notranslate"><span class="pre">at_post_cmd()</span></code> hook. This hook is always called <em>after</em> the main <code class="docutils literal notranslate"><span class="pre">func()</span></code> method of the Command.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="k">class</span> <span class="nc">MuxCommand</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MuxCommand</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_post_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_post_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;called after self.func().&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>        
         <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="si">}</span><span class="s2"> HP, </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mp</span><span class="si">}</span><span class="s2"> MP, </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sp</span><span class="si">}</span><span class="s2"> SP&quot;</span>
@@ -204,12 +204,12 @@ the prompt when they cause a change in health, for example.</p>
 <p>If you want to add something small like this to Evennia’s default commands without modifying them directly the easiest way is to just wrap those with a multiple inheritance to your own base class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in (for example) mygame/commands/mycommands.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 <span class="c1"># our custom MuxCommand with at_post_cmd hook</span>
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
 
 <span class="c1"># overloading the look command</span>
-<span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">):</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
@@ -217,12 +217,12 @@ the prompt when they cause a change in health, for example.</p>
 <code class="docutils literal notranslate"><span class="pre">CmdLook</span></code> through multiple inheritance. Next you just add this to your default command set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">())</span>
 </pre></div>

@@ -146,9 +146,9 @@ You<span class="w"> </span>say<span class="w"> </span><span class="s2">&quot;I g
 <p>To escape the inlinefunc (e.g. to explain to someone how it works, use <code class="docutils literal notranslate"><span class="pre">$$</span></code>)</p>
 <p>While <code class="docutils literal notranslate"><span class="pre">randint</span></code> may look and work just like <code class="docutils literal notranslate"><span class="pre">random.randint</span></code> from the standard Python library, it is <em>not</em>. Instead it’s an <code class="docutils literal notranslate"><span class="pre">inlinefunc</span></code> named <code class="docutils literal notranslate"><span class="pre">randint</span></code> made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable.</p>
 <p>You can apply the <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code>  manually. The parser is initialized with the inlinefunc(s) it’s supposed to recognize in that string. Below is an example of a parser only understanding a single <code class="docutils literal notranslate"><span class="pre">$pow</span></code> inlinefunc:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.funcparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncParser</span>
 
-<span class="k">def</span> <span class="nf">_power_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_power_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This will be callable as $pow(number, power=&lt;num&gt;) in string&quot;&quot;&quot;</span>
     <span class="nb">pow</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="nb">pow</span>
@@ -185,7 +185,7 @@ should see “You” or the character’s name.</p></li>
 </div>
 <p>You can apply inline function parsing to any string. The
 <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">FuncParser</span></a> is imported as <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">funcparser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">funcparser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="n">callables</span><span class="p">,</span> <span class="o">**</span><span class="n">default_kwargs</span><span class="p">)</span>
 <span class="n">parsed_string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -234,7 +234,7 @@ back-reference to the <code class="docutils literal notranslate"><span class="pr
 is the <code class="docutils literal notranslate"><span class="pre">raise_errors</span></code> boolean given to <code class="docutils literal notranslate"><span class="pre">FuncParser.parse</span></code>.</p></li>
 </ul>
 <p>Here’s an example of using the default/reserved keywords:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># do stuff</span>
     <span class="k">return</span> <span class="n">something</span>
 
@@ -253,7 +253,7 @@ The <code class="docutils literal notranslate"><span class="pre">funcparser</spa
 <section id="defining-custom-callables">
 <h2>Defining custom callables<a class="headerlink" href="#defining-custom-callables" title="Permalink to this headline">¶</a></h2>
 <p>All callables made available to the parser must have the following signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># ...</span>
     <span class="k">return</span> <span class="n">something</span>
 </pre></div>
@@ -343,9 +343,9 @@ non-developer players/builders and some things (such as complex
 classes/callables etc) are just not safe/possible to convert from string
 representation.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">evennia.utils.utils</span></code> is a helper called <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.safe_convert_to_types" title="evennia.utils.utils.safe_convert_to_types"><span class="xref myst py py-func">safe_convert_to_types</span></a>. This function automates the conversion of simple data types in a safe way:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">safe_convert_to_types</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_convert_to_types</span>
 
-<span class="k">def</span> <span class="nf">_process_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    $process(expression, local, extra1=34, extra2=foo)</span>
 
@@ -458,15 +458,15 @@ gendering. For example <code class="docutils literal notranslate"><span class="p
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>Here’s an example of including the default callables together with two custom ones.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">funcparser</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">funcparser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gametime</span>
 
-<span class="k">def</span> <span class="nf">_dashline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dashline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">-------- </span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> --------&quot;</span>
     <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-<span class="k">def</span> <span class="nf">_uptime</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_uptime</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">gametime</span><span class="o">.</span><span class="n">uptime</span><span class="p">()</span>
 
 <span class="n">callables</span> <span class="o">=</span> <span class="p">{</span>

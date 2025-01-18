@@ -98,18 +98,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">traceback</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">_SaverSet</span><span class="p">,</span> <span class="n">from_pickle</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.picklefield</span> <span class="kn">import</span> <span class="n">PickledFormField</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.dbserialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">_SaverSet</span><span class="p">,</span> <span class="n">from_pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.picklefield</span><span class="w"> </span><span class="kn">import</span> <span class="n">PickledFormField</span>
 
 
-<div class="viewcode-block" id="AttributeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm">[docs]</a><span class="k">class</span> <span class="nc">AttributeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AttributeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This form overrides the base behavior of the ModelForm that would be used for a Attribute-through-model.</span>
 <span class="sd">    Since the through-models only have access to the foreignkeys of the Attribute and the Object that they&#39;re</span>
@@ -152,10 +152,10 @@
         <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}),</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AttributeForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AttributeForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;attr_key&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_value&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_category&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_lockstring&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_type&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AttributeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If we have an Attribute, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
 <span class="sd">        to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,</span>
@@ -192,7 +192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_type</span> <span class="o">=</span> <span class="n">attr_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_lockstring</span> <span class="o">=</span> <span class="n">attr_lockstring</span></div>
 
-<div class="viewcode-block" id="AttributeForm.save"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeForm.save"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.save">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One thing we want to do here is the or None checks, because forms are saved with an empty</span>
 <span class="sd">        string rather than null from forms, usually, and the Handlers may handle empty strings</span>
@@ -210,7 +210,7 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">attr_lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_lockstring&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">instance</span></div>
 
-<div class="viewcode-block" id="AttributeForm.clean_attr_value"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.clean_attr_value">[docs]</a>    <span class="k">def</span> <span class="nf">clean_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeForm.clean_attr_value"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.clean_attr_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prevent certain data-types from being cleaned due to literal_eval</span>
 <span class="sd">        failing on them. Otherwise they will be turned into str.</span>
@@ -223,13 +223,13 @@
         <span class="k">return</span> <span class="n">data</span></div></div>
 
 
-<div class="viewcode-block" id="AttributeFormSet"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeFormSet">[docs]</a><span class="k">class</span> <span class="nc">AttributeFormSet</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">BaseInlineFormSet</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeFormSet"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeFormSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AttributeFormSet</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">BaseInlineFormSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attribute version of TagFormSet, as above.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AttributeFormSet.save"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeFormSet.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="n">finished_object</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeFormSet.save"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeFormSet.save">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_handler</span><span class="p">(</span><span class="n">finished_object</span><span class="p">):</span>
             <span class="n">related</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">finished_object</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">attrtype</span> <span class="o">=</span> <span class="n">finished_object</span><span class="o">.</span><span class="n">attr_type</span>
@@ -266,7 +266,7 @@
                 <span class="k">continue</span></div></div>
 
 
-<div class="viewcode-block" id="AttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline">[docs]</a><span class="k">class</span> <span class="nc">AttributeInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AttributeInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A handler for inline Attributes. This class should be subclassed in the admin of your models,</span>
 <span class="sd">    and the &#39;model&#39; and &#39;related_field&#39; class attributes must be set. model should be the</span>
@@ -286,7 +286,7 @@
     <span class="c1"># readonly_fields = (&#39;attribute&#39;,)</span>
     <span class="n">extra</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="AttributeInline.get_formset"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline.get_formset">[docs]</a>    <span class="k">def</span> <span class="nf">get_formset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeInline.get_formset"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline.get_formset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_formset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get_formset has to return a class, but we need to make the class that we return</span>
 <span class="sd">        know about the related_field that we&#39;ll use. Returning the class itself rather than</span>
@@ -295,7 +295,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">formset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_formset</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="k">class</span> <span class="nc">ProxyFormset</span><span class="p">(</span><span class="n">formset</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ProxyFormset</span><span class="p">(</span><span class="n">formset</span><span class="p">):</span>
             <span class="k">pass</span>
 
         <span class="n">ProxyFormset</span><span class="o">.</span><span class="n">related_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span>

@@ -95,22 +95,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anything</span><span class="w"> </span><span class="kn">import</span> <span class="n">Anything</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">AuditedServerSession</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditedServerSession</span>
 
 
 <div class="viewcode-block" id="AuditingTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">AUDIT_MASKS</span><span class="o">=</span><span class="p">[])</span>
-<span class="k">class</span> <span class="nc">AuditingTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuditingTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="AuditingTest.setup_session"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.setup_session">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.sessionhandler._ServerSession&quot;</span><span class="p">,</span> <span class="n">AuditedServerSession</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overrides default one in EvenniaTest&quot;&quot;&quot;</span>
         <span class="n">dummysession</span> <span class="o">=</span> <span class="n">AuditedServerSession</span><span class="p">()</span>
         <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">)</span>
@@ -128,7 +128,7 @@
     <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_IN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_OUT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure the &#39;mask&#39; function is properly masking potentially sensitive</span>
 <span class="sd">        information from strings.</span>
@@ -201,7 +201,7 @@
     <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_IN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_OUT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure the &#39;audit&#39; function is returning a dictionary based on values</span>
 <span class="sd">        parsed from the Session object.</span>

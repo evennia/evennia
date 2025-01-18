@@ -159,14 +159,14 @@ but are used for more advanced set manipulation and coding (see the [merge rules
 Sets#merge-rules) section).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/commands/mycmdset.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
 
 <span class="c1"># this is a theoretical custom module with commands we</span>
 <span class="c1"># created previously: mygame/commands/mycommands.py</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The only thing this method should need</span>
 <span class="sd">        to do is to add commands to the set.</span>
@@ -178,7 +178,7 @@ Sets#merge-rules) section).</p>
 </div>
 <p>The CmdSet’s <code class="docutils literal notranslate"><span class="pre">add()</span></code> method can also take another CmdSet as input. In this case all the commands
 from that CmdSet will be appended to this one as if you added them line by line:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">():</span>
         <span class="o">...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AdditionalCmdSet</span><span class="p">)</span> <span class="c1"># adds all command from this set</span>
         <span class="o">...</span>
@@ -455,16 +455,16 @@ sure we merge onto B.  Setting E’s priority to, say, -4 will make sure to merg
 it appropriately.</p>
 </div></blockquote>
 <p>More advanced cmdset example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MyCmdSet&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
     <span class="n">key_mergetypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MyOtherCmdSet&#39;</span><span class="p">:</span><span class="s1">&#39;Union&#39;</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The only thing this method should need</span>
 <span class="sd">        to do is to add commands to the set.</span>

@@ -357,25 +357,25 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
-<span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatch</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span><span class="p">,</span> <span class="n">isfunction</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fnmatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">getfullargspec</span><span class="p">,</span> <span class="n">isfunction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">ceil</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="c1"># i18n</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvColumn</span><span class="p">,</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evtable</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvColumn</span><span class="p">,</span> <span class="n">EvTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">crop</span><span class="p">,</span>
     <span class="n">dedent</span><span class="p">,</span>
     <span class="n">inherits_from</span><span class="p">,</span>
@@ -425,7 +425,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="EvMenuError"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuError">[docs]</a><span class="k">class</span> <span class="nc">EvMenuError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenuError"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvMenuError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error raised by menu when facing internal errors.</span>
 
@@ -434,7 +434,7 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="EvMenuGotoAbortMessage"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuGotoAbortMessage">[docs]</a><span class="k">class</span> <span class="nc">EvMenuGotoAbortMessage</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenuGotoAbortMessage"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuGotoAbortMessage">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvMenuGotoAbortMessage</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This can be raised by a goto-callable to abort the goto flow.  The message</span>
 <span class="sd">    stored with the executable will be sent to the caller who will remain on</span>
@@ -454,7 +454,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdEvMenuNode"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode">[docs]</a><span class="k">class</span> <span class="nc">CmdEvMenuNode</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEvMenuNode"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdEvMenuNode</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Command to handle all user input targeted at the menu while the menu is active.</span>
 
@@ -466,10 +466,10 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Menu&quot;</span>
     <span class="n">auto_help_display_key</span> <span class="o">=</span> <span class="s2">&quot;&lt;menu commands&gt;&quot;</span>
 
-<div class="viewcode-block" id="CmdEvMenuNode.get_help"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEvMenuNode.get_help"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.get_help">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Menu commands are explained within the menu.&quot;</span></div>
 
-    <span class="k">def</span> <span class="nf">_update_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add aliases to make sure to override defaults if we defined we want it.&quot;&quot;&quot;</span>
 
         <span class="n">new_aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">_CMD_NOMATCH</span><span class="p">]</span>
@@ -484,12 +484,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;aliases: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CmdEvMenuNode.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEvMenuNode.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement all menu commands.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
             <span class="c1"># check if there is a saved menu available.</span>
             <span class="c1"># this will re-start a completely new evmenu call.</span>
             <span class="n">saved_options</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_menutree_saved&quot;</span><span class="p">)</span>
@@ -542,7 +542,7 @@
         <span class="n">menu</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EvMenuCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvMenuCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenuCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvMenuCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Menu cmdset replaces the current cmdset.</span>
 
@@ -555,7 +555,7 @@
     <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">no_channels</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="EvMenuCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenuCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when creating the set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -569,7 +569,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="EvMenu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu">[docs]</a><span class="k">class</span> <span class="nc">EvMenu</span><span class="p">:</span>
+<div class="viewcode-block" id="EvMenu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvMenu</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object represents an operational menu. It is initialized from</span>
 <span class="sd">    a menufile.py instruction.</span>
@@ -579,7 +579,7 @@
     <span class="c1"># convenient helpers for easy overloading</span>
     <span class="n">node_border_char</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span>
 
-<div class="viewcode-block" id="EvMenu.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="EvMenu.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">caller</span><span class="p">,</span>
         <span class="n">menudata</span><span class="p">,</span>
@@ -805,7 +805,7 @@
         <span class="c1"># start the menu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_startnode</span><span class="p">,</span> <span class="n">startnode_input</span><span class="p">,</span> <span class="o">**</span><span class="n">startnode_kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_parse_menudata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menudata</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_menudata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menudata</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse a menufile for node functions and store in dictionary</span>
 <span class="sd">        map. Alternatively, accept a pre-made mapping dictionary of</span>
@@ -833,7 +833,7 @@
                 <span class="k">if</span> <span class="n">isfunction</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_format_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node text + option section</span>
 
@@ -861,7 +861,7 @@
         <span class="c1"># format the entire node</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_safe_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_safe_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call a node-like callable, with a variable number of raw_string, *args, **kwargs, all of</span>
 <span class="sd">        which should work also if not present (only `caller` is always required). Return its result.</span>
@@ -897,7 +897,7 @@
 
         <span class="k">return</span> <span class="n">ret</span>
 
-    <span class="k">def</span> <span class="nf">_execute_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a node (-function) and get its returns.</span>
 
@@ -940,7 +940,7 @@
 
         <span class="k">return</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span>
 
-    <span class="k">def</span> <span class="nf">_extract_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">option_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">option_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper: Get callables and their eventual kwargs.</span>
 
@@ -969,7 +969,7 @@
                 <span class="n">goto</span> <span class="o">=</span> <span class="n">goto</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span>
 
-<div class="viewcode-block" id="EvMenu.goto"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename_or_callable</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.goto"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.goto">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename_or_callable</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run a node by name, optionally dynamically generating that name first.</span>
 
@@ -1087,7 +1087,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvMenu.close_menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.close_menu">[docs]</a>    <span class="k">def</span> <span class="nf">close_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.close_menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.close_menu">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shutdown menu; occurs when reaching the end node or using the quit command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1105,7 +1105,7 @@
             <span class="c1"># special for template-generated menues</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_evmenu_template_contents</span></div>
 
-<div class="viewcode-block" id="EvMenu.print_debug_info"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.print_debug_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_debug_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.print_debug_info"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.print_debug_info">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">print_debug_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Messages the caller with the current menu state, for debug purposes.</span>
 
@@ -1164,7 +1164,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">debugtxt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvMenu.msg"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.msg"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a central point for sending return texts to the caller. It</span>
 <span class="sd">        allows for a central point to add custom messaging when creating custom</span>
@@ -1181,7 +1181,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;menu&quot;</span><span class="p">}),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvMenu.parse_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.parse_input">[docs]</a>    <span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.parse_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.parse_input">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses the incoming string from the menu user. This is the entry-point for all input</span>
 <span class="sd">        into the menu.</span>
@@ -1224,18 +1224,18 @@
             <span class="c1"># stay on the current node.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvMenu.display_nodetext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_nodetext">[docs]</a>    <span class="k">def</span> <span class="nf">display_nodetext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.display_nodetext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_nodetext">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_nodetext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodetext</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_helptext">[docs]</a>    <span class="k">def</span> <span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_helptext">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvMenu.display_tooltip"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_tooltip">[docs]</a>    <span class="k">def</span> <span class="nf">display_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.display_tooltip"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_tooltip">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span></div>
 
     <span class="c1"># formatters - override in a child class</span>
 
-<div class="viewcode-block" id="EvMenu.nodetext_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.nodetext_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node text itself.</span>
 
@@ -1248,7 +1248,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dedent</span><span class="p">(</span><span class="n">nodetext</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">baseline_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvMenu.helptext_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.helptext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.helptext_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.helptext_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node&#39;s help text</span>
 
@@ -1261,7 +1261,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dedent</span><span class="p">(</span><span class="n">helptext</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">baseline_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.options_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the option block.</span>
 
@@ -1333,7 +1333,7 @@
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">EvTable</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">cols_list</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvMenu.node_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.node_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.node_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.node_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the entirety of the node.</span>
 
@@ -1369,7 +1369,7 @@
 <span class="c1"># -----------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="list_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.list_node">[docs]</a><span class="k">def</span> <span class="nf">list_node</span><span class="p">(</span><span class="n">option_generator</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="list_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.list_node">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">list_node</span><span class="p">(</span><span class="n">option_generator</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for making an EvMenu node into a multi-page list node. Will add new options,</span>
 <span class="sd">    prepending those options added in the node.</span>
@@ -1429,8 +1429,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">_select_parser</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_select_parser</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Parse the select action</span>
 
@@ -1466,7 +1466,7 @@
             <span class="c1"># this means the previous node will be re-run with these same kwargs</span>
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
 
-        <span class="k">def</span> <span class="nf">_list_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_list_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">option_list</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">option_generator</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">option_generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">option_generator</span>
             <span class="p">)</span>
@@ -1591,7 +1591,7 @@
 <span class="c1"># -------------------------------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdGetInput"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdGetInput">[docs]</a><span class="k">class</span> <span class="nc">CmdGetInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGetInput"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdGetInput">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdGetInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enter your data and press return.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1599,7 +1599,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOMATCH</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">_CMD_NOINPUT</span>
 
-<div class="viewcode-block" id="CmdGetInput.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdGetInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGetInput.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdGetInput.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called when user enters anything.&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1629,7 +1629,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">InputCmdSet</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="InputCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.InputCmdSet">[docs]</a><span class="k">class</span> <span class="nc">InputCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="InputCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.InputCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InputCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This stores the input command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1641,18 +1641,18 @@
     <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">no_channels</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="InputCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.InputCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="InputCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.InputCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;called once at creation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGetInput</span><span class="p">())</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">_Prompt</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Prompt</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dummy holder&quot;&quot;&quot;</span>
 
     <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="get_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.get_input">[docs]</a><span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="get_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.get_input">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a helper function for easily request input from the caller.</span>
 
@@ -1713,7 +1713,7 @@
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CmdYesNoQuestion"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdYesNoQuestion">[docs]</a><span class="k">class</span> <span class="nc">CmdYesNoQuestion</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdYesNoQuestion"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdYesNoQuestion">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdYesNoQuestion</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handle a prompt for yes or no. Press [return] for the default choice.</span>
 
@@ -1723,7 +1723,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">_CMD_NOMATCH</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;abort&quot;</span><span class="p">]</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^$&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span> <span class="ow">and</span> <span class="n">inherits_from</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span>
@@ -1732,7 +1732,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CmdYesNoQuestion.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdYesNoQuestion.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdYesNoQuestion.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdYesNoQuestion.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called when user enters anything.&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1785,7 +1785,7 @@
             <span class="k">raise</span></div></div>
 
 
-<div class="viewcode-block" id="YesNoQuestionCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.YesNoQuestionCmdSet">[docs]</a><span class="k">class</span> <span class="nc">YesNoQuestionCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="YesNoQuestionCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.YesNoQuestionCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">YesNoQuestionCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This stores the input command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1797,12 +1797,12 @@
     <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">no_channels</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="YesNoQuestionCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.YesNoQuestionCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="YesNoQuestionCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.YesNoQuestionCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;called once at creation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdYesNoQuestion</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="ask_yes_no"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.ask_yes_no">[docs]</a><span class="k">def</span> <span class="nf">ask_yes_no</span><span class="p">(</span>
+<div class="viewcode-block" id="ask_yes_no"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.ask_yes_no">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ask_yes_no</span><span class="p">(</span>
     <span class="n">caller</span><span class="p">,</span>
     <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Yes or No </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
     <span class="n">yes_action</span><span class="o">=</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span>
@@ -1858,12 +1858,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_callable_yes_txt</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callable_yes_txt</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">yes_txt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;yes_txt&quot;</span><span class="p">]</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;caller_session&quot;</span><span class="p">]</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">yes_txt</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_callable_no_txt</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callable_no_txt</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">no_txt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;no_txt&quot;</span><span class="p">]</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;caller_session&quot;</span><span class="p">]</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">no_txt</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
@@ -1930,7 +1930,7 @@
 <span class="c1"># nodes read from the menu template.</span>
 
 
-<span class="k">def</span> <span class="nf">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of</span>
 <span class="sd">    the right-hand-side of the template options and map this to an actual</span>
@@ -1974,7 +1974,7 @@
     <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;generated_nodename&quot;</span><span class="p">:</span> <span class="n">goto</span><span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_generated_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generated_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This rerouter handles normal direct goto func call matches.</span>
 
@@ -1987,7 +1987,7 @@
     <span class="k">return</span> <span class="n">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_generated_input_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generated_input_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This goto-func acts as a rerouter for &gt;-type line parsing (by acting as the</span>
 <span class="sd">    _default option). The patterns discovered in the menu maps to different</span>
@@ -2017,7 +2017,7 @@
     <span class="k">raise</span> <span class="n">EvMenuGotoAbortMessage</span><span class="p">(</span><span class="n">_HELP_NO_OPTION_MATCH</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_generated_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generated_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Every node in the templated menu will be this node, but with dynamically</span>
 <span class="sd">    changing text/options. It must be a global function like this because</span>
@@ -2028,7 +2028,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="parse_menu_template"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.parse_menu_template">[docs]</a><span class="k">def</span> <span class="nf">parse_menu_template</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_menu_template"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.parse_menu_template">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_menu_template</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse menu-template string. The main function of the EvMenu templating system.</span>
 
@@ -2044,7 +2044,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_validate_kwarg</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">kwarg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_kwarg</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">kwarg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate goto-callable kwarg is on correct form.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2069,7 +2069,7 @@
                 <span class="s2">&quot;system. Rename the kwarg.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_parse_options</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">optiontxt</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_options</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">optiontxt</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse option section into option dict.</span>
 
@@ -2147,7 +2147,7 @@
 
         <span class="k">return</span> <span class="n">options</span>
 
-    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the menu string format into a node tree.</span>
 
@@ -2171,7 +2171,7 @@
     <span class="k">return</span> <span class="n">_parse</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="template2menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.template2menu">[docs]</a><span class="k">def</span> <span class="nf">template2menu</span><span class="p">(</span>
+<div class="viewcode-block" id="template2menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.template2menu">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">template2menu</span><span class="p">(</span>
     <span class="n">caller</span><span class="p">,</span>
     <span class="n">menu_template</span><span class="p">,</span>
     <span class="n">goto_callables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

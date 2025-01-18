@@ -160,12 +160,12 @@
 <p>To allow players to check their achievements, you’ll also want to add the <code class="docutils literal notranslate"><span class="pre">achievements</span></code> command to your default Character and/or Account command sets.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in commands/default_cmdsets.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements.achievements</span> <span class="kn">import</span> <span class="n">CmdAchieve</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.achievements.achievements</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdAchieve</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAchieve</span><span class="p">)</span>
 </pre></div>
@@ -276,12 +276,12 @@
 <p>Adding achievement tracking to it could then look something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">track_achievements</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contrib.game_systems.achievements</span><span class="w"> </span><span class="kn">import</span> <span class="n">track_achievements</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
     <span class="c1"># ....</span>
 
-    <span class="k">def</span> <span class="nf">at_defeated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">victor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_defeated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">victor</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;called when this object is defeated in combat&quot;&quot;&quot;</span>
         <span class="c1"># we&#39;ll use the &quot;mob_type&quot; tag-category as the tracked info</span>
         <span class="c1"># this way we can have rats named &quot;black rat&quot; and &quot;brown rat&quot; that are both rats</span>
@@ -293,12 +293,12 @@
 <p>If a player defeats something tagged <code class="docutils literal notranslate"><span class="pre">rat</span></code> with a tag category of <code class="docutils literal notranslate"><span class="pre">mob_type</span></code>, it’d now count towards the rat-killing achievement.</p>
 <p>You can also have the tracking information hard-coded into your game, for special or unique situations. The achievement described earlier, <code class="docutils literal notranslate"><span class="pre">FIRST_LOGIN_ACHIEVE</span></code>, for example, would be tracked like this:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># in typeclasses/accounts.py</span>
-<span class="kn">from</span> <span class="nn">contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">track_achievements</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contrib.game_systems.achievements</span><span class="w"> </span><span class="kn">import</span> <span class="n">track_achievements</span>
 
-<span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Account</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">at_first_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_first_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># this function is only called on the first time the account logs in</span>
         <span class="c1"># so we already know and can just tell the tracker that this is the first</span>
         <span class="n">track_achievements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;login&quot;</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span>
@@ -317,9 +317,9 @@
 </section>
 <section id="example">
 <h4>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">get_achievement</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.achievements</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_achievement</span>
 
-<span class="k">def</span> <span class="nf">toast</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">completed_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">toast</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">completed_list</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">completed_list</span><span class="p">:</span>
         <span class="c1"># `completed_data` will be a list of dictionaries - unrecognized keys return empty dictionaries</span>
         <span class="n">completed_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_achievement</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
@@ -336,7 +336,7 @@
 <h4>Example:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <p>The first example does a search for “fruit”, which returns the fruit medley achievement as it contains “fruit” in the key and name.</p>
 <p>The second example searches for “usual”, which returns the ten rats achievement due to its display name.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.achievements</span> <span class="kn">import</span> <span class="n">search_achievement</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.achievements</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_achievement</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">search_achievement</span><span class="p">(</span><span class="s2">&quot;fruit&quot;</span><span class="p">)</span>
 <span class="go">{&#39;fruit_basket_achievement&#39;: {&#39;name&#39;: &#39;Fruit Basket&#39;, &#39;desc&#39;: &quot;One kind of fruit just isn&#39;t enough.&quot;, &#39;category&#39;: &#39;buy&#39;, &#39;tracking&#39;: (&#39;apple&#39;, &#39;orange&#39;, &#39;pear&#39;), &#39;count&#39;: 5, &#39;tracking_type&#39;: &#39;separate&#39;}}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">search_achievement</span><span class="p">(</span><span class="s2">&quot;usual&quot;</span><span class="p">)</span>

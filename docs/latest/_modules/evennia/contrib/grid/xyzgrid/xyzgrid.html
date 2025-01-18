@@ -109,21 +109,21 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.scripts</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">variable_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.xymap</span> <span class="kn">import</span> <span class="n">XYMap</span>
-<span class="kn">from</span> <span class="nn">.xyzroom</span> <span class="kn">import</span> <span class="n">XYZExit</span><span class="p">,</span> <span class="n">XYZRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.xymap</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYMap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.xyzroom</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZExit</span><span class="p">,</span> <span class="n">XYZRoom</span>
 
 
-<div class="viewcode-block" id="XYZGrid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid">[docs]</a><span class="k">class</span> <span class="nc">XYZGrid</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">XYZGrid</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main grid class. This organizes the Maps based on their name/Z-coordinate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="XYZGrid.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        What we store persistently is data used to create each map (the legends, names etc)</span>
 
@@ -132,12 +132,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Manages maps for XYZ-grid&quot;</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">grid</span>
 
-<div class="viewcode-block" id="XYZGrid.get_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.get_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_map">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a specific xymap.</span>
 
@@ -150,7 +150,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">zcoord</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZGrid.all_maps"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.all_maps">[docs]</a>    <span class="k">def</span> <span class="nf">all_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.all_maps"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.all_maps">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all xymaps stored in the grid.</span>
 
@@ -160,10 +160,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="XYZGrid.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|grid| </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZGrid.get_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_room">[docs]</a>    <span class="k">def</span> <span class="nf">get_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.get_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_room">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get one or more room objects from XYZ coordinate.</span>
 
@@ -183,7 +183,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZGrid.get_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.get_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get one or more exit object at coordinate.</span>
 
@@ -200,7 +200,7 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">return</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz_exit</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZGrid.maps_from_module"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module">[docs]</a>    <span class="k">def</span> <span class="nf">maps_from_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_path</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.maps_from_module"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">maps_from_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load map data from module. The loader will look for a dict XYMAP_DATA or a list of</span>
 <span class="sd">        XYMAP_DATA_LIST (a list of XYMAP_DATA dicts). Each XYMAP_DATA dict should contain</span>
@@ -225,7 +225,7 @@
             <span class="n">mapdata</span><span class="p">[</span><span class="s2">&quot;module_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_path</span>
         <span class="k">return</span> <span class="n">map_data_list</span></div>
 
-<div class="viewcode-block" id="XYZGrid.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload and rebuild the grid. This is done on a server reload.</span>
 
@@ -275,7 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded and linked </span><span class="si">{</span><span class="n">nmaps</span><span class="si">}</span><span class="s2"> map(s).&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="XYZGrid.add_maps"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.add_maps">[docs]</a>    <span class="k">def</span> <span class="nf">add_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">mapdatas</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.add_maps"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.add_maps">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">mapdatas</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add map or maps to the grid.</span>
 
@@ -298,7 +298,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapdata</span></div>
 
-<div class="viewcode-block" id="XYZGrid.remove_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.remove_map">[docs]</a>    <span class="k">def</span> <span class="nf">remove_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">zcoords</span><span class="p">,</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.remove_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.remove_map">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">zcoords</span><span class="p">,</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove an XYmap from the grid.</span>
 
@@ -318,7 +318,7 @@
                     <span class="n">xyzroom</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="XYZGrid.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.delete">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the entire grid, including database entities, then the grid too.</span>
 
@@ -328,7 +328,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_map</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">zcoord</span> <span class="k">for</span> <span class="n">zcoord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">),</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="XYZGrid.spawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn">[docs]</a>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.spawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create/recreate/update the in-game grid based on the stored Maps or for a specific Map</span>
 <span class="sd">        or coordinate.</span>
@@ -369,7 +369,7 @@
             <span class="n">xymap</span><span class="o">.</span><span class="n">spawn_links</span><span class="p">(</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="n">directions</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="get_xyzgrid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid">[docs]</a><span class="k">def</span> <span class="nf">get_xyzgrid</span><span class="p">(</span><span class="n">print_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="get_xyzgrid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_xyzgrid</span><span class="p">(</span><span class="n">print_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for getting the grid. This will create the XYZGrid global script if it didn&#39;t</span>
 <span class="sd">    previously exist.</span>

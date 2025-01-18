@@ -94,11 +94,11 @@
 <span class="sd">The report-management menu module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">datetime_format</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">datetime_format</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span>
 
 <span class="c1"># the number of reports displayed on each page</span>
 <span class="n">_REPORTS_PER_PAGE</span> <span class="o">=</span> <span class="mi">10</span>
@@ -113,7 +113,7 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="menunode_list_reports"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_list_reports">[docs]</a><span class="k">def</span> <span class="nf">menunode_list_reports</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="menunode_list_reports"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_list_reports">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menunode_list_reports</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Paginates and lists out reports for the provided hub&quot;&quot;&quot;</span>
     <span class="n">hub</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">hub</span>
     <span class="n">hub_name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hub</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
@@ -182,7 +182,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="menunode_choose_filter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_choose_filter">[docs]</a><span class="k">def</span> <span class="nf">menunode_choose_filter</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="menunode_choose_filter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_choose_filter">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menunode_choose_filter</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;apply or clear a status filter to the main report view&quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;View which reports?&quot;</span>
     <span class="c1"># options for all the possible statuses</span>
@@ -195,7 +195,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<span class="k">def</span> <span class="nf">_report_toggle_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_report_toggle_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;goto callable to toggle a status tag on or off&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="n">report</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
@@ -204,7 +204,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;menunode_manage_report&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;report&quot;</span><span class="p">:</span> <span class="n">report</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="menunode_manage_report"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_manage_report">[docs]</a><span class="k">def</span> <span class="nf">menunode_manage_report</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="menunode_manage_report"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.menu.html#evennia.contrib.base_systems.ingame_reports.menu.menunode_manage_report">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menunode_manage_report</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read out the full report text and targets, and allow for changing the report&#39;s status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -90,11 +90,11 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.game_systems.achievements.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">BaseEvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">achievements</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">achievements</span>
 
 <span class="n">_dummy_achievements</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;ACHIEVE_ONE&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -128,12 +128,12 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="TestAchievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchievements">[docs]</a><span class="k">class</span> <span class="nc">TestAchievements</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestAchievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchievements">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestAchievements</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestAchievements.test_completion"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchievements.test_completion">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span>
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;no defined count means a single match completes it&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
             <span class="s2">&quot;ACHIEVE_ONE&quot;</span><span class="p">,</span>
@@ -144,7 +144,7 @@
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_counter_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_counter_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;progressing a counter should update the achiever&quot;&quot;&quot;</span>
         <span class="c1"># this should not complete any achievements; verify it returns the right empty result</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">achievements</span><span class="o">.</span><span class="n">track_achievements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;thing&quot;</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">())</span>
@@ -164,7 +164,7 @@
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_prereqs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_prereqs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;verify progress is not counted on achievements with unmet prerequisites&quot;&quot;&quot;</span>
         <span class="n">achievements</span><span class="o">.</span><span class="n">track_achievements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;thing&quot;</span><span class="p">)</span>
         <span class="c1"># this should mark progress on COUNTING_ACHIEVE, but NOT on COUNTING_TWO</span>
@@ -187,7 +187,7 @@
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_separate_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_separate_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;achievements with &#39;tracking_type&#39;: &#39;separate&#39; should count progress for each item&quot;&quot;&quot;</span>
         <span class="c1"># getting one item only increments that one item</span>
         <span class="n">achievements</span><span class="o">.</span><span class="n">track_achievements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;apple&quot;</span><span class="p">)</span>
@@ -210,18 +210,18 @@
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_search_achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;searching for achievements by name&quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">achievements</span><span class="o">.</span><span class="n">search_achievement</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">([</span><span class="s2">&quot;COUNTING_ACHIEVE&quot;</span><span class="p">,</span> <span class="s2">&quot;COUNTING_TWO&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div></div>
 
 
-<div class="viewcode-block" id="TestAchieveCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchieveCommand">[docs]</a><span class="k">class</span> <span class="nc">TestAchieveCommand</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestAchieveCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchieveCommand">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestAchieveCommand</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestAchieveCommand.test_switches"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.tests.html#evennia.contrib.game_systems.achievements.tests.TestAchieveCommand.test_switches">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span>
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_switches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_switches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># print only achievements that have no prereqs</span>
         <span class="n">expected_output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;desc&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">Not Started&quot;</span>
@@ -256,7 +256,7 @@
         <span class="s2">&quot;evennia.contrib.game_systems.achievements.achievements._ACHIEVEMENT_DATA&quot;</span><span class="p">,</span>
         <span class="n">_dummy_achievements</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># by default, only returns matching items that are trackable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">achievements</span><span class="o">.</span><span class="n">CmdAchieve</span><span class="p">(),</span>

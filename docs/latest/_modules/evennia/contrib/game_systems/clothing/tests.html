@@ -95,16 +95,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">clothing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">clothing</span>
 
 
-<div class="viewcode-block" id="TestClothingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd">[docs]</a><span class="k">class</span> <span class="nc">TestClothingCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestClothingCmd.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestClothingCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wearer&quot;</span><span class="p">)</span>
@@ -118,7 +118,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A test scarf.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;accessory&quot;</span></div>
 
-<div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Test inventory command with no items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
@@ -198,7 +198,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You uncover test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestClothingCmd.test_clothing_limits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothing_limits">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothing_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd.test_clothing_limits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothing_limits">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_clothing_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make sure clothing type limits are being enforced</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -218,8 +218,8 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestClothingFunc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc">[docs]</a><span class="k">class</span> <span class="nc">TestClothingFunc</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestClothingFunc.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingFunc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestClothingFunc</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingFunc.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wearer&quot;</span><span class="p">)</span>
@@ -237,7 +237,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">test_pants</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_pants</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span></div>
 
-<div class="viewcode-block" id="TestClothingFunc.test_clothingfunctions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc.test_clothingfunctions">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingfunctions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingFunc.test_clothingfunctions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc.test_clothingfunctions">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_clothingfunctions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span> <span class="s2">&quot;on the head&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">,</span> <span class="s2">&quot;on the head&quot;</span><span class="p">)</span>
 

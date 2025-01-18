@@ -94,31 +94,31 @@
 <span class="sd">Scripts for the in-game Python system.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Queue</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultScript</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.callbackhandler</span> <span class="kn">import</span> <span class="n">CallbackHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultScript</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.callbackhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EVENTS</span><span class="p">,</span>
     <span class="n">InterruptEvent</span><span class="p">,</span>
     <span class="n">get_next_wait</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">pypath_to_realpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_channel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.dbserialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbserialize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">pypath_to_realpath</span>
 
 <span class="c1"># Constants</span>
 <span class="n">RE_LINE_ERROR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^  File &quot;\&lt;string\&gt;&quot;, line (\d+)&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EventHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler">[docs]</a><span class="k">class</span> <span class="nc">EventHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EventHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The event handler that contains all events in a global script.</span>
 
@@ -129,7 +129,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EventHandler.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook called when the script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;event_handler&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Global event handler&quot;</span>
@@ -144,7 +144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EventHandler.at_server_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.at_server_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_server_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up the event system when starting.</span>
 
 <span class="sd">        Note that this hook is called every time the server restarts</span>
@@ -182,7 +182,7 @@
             <span class="n">delay</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">complete_task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
 
         <span class="c1"># Place the script in the CallbackHandler</span>
-        <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python</span> <span class="kn">import</span> <span class="n">typeclasses</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python</span><span class="w"> </span><span class="kn">import</span> <span class="n">typeclasses</span>
 
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">DefaultObject</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="n">typeclasses</span><span class="o">.</span><span class="n">EventObject</span><span class="o">.</span><span class="n">callbacks</span>
@@ -197,7 +197,7 @@
                 <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;control:false();listen:perm(Builders);send:false()&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventHandler.get_events"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_events">[docs]</a>    <span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.get_events"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_events">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dictionary of events on this object.</span>
 
@@ -244,7 +244,7 @@
 
         <span class="k">return</span> <span class="n">events</span></div>
 
-<div class="viewcode-block" id="EventHandler.get_variable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.get_variable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_variable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the variable defined in the locals.</span>
 
@@ -269,7 +269,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventHandler.get_callbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.get_callbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dictionary of the object&#39;s callbacks.</span>
 
@@ -300,7 +300,7 @@
 
         <span class="k">return</span> <span class="n">callbacks</span></div>
 
-<div class="viewcode-block" id="EventHandler.add_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.add_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add the specified callback.</span>
 
@@ -353,7 +353,7 @@
         <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">definition</span></div>
 
-<div class="viewcode-block" id="EventHandler.edit_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.edit_callback">[docs]</a>    <span class="k">def</span> <span class="nf">edit_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.edit_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.edit_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">edit_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Edit the specified callback.</span>
 
@@ -404,7 +404,7 @@
         <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">number</span>
         <span class="k">return</span> <span class="n">definition</span></div>
 
-<div class="viewcode-block" id="EventHandler.del_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.del_callback">[docs]</a>    <span class="k">def</span> <span class="nf">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.del_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.del_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the specified callback.</span>
 
@@ -466,7 +466,7 @@
                     <span class="k">elif</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;</span> <span class="n">number</span><span class="p">:</span>
                         <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">-=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EventHandler.accept_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.accept_callback">[docs]</a>    <span class="k">def</span> <span class="nf">accept_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.accept_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.accept_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">accept_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Valid a callback.</span>
 
@@ -484,7 +484,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EventHandler.call"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.call"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.call">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the connected callbacks.</span>
 
@@ -564,7 +564,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EventHandler.handle_error"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.handle_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.handle_error"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.handle_error">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle an error in a callback.</span>
 
@@ -623,7 +623,7 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventHandler.add_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_event">[docs]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.add_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new event for a defined typeclass.</span>
 
@@ -645,7 +645,7 @@
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
             <span class="n">events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventHandler.set_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.set_task">[docs]</a>    <span class="k">def</span> <span class="nf">set_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.set_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.set_task">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set and schedule a task to run.</span>
 
@@ -690,10 +690,10 @@
 
 
 <span class="c1"># Script to call time-related events</span>
-<div class="viewcode-block" id="TimeEventScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript">[docs]</a><span class="k">class</span> <span class="nc">TimeEventScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeEventScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TimeEventScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gametime-sensitive script.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TimeEventScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeEventScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
@@ -703,7 +703,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">event_name</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TimeEventScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeEventScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_repeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the event and reset interval.</span>
 
@@ -738,7 +738,7 @@
 
 
 <span class="c1"># Functions to manipulate tasks</span>
-<div class="viewcode-block" id="complete_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.complete_task">[docs]</a><span class="k">def</span> <span class="nf">complete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
+<div class="viewcode-block" id="complete_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.complete_task">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">complete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mark the task in the event handler as complete.</span>
 

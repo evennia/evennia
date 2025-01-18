@@ -198,7 +198,7 @@ sections).</p>
 
 <span class="c1"># search through Evennia&#39;s GLOBAL_SCRIPTS container (based on</span>
 <span class="c1"># script&#39;s key only)</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 
 <span class="n">myscript</span> <span class="o">=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">myscript</span>
 <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timed script&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
@@ -220,13 +220,13 @@ sections).</p>
 can use this as a base for your own scripts.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
-<span class="k">class</span> <span class="nc">Script</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Script</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="c1"># stuff common for all your scripts goes here</span>
 
-<span class="k">class</span> <span class="nc">MyScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once, when script is first created&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;myscript&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
@@ -260,14 +260,14 @@ you set in your <code class="docutils literal notranslate"><span class="pre">at_
 <p>There are several properties one can set on the Script to control its timer component.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
 
-<span class="k">class</span> <span class="nc">TimerScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimerScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;myscript&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;An example script&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 1 min repeat</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># do stuff every minute</span>
 
 </pre></div>
@@ -327,20 +327,20 @@ If so, the ‘parent object’ will be available to the script as either <code c
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py</span>
     <span class="c1"># Script class is defined at the top of this module</span>
 
-    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-    <span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A timer script that displays weather info. Meant to</span>
 <span class="sd">        be attached to a room.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;weather_script&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Gives random weather messages.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># every 5 minutes</span>
 
-        <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;called every self.interval seconds.&quot;</span>
             <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
@@ -394,13 +394,13 @@ it will also stop the timer (if it runs), leading to the <code class="docutils l
 <h3>Dealing with Script Errors<a class="headerlink" href="#dealing-with-script-errors" title="Permalink to this headline">¶</a></h3>
 <p>Errors inside a timed, executing script can sometimes be rather terse or point to parts of the execution mechanism that is hard to interpret. One way to make it easier to debug scripts is to import Evennia’s native logger and wrap your functions in a try/catch block. Evennia’s logger can show you where the traceback occurred in your script.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 
-<span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
 
     <span class="c1"># [...]</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># [...]</span>
@@ -416,7 +416,7 @@ it will also stop the timer (if it runs), leading to the <code class="docutils l
 to access from anywhere. This means they need to be searched for in order to be used.</p>
 <p>Evennia supplies a convenient “container” <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code> to help organize your global
 scripts. All you need is the Script’s <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 
 <span class="c1"># access as a property on the container, named the same as the key</span>
 <span class="n">my_script</span> <span class="o">=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">my_script</span>
@@ -462,7 +462,7 @@ script keys are globally unique.</p></li>
 <p>Before setting up Evennia to manage your script like this, make sure that your Script typeclass does not have any critical errors (test it separately). If there are, you’ll see errors in your log and your Script will temporarily fall back to being a <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code> type.</p>
 </div>
 <p>Moreover, a script defined this way is <em>guaranteed</em> to exist when you try to access it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 <span class="c1"># Delete the script</span>
 <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">storagescript</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="c1"># running the `scripts` command now will show no storagescript</span>

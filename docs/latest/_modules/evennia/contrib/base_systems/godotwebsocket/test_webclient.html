@@ -90,38 +90,38 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.godotwebsocket.test_webclient</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.godotwebsocket.webclient</span> <span class="kn">import</span> <span class="n">start_plugin_services</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.amp_server</span> <span class="kn">import</span> <span class="n">AMPServerFactory</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.godotwebsocket.webclient</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_plugin_services</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.amp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">AMPServerFactory</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.utils.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">unittest</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unittest</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">unittest</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">import</span> <span class="nn">mock</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="kn">import</span> <span class="n">DelayedCall</span>
-<span class="kn">from</span> <span class="nn">twisted.test</span> <span class="kn">import</span> <span class="n">proto_helpers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">proto_helpers</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PortalSessionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.service</span> <span class="kn">import</span> <span class="n">EvenniaPortalService</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.portalsessionhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">PortalSessionHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaPortalService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 
-<div class="viewcode-block" id="TestGodotWebSocketClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">TestGodotWebSocketClient</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGodotWebSocketClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestGodotWebSocketClient</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestGodotWebSocketClient.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.setUp">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span>
         <span class="n">GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">GODOT_CLIENT_WEBSOCKET_PORT</span><span class="o">=</span><span class="s2">&quot;8988&quot;</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">EvenniaPortalService</span><span class="p">()</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span>
@@ -149,7 +149,7 @@
         <span class="n">DelayedCall</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="TestGodotWebSocketClient.test_data_in"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.test_data_in">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portalsessionhandler.reactor&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onOpen</span><span class="p">()</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="s2">&quot;logged_in&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{}])</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
@@ -162,7 +162,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestGodotWebSocketClient.test_data_out"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.test_data_out">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portalsessionhandler.reactor&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onOpen</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sendLine</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;|rRed Text|n&quot;</span><span class="p">],</span> <span class="p">{}])</span>

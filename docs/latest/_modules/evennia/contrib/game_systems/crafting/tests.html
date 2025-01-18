@@ -95,19 +95,19 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">mock</span>
 
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">override_settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTestCase</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">crafting</span><span class="p">,</span> <span class="n">example_recipes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">crafting</span><span class="p">,</span> <span class="n">example_recipes</span>
 
 
-<div class="viewcode-block" id="TestCraftUtils"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils">[docs]</a><span class="k">class</span> <span class="nc">TestCraftUtils</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftUtils"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestCraftUtils</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test helper utils for crafting.</span>
 
@@ -116,7 +116,7 @@
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TestCraftUtils.test_load_recipes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils.test_load_recipes">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="o">=</span><span class="p">[])</span>
-    <span class="k">def</span> <span class="nf">test_load_recipes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_load_recipes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This should only load the example module now&quot;&quot;&quot;</span>
 
         <span class="n">crafting</span><span class="o">.</span><span class="n">_load_recipes</span><span class="p">()</span>
@@ -139,20 +139,20 @@
         <span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">_TestMaterial</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_TestMaterial</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 
-<div class="viewcode-block" id="TestCraftingRecipeBase"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase">[docs]</a><span class="k">class</span> <span class="nc">TestCraftingRecipeBase</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestCraftingRecipeBase</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the parent recipe class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -166,24 +166,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp3</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.test_msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_msg">[docs]</a>    <span class="k">def</span> <span class="nf">test_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.test_msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test messaging to crafter&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">}))</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.test_pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft">[docs]</a>    <span class="k">def</span> <span class="nf">test_pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.test_pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test validating hook&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">pre_craft</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">validated_inputs</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inp1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inp3</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.test_pre_craft_fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft_fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_pre_craft_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.test_pre_craft_fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft_fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_pre_craft_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Should rase error if validation fails&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">allow_craft</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">crafting</span><span class="o">.</span><span class="n">CraftingValidationError</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">pre_craft</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.test_craft_hook__succeed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__succeed">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_hook__succeed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.test_craft_hook__succeed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__succeed">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_hook__succeed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test craft hook, the main access method.&quot;&quot;&quot;</span>
 
         <span class="n">expected_result</span> <span class="o">=</span> <span class="n">_TestMaterial</span><span class="p">(</span><span class="s2">&quot;test_result&quot;</span><span class="p">)</span>
@@ -203,7 +203,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">crafting</span><span class="o">.</span><span class="n">CraftingError</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipeBase.test_craft_hook__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_hook__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipeBase.test_craft_hook__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_hook__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test failing the call&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">do_craft</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -218,7 +218,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">_MockRecipe</span><span class="p">(</span><span class="n">crafting</span><span class="o">.</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_MockRecipe</span><span class="p">(</span><span class="n">crafting</span><span class="o">.</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;testrecipe&quot;</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tool1&quot;</span><span class="p">,</span> <span class="s2">&quot;tool2&quot;</span><span class="p">]</span>
     <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cons1&quot;</span><span class="p">,</span> <span class="s2">&quot;cons2&quot;</span><span class="p">,</span> <span class="s2">&quot;cons3&quot;</span><span class="p">]</span>
@@ -232,14 +232,14 @@
 
 
 <div class="viewcode-block" id="TestCraftingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="o">=</span><span class="p">[])</span>
-<span class="k">class</span> <span class="nc">TestCraftingRecipe</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCraftingRecipe</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the CraftingRecipe class with one recipe</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TestCraftingRecipe.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -249,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;cons2&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;cons2&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;cons3&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;cons3&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.tearDown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
@@ -259,7 +259,7 @@
         <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_error_format"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_error_format">[docs]</a>    <span class="k">def</span> <span class="nf">test_error_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_error_format"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_error_format">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_error_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the automatic error formatter&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span>
@@ -287,7 +287,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">_format_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">expected</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft__success">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft__success">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test to create a result from the recipe&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span>
@@ -309,7 +309,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_seed__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_seed__success">[docs]</a>    <span class="k">def</span> <span class="nf">test_seed__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_seed__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_seed__success">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_seed__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test seed helper classmethod&quot;&quot;&quot;</span>
 
         <span class="c1"># needed for other dbs to pass seed</span>
@@ -337,7 +337,7 @@
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_tool__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_tool__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_missing_tool__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_tool__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_tool__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_missing_tool__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail craft by missing tool2&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
@@ -357,7 +357,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_cons__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_missing_cons__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_cons__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_missing_cons__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail craft by missing cons3&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
@@ -377,7 +377,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_cons__always_consume__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__always_consume__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_missing_cons__always_consume__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_missing_cons__always_consume__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__always_consume__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_missing_cons__always_consume__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail craft by missing cons3, with always-consume flag&quot;&quot;&quot;</span>
 
         <span class="n">cons4</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;cons4&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;cons4&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -406,7 +406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_wrong_tool__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_wrong_tool__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_wrong_tool__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_wrong_tool__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_wrong_tool__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_wrong_tool__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail craft by including a wrong tool&quot;&quot;&quot;</span>
 
         <span class="n">wrong</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;wrong&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;wrongtool&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_tool&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -430,7 +430,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_excess__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_tool_excess__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_excess__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_tool_excess__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail by too many consumables&quot;&quot;&quot;</span>
 
         <span class="c1"># note that this is a valid tag!</span>
@@ -459,7 +459,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">tool3</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_excess__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_cons_excess__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_excess__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_cons_excess__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fail by too many consumables&quot;&quot;&quot;</span>
 
         <span class="c1"># note that this is a valid tag!</span>
@@ -488,7 +488,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_excess__sucess"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__sucess">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_tool_excess__sucess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_excess__sucess"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__sucess">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_tool_excess__sucess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow too many consumables&quot;&quot;&quot;</span>
 
         <span class="n">tool3</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;tool3&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;tool2&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_tool&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -511,7 +511,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_excess__sucess"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__sucess">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_cons_excess__sucess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_excess__sucess"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__sucess">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_cons_excess__sucess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow too many consumables&quot;&quot;&quot;</span>
 
         <span class="n">cons4</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;cons4&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;cons3&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -534,7 +534,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_order__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_order__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_tool_order__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_tool_order__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_order__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_tool_order__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Strict tool-order recipe fail&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span>
@@ -559,7 +559,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_order__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_order__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft_cons_order__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftingRecipe.test_craft_cons_order__fail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_order__fail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_cons_order__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Strict tool-order recipe fail&quot;&quot;&quot;</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons1</span>
@@ -585,19 +585,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestCraftSword"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword">[docs]</a><span class="k">class</span> <span class="nc">TestCraftSword</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftSword"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestCraftSword</span><span class="p">(</span><span class="n">BaseEvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the `craft` function by crafting the example sword.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestCraftSword.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftSword.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestCraftSword.test_craft_sword"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword.test_craft_sword">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="o">=</span><span class="p">[],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#999999&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.game_systems.crafting.example_recipes.random&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_craft_sword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mockrandom</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft_sword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mockrandom</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Craft example sword. For the test, every crafting works.</span>
 
@@ -605,11 +605,11 @@
         <span class="c1"># make sure every craft succeeds</span>
         <span class="n">mockrandom</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_co</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tagkey</span><span class="p">,</span> <span class="n">is_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_co</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tagkey</span><span class="p">,</span> <span class="n">is_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="n">tagcat</span> <span class="o">=</span> <span class="s2">&quot;crafting_tool&quot;</span> <span class="k">if</span> <span class="n">is_tool</span> <span class="k">else</span> <span class="s2">&quot;crafting_material&quot;</span>
             <span class="k">return</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">)],</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_craft</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_craft</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;shortcut to shorten and return only one element&quot;&quot;&quot;</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">crafting</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
@@ -769,17 +769,17 @@
     <span class="n">new</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;testrecipe&quot;</span><span class="p">:</span> <span class="n">_MockRecipe</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="nd">@override_settings</span><span class="p">(</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="o">=</span><span class="p">[])</span>
-<span class="k">class</span> <span class="nc">TestCraftCommand</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCraftCommand</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the crafting command&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestCraftCommand.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftCommand.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span>
             <span class="n">tool_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">},</span> <span class="n">consumable_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftCommand.test_craft__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__success">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftCommand.test_craft__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__success">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Successfully craft using command&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
@@ -787,7 +787,7 @@
             <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftCommand.test_craft__notools__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__notools__failure">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__notools__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftCommand.test_craft__notools__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__notools__failure">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft__notools__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Craft fail no tools&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
@@ -795,14 +795,14 @@
             <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">error_tool_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;tool1&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftCommand.test_craft__nocons__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__nocons__failure">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__nocons__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftCommand.test_craft__nocons__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__nocons__failure">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft__nocons__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
             <span class="s2">&quot;testrecipe using tool1, tool2&quot;</span><span class="p">,</span>
             <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons1&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCraftCommand.test_craft__unknown_recipe__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__unknown_recipe__failure">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__unknown_recipe__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCraftCommand.test_craft__unknown_recipe__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__unknown_recipe__failure">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_craft__unknown_recipe__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
             <span class="s2">&quot;nonexistent from cons1, cons2, cons3 using tool1, tool2&quot;</span><span class="p">,</span>

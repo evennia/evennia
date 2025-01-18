@@ -95,17 +95,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">get_bare_hands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">get_bare_hands</span>
 
 
-<div class="viewcode-block" id="EquipmentError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentError">[docs]</a><span class="k">class</span> <span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="EquipmentHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler">[docs]</a><span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="EquipmentHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    _Knave_ puts a lot of emphasis on the inventory. You have CON_DEFENSE inventory</span>
 <span class="sd">    slots. Some things, like torches can fit multiple in one slot, other (like</span>
@@ -120,11 +120,11 @@
 
     <span class="n">save_attribute</span> <span class="o">=</span> <span class="s2">&quot;inventory_slots&quot;</span>
 
-<div class="viewcode-block" id="EquipmentHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load or create a new slot storage.</span>
 
@@ -145,14 +145,14 @@
             <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
         <span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save slot to storage.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_attribute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inventory&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EquipmentHandler.count_slots"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.count_slots">[docs]</a>    <span class="k">def</span> <span class="nf">count_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.count_slots"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.count_slots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">count_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count slot usage. This is fetched from the .size Attribute of the</span>
 <span class="sd">        object. The size can also be partial slots.</span>
@@ -170,7 +170,7 @@
         <span class="k">return</span> <span class="n">wield_usage</span> <span class="o">+</span> <span class="n">backpack_usage</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The max amount of equipment slots (&#39;carrying capacity&#39;) is based on</span>
 <span class="sd">        the constitution defense.</span>
@@ -178,7 +178,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>
 
-<div class="viewcode-block" id="EquipmentHandler.validate_slot_usage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.validate_slot_usage">[docs]</a>    <span class="k">def</span> <span class="nf">validate_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.validate_slot_usage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.validate_slot_usage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">validate_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if obj can fit in equipment, based on its size.</span>
 
@@ -202,7 +202,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.get_current_slot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_current_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.get_current_slot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_current_slot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check which slot-type the given object is in.</span>
 
@@ -219,7 +219,7 @@
                 <span class="k">return</span> <span class="n">slot</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Armor provided by actually worn equipment/shield. For body armor</span>
 <span class="sd">        this is a base value, like 12, for shield/helmet, it&#39;s a bonus, like +1.</span>
@@ -245,7 +245,7 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Conveniently get the currently active weapon or rune stone.</span>
 
@@ -263,7 +263,7 @@
             <span class="n">weapon</span> <span class="o">=</span> <span class="n">get_bare_hands</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">weapon</span>
 
-<div class="viewcode-block" id="EquipmentHandler.display_loadout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_loadout">[docs]</a>    <span class="k">def</span> <span class="nf">display_loadout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.display_loadout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_loadout">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_loadout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a visual representation of your current loadout.</span>
 
@@ -299,7 +299,7 @@
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weapon_str</span><span class="si">}{</span><span class="n">shield_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">armor_str</span><span class="si">}{</span><span class="n">helmet_str</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.display_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_backpack">[docs]</a>    <span class="k">def</span> <span class="nf">display_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.display_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_backpack">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a visual representation of the backpack&#39;s contents.</span>
 
@@ -312,7 +312,7 @@
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> [|b</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">|n] slot(s)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.display_slot_usage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_slot_usage">[docs]</a>    <span class="k">def</span> <span class="nf">display_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.display_slot_usage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_slot_usage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a slot usage/max string for display.</span>
 
@@ -322,7 +322,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count_slots</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_slots</span><span class="si">}</span><span class="s2">|n&quot;</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.move">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves item to the place it things it should be in - this makes use of the object&#39;s wield</span>
 <span class="sd">        slot to decide where it goes. The item is assumed to already be in the backpack.</span>
@@ -376,7 +376,7 @@
         <span class="c1"># store new state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Put something in the backpack specifically (even if it could be wield/worn).</span>
 
@@ -393,7 +393,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_or_slot</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.remove">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_or_slot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove specific object or objects from a slot.</span>
 
@@ -436,7 +436,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.get_wieldable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_wieldable_objects_from_backpack">[docs]</a>    <span class="k">def</span> <span class="nf">get_wieldable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.get_wieldable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_wieldable_objects_from_backpack">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_wieldable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all wieldable weapons (or spell runes) from backpack. This is useful in order to</span>
 <span class="sd">        have a list to select from when swapping your wielded loadout.</span>
@@ -456,7 +456,7 @@
             <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.get_wearable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_wearable_objects_from_backpack">[docs]</a>    <span class="k">def</span> <span class="nf">get_wearable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.get_wearable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_wearable_objects_from_backpack">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_wearable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all wearable items (armor or helmets) from backpack. This is useful in order to</span>
 <span class="sd">        have a list to select from when swapping your worn loadout.</span>
@@ -473,7 +473,7 @@
             <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">inventory_use_slot</span> <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.get_usable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_usable_objects_from_backpack">[docs]</a>    <span class="k">def</span> <span class="nf">get_usable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.get_usable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_usable_objects_from_backpack">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_usable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all &#39;usable&#39; items (like potions) from backpack. This is useful for getting a</span>
 <span class="sd">        list to select from.</span>
@@ -487,7 +487,7 @@
             <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EquipmentHandler.all"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EquipmentHandler.all"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all objects in inventory, regardless of location.</span>
 

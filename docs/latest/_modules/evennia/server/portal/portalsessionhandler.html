@@ -95,18 +95,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">namedtuple</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.amp</span> <span class="kn">import</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SessionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.amp</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.sessionhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
 <span class="c1"># module import</span>
 <span class="n">_MOD_IMPORT</span> <span class="o">=</span> <span class="kc">None</span>
@@ -136,7 +136,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="PortalSessionHandler"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">PortalSessionHandler</span><span class="p">(</span><span class="n">SessionHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PortalSessionHandler</span><span class="p">(</span><span class="n">SessionHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object holds the sessions connected to the portal at any time.</span>
 <span class="sd">    It is synced with the server&#39;s equivalent SessionHandler over the AMP</span>
@@ -148,7 +148,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PortalSessionHandler.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Init the handler</span>
 
@@ -161,7 +161,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uptime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_task</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.at_server_connection"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.at_server_connection">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.at_server_connection"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.at_server_connection">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Portal establishes connection with the Server.</span>
 <span class="sd">        At this point, the AMP connection is already established.</span>
@@ -169,7 +169,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.generate_sessid"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.generate_sessid">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sessid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.generate_sessid"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.generate_sessid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sessid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply generates a sessid that&#39;s guaranteed to be unique for this Portal run.</span>
 
@@ -182,7 +182,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sessid</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.connect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by protocol at first connect. This adds a not-yet</span>
 <span class="sd">        authenticated session using an ever-increasing counter for</span>
@@ -251,7 +251,7 @@
                 <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PCONN</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.sync"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.sync"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.sync">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the protocol of an already connected session. This</span>
 <span class="sd">        can be used to sync the session info in a delayed manner, such</span>
@@ -287,7 +287,7 @@
                     <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called from portal when the connection is closed from the</span>
 <span class="sd">        portal side.</span>
@@ -317,7 +317,7 @@
             <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PDISCONN</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect_all">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect all sessions, informing the Server.</span>
 
@@ -325,7 +325,7 @@
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
             <span class="c1"># we set a watchdog to stop self.disconnect from deleting</span>
             <span class="c1"># sessions while we are looping over them.</span>
             <span class="n">sessionhandler</span><span class="o">.</span><span class="n">_disconnect_all</span> <span class="o">=</span> <span class="kc">True</span>
@@ -340,7 +340,7 @@
             <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PDISCONNALL</span>
         <span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_callback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.server_connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_connect">[docs]</a>    <span class="k">def</span> <span class="nf">server_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
+<div class="viewcode-block" id="PortalSessionHandler.server_connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_connect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server to force the initialization of a new protocol</span>
 <span class="sd">        instance. Server wants this instance to get a unique sessid and to be</span>
@@ -364,7 +364,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_MOD_IMPORT</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_MOD_IMPORT</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span> <span class="k">as</span> <span class="n">_MOD_IMPORT</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">variable_from_module</span> <span class="k">as</span> <span class="n">_MOD_IMPORT</span>
         <span class="n">path</span><span class="p">,</span> <span class="n">clsname</span> <span class="o">=</span> <span class="n">protocol_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">_MOD_IMPORT</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">clsname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="p">:</span>
@@ -372,7 +372,7 @@
         <span class="n">protocol</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
         <span class="n">protocol</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.server_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">server_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.server_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server to force a disconnect by sessid.</span>
 
@@ -388,7 +388,7 @@
                 <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">session</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.server_disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect_all">[docs]</a>    <span class="k">def</span> <span class="nf">server_disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.server_disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server when forcing a clean disconnect for everyone.</span>
 
@@ -401,7 +401,7 @@
             <span class="k">del</span> <span class="n">session</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.server_logged_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_logged_in">[docs]</a>    <span class="k">def</span> <span class="nf">server_logged_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.server_logged_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_logged_in">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_logged_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The server tells us that the session has been authenticated.</span>
 <span class="sd">        Update it. Called by the Server.</span>
@@ -414,7 +414,7 @@
         <span class="n">session</span><span class="o">.</span><span class="n">load_sync_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">session</span><span class="o">.</span><span class="n">at_login</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.server_session_sync"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_session_sync">[docs]</a>    <span class="k">def</span> <span class="nf">server_session_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serversessions</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.server_session_sync"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_session_sync">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_session_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serversessions</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Server wants to save data to the portal, maybe because it&#39;s</span>
 <span class="sd">        about to shut down. We don&#39;t overwrite any sessions here, just</span>
@@ -438,7 +438,7 @@
             <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server_disconnect</span><span class="p">(</span><span class="n">sessid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.count_loggedin"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.count_loggedin">[docs]</a>    <span class="k">def</span> <span class="nf">count_loggedin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_unloggedin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.count_loggedin"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.count_loggedin">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">count_loggedin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_unloggedin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count loggedin connections, alternatively count all connections.</span>
 
@@ -452,7 +452,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">(</span><span class="n">include_unloggedin</span><span class="o">=</span><span class="n">include_unloggedin</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.sessions_from_csessid"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.sessions_from_csessid">[docs]</a>    <span class="k">def</span> <span class="nf">sessions_from_csessid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csessid</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.sessions_from_csessid"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.sessions_from_csessid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sessions_from_csessid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csessid</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a session id, retrieve the session (this is primarily</span>
 <span class="sd">        intended to be called by web clients)</span>
@@ -470,7 +470,7 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="s2">&quot;csessid&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sess</span><span class="o">.</span><span class="n">csessid</span> <span class="ow">and</span> <span class="n">sess</span><span class="o">.</span><span class="n">csessid</span> <span class="o">==</span> <span class="n">csessid</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.announce_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.announce_all">[docs]</a>    <span class="k">def</span> <span class="nf">announce_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.announce_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.announce_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">announce_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send message to all connected sessions.</span>
 
@@ -485,7 +485,7 @@
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="n">message</span><span class="p">],</span> <span class="p">{}])</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_in">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by portal sessions for relaying data coming</span>
 <span class="sd">        in from the protocol to the server.</span>
@@ -547,7 +547,7 @@
             <span class="k">if</span> <span class="s2">&quot;text&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCALECHO&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PortalSessionHandler.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_out">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server for having the portal relay messages and data</span>
 <span class="sd">        to the correct session protocol.</span>

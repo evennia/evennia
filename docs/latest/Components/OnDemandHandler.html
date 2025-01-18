@@ -145,13 +145,13 @@
 <p>This handler is found as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>. It is meant to be integrated into your other code. Here’s an example of a flower that goes through its stages of life in 12 hours.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">Flower</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">Flower</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">minute</span> <span class="o">=</span> <span class="mi">60</span>
         <span class="n">hour</span> <span class="o">=</span> <span class="n">minute</span> <span class="o">*</span> <span class="mi">60</span>
@@ -167,7 +167,7 @@
                 <span class="mi">12</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;dead&quot;</span>
             <span class="p">})</span>
 
-    <span class="k">def</span> <span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called whenever someone looks at this object</span>
 <span class="sd">        &quot;&quot;&quot;</span> 
@@ -196,7 +196,7 @@
 <section id="more-usage-examples">
 <h2>More usage examples<a class="headerlink" href="#more-usage-examples" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler" title="evennia.scripts.ondemandhandler.OnDemandHandler"><span class="xref myst py py-class">OnDemandHandler API</span></a> describes how to use the handler in detail. While it’s available as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>, its code is located in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.ondemandhandler.py</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
 
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">time_passed</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_dt</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -219,7 +219,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">.get_stage()</span></code> - get the current state name, such as “flowering” or “seedling”. If you didn’t specify any <code class="docutils literal notranslate"><span class="pre">stages</span></code>, this will return <code class="docutils literal notranslate"><span class="pre">None</span></code>, and you need to interpret the <code class="docutils literal notranslate"><span class="pre">dt</span></code> yourself to determine which state you are in.</p></li>
 </ul>
 <p>Under the hood, the handler uses  <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> objects. It can sometimes be practical to create tasks directly with these, and pass them to the handler in bulk:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
 <span class="n">task1</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;state1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;state2&quot;</span><span class="p">,</span> <span class="n">my_callable</span><span class="p">)})</span>
 <span class="n">task2</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;state-category&quot;</span><span class="p">)</span>
@@ -244,22 +244,22 @@
 <li><p>It may optionally take <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> . This will be passed down from your call of <code class="docutils literal notranslate"><span class="pre">get_dt</span></code> or <code class="docutils literal notranslate"><span class="pre">get_stages</span></code>.</p></li>
 </ul>
 <p>Here’s an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">ON_DEMAND_HANDLER</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">ON_DEMAND_HANDLER</span>
 
-<span class="k">def</span> <span class="nf">mycallable</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mycallable</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 	<span class="c1"># this function is outside the class and is pickleable just fine</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj&quot;</span><span class="p">)</span>
     <span class="c1"># do something with the object</span>
 
-<span class="k">class</span> <span class="nc">SomeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SomeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 	        <span class="s2">&quot;key1&quot;</span><span class="p">,</span> 
 	        <span class="n">stages</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="n">mycallable</span><span class="p">)}</span>
 	    <span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">do_something</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span><span class="w"> </span><span class="nf">do_something</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 	    <span class="c1"># pass obj=self into the handler; to be passed into</span>
 	    <span class="c1"># mycallable if we are in the &#39;old&#39; stage.</span>
 		<span class="n">state</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
@@ -275,7 +275,7 @@
 <h3>Looping repeatedly<a class="headerlink" href="#looping-repeatedly" title="Permalink to this headline">¶</a></h3>
 <p>Normally, when a sequence of <code class="docutils literal notranslate"><span class="pre">stages</span></code> have been cycled through, the task will just stop at the last stage indefinitely.</p>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_loop</span></code> is an included static-method stage callable you can use to make the task loop. Here’s an example of how to use it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="s2">&quot;trap_state&quot;</span><span class="p">,</span> 
@@ -297,7 +297,7 @@
 <h3>Bouncing back and forth<a class="headerlink" href="#bouncing-back-and-forth" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_bounce</span></code> is an included static-method callable you can use to ‘bounce’ the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse, keeping the same time intervals between each stage.</p>
 <p>To make this repeat indefinitely, you need to put these callables at both ends of the list:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="s2">&quot;cycling reactor&quot;</span><span class="p">,</span>

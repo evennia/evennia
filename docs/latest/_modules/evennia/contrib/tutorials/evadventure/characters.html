@@ -95,19 +95,19 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evform</span> <span class="kn">import</span> <span class="n">EvForm</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evform</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evtable</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
-<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span><span class="p">,</span> <span class="n">EquipmentHandler</span>
-<span class="kn">from</span> <span class="nn">.quests</span> <span class="kn">import</span> <span class="n">EvAdventureQuestHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.equipment</span><span class="w"> </span><span class="kn">import</span> <span class="n">EquipmentError</span><span class="p">,</span> <span class="n">EquipmentHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.quests</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureQuestHandler</span>
 
 
-<div class="viewcode-block" id="LivingMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin">[docs]</a><span class="k">class</span> <span class="nc">LivingMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="LivingMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LivingMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin class to use for all living things.</span>
 
@@ -116,7 +116,7 @@
     <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hurt_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hurt_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        String describing how hurt this character is.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -138,7 +138,7 @@
         <span class="k">elif</span> <span class="n">percent</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;|RCollapsed!|n&quot;</span>
 
-<div class="viewcode-block" id="LivingMixin.heal"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.heal">[docs]</a>    <span class="k">def</span> <span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">,</span> <span class="n">healer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.heal"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.heal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">,</span> <span class="n">healer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Heal by a certain amount of HP.</span>
 
@@ -154,21 +154,21 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are healed for </span><span class="si">{</span><span class="n">healed</span><span class="si">}</span><span class="s2"> health.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_attacked">[docs]</a>    <span class="k">def</span> <span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_attacked">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when being attacked / combat starts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_damage">[docs]</a>    <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_damage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when attacked and taking damage.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="n">damage</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_defeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_defeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this living thing reaches HP 0.</span>
 
@@ -176,14 +176,14 @@
         <span class="c1"># by default, defeat means death</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_death</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_death">[docs]</a>    <span class="k">def</span> <span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_death">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this living thing dies.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_pay"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_pay">[docs]</a>    <span class="k">def</span> <span class="nf">at_pay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_pay"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_pay">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get coins, but no more than we actually have.</span>
 
@@ -192,7 +192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coins</span> <span class="o">-=</span> <span class="n">amount</span>
         <span class="k">return</span> <span class="n">amount</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_looted"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_looted">[docs]</a>    <span class="k">def</span> <span class="nf">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looter</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_looted"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_looted">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looter</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when being looted (after defeat).</span>
 
@@ -211,7 +211,7 @@
             <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;looter&quot;</span><span class="p">:</span> <span class="n">looter</span><span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="LivingMixin.pre_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.pre_loot">[docs]</a>    <span class="k">def</span> <span class="nf">pre_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.pre_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.pre_loot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pre_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before looting an enemy.</span>
 
@@ -224,7 +224,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="LivingMixin.at_do_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_do_loot">[docs]</a>    <span class="k">def</span> <span class="nf">at_do_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.at_do_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_do_loot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_do_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when looting another entity.</span>
 
@@ -234,7 +234,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">defeated_enemy</span><span class="o">.</span><span class="n">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LivingMixin.post_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.post_loot">[docs]</a>    <span class="k">def</span> <span class="nf">post_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
+<div class="viewcode-block" id="LivingMixin.post_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.post_loot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defeated_enemy</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after having looted an enemy.</span>
 
@@ -245,7 +245,7 @@
         <span class="k">pass</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventureCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Character for use with EvAdventure.</span>
 
@@ -270,24 +270,24 @@
     <span class="n">xp_per_level</span> <span class="o">=</span> <span class="mi">1000</span>
 
 <div class="viewcode-block" id="EvAdventureCharacter.equipment"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.equipment">[docs]</a>    <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">equipment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">equipment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Allows to access equipment like char.equipment.worn&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">EquipmentHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureCharacter.quests"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.quests">[docs]</a>    <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Access and track quests&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">EvAdventureQuestHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">weapon</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">armor</span>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_pre_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_pre_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_object_receive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called by Evennia before moving an object here. Return False to abort move.</span>
 
@@ -304,7 +304,7 @@
         <span class="c1"># this will raise EquipmentError if inventory is full</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">validate_slot_usage</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_object_receive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called by Evennia as an object is moved here. We make sure it&#39;s added</span>
 <span class="sd">        to the equipment handler.</span>
@@ -320,7 +320,7 @@
         <span class="k">except</span> <span class="n">EquipmentError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;at_object_receive error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_pre_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaving_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_pre_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_object_leave">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaving_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called when dropping an item. We don&#39;t allow to drop wielded/worn items</span>
 <span class="sd">        (need to unwield/remove them first). Return False to</span>
@@ -328,7 +328,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_object_leave">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before an object leaves from inside this object</span>
 
@@ -341,7 +341,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_defeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_defeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This happens when character drops &lt;= 0 HP. For Characters, this means rolling on</span>
 <span class="sd">        the death table.</span>
@@ -353,7 +353,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;|y$You() $conj(yield), beaten and out of the fight.|n&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_death">[docs]</a>    <span class="k">def</span> <span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_death">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when character dies.</span>
 
@@ -363,21 +363,21 @@
             <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_pre_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_loot">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_pre_loot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_pre_loot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before allowing to loot. Return False to block enemy looting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># don&#39;t allow looting in pvp</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_pvp</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.at_looted"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_looted">[docs]</a>    <span class="k">def</span> <span class="nf">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looter</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.at_looted"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.at_looted">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looter</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when being looted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.add_xp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.add_xp">[docs]</a>    <span class="k">def</span> <span class="nf">add_xp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xp</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.add_xp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.add_xp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_xp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add new XP.</span>
 
@@ -396,7 +396,7 @@
         <span class="n">next_level_xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp_per_level</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span> <span class="o">&gt;=</span> <span class="n">next_level_xp</span></div>
 
-<div class="viewcode-block" id="EvAdventureCharacter.level_up"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.level_up">[docs]</a>    <span class="k">def</span> <span class="nf">level_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">abilities</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCharacter.level_up"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter.level_up">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">level_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">abilities</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform the level-up action.</span>
 
@@ -459,7 +459,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="get_character_sheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.get_character_sheet">[docs]</a><span class="k">def</span> <span class="nf">get_character_sheet</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="get_character_sheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.get_character_sheet">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_character_sheet</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a character sheet. This is grouped in a class in order to make</span>
 <span class="sd">    it easier to override the look of the sheet.</span>
@@ -467,7 +467,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a character sheet from the character&#39;s stats.</span>
 

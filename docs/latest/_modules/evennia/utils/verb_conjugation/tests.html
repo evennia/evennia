@@ -95,13 +95,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">parameterized</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterized</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">conjugate</span><span class="p">,</span> <span class="n">pronouns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">conjugate</span><span class="p">,</span> <span class="n">pronouns</span>
 
 
-<div class="viewcode-block" id="TestVerbConjugate"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestVerbConjugate">[docs]</a><span class="k">class</span> <span class="nc">TestVerbConjugate</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestVerbConjugate"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestVerbConjugate">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestVerbConjugate</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the conjugation.</span>
 
@@ -118,7 +118,7 @@
             <span class="p">(</span><span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="s2">&quot;be&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_infinitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_infinitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the infinite-getter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -137,7 +137,7 @@
             <span class="p">(</span><span class="s2">&quot;3sgpres&quot;</span><span class="p">,</span> <span class="s2">&quot;am&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_conjugate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tense</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_conjugate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tense</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test conjugation for different tenses.</span>
 
@@ -157,7 +157,7 @@
             <span class="p">(</span><span class="s2">&quot;3rd&quot;</span><span class="p">,</span> <span class="s2">&quot;am&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the present.</span>
 
@@ -175,7 +175,7 @@
             <span class="p">(</span><span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="s2">&quot;being&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_present_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_present_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the present_participle</span>
 
@@ -194,7 +194,7 @@
             <span class="p">(</span><span class="s2">&quot;2nd&quot;</span><span class="p">,</span> <span class="s2">&quot;were&quot;</span><span class="p">,</span> <span class="s2">&quot;were&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_past</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_past</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the past getter.</span>
 
@@ -212,14 +212,14 @@
             <span class="p">(</span><span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="s2">&quot;been&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_past_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_past_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the past participle.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">.</span><span class="n">verb_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TestVerbConjugate.test_verb_get_all_tenses"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestVerbConjugate.test_verb_get_all_tenses">[docs]</a>    <span class="k">def</span> <span class="nf">test_verb_get_all_tenses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestVerbConjugate.test_verb_get_all_tenses"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestVerbConjugate.test_verb_get_all_tenses">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_get_all_tenses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test getting all tenses.</span>
 
@@ -237,7 +237,7 @@
             <span class="p">(</span><span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="s2">&quot;2nd singular present&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_tense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_tense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense retriever.</span>
 
@@ -255,7 +255,7 @@
             <span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">,</span> <span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_is_tense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tense</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_is_tense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tense</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -274,7 +274,7 @@
             <span class="p">(</span><span class="s2">&quot;1st&quot;</span><span class="p">,</span> <span class="s2">&quot;had&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_is_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_is_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -292,7 +292,7 @@
             <span class="p">(</span><span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_is_present_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_is_present_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -311,7 +311,7 @@
             <span class="p">(</span><span class="s2">&quot;2nd&quot;</span><span class="p">,</span> <span class="s2">&quot;were&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_is_past</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_is_past</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -330,7 +330,7 @@
             <span class="p">(</span><span class="s2">&quot;had&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_is_past_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_is_past_participle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -353,7 +353,7 @@
             <span class="p">(</span><span class="s2">&quot;thrust&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;thrust&quot;</span><span class="p">,</span> <span class="s2">&quot;thrusts&quot;</span><span class="p">)),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_verb_actor_stance_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_verb_actor_stance_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the tense-checker</span>
 
@@ -361,7 +361,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">.</span><span class="n">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="TestPronounMapping"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestPronounMapping">[docs]</a><span class="k">class</span> <span class="nc">TestPronounMapping</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestPronounMapping"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.tests.html#evennia.utils.verb_conjugation.tests.TestPronounMapping">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestPronounMapping</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test pronoun viewpoint mapping</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -382,7 +382,7 @@
             <span class="p">(</span><span class="s2">&quot;themselves&quot;</span><span class="p">,</span> <span class="s2">&quot;yourselves&quot;</span><span class="p">,</span> <span class="s2">&quot;themselves&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_default_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pronoun</span><span class="p">,</span> <span class="n">expected_1st_or_2nd_person</span><span class="p">,</span> <span class="n">expected_3rd_person</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_default_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pronoun</span><span class="p">,</span> <span class="n">expected_1st_or_2nd_person</span><span class="p">,</span> <span class="n">expected_3rd_person</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the pronoun mapper.</span>
 
@@ -411,7 +411,7 @@
             <span class="p">(</span><span class="s2">&quot;their&quot;</span><span class="p">,</span> <span class="s2">&quot;ma&quot;</span><span class="p">,</span> <span class="s2">&quot;your&quot;</span><span class="p">,</span> <span class="s2">&quot;their&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_mapping_with_options</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_mapping_with_options</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pronoun</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">expected_1st_or_2nd_person</span><span class="p">,</span> <span class="n">expected_3rd_person</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -436,7 +436,7 @@
             <span class="p">(</span><span class="s2">&quot;myself&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;myself&quot;</span><span class="p">,</span> <span class="s2">&quot;themselves&quot;</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_colloquial_plurals</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_colloquial_plurals</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pronoun</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">expected_1st_or_2nd_person</span><span class="p">,</span> <span class="n">expected_3rd_person</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

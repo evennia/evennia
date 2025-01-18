@@ -96,18 +96,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">protocol</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
 
-<div class="viewcode-block" id="AMPClientFactory"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory">[docs]</a><span class="k">class</span> <span class="nc">AMPClientFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AMPClientFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This factory creates an instance of an AMP client connection. This handles communication from</span>
 <span class="sd">    the be the Evennia &#39;Server&#39; service to the &#39;Portal&#39;. The client will try to auto-reconnect on a</span>
@@ -121,7 +121,7 @@
     <span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="AMPClientFactory.__init__"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory.__init__"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the client factory.</span>
 
@@ -136,7 +136,7 @@
         <span class="c1"># avoids having to check for its existence on the protocol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcasts</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="AMPClientFactory.startedConnecting"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory.startedConnecting"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.startedConnecting">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when starting to try to connect to the Portal AMP server.</span>
 
@@ -147,7 +147,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AMPClientFactory.buildProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory.buildProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.buildProtocol">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an AMPProtocol instance when connecting to the AMP server.</span>
 
@@ -160,7 +160,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span></div>
 
-<div class="viewcode-block" id="AMPClientFactory.clientConnectionLost"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory.clientConnectionLost"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the AMP connection to the MUD server is lost.</span>
 
@@ -173,7 +173,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Server disconnected from the portal.&quot;</span><span class="p">)</span>
         <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="o">.</span><span class="n">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPClientFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPClientFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an AMP connection attempt to the MUD server fails.</span>
 
@@ -187,7 +187,7 @@
         <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="o">.</span><span class="n">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="AMPServerClientProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPServerClientProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerClientProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AMPServerClientProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This protocol describes the Server service (acting as an AMP-client)&#39;s communication with the</span>
 <span class="sd">    Portal (which acts as the AMP-server)</span>
@@ -196,7 +196,7 @@
 
     <span class="c1"># sending AMP data</span>
 
-<div class="viewcode-block" id="AMPServerClientProtocol.connectionMade"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerClientProtocol.connectionMade"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.connectionMade">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when a new connection is established.</span>
 
@@ -212,7 +212,7 @@
         <span class="c1"># run the intial setup if needed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run_initial_setup</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AMPServerClientProtocol.data_to_portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.data_to_portal">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerClientProtocol.data_to_portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.data_to_portal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_to_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send data across the wire to the Portal</span>
 
@@ -234,7 +234,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">key</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerClientProtocol.send_MsgServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_MsgServer2Portal">[docs]</a>    <span class="k">def</span> <span class="nf">send_MsgServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerClientProtocol.send_MsgServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_MsgServer2Portal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_MsgServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access method - executed on the Server for sending data</span>
 <span class="sd">            to Portal.</span>
@@ -246,7 +246,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_to_portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">MsgServer2Portal</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerClientProtocol.send_AdminServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_AdminServer2Portal">[docs]</a>    <span class="k">def</span> <span class="nf">send_AdminServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerClientProtocol.send_AdminServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_AdminServer2Portal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_AdminServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Administrative access method called by the Server to send an</span>
 <span class="sd">        instruction to the Portal.</span>
@@ -266,12 +266,12 @@
     <span class="c1"># receiving AMP data</span>
 
 <div class="viewcode-block" id="AMPServerClientProtocol.server_receive_status"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.server_receive_status">[docs]</a>    <span class="nd">@amp</span><span class="o">.</span><span class="n">MsgStatus</span><span class="o">.</span><span class="n">responder</span>
-    <span class="k">def</span> <span class="nf">server_receive_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">server_receive_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">}</span></div>
 
     <span class="nd">@amp</span><span class="o">.</span><span class="n">MsgPortal2Server</span><span class="o">.</span><span class="n">responder</span>
     <span class="nd">@amp</span><span class="o">.</span><span class="n">catch_traceback</span>
-    <span class="k">def</span> <span class="nf">server_receive_msgportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">server_receive_msgportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receives message arriving to server. This method is executed</span>
 <span class="sd">        on the Server.</span>
@@ -288,7 +288,7 @@
 
     <span class="nd">@amp</span><span class="o">.</span><span class="n">AdminPortal2Server</span><span class="o">.</span><span class="n">responder</span>
     <span class="nd">@amp</span><span class="o">.</span><span class="n">catch_traceback</span>
-    <span class="k">def</span> <span class="nf">server_receive_adminportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">server_receive_adminportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receives admin data from the Portal (allows the portal to</span>
 <span class="sd">        perform admin operations on the server). This is executed on</span>

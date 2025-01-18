@@ -94,15 +94,15 @@
 <span class="sd">IDmapper extension to the default manager.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.db.models.manager</span> <span class="kn">import</span> <span class="n">Manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">Manager</span>
 
 
-<div class="viewcode-block" id="SharedMemoryManager"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.manager.html#evennia.utils.idmapper.manager.SharedMemoryManager">[docs]</a><span class="k">class</span> <span class="nc">SharedMemoryManager</span><span class="p">(</span><span class="n">Manager</span><span class="p">):</span>
+<div class="viewcode-block" id="SharedMemoryManager"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.manager.html#evennia.utils.idmapper.manager.SharedMemoryManager">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SharedMemoryManager</span><span class="p">(</span><span class="n">Manager</span><span class="p">):</span>
     <span class="c1"># TODO: improve on this implementation</span>
     <span class="c1"># We need a way to handle reverse lookups so that this model can</span>
     <span class="c1"># still use the singleton cache, but the active model isn&#39;t required</span>
     <span class="c1"># to be a SharedMemoryModel.</span>
-<div class="viewcode-block" id="SharedMemoryManager.get"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.manager.html#evennia.utils.idmapper.manager.SharedMemoryManager.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SharedMemoryManager.get"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.manager.html#evennia.utils.idmapper.manager.SharedMemoryManager.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data entity lookup.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

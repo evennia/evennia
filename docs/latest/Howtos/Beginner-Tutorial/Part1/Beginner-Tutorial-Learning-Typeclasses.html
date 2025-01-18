@@ -146,28 +146,28 @@
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we <code class="docutils literal notranslate"><span class="pre">restart</span></code> the server or <code class="docutils literal notranslate"><span class="pre">quit()</span></code> out of python mode they are gone.</p>
 <p>This is what you should have in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> so far:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monster</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a base class for Monsters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
  
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span> 
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a dragon-specific monster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -182,15 +182,15 @@ open it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">module docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectParent</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    class docstring </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class docstring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -202,26 +202,26 @@ open it:</p>
 <p>One thing that Evennia classes offers and which you don’t get with vanilla Python classes is <em>persistence</em> - they survive a server reload since they are stored in the database.</p>
 <p>Go back to <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Change it as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
 
-<span class="k">class</span> <span class="nc">Monster</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monster</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a base class for Monsters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a dragon-specific Monster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -343,15 +343,15 @@ Cuddly is moving!
 </tbody>
 </table>
 <p>The child classes under <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> are meant for you to conveniently modify and  work with.  Every class inheriting (at any distance) from a Evennia base typeclass is also considered a typeclass.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">somewhere</span> <span class="kn">import</span> <span class="n">Something</span> 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">somewhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">Something</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span> 
 
-<span class="k">class</span> <span class="nc">MyOwnClass</span><span class="p">(</span><span class="n">Something</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">MyOwnClass</span><span class="p">(</span><span class="n">Something</span><span class="p">):</span> 
     <span class="c1"># not inheriting from an Evennia core typeclass, so this </span>
     <span class="c1"># is just a &#39;normal&#39; Python class inheriting from somewhere</span>
     <span class="k">pass</span> 
 
-<span class="k">class</span> <span class="nc">MyOwnClass2</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyOwnClass2</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="c1"># inherits from one of the core Evennia typeclasses, so </span>
     <span class="c1"># this is also considered a &#39;typeclass&#39;.</span>
     <span class="k">pass</span>
@@ -438,10 +438,10 @@ You create a new Object: box.
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectParent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectParent</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -491,7 +491,7 @@ Non-Persistent attributes:
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -500,7 +500,7 @@ Non-Persistent attributes:
     <span class="n">dexterity</span> <span class="o">=</span> <span class="mi">12</span>
     <span class="n">intelligence</span> <span class="o">=</span> <span class="mi">15</span>
 
-    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -555,12 +555,12 @@ Strength is 10.
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -612,19 +612,19 @@ AttributeError: &#39;Character&#39; object has no attribute &#39;strength&#39;
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
 <span class="c1"># ...</span>
-<span class="kn">import</span> <span class="nn">random</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span> 
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>       
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>       
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dexterity</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">intelligence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>

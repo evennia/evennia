@@ -132,12 +132,12 @@ talk &lt;npc&gt;</p>
 <p>To install, add the <strong>EvAdventureCmdSet</strong> from this module to the default character cmdset:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmds.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.commands</span> <span class="kn">import</span> <span class="n">EvAdventureCmdSet</span>  <span class="c1"># &lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorials.evadventure.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCmdSet</span>  <span class="c1"># &lt;---</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EvAdventureCmdSet</span><span class="p">)</span>   <span class="c1"># &lt;-----</span>
 </pre></div>
@@ -307,7 +307,7 @@ unwear &lt;item&gt;</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['unwield', 'unwear']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['unwear', 'unwield']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -331,7 +331,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unwield unwear', 'category': 'general', 'key': 'remove', 'no_prefix': ' unwield unwear', 'tags': '', 'text': '\n    Remove a remove a weapon/shield, armor or helmet.\n\n    Usage:\n      remove &lt;item&gt;\n      unwield &lt;item&gt;\n      unwear &lt;item&gt;\n\n    To remove an item from the backpack, use |wdrop|n instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unwear unwield', 'category': 'general', 'key': 'remove', 'no_prefix': ' unwear unwield', 'tags': '', 'text': '\n    Remove a remove a weapon/shield, armor or helmet.\n\n    Usage:\n      remove &lt;item&gt;\n      unwield &lt;item&gt;\n      unwear &lt;item&gt;\n\n    To remove an item from the backpack, use |wdrop|n instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

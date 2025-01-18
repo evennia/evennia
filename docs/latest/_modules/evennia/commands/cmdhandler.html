@@ -119,23 +119,23 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">weakref</span><span class="w"> </span><span class="kn">import</span> <span class="n">WeakValueDictionary</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">returnValue</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">returnValue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">deferLater</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_suggestions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">string_suggestions</span>
 
 <span class="n">_IN_GAME_ERRORS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IN_GAME_ERRORS</span>
 
@@ -243,13 +243,13 @@
 
 
 <span class="c1"># helper functions</span>
-<span class="k">def</span> <span class="nf">err_helper</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">err_helper</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">cmdid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">raw_string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;cmdid&quot;</span><span class="p">:</span> <span class="n">cmdid</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">raw_string</span>
 
 
-<span class="k">def</span> <span class="nf">_msg_err</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">stringtuple</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_msg_err</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">stringtuple</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for returning an error to the caller.</span>
 
@@ -277,7 +277,7 @@
     <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specifically handle the get_input value to send to _progressive_cmd_run as</span>
 <span class="sd">    part of yielding from a Command&#39;s `func`.</span>
@@ -298,7 +298,7 @@
     <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="k">def</span> <span class="nf">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Progressively call the command that was given in argument. Used</span>
 <span class="sd">    when `yield` is present in the Command&#39;s `func()` method.</span>
@@ -322,7 +322,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GET_INPUT</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_GET_INPUT</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span> <span class="k">as</span> <span class="n">_GET_INPUT</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_input</span> <span class="k">as</span> <span class="n">_GET_INPUT</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -351,30 +351,30 @@
 <span class="c1"># custom Exceptions</span>
 
 
-<span class="k">class</span> <span class="nc">NoCmdSets</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NoCmdSets</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="s2">&quot;No cmdsets found. Critical error.&quot;</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">ExecSystemCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExecSystemCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="s2">&quot;Run a system command&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>  <span class="c1"># needed by exception error handling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">syscmd</span> <span class="o">=</span> <span class="n">syscmd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sysarg</span> <span class="o">=</span> <span class="n">sysarg</span>
 
 
-<span class="k">class</span> <span class="nc">ErrorReported</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ErrorReported</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="s2">&quot;Re-raised when a subsructure already reported the error&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_string</span><span class="p">,)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span>
 
 
 <span class="c1"># Helper function</span>
-<span class="k">def</span> <span class="nf">generate_cmdset_providers</span><span class="p">(</span><span class="n">called_by</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_cmdset_providers</span><span class="p">(</span><span class="n">called_by</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">cmdset_providers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">cmdset_providers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">called_by</span><span class="o">.</span><span class="n">get_cmdset_providers</span><span class="p">())</span>
     <span class="k">if</span> <span class="n">session</span> <span class="ow">and</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">called_by</span><span class="p">:</span>
@@ -404,7 +404,7 @@
 
 
 <span class="nd">@inlineCallbacks</span>
-<span class="k">def</span> <span class="nf">get_and_merge_cmdsets</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_and_merge_cmdsets</span><span class="p">(</span>
     <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset_providers</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -435,7 +435,7 @@
     <span class="k">try</span><span class="p">:</span>
 
         <span class="nd">@inlineCallbacks</span>
-        <span class="k">def</span> <span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper-method; Get Object-level cmdsets</span>
 
@@ -488,7 +488,7 @@
                 <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
 
         <span class="nd">@inlineCallbacks</span>
-        <span class="k">def</span> <span class="nf">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper method; Get cmdset while making sure to trigger all</span>
 <span class="sd">            hooks safely. Returns the stack and the valid options.</span>
@@ -591,7 +591,7 @@
 
 
 <div class="viewcode-block" id="cmdhandler"><a class="viewcode-back" href="../../../api/evennia.commands.cmdhandler.html#evennia.commands.cmdhandler.cmdhandler">[docs]</a><span class="nd">@inlineCallbacks</span>
-<span class="k">def</span> <span class="nf">cmdhandler</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cmdhandler</span><span class="p">(</span>
     <span class="n">called_by</span><span class="p">,</span>
     <span class="n">raw_string</span><span class="p">,</span>
     <span class="n">_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -647,7 +647,7 @@
     <span class="n">cmdid</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cmdid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@inlineCallbacks</span>
-    <span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">cmdset_providers</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">cmdset_providers</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function: This initializes and runs the Command</span>
 <span class="sd">        instance once the parser has identified it as either a normal</span>

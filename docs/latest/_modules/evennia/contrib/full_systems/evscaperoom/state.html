@@ -104,14 +104,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">EvscaperoomObject</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_evscaperoom_object</span><span class="p">,</span> <span class="n">msg_cinematic</span><span class="p">,</span> <span class="n">parse_for_things</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvscaperoomObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_evscaperoom_object</span><span class="p">,</span> <span class="n">msg_cinematic</span><span class="p">,</span> <span class="n">parse_for_things</span>
 
 <span class="c1"># state setup</span>
 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;EVSCAPEROOM_STATE_PACKAGE&quot;</span><span class="p">):</span>
@@ -129,20 +129,20 @@
 <span class="c1"># handler for managing states on room</span>
 
 
-<div class="viewcode-block" id="StateHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler">[docs]</a><span class="k">class</span> <span class="nc">StateHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StateHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StateHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This sits on the room and is used to progress through the states.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StateHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="viewcode-block" id="StateHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">room</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_state_name</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">state</span> <span class="ow">or</span> <span class="n">_FIRST_STATE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_state_name</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prev_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StateHandler.load_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.load_state">[docs]</a>    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statename</span><span class="p">):</span>
+<div class="viewcode-block" id="StateHandler.load_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.load_state">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load state without initializing it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -157,14 +157,14 @@
         <span class="n">state</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">state</span></div>
 
-<div class="viewcode-block" id="StateHandler.init_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.init_state">[docs]</a>    <span class="k">def</span> <span class="nf">init_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StateHandler.init_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.init_state">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a new state</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="StateHandler.next_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.next_state">[docs]</a>    <span class="k">def</span> <span class="nf">next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="StateHandler.next_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.StateHandler.next_state">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current state is finished. This should be called whenever</span>
 <span class="sd">        the players do actions that may affect the state of the room.</span>
@@ -205,7 +205,7 @@
 <span class="c1"># base state class</span>
 
 
-<div class="viewcode-block" id="BaseState"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState">[docs]</a><span class="k">class</span> <span class="nc">BaseState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base object holding all callables for a state. This is here to</span>
 <span class="sd">    allow easy overriding for child states.</span>
@@ -216,7 +216,7 @@
     <span class="c1"># a sequence of hints to describe this state.</span>
     <span class="n">hints</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="BaseState.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializer.</span>
 
@@ -230,20 +230,20 @@
         <span class="c1"># the name is derived from the name of the module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_catch_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_catch_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper handling state method errors.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -257,7 +257,7 @@
 
         <span class="k">return</span> <span class="n">decorator</span>
 
-    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always wrap all callables in the error-handler</span>
 
@@ -267,7 +267,7 @@
             <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_catch_errors&quot;</span><span class="p">)(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span>
 
-<div class="viewcode-block" id="BaseState.get_hint"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.get_hint">[docs]</a>    <span class="k">def</span> <span class="nf">get_hint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.get_hint"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.get_hint">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_hint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a hint for how to solve this state.</span>
 
@@ -288,7 +288,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># helpers</span>
-<div class="viewcode-block" id="BaseState.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cinematic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cinematic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display messsage to everyone in room, or given target.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -302,13 +302,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseState.cinematic"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.cinematic">[docs]</a>    <span class="k">def</span> <span class="nf">cinematic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.cinematic"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.cinematic">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cinematic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display a &#39;cinematic&#39; sequence - centered, with borders.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cinematic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseState.create_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.create_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.create_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.create_object">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a convenience-wrapper for quickly building EvscapeRoom objects.</span>
 
@@ -333,7 +333,7 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseState.get_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.get_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.get_object">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find a named *non-character* object for this state in this room.</span>
 
@@ -353,21 +353,21 @@
 
     <span class="c1"># state methods</span>
 
-<div class="viewcode-block" id="BaseState.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the state (usually by modifying the room in some way)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BaseState.clean"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.clean"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.clean">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Any cleanup operations after the state ends.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">state_hint_level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="BaseState.next"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.next"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.next">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the next state after this one.</span>
 
@@ -384,14 +384,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">next_state</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_state</span></div>
 
-<div class="viewcode-block" id="BaseState.character_enters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.character_enters">[docs]</a>    <span class="k">def</span> <span class="nf">character_enters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.character_enters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.character_enters">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">character_enters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when character enters the room in this state.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BaseState.character_leaves"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.character_leaves">[docs]</a>    <span class="k">def</span> <span class="nf">character_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseState.character_leaves"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.state.html#evennia.contrib.full_systems.evscaperoom.state.BaseState.character_leaves">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">character_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when character is whisked away (usually because of</span>
 <span class="sd">        quitting). This method cannot influence the move itself; it</span>

@@ -139,13 +139,13 @@ signal.</p>
 <h2>Working with Signals<a class="headerlink" href="#working-with-signals" title="Permalink to this headline">¶</a></h2>
 <p>First you create your handler</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="k">def</span> <span class="nf">myhandler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">myhandler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
   <span class="c1"># do stuff</span>
 
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is mandatory. Then you attach it to the signal of your choice:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_CREATE</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">myhandler</span><span class="p">)</span>
 
@@ -155,8 +155,8 @@ signal.</p>
 When that happens, <code class="docutils literal notranslate"><span class="pre">myhandler</span></code> will fire with the <code class="docutils literal notranslate"><span class="pre">sender</span></code> being the Account that just connected.</p>
 <p>If you want to respond only to the effects of a specific entity you can do so
 like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_account</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">signals</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_account</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">account</span> <span class="o">=</span> <span class="n">search_account</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_ACCOUNT_POST_CONNECT</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">myhandler</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>

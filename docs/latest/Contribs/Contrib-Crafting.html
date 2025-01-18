@@ -176,7 +176,7 @@ available to you:</p>
 </div>
 <p>In code, you can craft using the
 <code class="docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.craft</span></code> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">craft</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;recipename&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">)</span>
 
@@ -196,10 +196,10 @@ the above example, create <code class="docutils literal notranslate"><span class
 there:</p>
 <p>A quick example (read on for more details):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span><span class="p">,</span> <span class="n">CraftingValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CraftingRecipe</span><span class="p">,</span> <span class="n">CraftingValidationError</span>
 
 
-<span class="k">class</span> <span class="nc">RecipeBread</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RecipeBread</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Bread is good for making sandwitches!</span>
 
@@ -218,14 +218,14 @@ there:</p>
 
   <span class="p">]</span>
 
-  <span class="k">def</span> <span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># validates inputs etc. Raise `CraftingValidationError` if fails</span>
 
-  <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># performs the craft - report errors directly to user and return None (if</span>
     <span class="c1"># failed) and the created object(s) if successful.</span>
 
-  <span class="k">def</span> <span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># any post-crafting effects. Always called, even if do_craft failed (the</span>
     <span class="c1"># result would be None then)</span>
 
@@ -251,9 +251,9 @@ as viable recipes.</p>
 example setting:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/myrecipes.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
-<span class="k">class</span> <span class="nc">WoodenPuppetRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WoodenPuppetRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A puppet&quot;&quot;&quot;</span><span class="s2">&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;wooden puppet&quot;</span>  <span class="c1"># name to refer to this recipe as</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">]</span>
@@ -279,7 +279,7 @@ specific tag-categories.  The tag-category used can be set per-recipe using the
 are <code class="docutils literal notranslate"><span class="pre">crafting_material</span></code> and <code class="docutils literal notranslate"><span class="pre">crafting_tool</span></code>. For
 the puppet we need one object with the <code class="docutils literal notranslate"><span class="pre">wood</span></code> tag and another with the <code class="docutils literal notranslate"><span class="pre">knife</span></code>
 tag:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
 
 <span class="n">knife</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Hobby knife&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;knife&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_tool&quot;</span><span class="p">)])</span>
 <span class="n">wood</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Piece of wood&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="p">[(</span><span class="s2">&quot;wood&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)])</span>
@@ -302,7 +302,7 @@ in-game command:</p>
 </pre></div>
 </div>
 <p>In code we would do</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">craft</span>
 <span class="n">puppet</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;wooden puppet&quot;</span><span class="p">,</span> <span class="n">knife</span><span class="p">,</span> <span class="n">wood</span><span class="p">)</span>
 
 </pre></div>
@@ -314,7 +314,7 @@ recipe will sort out which is which based on their tags.</p>
 <h2>Deeper customization of recipes<a class="headerlink" href="#deeper-customization-of-recipes" title="Permalink to this headline">¶</a></h2>
 <p>For customizing recipes further, it helps to understand how to use the
 recipe-class directly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">MyRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
@@ -354,15 +354,15 @@ into each crafting hook. These are unused by default but could be used to custom
 notion of being able to fail the craft if you are not skilled enough. Just how
 skills work is game-dependent, so to add this you need to make your own recipe
 parent class and have your recipes inherit from this.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
-<span class="k">class</span> <span class="nc">SkillRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SkillRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;A recipe that considers skill&quot;&quot;&quot;</span>
 
     <span class="n">difficulty</span> <span class="o">=</span> <span class="mi">20</span>
 
-    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The input is ok. Determine if crafting succeeds&quot;&quot;&quot;</span>
 
         <span class="c1"># this is set at initialization</span>

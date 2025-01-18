@@ -167,8 +167,8 @@ you want to set your time in the future, you just need to find the starting poin
 are several ways to do this in Python, this method will show you how to do it in local time:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We&#39;re looking for the number of seconds representing</span>
 <span class="c1"># January 1st, 2020</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
 </pre></div>
@@ -190,7 +190,7 @@ this:</p>
 <span class="o">+----------------------------+-------------------------------------+</span>
 <span class="o">|</span> <span class="n">In</span><span class="o">-</span><span class="n">Game</span> <span class="n">time</span>               <span class="o">|</span> <span class="n">Real</span> <span class="n">time</span> <span class="n">x</span> <span class="mi">2</span>                       <span class="o">|</span>
 <span class="o">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</span>
-<span class="o">|</span> <span class="n">Epoch</span> <span class="p">(</span><span class="kn">from</span> <span class="nn">settings</span><span class="p">)</span>      <span class="o">|</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">Epoch</span> <span class="p">(</span><span class="kn">from</span><span class="w"> </span><span class="nn">settings</span><span class="p">)</span>      <span class="o">|</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                 <span class="o">|</span>
 <span class="o">|</span> <span class="n">Total</span> <span class="n">time</span> <span class="n">passed</span><span class="p">:</span>         <span class="o">|</span> <span class="mi">1</span> <span class="n">day</span><span class="p">,</span> <span class="mi">17</span> <span class="n">hours</span><span class="p">,</span> <span class="mi">34</span> <span class="n">minutes</span>         <span class="o">|</span>
 <span class="o">|</span> <span class="n">Current</span> <span class="n">time</span>               <span class="o">|</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">17</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span><span class="mf">55.430000</span>          <span class="o">|</span>
 <span class="o">+----------------------------+-------------------------------------+</span>
@@ -213,23 +213,23 @@ time updated correctly… and going (by default) twice as fast as the real time.
 <p>Here is a short example for making the sun rise every day:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file ingame_time.py in mygame/world/</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
-<span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gametime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Room</span>
 
-<span class="k">def</span> <span class="nf">at_sunrise</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">at_sunrise</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;When the sun rises, display a message in every room.&quot;&quot;&quot;</span>
     <span class="c1"># Browse all rooms</span>
     <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The sun rises from the eastern horizon.&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">start_sunrise_event</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_sunrise_event</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Schedule an sunrise event to happen every day at 6 AM.&quot;&quot;&quot;</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">at_sunrise</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">script</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;at sunrise&quot;</span>
 </pre></div>
 </div>
 <p>If you want to test this function, you can easily do something like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">ingame_time</span><span class="p">;</span> <span class="n">ingame_time</span><span class="o">.</span><span class="n">start_sunrise_event</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span><span class="w"> </span><span class="nn">world</span><span class="w"> </span><span class="kn">import</span> <span class="n">ingame_time</span><span class="p">;</span> <span class="n">ingame_time</span><span class="o">.</span><span class="n">start_sunrise_event</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The script will be created silently. The <code class="docutils literal notranslate"><span class="pre">at_sunrise</span></code> function will now be called every in-game day
@@ -301,11 +301,11 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 <code class="docutils literal notranslate"><span class="pre">gametime.py</span></code> in your <code class="docutils literal notranslate"><span class="pre">commands</span></code> directory and paste this code in it):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/commands/gametime.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">custom_gametime</span>
 
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdTime</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the time.</span>
@@ -318,7 +318,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
         <span class="c1"># Get the absolute game time</span>
         <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -330,11 +330,11 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 <p>Don’t forget to add it in your CharacterCmdSet to see this command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdset.py</span>
 
-<span class="kn">from</span> <span class="nn">commands.gametime</span> <span class="kn">import</span> <span class="n">CmdTime</span>   <span class="c1"># &lt;-- Add</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.gametime</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdTime</span>   <span class="c1"># &lt;-- Add</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -342,7 +342,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>

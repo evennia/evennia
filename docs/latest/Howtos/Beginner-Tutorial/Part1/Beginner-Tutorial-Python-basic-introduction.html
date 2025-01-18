@@ -340,7 +340,7 @@ Hello World!
 <h3><span class="section-number">3.3.1. </span>Our first own function<a class="headerlink" href="#our-first-own-function" title="Permalink to this headline">¶</a></h3>
 <p>We want to be able to print our hello-world message at any time, not just once after a server
 reload. Change your <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file to look like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -401,7 +401,7 @@ debugging and <code class="docutils literal notranslate"><span class="pre">.msg(
 <h2><span class="section-number">3.5. </span>Parsing Python errors<a class="headerlink" href="#parsing-python-errors" title="Permalink to this headline">¶</a></h2>
 <p>Let’s try this new text-sending in the function we just created.  Go back to
 your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> file and Replace the function with this instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">():</span>
     <span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -439,7 +439,7 @@ sometimes be useful information, but reading from the bottom is always a good st
 <section id="passing-arguments-to-functions">
 <h2><span class="section-number">3.6. </span>Passing arguments to functions<a class="headerlink" href="#passing-arguments-to-functions" title="Permalink to this headline">¶</a></h2>
 <p>We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> exists at the point when we run the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, because we can do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code> with no problem. So let’s <em>pass</em> that me along to the function so it knows what it should be. Go back to your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and change it to this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>

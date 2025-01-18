@@ -146,10 +146,10 @@ An example is <code class="docutils literal notranslate"><span class="pre">look<
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span> <span class="k">as</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span> <span class="k">as</span> <span class="n">BaseCommand</span>
 <span class="c1"># from evennia import default_cmds</span>
 
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -167,9 +167,9 @@ An example is <code class="docutils literal notranslate"><span class="pre">look<
 <p>We could modify this module directly, but let’s work in a separate module just for the heck of it. Open a new file <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and add the following code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
 </pre></div>
@@ -178,16 +178,16 @@ An example is <code class="docutils literal notranslate"><span class="pre">look<
 <p>Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! Change your file as such:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
 
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEcho</span><span class="p">)</span>
 
 </pre></div>
@@ -233,7 +233,7 @@ Command &quot;echo&quot; has no defined `func()`. Available properties ...
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple echo command</span>
 
@@ -243,7 +243,7 @@ Command &quot;echo&quot; has no defined `func()`. Available properties ...
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
 <span class="c1"># ...</span>
@@ -271,7 +271,7 @@ Echo: &#39; Woo Tang!&#39;
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple echo command</span>
 
@@ -281,7 +281,7 @@ Echo: &#39; Woo Tang!&#39;
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
 <span class="c1"># ...</span>
@@ -326,9 +326,9 @@ Echo: &#39;Woo Tang!&#39;
 
 <span class="c1"># ... </span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mycommands</span>    <span class="c1"># &lt;-------  </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>    <span class="c1"># &lt;-------  </span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -337,7 +337,7 @@ Echo: &#39;Woo Tang!&#39;
  
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
  
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -409,7 +409,7 @@ You hit Bob with full force!
 
 <span class="c1"># ...</span>
 
-<span class="hll"><span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="hll"><span class="k">class</span><span class="w"> </span><span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 </span><span class="hll"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="sd">    Hit a target.</span>
 
@@ -419,7 +419,7 @@ You hit Bob with full force!
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="hll">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
 </span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 </span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
@@ -484,9 +484,9 @@ directly in-game or in your log (view it with <code class="docutils literal notr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
 <span class="c1"># ...</span>
-<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEcho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHit</span><span class="p">)</span>
 
@@ -497,9 +497,9 @@ directly in-game or in your log (view it with <code class="docutils literal notr
 
 <span class="c1"># ,.. </span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mycommands</span>    
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>    
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -508,7 +508,7 @@ directly in-game or in your log (view it with <code class="docutils literal notr
  
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
  
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>

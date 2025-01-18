@@ -143,11 +143,11 @@
 <p>In your game folder <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>, import and add
 <code class="docutils literal notranslate"><span class="pre">ContribChargenCmdSet</span></code> to your <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribChargenCmdSet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.character_creator.character_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribChargenCmdSet</span>
 
-<span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribChargenCmdSet</span><span class="p">)</span>
 </pre></div>
@@ -157,9 +157,9 @@ on your Account class.</p>
 <p>(Alternatively, you can copy the <code class="docutils literal notranslate"><span class="pre">at_look</span></code> method directly into your own class.)</p>
 <section id="example">
 <h3>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribChargenAccount</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.character_creator.character_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribChargenAccount</span>
 
-<span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">ContribChargenAccount</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Account</span><span class="p">(</span><span class="n">ContribChargenAccount</span><span class="p">):</span>
     <span class="c1"># your Account class code</span>
 </pre></div>
 </div>

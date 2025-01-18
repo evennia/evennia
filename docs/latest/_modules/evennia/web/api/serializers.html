@@ -102,17 +102,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
 
-<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
-<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.accounts</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultAccount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.help.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tag</span>
 
 
-<div class="viewcode-block" id="AttributeSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AttributeSerializer">[docs]</a><span class="k">class</span> <span class="nc">AttributeSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AttributeSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AttributeSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialize Attribute views.</span>
 
@@ -121,12 +121,12 @@
     <span class="n">value_display</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
     <span class="n">db_value</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">write_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AttributeSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AttributeSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AttributeSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AttributeSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Attribute</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_attrtype&quot;</span><span class="p">,</span> <span class="s2">&quot;value_display&quot;</span><span class="p">,</span> <span class="s2">&quot;db_value&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="AttributeSerializer.get_value_display"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AttributeSerializer.get_value_display">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_value_display</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Attribute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value_display</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Attribute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the string display of an Attribute&#39;s value for serialization</span>
 <span class="sd">        Args:</span>
@@ -141,19 +141,19 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TagSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TagSerializer">[docs]</a><span class="k">class</span> <span class="nc">TagSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
-<div class="viewcode-block" id="TagSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TagSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="TagSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TagSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TagSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="TagSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TagSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Tag</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_data&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="SimpleObjectDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.SimpleObjectDBSerializer">[docs]</a><span class="k">class</span> <span class="nc">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
-<div class="viewcode-block" id="SimpleObjectDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.SimpleObjectDBSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="SimpleObjectDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.SimpleObjectDBSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleObjectDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.SimpleObjectDBSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="TypeclassSerializerMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassSerializerMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="TypeclassSerializerMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TypeclassSerializerMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin that contains types shared by typeclasses. A note about tags,</span>
 <span class="sd">    aliases, and permissions. You might note that the methods and fields are</span>
@@ -177,7 +177,7 @@
     <span class="p">]</span>
 
 <div class="viewcode-block" id="TypeclassSerializerMixin.get_tags"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin.get_tags">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tags</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes tags from the object&#39;s Tagshandler</span>
 <span class="sd">        Args:</span>
@@ -189,7 +189,7 @@
         <span class="k">return</span> <span class="n">TagSerializer</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">return_tagobj</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="TypeclassSerializerMixin.get_aliases"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin.get_aliases">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_aliases</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_aliases</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes tags from the object&#39;s Aliashandler</span>
 <span class="sd">        Args:</span>
@@ -201,7 +201,7 @@
         <span class="k">return</span> <span class="n">TagSerializer</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">return_tagobj</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="TypeclassSerializerMixin.get_permissions"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin.get_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_permissions</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_permissions</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes tags from the object&#39;s Permissionshandler</span>
 <span class="sd">        Args:</span>
@@ -215,7 +215,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="TypeclassSerializerMixin.get_attributes"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin.get_attributes">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes attributes from the object&#39;s AttributeHandler</span>
 <span class="sd">        Args:</span>
@@ -227,7 +227,7 @@
         <span class="k">return</span> <span class="n">AttributeSerializer</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="TypeclassSerializerMixin.get_nicks"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassSerializerMixin.get_nicks">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_nicks</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nicks</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes attributes from the object&#39;s NicksHandler</span>
 <span class="sd">        Args:</span>
@@ -239,7 +239,7 @@
         <span class="k">return</span> <span class="n">AttributeSerializer</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div></div>
 
 
-<div class="viewcode-block" id="TypeclassListSerializerMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassListSerializerMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassListSerializerMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="TypeclassListSerializerMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.TypeclassListSerializerMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TypeclassListSerializerMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortened serializer for list views.</span>
 
@@ -252,7 +252,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="ObjectDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectDBSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing Objects.</span>
 
@@ -266,7 +266,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">permissions</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ObjectDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;db_location&quot;</span><span class="p">,</span>
@@ -278,7 +278,7 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ObjectDBSerializer.get_exits"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer.get_exits">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_exits</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_exits</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets exits for the object</span>
 <span class="sd">        Args:</span>
@@ -291,7 +291,7 @@
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">exits</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="ObjectDBSerializer.get_contents"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectDBSerializer.get_contents">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_contents</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets non-exits for the object</span>
 <span class="sd">        Args:</span>
@@ -304,13 +304,13 @@
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">non_exits</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer">[docs]</a><span class="k">class</span> <span class="nc">ObjectListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortened representation for listings.]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ObjectListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;db_location&quot;</span><span class="p">,</span>
@@ -319,7 +319,7 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="AccountSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountSerializer">[docs]</a><span class="k">class</span> <span class="nc">AccountSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This uses the DefaultAccount object to have access to the sessions property</span>
 
@@ -334,7 +334,7 @@
     <span class="n">permissions</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AccountSerializer.get_session_ids"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountSerializer.get_session_ids">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_session_ids</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_session_ids</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a list of session IDs connected to this Account</span>
 <span class="sd">        Args:</span>
@@ -345,19 +345,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">sess</span><span class="o">.</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="s2">&quot;sessid&quot;</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="AccountSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AccountSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultAccount</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;session_ids&quot;</span><span class="p">,</span> <span class="s2">&quot;nicks&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">TypeclassSerializerMixin</span><span class="o">.</span><span class="n">shared_fields</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="AccountListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer">[docs]</a><span class="k">class</span> <span class="nc">AccountListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A shortened form for listing.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AccountListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AccountListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultAccount</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
             <span class="n">fi</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">TypeclassListSerializerMixin</span><span class="o">.</span><span class="n">shared_fields</span> <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s2">&quot;db_key&quot;</span>
@@ -365,7 +365,7 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="ScriptDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptDBSerializer">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptDBSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptDBSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptDBSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing Account.</span>
 
@@ -376,7 +376,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">permissions</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ScriptDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptDBSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ScriptDBSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptDBSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;db_interval&quot;</span><span class="p">,</span>
@@ -388,13 +388,13 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="ScriptListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer">[docs]</a><span class="k">class</span> <span class="nc">ScriptListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortened form for listing.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ScriptListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ScriptListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;db_interval&quot;</span><span class="p">,</span>
@@ -406,7 +406,7 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="HelpSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer">[docs]</a><span class="k">class</span> <span class="nc">HelpSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpSerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializers Help entries (not a typeclass).</span>
 
@@ -415,7 +415,7 @@
     <span class="n">tags</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="HelpSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="HelpSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span>
@@ -429,13 +429,13 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="HelpListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer">[docs]</a><span class="k">class</span> <span class="nc">HelpListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortened form for listings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HelpListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="HelpListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span>

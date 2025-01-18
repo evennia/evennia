@@ -143,18 +143,18 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/api/views.py</span>
 
 <span class="c1"># we&#39;ll need these from django&#39;s rest framework to make our view work</span>
-<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="kn">import</span> <span class="n">action</span>
-<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">status</span>
 
 <span class="c1"># this implements all the basic Evennia Object endpoint logic, so we&#39;re inheriting from it</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.views</span> <span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
 
 <span class="c1"># and we need this to filter our character view</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
 <span class="c1"># our own custom view</span>
-<span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -172,14 +172,14 @@
 <p>Import your new views module, then find and update the <code class="docutils literal notranslate"><span class="pre">characters</span></code> path to use your own viewset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/api/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
-<span class="kn">from</span> <span class="nn">rest_framework.schemas</span> <span class="kn">import</span> <span class="n">get_schema_view</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.schemas</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_schema_view</span>
 
-<span class="kn">from</span> <span class="nn">evennia.web.api.root</span> <span class="kn">import</span> <span class="n">APIRootRouter</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIRootRouter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">my_views</span> <span class="c1"># &lt;--- NEW</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">my_views</span> <span class="c1"># &lt;--- NEW</span>
 
 <span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;api&quot;</span>
 
@@ -217,10 +217,10 @@
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code> in your editor and add a new path for “api/”, pointing to <code class="docutils literal notranslate"><span class="pre">web.api.urls</span></code>. The final file should look something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
 
 <span class="c1"># default evennia patterns</span>
-<span class="kn">from</span> <span class="nn">evennia.web.urls</span> <span class="kn">import</span> <span class="n">urlpatterns</span> <span class="k">as</span> <span class="n">evennia_default_urlpatterns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlpatterns</span> <span class="k">as</span> <span class="n">evennia_default_urlpatterns</span>
 
 <span class="c1"># add patterns</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
@@ -264,18 +264,18 @@
 <span class="sd">Customized views for the REST API</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># we&#39;ll need these from django&#39;s rest framework to make our view work</span>
-<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="kn">import</span> <span class="n">action</span>
-<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">status</span>
 
 <span class="c1"># this implements all the basic Evennia Object endpoint logic, so we&#39;re inheriting from it</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.views</span> <span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
 
 <span class="c1"># and we need this to filter our character view</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
 <span class="c1"># our own custom view</span>
-<span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -283,7 +283,7 @@
 
     <span class="c1"># !! NEW</span>
     <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;your inventory&quot;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="p">)</span>
 </pre></div>
 </div>
@@ -299,17 +299,17 @@
 <p>Generally speaking, a <em>serializer</em> turns a set of data into a specially formatted string that can be sent in a data stream - usually JSON. Django REST serializers are special classes and functions which take python objects and convert them into API-ready formats. So, just like for the viewset, django and evennia have done a lot of the heavy lifting for us already.</p>
 <p>Instead of writing our own serializer, we’ll inherit from evennia’s pre-existing serializers and extend them for our own purpose. To do that, create a new file <code class="docutils literal notranslate"><span class="pre">mygame/web/api/serializers.py</span></code> and start by adding in the imports you’ll need.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># the base serializing library for the framework</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
 
 <span class="c1"># the handy classes Evennia already prepared for us</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.serializers</span> <span class="kn">import</span> <span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">SimpleObjectDBSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">SimpleObjectDBSerializer</span>
 
 <span class="c1"># and the DefaultObject typeclass, for the necessary db model information</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 </pre></div>
 </div>
 <p>Next, we’ll be defining our own serializer class. Since it’s for retrieving inventory data, we’ll name it appropriately.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing an inventory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -318,7 +318,7 @@
     <span class="n">worn</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">carried</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="c1"># required field</span>
@@ -332,14 +332,14 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">Meta</span></code> class defines which fields will be used in the final serialized string. The <code class="docutils literal notranslate"><span class="pre">id</span></code> field is from the base ModelSerializer, but you’ll notice that the two others - <code class="docutils literal notranslate"><span class="pre">worn</span></code> and <code class="docutils literal notranslate"><span class="pre">carried</span></code> - are defined as properties to <code class="docutils literal notranslate"><span class="pre">SerializerMethodField</span></code>. That tells the framework to look for matching method names in the form <code class="docutils literal notranslate"><span class="pre">get_X</span></code> when serializing.</p>
 <p>Which is why our next step is to add those methods! We defined the properties <code class="docutils literal notranslate"><span class="pre">worn</span></code> and <code class="docutils literal notranslate"><span class="pre">carried</span></code>, so the methods we’ll add are <code class="docutils literal notranslate"><span class="pre">get_worn</span></code> and <code class="docutils literal notranslate"><span class="pre">get_carried</span></code>. They’ll be static methods - that is, they don’t include <code class="docutils literal notranslate"><span class="pre">self</span></code> - since they don’t need to reference the serializer class itself.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># these methods filter the character&#39;s contents based on the `worn` attribute</span>
-    <span class="k">def</span> <span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">worn</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">worn</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
     
-    <span class="k">def</span> <span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only non-worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -356,15 +356,15 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/api/serializers.py</span>
 
 <span class="c1"># the base serializing library for the framework</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
 
 <span class="c1"># the handy classes Evennia already prepared for us</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.serializers</span> <span class="kn">import</span> <span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">SimpleObjectDBSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">SimpleObjectDBSerializer</span>
 
 <span class="c1"># and the DefaultObject typeclass, for the necessary db model information</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing an inventory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -373,7 +373,7 @@
     <span class="n">worn</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">carried</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="c1"># required field</span>
@@ -384,14 +384,14 @@
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
 
     <span class="c1"># these methods filter the character&#39;s contents based on the `worn` attribute</span>
-    <span class="k">def</span> <span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">worn</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">worn</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
     
-    <span class="k">def</span> <span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only non-worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -403,12 +403,12 @@
 <section id="using-your-serializer">
 <h2>Using your serializer<a class="headerlink" href="#using-your-serializer" title="Permalink to this headline">¶</a></h2>
 <p>Now let’s go back to our views file, <code class="docutils literal notranslate"><span class="pre">mygame/web/api/views.py</span></code>. Add our new serializer with the rest of the imports:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="n">InventorySerializer</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">InventorySerializer</span>
 </pre></div>
 </div>
 <p>Then, update our <code class="docutils literal notranslate"><span class="pre">inventory</span></code> detail to use our serializer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span> <span class="n">InventorySerializer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="p">)</span>
 </pre></div>
@@ -420,27 +420,27 @@
 <span class="sd">Customized views for the REST API</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># we&#39;ll need these from django&#39;s rest framework to make our view work</span>
-<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="kn">import</span> <span class="n">action</span>
-<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">status</span>
 
 <span class="c1"># this implements all the basic Evennia Object endpoint logic, so we&#39;re inheriting from it</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.views</span> <span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
 
 <span class="c1"># and we need this to filter our character view</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
-<span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="n">InventorySerializer</span> <span class="c1"># &lt;--- NEW</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">InventorySerializer</span> <span class="c1"># &lt;--- NEW</span>
 
 <span class="c1"># our own custom view</span>
-<span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span>
 
     <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span> <span class="n">InventorySerializer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="p">)</span> <span class="c1"># &lt;--- MODIFIED</span>
 </pre></div>
 </div>
@@ -454,11 +454,11 @@
 <p>Like with the previous classes, we’ll be inheriting from the original and extending it to take advantage of all the work Evennia already does for us.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/api/permissions.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.web.api.permissions</span> <span class="kn">import</span> <span class="n">EvenniaPermission</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaPermission</span>
 
-<span class="k">class</span> <span class="nc">CharacterPermission</span><span class="p">(</span><span class="n">EvenniaPermission</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterPermission</span><span class="p">(</span><span class="n">EvenniaPermission</span><span class="p">):</span>
     
-    <span class="k">def</span> <span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks object-level permissions after has_permission</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -478,21 +478,21 @@
 <span class="sd">Customized views for the REST API</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># we&#39;ll need these from django&#39;s rest framework to make our view work</span>
-<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="kn">import</span> <span class="n">action</span>
-<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">status</span>
 
 <span class="c1"># this implements all the basic Evennia Object endpoint logic, so we&#39;re inheriting from it</span>
-<span class="kn">from</span> <span class="nn">evennia.web.api.views</span> <span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.api.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDBViewSet</span>
 
 <span class="c1"># and we need this to filter our character view</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
-<span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="n">InventorySerializer</span>
-<span class="kn">from</span> <span class="nn">.permissions</span> <span class="kn">import</span> <span class="n">CharacterPermission</span> <span class="c1"># &lt;--- NEW</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">InventorySerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">CharacterPermission</span> <span class="c1"># &lt;--- NEW</span>
 
 <span class="c1"># our own custom view</span>
-<span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -500,7 +500,7 @@
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span>
 
     <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span> <span class="n">InventorySerializer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="p">)</span>
 </pre></div>

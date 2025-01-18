@@ -206,19 +206,19 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">TextWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">textwrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextWrapper</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">display_len</span> <span class="k">as</span> <span class="n">d_len</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">justify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANSIString</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_len</span> <span class="k">as</span> <span class="n">d_len</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">justify</span>
 
 <span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 
 
-<span class="k">def</span> <span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    convert to ANSIString.</span>
 
@@ -235,7 +235,7 @@
 <span class="n">_whitespace</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\t\n\x0b\x0c\r</span><span class="s2"> &quot;</span>
 
 
-<div class="viewcode-block" id="ANSITextWrapper"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.ANSITextWrapper">[docs]</a><span class="k">class</span> <span class="nc">ANSITextWrapper</span><span class="p">(</span><span class="n">TextWrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSITextWrapper"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.ANSITextWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ANSITextWrapper</span><span class="p">(</span><span class="n">TextWrapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a wrapper work class for handling strings with ANSI tags</span>
 <span class="sd">    in it.  It overloads the standard library `TextWrapper` class and</span>
@@ -243,7 +243,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_munge_whitespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_munge_whitespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_munge_whitespace(text : string) -&gt; string</span>
 
 <span class="sd">        Munge whitespace in text: expand tabs and convert all other</span>
@@ -261,7 +261,7 @@
     <span class="c1">#                text = text.translate(self.whitespace_trans)</span>
     <span class="c1">#        return text</span>
 
-    <span class="k">def</span> <span class="nf">_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_split(text : string) -&gt; [string]</span>
 
 <span class="sd">        Split the text to wrap into indivisible chunks.  Chunks are</span>
@@ -291,7 +291,7 @@
 
         <span class="k">return</span> <span class="n">chunks</span>
 
-    <span class="k">def</span> <span class="nf">_wrap_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_wrap_chunks(chunks : [string]) -&gt; [string]</span>
 
 <span class="sd">        Wrap a sequence of text chunks and return a list of lines of</span>
@@ -366,7 +366,7 @@
 <span class="c1"># -- Convenience interface ---------------------------------------------</span>
 
 
-<div class="viewcode-block" id="wrap"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.wrap">[docs]</a><span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="wrap"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.wrap">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrap a single paragraph of text, returning a list of wrapped lines.</span>
 
@@ -388,7 +388,7 @@
     <span class="k">return</span> <span class="n">w</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fill"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.fill">[docs]</a><span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="fill"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.fill">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fill a single paragraph of text, returning a new string.</span>
 
 <span class="sd">    Reformat the single paragraph in &#39;text&#39; to fit in lines of no more</span>
@@ -412,7 +412,7 @@
 <span class="c1"># EvCell class (see further down for the EvTable itself)</span>
 
 
-<div class="viewcode-block" id="EvCell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell">[docs]</a><span class="k">class</span> <span class="nc">EvCell</span><span class="p">:</span>
+<div class="viewcode-block" id="EvCell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvCell</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Holds a single data cell for the table. A cell has a certain width</span>
 <span class="sd">    and height and contains one or more lines of data. It can shrink</span>
@@ -420,7 +420,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvCell.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            data (str): The un-padded data of the entry.</span>
@@ -563,7 +563,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_height</span></div>
 
-    <span class="k">def</span> <span class="nf">_reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply all EvCells&#39; formatting operations.</span>
 
@@ -571,7 +571,7 @@
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_border</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_valign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_align</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_width</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)))))</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="k">def</span> <span class="nf">_split_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply split by linebreaks</span>
 
@@ -583,7 +583,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_fit_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Split too-long lines to fit the desired width of the Cell.</span>
 
@@ -633,7 +633,7 @@
 
         <span class="k">return</span> <span class="n">adjusted_data</span>
 
-    <span class="k">def</span> <span class="nf">_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Align list of rows of cell. Whitespace characters will be stripped</span>
 <span class="sd">        if there is only one whitespace character - otherwise, it&#39;s assumed</span>
@@ -651,7 +651,7 @@
         <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">justify</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="n">hfill_char</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_valign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Align cell vertically</span>
 
@@ -688,7 +688,7 @@
                 <span class="c1"># even padding, same on both sides</span>
                 <span class="k">return</span> <span class="n">narrowside</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="n">narrowside</span>
 
-    <span class="k">def</span> <span class="nf">_pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pad data with extra characters on all sides.</span>
 
@@ -706,7 +706,7 @@
         <span class="n">bottom</span> <span class="o">=</span> <span class="p">[</span><span class="n">vfill</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_bottom</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">top</span> <span class="o">+</span> <span class="p">[</span><span class="n">left</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="n">right</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span> <span class="o">+</span> <span class="n">bottom</span>
 
-    <span class="k">def</span> <span class="nf">_border</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_border</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add borders to the cell.</span>
 
@@ -741,7 +741,7 @@
 
         <span class="k">return</span> <span class="n">top</span> <span class="o">+</span> <span class="p">[</span><span class="n">left</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="n">right</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span> <span class="o">+</span> <span class="n">bottom</span>
 
-<div class="viewcode-block" id="EvCell.get_min_height"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_min_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.get_min_height"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_min_height">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_min_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the minimum possible height of cell, including at least</span>
 <span class="sd">        one line for data.</span>
@@ -752,7 +752,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_top</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_bottom</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_bottom</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_top</span> <span class="o">+</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EvCell.get_min_width"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_min_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.get_min_width"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_min_width">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_min_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the minimum possible width of cell, including at least one</span>
 <span class="sd">        character-width for data.</span>
@@ -763,7 +763,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_left</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_right</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_left</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_right</span> <span class="o">+</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EvCell.get_height"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.get_height"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_height">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get natural height of cell, including padding.</span>
 
@@ -773,7 +773,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">)</span>  <span class="c1"># if self.formatted else 0</span></div>
 
-<div class="viewcode-block" id="EvCell.get_width"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.get_width"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get_width">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get natural width of cell, including padding.</span>
 
@@ -783,7 +783,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">d_len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># if self.formatted else 0</span></div>
 
-<div class="viewcode-block" id="EvCell.replace_data"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.replace_data">[docs]</a>    <span class="k">def</span> <span class="nf">replace_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.replace_data"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.replace_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">replace_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace cell data. This causes a full reformat of the cell.</span>
 
@@ -800,7 +800,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvCell.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.reformat">[docs]</a>    <span class="k">def</span> <span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.reformat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reformat the EvCell with new options</span>
 
@@ -926,7 +926,7 @@
         <span class="c1"># reformat (to new sizes, padding, header and borders)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvCell.get"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell.get"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get data, padded and aligned in the form of a list of lines.</span>
 
@@ -935,12 +935,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span></div>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&lt;EvCel </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;returns cell contents on string form&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
@@ -950,7 +950,7 @@
 <span class="c1"># EvColumn class</span>
 
 
-<div class="viewcode-block" id="EvColumn"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn">[docs]</a><span class="k">class</span> <span class="nc">EvColumn</span><span class="p">:</span>
+<div class="viewcode-block" id="EvColumn"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvColumn</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class holds a list of Cells to represent a column of a table.</span>
 <span class="sd">    It holds operations and settings that affect *all* cells in the</span>
@@ -961,7 +961,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvColumn.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvColumn.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            Text for each row in the column</span>
@@ -975,7 +975,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span>  <span class="c1"># column-specific options</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="p">[</span><span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure to adjust the width of all cells so we form a</span>
 <span class="sd">        coherent and lined-up column. Will enforce column-specific</span>
@@ -999,7 +999,7 @@
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="n">col</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
 
-<div class="viewcode-block" id="EvColumn.add_rows"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.add_rows">[docs]</a>    <span class="k">def</span> <span class="nf">add_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvColumn.add_rows"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.add_rows">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add new cells to column. They will be inserted as</span>
 <span class="sd">        a series of rows. It will inherit the options</span>
@@ -1031,7 +1031,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[:</span><span class="n">ypos</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_cells</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">ypos</span><span class="p">:]</span></div>
         <span class="c1"># self._balance(**kwargs)</span>
 
-<div class="viewcode-block" id="EvColumn.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.reformat">[docs]</a>    <span class="k">def</span> <span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvColumn.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.reformat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the options for the column.</span>
 
@@ -1041,7 +1041,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_balance</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvColumn.reformat_cell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.reformat_cell">[docs]</a>    <span class="k">def</span> <span class="nf">reformat_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvColumn.reformat_cell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn.reformat_cell">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reformat_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        reformat cell at given index, keeping column options if</span>
 <span class="sd">        necessary.</span>
@@ -1058,35 +1058,35 @@
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;EvColumn</span><span class="se">\n</span><span class="s2">  </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 
 <span class="c1"># Main Evtable class</span>
 
 
-<div class="viewcode-block" id="EvTable"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable">[docs]</a><span class="k">class</span> <span class="nc">EvTable</span><span class="p">:</span>
+<div class="viewcode-block" id="EvTable"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvTable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The table class holds a list of EvColumns, each consisting of EvCells so</span>
 <span class="sd">    that the result is a 2D matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvTable.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            Header texts for the table.</span>
@@ -1247,7 +1247,7 @@
         <span class="c1"># balance the table</span>
         <span class="c1"># self._balance()</span>
 
-    <span class="k">def</span> <span class="nf">_cellborders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cellborders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds borders to the table by adjusting the input kwarg to</span>
 <span class="sd">        instruct cells to build a border in the right positions.</span>
@@ -1279,7 +1279,7 @@
         <span class="n">bwidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_width</span>
         <span class="n">headchar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_line_char</span>
 
-        <span class="k">def</span> <span class="nf">corners</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">corners</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Handle corners of table&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;corner_top_left_char&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_top_left_char</span>
@@ -1291,47 +1291,47 @@
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;corner_bottom_right_char&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_bottom_right_char</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">left_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">left_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;add vertical border along left table edge&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_left&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
                 <span class="c1"># ret[&quot;trim_horizontal&quot;] = bwidth</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">top_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">top_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;add border along top table edge&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">iy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_top&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
                 <span class="c1"># ret[&quot;trim_vertical&quot;] = bwidth</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">right_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">right_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;add vertical border along right table edge&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="n">nx</span><span class="p">:</span>  <span class="c1"># and 0 &lt; iy &lt; ny:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
                 <span class="c1"># ret[&quot;trim_horizontal&quot;] = 0</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">bottom_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">bottom_edge</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;add border along bottom table edge&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">iy</span> <span class="o">==</span> <span class="n">ny</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
                 <span class="c1"># ret[&quot;trim_vertical&quot;] = bwidth</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">cols</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">cols</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Adding vertical borders inside the table&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">ix</span> <span class="o">&lt;</span> <span class="n">nx</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">rows</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Adding horizontal borders inside the table&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="n">ny</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;border_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwidth</span>
             <span class="k">return</span> <span class="n">ret</span>
 
-        <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Add header underline&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">iy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># put different bottom line for header</span>
@@ -1355,7 +1355,7 @@
 
         <span class="k">return</span> <span class="n">ret</span>
 
-    <span class="k">def</span> <span class="nf">_borders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_borders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add borders to table. This is called from self._balance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1365,7 +1365,7 @@
             <span class="k">for</span> <span class="n">iy</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>
                 <span class="n">col</span><span class="o">.</span><span class="n">reformat_cell</span><span class="p">(</span><span class="n">iy</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_cellborders</span><span class="p">(</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Balance the table. This means to make sure</span>
 <span class="sd">        all cells on the same row have the same height,</span>
@@ -1545,7 +1545,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cwidth</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cwidths</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cheight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cheights</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_generate_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates lines across all columns</span>
 <span class="sd">        (each cell may contain multiple lines)</span>
@@ -1560,7 +1560,7 @@
             <span class="k">for</span> <span class="n">iline</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cell_height</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">celldata</span><span class="p">[</span><span class="n">iline</span><span class="p">]</span> <span class="k">for</span> <span class="n">celldata</span> <span class="ow">in</span> <span class="n">cell_data</span><span class="p">))</span>
 
-<div class="viewcode-block" id="EvTable.add_header"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_header">[docs]</a>    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.add_header"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_header">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add header to table. This is a number of texts to be put at</span>
 <span class="sd">        the top of the table. They will replace an existing header.</span>
@@ -1576,7 +1576,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">ypos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvTable.add_column"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_column">[docs]</a>    <span class="k">def</span> <span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.add_column"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_column">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a column to table. If there are more rows in new column</span>
 <span class="sd">        than there are rows in the current table, the table will</span>
@@ -1643,7 +1643,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EvTable.add_row"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_row">[docs]</a>    <span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.add_row"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_row">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a row to table (not a header). If there are more cells in</span>
 <span class="sd">        the given row than there are cells in the current table the</span>
@@ -1693,7 +1693,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">+=</span> <span class="mi">1</span></div>
         <span class="c1"># self._balance()</span>
 
-<div class="viewcode-block" id="EvTable.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.reformat">[docs]</a>    <span class="k">def</span> <span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.reformat"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.reformat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a re-shape of the entire table.</span>
 
@@ -1725,7 +1725,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvTable.reformat_column"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.reformat_column">[docs]</a>    <span class="k">def</span> <span class="nf">reformat_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.reformat_column"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.reformat_column">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reformat_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends custom options to a specific column in the table.</span>
 
@@ -1747,7 +1747,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvTable.get"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable.get"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return lines of table as a list.</span>
 
@@ -1757,7 +1757,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lines</span><span class="p">()]</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;print table (this also balances it)&quot;&quot;&quot;</span>
         <span class="c1"># h = &quot;12345678901234567890123456789012345678901234567890123456789012345678901234567890&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lines</span><span class="p">()])))</span></div>

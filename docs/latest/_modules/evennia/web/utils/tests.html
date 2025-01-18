@@ -90,14 +90,14 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.web.utils.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">AnonymousUser</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">RequestFactory</span><span class="p">,</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnonymousUser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestFactory</span><span class="p">,</span> <span class="n">TestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">general_context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">general_context</span>
 
 
-<div class="viewcode-block" id="TestGeneralContext"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext">[docs]</a><span class="k">class</span> <span class="nc">TestGeneralContext</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGeneralContext"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestGeneralContext</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TestGeneralContext.test_general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_general_context">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">)</span>
@@ -111,7 +111,7 @@
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.REST_API_ENABLED&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_general_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_general_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
         <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">AnonymousUser</span><span class="p">()</span>
         <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>

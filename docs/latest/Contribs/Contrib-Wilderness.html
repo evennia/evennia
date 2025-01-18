@@ -186,11 +186,11 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
 <span class="s1">  .......</span>
 <span class="s1">&#39;&#39;&#39;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">wilderness</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">wilderness</span>
 
-<span class="k">class</span> <span class="nc">PyramidMapProvider</span><span class="p">(</span><span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessMapProvider</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PyramidMapProvider</span><span class="p">(</span><span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessMapProvider</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wilderness</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wilderness</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="s2">&quot;Validates if these coordinates are inside the map&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span>
         <span class="k">try</span><span class="p">:</span>
@@ -204,7 +204,7 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="s2">&quot;Set the location name&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
@@ -212,7 +212,7 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Inside a pyramid.&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_prepare_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_prepare_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="s2">&quot;Any other changes done to the room before showing it&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a room in the pyramid.&quot;</span>

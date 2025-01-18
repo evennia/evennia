@@ -141,14 +141,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmore</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">all_from_module</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
@@ -178,7 +178,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;No achievement modules have been added to settings.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_read_player_data</span><span class="p">(</span><span class="n">achiever</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_player_data</span><span class="p">(</span><span class="n">achiever</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    helper function to get a player&#39;s achievement data from the database.</span>
 
@@ -195,7 +195,7 @@
     <span class="k">return</span> <span class="n">data</span> <span class="ow">or</span> <span class="p">{}</span>
 
 
-<span class="k">def</span> <span class="nf">_write_player_data</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_player_data</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    helper function to write a player&#39;s achievement data to the database.</span>
 
@@ -212,7 +212,7 @@
     <span class="n">achiever</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_ATTR_KEY</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">_ATTR_CAT</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="track_achievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.track_achievements">[docs]</a><span class="k">def</span> <span class="nf">track_achievements</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="track_achievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.track_achievements">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">track_achievements</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update and check achievement progress.</span>
 
@@ -294,7 +294,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">completed</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.get_achievement">[docs]</a><span class="k">def</span> <span class="nf">get_achievement</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="get_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.get_achievement">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_achievement</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get an achievement by its key.</span>
 
@@ -312,7 +312,7 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="all_achievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.all_achievements">[docs]</a><span class="k">def</span> <span class="nf">all_achievements</span><span class="p">():</span>
+<div class="viewcode-block" id="all_achievements"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.all_achievements">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">all_achievements</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dict of all achievements in the game.</span>
 
@@ -323,7 +323,7 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">_ACHIEVEMENT_DATA</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="get_achievement_progress"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.get_achievement_progress">[docs]</a><span class="k">def</span> <span class="nf">get_achievement_progress</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="get_achievement_progress"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.get_achievement_progress">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_achievement_progress</span><span class="p">(</span><span class="n">achiever</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the progress data on a particular achievement for a particular achiever.</span>
 
@@ -342,7 +342,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
 
-<div class="viewcode-block" id="search_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.search_achievement">[docs]</a><span class="k">def</span> <span class="nf">search_achievement</span><span class="p">(</span><span class="n">search_term</span><span class="p">):</span>
+<div class="viewcode-block" id="search_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.search_achievement">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">search_achievement</span><span class="p">(</span><span class="n">search_term</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Search for an achievement containing the search term. If no matches are found in the achievement names, it searches</span>
 <span class="sd">    in the achievement descriptions.</span>
@@ -366,7 +366,7 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_ACHIEVEMENT_DATA</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CmdAchieve"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve">[docs]</a><span class="k">class</span> <span class="nc">CmdAchieve</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAchieve"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdAchieve</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view achievements</span>
 
@@ -403,7 +403,7 @@
 <span class="si">{status}</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CmdAchieve.format_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.format_achievement">[docs]</a>    <span class="k">def</span> <span class="nf">format_achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement_data</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAchieve.format_achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.format_achievement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement_data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the raw achievement data for display.</span>
 
@@ -438,7 +438,7 @@
             <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdAchieve.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAchieve.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.achievements.achievements.html#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="c1"># we&#39;re doing a name lookup</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">achievements</span> <span class="o">:=</span> <span class="n">search_achievement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">())):</span>

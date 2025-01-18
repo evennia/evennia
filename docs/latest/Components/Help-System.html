@@ -192,7 +192,7 @@ Suggestions:
 <p>This will create a new help entry in the database. Use the <code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch to open the EvEditor for more convenient in-game writing (but note that devs can also create help entries outside the game using their regular code editor, see below).</p>
 <p>The <a class="reference internal" href="../api/evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><span class="xref myst py py-class">HelpEntry</span></a> stores database help. It is <em>not</em> a Typeclassed entity and can’t be extended using the typeclass mechanism.</p>
 <p>Here’s how to create a database-help entry in code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_help_entry</span>
 <span class="n">entry</span> <span class="o">=</span> <span class="n">create_help_entry</span><span class="p">(</span><span class="s2">&quot;emote&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Emoting is important because ...&quot;</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Roleplaying&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;view:all()&quot;</span><span class="p">)</span>
@@ -262,9 +262,9 @@ server and the file-based help entries will be available to view.</p>
 <section id="command-help-entries">
 <h3>Command-help entries<a class="headerlink" href="#command-help-entries" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">__docstring__</span></code> of  <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command classes</span></a> are automatically extracted into a help entry. You set <code class="docutils literal notranslate"><span class="pre">help_category</span></code> directly on the class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    This command is great! </span>
 
@@ -304,7 +304,7 @@ also not show up in the index). If <code class="docutils literal notranslate"><s
 everyone can read the help entry.</p></li>
 </ul>
 <p>For Commands you set the help-related locks the same way you would any lock:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &lt;docstring for command&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>

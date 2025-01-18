@@ -148,30 +148,30 @@ exit-object, which is why you can see the exit in the room and just write its na
 <p>In this example we will just echo an error message, but you could do everything (maybe you lose health if you bump into a wall?)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in a file mygame/commands/movecommands.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
 
-<span class="k">class</span> <span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent class for all exit-errors.&quot;&quot;&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
     <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns error based on key&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You cannot move </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">CmdExitErrorNorth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdExitErrorNorth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;north&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span>
 
-<span class="k">class</span> <span class="nc">CmdExitErrorEast</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdExitErrorEast</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;east&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]</span>
 
-<span class="k">class</span> <span class="nc">CmdExitErrorSouth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdExitErrorSouth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;south&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">]</span>
 
-<span class="k">class</span> <span class="nc">CmdExitErrorWest</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdExitErrorWest</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;west&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span>
 
@@ -180,8 +180,8 @@ exit-object, which is why you can see the exit in the room and just write its na
 <span class="c1"># just add this and makes it easier to expand with more </span>
 <span class="c1"># exit-errors in the future</span>
 
-<span class="k">class</span> <span class="nc">MovementFailCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">MovementFailCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorNorth</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorEast</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorWest</span><span class="p">())</span>
@@ -191,12 +191,12 @@ exit-object, which is why you can see the exit in the room and just write its na
 <p>We pack our commands in a new little cmdset; if we add this to our  <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>, we can just add more errors to <code class="docutils literal notranslate"><span class="pre">MovementFailCmdSet</span></code>  later without having to change code in two places.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">movecommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">movecommands</span>
 
 <span class="c1"># [...]</span>
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># [...]</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># [...]</span>
         <span class="c1"># this adds all the commands at once</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movecommands</span><span class="o">.</span><span class="n">MovementFailCmdSet</span><span class="p">)</span>
@@ -211,7 +211,7 @@ exit-object, which is why you can see the exit in the room and just write its na
 <section id="why-not-a-single-command">
 <h2>Why not a single command?<a class="headerlink" href="#why-not-a-single-command" title="Permalink to this headline">¶</a></h2>
 <p>So why didn’t we create a single error command above? Something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
    <span class="s2">&quot;Handles all exit-errors.&quot;</span>
    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;error_cmd&quot;</span>
    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> 

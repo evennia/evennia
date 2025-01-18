@@ -138,12 +138,12 @@
 <p>To install the reports contrib, just add the provided cmdset to your default AccountCmdSet:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in commands/default_cmdset.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_reports</span> <span class="kn">import</span> <span class="n">ReportsCmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReportsCmdSet</span>
 
-<span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ReportsCmdSet</span><span class="p">)</span>
 </pre></div>
@@ -225,9 +225,9 @@
 <div><p>Note: The contrib’s own commands - <code class="docutils literal notranslate"><span class="pre">CmdBug</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdIdea</span></code>, and <code class="docutils literal notranslate"><span class="pre">CmdReport</span></code> - are implemented the same way, so you can review them as examples.</p>
 </div></blockquote>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_reports.reports</span> <span class="kn">import</span> <span class="n">ReportCmdBase</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_reports.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReportCmdBase</span>
 
-<span class="k">class</span> <span class="nc">CmdCustomReport</span><span class="p">(</span><span class="n">ReportCmdBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdCustomReport</span><span class="p">(</span><span class="n">ReportCmdBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    file a custom report</span>
 

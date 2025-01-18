@@ -151,7 +151,7 @@ Before we continue, let’s expand with enums for use-slots and object types.</p
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     
     <span class="n">BACKPACK</span> <span class="o">=</span> <span class="s2">&quot;backpack&quot;</span>
     <span class="n">WEAPON_HAND</span> <span class="o">=</span> <span class="s2">&quot;weapon_hand&quot;</span>
@@ -160,7 +160,7 @@ Before we continue, let’s expand with enums for use-slots and object types.</p
     <span class="n">BODY</span> <span class="o">=</span> <span class="s2">&quot;body&quot;</span>  <span class="c1"># armor</span>
     <span class="n">HEAD</span> <span class="o">=</span> <span class="s2">&quot;head&quot;</span>  <span class="c1"># helmets</span>
 
-<span class="k">class</span> <span class="nc">ObjType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     
     <span class="n">WEAPON</span> <span class="o">=</span> <span class="s2">&quot;weapon&quot;</span>
     <span class="n">ARMOR</span> <span class="o">=</span> <span class="s2">&quot;armor&quot;</span>
@@ -188,13 +188,13 @@ a full set of objects implemented.</p>
 <p>We will make a base <code class="docutils literal notranslate"><span class="pre">EvAdventureObject</span></code> class off Evennia’s standard <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. We will then add child classes to represent the relevant types:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span> 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_obj_stats</span> 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_obj_stats</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span>
 
 
-<span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    Base for all evadventure objects. </span>
 <span class="sd">    </span>
@@ -209,40 +209,40 @@ a full set of objects implemented.</p>
 
     <span class="c1"># default evennia hooks</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when this object is first created. We convert the .obj_type </span>
 <span class="sd">        property to a database tag.&quot;&quot;&quot;</span>
         
         <span class="k">for</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;obj_type&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">	    </span><span class="sd">&quot;&quot;&quot;The top of the description&quot;&quot;&quot;</span> 
 	    <span class="k">return</span> <span class="s2">&quot;&quot;</span> 
 
-	<span class="k">def</span> <span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span><span class="w"> </span><span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">		</span><span class="sd">&quot;&quot;&quot;The main display - show object stats&quot;&quot;&quot;</span> 
 		<span class="k">return</span> <span class="n">get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">looker</span><span class="p">)</span>
 
     <span class="c1"># custom evadventure methods</span>
 
-	<span class="k">def</span> <span class="nf">has_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span> 
+	<span class="k">def</span><span class="w"> </span><span class="nf">has_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span> 
 <span class="w">		</span><span class="sd">&quot;&quot;&quot;Check if object is of a certain type&quot;&quot;&quot;</span> 
 		<span class="k">return</span> <span class="n">objtype</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before use. If returning False, can&#39;t be used&quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="kc">True</span> 
 
-	<span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+	<span class="k">def</span><span class="w"> </span><span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">		</span><span class="sd">&quot;&quot;&quot;Use this object, whatever that means&quot;&quot;&quot;</span> 
 		<span class="k">pass</span> 
 
-    <span class="k">def</span> <span class="nf">post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">	    </span><span class="sd">&quot;&quot;&quot;Always called after use.&quot;&quot;&quot;</span> 
 	    <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get any help text for this item&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;No help for this item&quot;</span>
 </pre></div>
@@ -251,7 +251,7 @@ a full set of objects implemented.</p>
 <h3><span class="section-number">4.2.1. </span>Using Attributes or not<a class="headerlink" href="#using-attributes-or-not" title="Permalink to this headline">¶</a></h3>
 <p>In theory, <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> does not change and <em>could</em> also be just set as a regular Python
 property on the class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span> 
     <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span> 
     <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> 
@@ -270,8 +270,8 @@ all objects of a particular size. So we should be safe.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is a method Evennia calls on every child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> whenever it is first created.</p>
 <p>We do a tricky thing here, converting our <code class="docutils literal notranslate"><span class="pre">.obj_type</span></code> to one or more <a class="reference internal" href="../../../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tagging the  object like this means you can later efficiently find all objects of a given type (or combination of
 types) with Evennia’s search functions:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ObjType</span> 
-    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjType</span> 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">search</span> 
     
     <span class="c1"># get all shields in the game</span>
     <span class="n">all_shields</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="n">ObjType</span><span class="o">.</span><span class="n">SHIELD</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;obj_type&quot;</span><span class="p">)</span>
@@ -285,18 +285,18 @@ types) with Evennia’s search functions:</p>
 <p>Some of the other object types are very simple so far.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ObjType</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjType</span> 
 
-<span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
     <span class="c1"># ... </span>
     
     
-<span class="k">class</span> <span class="nc">EvAdventureQuestObject</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuestObject</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Quest objects should usually not be possible to sell or trade.&quot;&quot;&quot;</span>
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">QUEST</span>
  
-<span class="k">class</span> <span class="nc">EvAdventureTreasure</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureTreasure</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Treasure is usually just for selling for coin&quot;&quot;&quot;</span>
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">TREASURE</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -311,14 +311,14 @@ types) with Evennia’s search functions:</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An item that can be used up&quot;&quot;&quot;</span> 
     
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">CONSUMABLE</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">uses</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before using. If returning False, abort use.&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
 			<span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
@@ -328,11 +328,11 @@ types) with Evennia’s search functions:</p>
 		    <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is used up.|n&quot;</span><span class="p">)</span>
 		    <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when using the item&quot;&quot;&quot;</span> 
         <span class="k">pass</span>
     
-    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after using the item&quot;&quot;&quot;</span> 
         <span class="c1"># detract a usage, deleting the item if used up.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -349,11 +349,11 @@ types) with Evennia’s search functions:</p>
 <p>All weapons need properties that describe how efficient they are in battle. To ‘use’ a weapon means to attack with it, so we can let the weapon itself handle all logic around performing an attack. Having the attack code on the weapon also means that if we in the future wanted a weapon doing something special on-attack (for example, a vampiric sword that heals the attacker when hurting the enemy), we could easily add that on the weapon subclass in question without modifying other code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">Ability</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all weapons&quot;&quot;&quot;</span>
 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span> 
@@ -366,7 +366,7 @@ types) with Evennia’s search functions:</p>
     <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
        <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
            <span class="c1"># we assume weapons can only be used in the same location</span>
            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
@@ -377,7 +377,7 @@ types) with Evennia’s search functions:</p>
            <span class="k">return</span> <span class="kc">False</span>
        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-   <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">       </span><span class="sd">&quot;&quot;&quot;When a weapon is used, it attacks an opponent&quot;&quot;&quot;</span>
 
        <span class="n">location</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">location</span>
@@ -421,7 +421,7 @@ types) with Evennia’s search functions:</p>
                    <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">-=</span> <span class="mi">1</span>
                <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
 
-   <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2"> breaks and can no longer be used!&quot;</span><span class="p">)</span>
 </pre></div>
@@ -474,13 +474,13 @@ types) with Evennia’s search functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
 
 <span class="c1"># ... </span>
-<span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
     <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
     <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRuneStone</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">EvAdventureConsumable</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRuneStone</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">EvAdventureConsumable</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base for all magical rune stones&quot;&quot;&quot;</span>
     
     <span class="n">obj_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span><span class="p">,</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">MAGIC</span><span class="p">)</span>
@@ -492,13 +492,13 @@ types) with Evennia’s search functions:</p>
     
     <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after usage/spell was cast&quot;&quot;&quot;</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span> 
         <span class="c1"># we don&#39;t delete the rune stone here, but </span>
         <span class="c1"># it must be reset on next rest.</span>
         
-    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh the rune stone (normally after rest)&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
@@ -515,7 +515,7 @@ types) with Evennia’s search functions:</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureAmor</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureAmor</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">ARMOR</span>
     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span> 
 
@@ -523,12 +523,12 @@ types) with Evennia’s search functions:</p>
     <span class="n">quality</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">EvAdventureShield</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureShield</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span>
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">SHIELD</span>
     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span> 
 
 
-<span class="k">class</span> <span class="nc">EvAdventureHelmet</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureHelmet</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span> 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">HELMET</span>
     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span>
 </pre></div>
@@ -540,13 +540,13 @@ types) with Evennia’s search functions:</p>
 <p>We will use this in the upcoming  <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment tutorial lesson</span></a> to represent when you have ‘nothing’  in your hands. This way we don’t need to add any special case for this.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span><span class="p">,</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span><span class="p">,</span> <span class="n">create_object</span>
 
 <span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="kc">None</span> 
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">WeaponBareHands</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeaponBareHands</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">):</span>
      <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span>
      <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span>
      <span class="n">attack_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span>
@@ -555,7 +555,7 @@ types) with Evennia’s search functions:</p>
      <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># let&#39;s assume fists are indestructible ...</span>
 
 
-<span class="k">def</span> <span class="nf">get_bare_hands</span><span class="p">():</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bare_hands</span><span class="p">():</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the bare hands&quot;&quot;&quot;</span> 
     <span class="k">global</span> <span class="n">_BARE_HANDS</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_BARE_HANDS</span><span class="p">:</span> 

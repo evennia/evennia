@@ -161,12 +161,12 @@ Rose
 <p>In other words, this method handles error messaging for you. A very common way to use it is in commands. You can put your command anywhere, but let’s try the pre-filled-in <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in for example mygame/commands/command.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span> <span class="k">as</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span> <span class="k">as</span> <span class="n">BaseCommand</span>
 
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span> 
     <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CmdQuickFind</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdQuickFind</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    Find an item in your current location.</span>
 
@@ -177,7 +177,7 @@ Rose
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quickfind&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
@@ -190,11 +190,11 @@ Rose
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdQuickFind</span>    <span class="c1"># &lt;-------</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdQuickFind</span>    <span class="c1"># &lt;-------</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ... </span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="c1"># ... </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdQuickFind</span><span class="p">())</span>   <span class="c1"># &lt;------</span>
 
@@ -237,7 +237,7 @@ inherits from <code class="docutils literal notranslate"><span class="pre">Defau
 <p>What is returned from the main search functions is actually a <code class="docutils literal notranslate"><span class="pre">queryset</span></code>. They can be treated like lists except that they can’t modified in-place. We’ll discuss querysets in the <a class="reference internal" href="Beginner-Tutorial-Django-queries.html"><span class="doc std std-doc">next lesson</span></a></p>
 </aside>
 <p>This searches for objects based on <code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">alias</span></code>.  The <code class="docutils literal notranslate"><span class="pre">.search</span></code> method we talked about in the previous section in fact wraps <code class="docutils literal notranslate"><span class="pre">evennia.search_object</span></code> and handles its output in various ways. Here’s the same example in Python code, for example as part of a command or coded system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span> 
 
 <span class="n">roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
 <span class="n">accts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="s2">&quot;YourName&quot;</span><span class="p">)</span>
@@ -441,12 +441,12 @@ all_fantasy_books = evennia.search_tag(&quot;fantasy&quot;, category=&quot;books
 </pre></div>
 </div>
 <p>If you e.g. have the <code class="docutils literal notranslate"><span class="pre">BlessedRose</span></code> class already imported you can also pass it directly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.flowers</span> <span class="kn">import</span> <span class="n">BlessedFlower</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.flowers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlessedFlower</span>
 <span class="n">blessed_roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">BlessedFlower</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A common use case is finding <em>all</em> items of a given typeclass, no matter what they are named. For this you don’t use <code class="docutils literal notranslate"><span class="pre">search_object</span></code>, but search with the typeclass directly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.objects.flowers</span> <span class="kn">import</span> <span class="n">Rose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects.flowers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rose</span>
 <span class="n">all_roses</span> <span class="o">=</span> <span class="n">Rose</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -475,7 +475,7 @@ eightball = evennia.search_object(&quot;#8&quot;)
 <h2><span class="section-number">11.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>Knowing how to find things is important and the tools from this section will serve you well. These tools will cover most of your regular needs.</p>
 <p>Not always though. If we go back to the example of a coin in a chest from before, you <em>could</em> use the following to dynamically figure out if there are any chests in the room with coins inside:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span>
 
 <span class="c1"># we assume only one match of each </span>
 <span class="n">dungeons</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;dungeon&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">)</span>

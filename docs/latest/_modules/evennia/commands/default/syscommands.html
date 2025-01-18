@@ -110,14 +110,14 @@
 <span class="sd">the line is just added to the editor buffer).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="c1"># The command keys the engine is calling</span>
 <span class="c1"># (the actual names all start with __)</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_MULTIMATCH</span><span class="p">,</span> <span class="n">CMD_NOINPUT</span><span class="p">,</span> <span class="n">CMD_NOMATCH</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">at_search_result</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">CMD_MULTIMATCH</span><span class="p">,</span> <span class="n">CMD_NOINPUT</span><span class="p">,</span> <span class="n">CMD_NOMATCH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">at_search_result</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -125,7 +125,7 @@
 <span class="c1"># (i.e. an lone return key)</span>
 
 
-<div class="viewcode-block" id="SystemNoInput"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput">[docs]</a><span class="k">class</span> <span class="nc">SystemNoInput</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoInput"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SystemNoInput</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called when there is no input given</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -133,7 +133,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_NOINPUT</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemNoInput.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoInput.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Do nothing.&quot;</span>
         <span class="k">pass</span></div></div>
 
@@ -142,7 +142,7 @@
 <span class="c1"># Command called when there was no match to the</span>
 <span class="c1"># command name</span>
 <span class="c1">#</span>
-<div class="viewcode-block" id="SystemNoMatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch">[docs]</a><span class="k">class</span> <span class="nc">SystemNoMatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoMatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SystemNoMatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No command was found matching the given input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -150,7 +150,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_NOMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemNoMatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoMatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is given the failed raw string as input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -160,7 +160,7 @@
 <span class="c1">#</span>
 <span class="c1"># Command called when there were multiple matches to the command.</span>
 <span class="c1">#</span>
-<div class="viewcode-block" id="SystemMultimatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch">[docs]</a><span class="k">class</span> <span class="nc">SystemMultimatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemMultimatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SystemMultimatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Multiple command matches.</span>
 
@@ -180,7 +180,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_MULTIMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemMultimatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemMultimatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle multiple-matches by using the at_search_result default handler.</span>
 

@@ -180,13 +180,13 @@ SQLite3 database.</p>
 <p>Make your changes in the <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     [...]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This is called when object is first created, only.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span> <span class="o">=</span> <span class="mi">1</span>
@@ -242,9 +242,9 @@ Character s “power” stat. It will be called on the following MUSH-like form:
 just import from that instead.</p>
 <p>Add the following to the end of the <code class="docutils literal notranslate"><span class="pre">command.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># end of command.py</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span> <span class="c1"># just for clarity; already imported above</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span> <span class="c1"># just for clarity; already imported above</span>
 
-<span class="k">class</span> <span class="nc">CmdSetPower</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdSetPower</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set the power of a character</span>
 
@@ -258,7 +258,7 @@ just import from that instead.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;+setpower&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;mush&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command&quot;</span>
         <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;You must supply a number between 1 and 10.&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -284,20 +284,20 @@ in the help list.</p>
 chargen system you would of course have more than one command here).</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and import your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> module at the top. We also
 import the default <code class="docutils literal notranslate"><span class="pre">CmdSet</span></code> class for the next step:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">command</span>
 </pre></div>
 </div>
 <p>Next scroll down and define a new command set (based on the base <code class="docutils literal notranslate"><span class="pre">CmdSet</span></code> class we just imported at
 the end of this file, to hold only our chargen-specific command(s):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># end of default_cmdsets.py</span>
 
-<span class="k">class</span> <span class="nc">ChargenCmdset</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChargenCmdset</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This cmdset it used in character generation areas.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Chargen&quot;</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This is called at initialization&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdSetPower</span><span class="p">())</span>
 </pre></div>
@@ -311,17 +311,17 @@ It’s cleaner to put it on a room, so it’s only available when players are in
 <h3>Chargen areas<a class="headerlink" href="#chargen-areas" title="Permalink to this headline">¶</a></h3>
 <p>We will create a simple Room typeclass to act as a template for all our Chargen areas. Edit
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/rooms.py</span></code> next:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.default_cmdsets</span> <span class="kn">import</span> <span class="n">ChargenCmdset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">commands.default_cmdsets</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChargenCmdset</span>
 
 <span class="c1"># ...</span>
 <span class="c1"># down at the end of rooms.py</span>
 
-<span class="k">class</span> <span class="nc">ChargenRoom</span><span class="p">(</span><span class="n">Room</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChargenRoom</span><span class="p">(</span><span class="n">Room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This room class is used by character-generation rooms. It makes</span>
 <span class="sd">    the ChargenCmdset available.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;this is called only at first creation&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ChargenCmdset</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -378,11 +378,11 @@ You +attack with a combat score of 12!
 </pre></div>
 </div>
 <p>Go back to <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> and add the command to the end like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    issues an attack</span>
 
@@ -395,7 +395,7 @@ You +attack with a combat score of 12!
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;+attack&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;mush&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Calculate the random score between 1-10*Power&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">power</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span>
@@ -452,16 +452,16 @@ comes into play for real).</p>
 <p>Go back to your custom Character typeclass in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. The default
 implementation of <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">appearance</span></code> is found in  <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><span class="xref myst py py-class">evennia.DefaultCharacter</span></a>.</p>
 <p>If you  want to make bigger changes you could copy &amp; paste the whole default thing into our overloading method. In our case the change is small though:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     [...]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This is called when object is first created, only.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The return from this method is what</span>
 <span class="sd">        looker sees when looking at this object.</span>
@@ -508,9 +508,9 @@ You created the NPC &#39;Anna&#39;.
 </pre></div>
 </div>
 <p>At the end of <code class="docutils literal notranslate"><span class="pre">command.py</span></code>, create our new command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
 
-<span class="k">class</span> <span class="nc">CmdCreateNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdCreateNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a new npc</span>
 
@@ -524,7 +524,7 @@ You created the NPC &#39;Anna&#39;.
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;call:not perm(nonpcs)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;mush&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;creates the object and names it&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -585,7 +585,7 @@ Set Anna&#39;s property &#39;power&#39; to 10.
 </pre></div>
 </div>
 <p>This is a slightly more complex command. It goes at the end of your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> file as before.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdEditNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdEditNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    edit an existing NPC</span>
 
@@ -606,7 +606,7 @@ Set Anna&#39;s property &#39;power&#39; to 10.
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not perm(nonpcs)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;mush&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;We need to do some parsing here&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="n">propname</span><span class="p">,</span> <span class="n">propval</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
@@ -620,7 +620,7 @@ Set Anna&#39;s property &#39;power&#39; to 10.
         <span class="c1"># a propval without a propname is meaningless</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propval</span> <span class="o">=</span> <span class="n">propval</span> <span class="k">if</span> <span class="n">propname</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;do the editing&quot;</span>
 
         <span class="n">allowed_propnames</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;power&quot;</span><span class="p">,</span> <span class="s2">&quot;attribute1&quot;</span><span class="p">,</span> <span class="s2">&quot;attribute2&quot;</span><span class="p">)</span>
@@ -683,7 +683,7 @@ Anna says, &#39;Hello!&#39;
 </pre></div>
 </div>
 <p>Again, add to the end of your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    controls an NPC</span>
 
@@ -697,7 +697,7 @@ Anna says, &#39;Hello!&#39;
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;call:not perm(nonpcs)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;mush&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Simple split of the = sign&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">cmdname</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -705,7 +705,7 @@ Anna says, &#39;Hello!&#39;
                              <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">cmdname</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Run the command&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">:</span>

@@ -153,22 +153,22 @@ It supports both persisted attributes and in-memory attributes by using Evennia�
 <h2>How to install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h2>
 <p>To enable component support for a typeclass,
 import and inherit the ComponentHolderMixin, similar to this</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span>
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComponentHolderMixin</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="c1"># ...</span>
 </pre></div>
 </div>
 <p>Components need to inherit the Component class and require a unique name.
 Components may inherit from other components but must specify another name.
 You can assign the same ‘slot’ to both components to have alternative implementations.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
 
 
-<span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
 
     
-<span class="k">class</span> <span class="nc">ItemHealth</span><span class="p">(</span><span class="n">Health</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemHealth</span><span class="p">(</span><span class="n">Health</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;item_health&quot;</span>
     <span class="n">slot</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
 </pre></div>
@@ -179,9 +179,9 @@ NDBField will store its values in the host’s NDB and will not persist.
 The key used will be ‘component_name::field_name’.
 They use AttributeProperty under the hood.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">DBField</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">DBField</span>
 
-<span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -194,9 +194,9 @@ TagField accepts a default value and can be used to store a single or multiple t
 Default values are automatically added when the component is added.
 Component Tags are cleared from the host if the component is removed.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">TagField</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">TagField</span>
 
-<span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">resistances</span> <span class="o">=</span> <span class="n">TagField</span><span class="p">()</span>
     <span class="n">vulnerability</span> <span class="o">=</span> <span class="n">TagField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;fire&quot;</span><span class="p">,</span> <span class="n">enforce_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -208,8 +208,8 @@ in the class via the ComponentProperty.
 These are components that will always be present in a typeclass.
 You can also pass kwargs to override the default values
 Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span>
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComponentHolderMixin</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">ComponentProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="n">hp</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_hp</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -239,16 +239,16 @@ You can then import all your components in that package’s <strong>init</strong
 I recommend placing the components package inside the typeclass package.
 In other words, create a folder named components inside your typeclass folder.
 Then, inside the ‘typeclasses/<strong>init</strong>.py’ file add the import to the folder, like</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">components</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">components</span>
 </pre></div>
 </div>
 <p>This ensures that the components package will be imported when the typeclasses are imported.
 You will also need to import each components inside the package’s own ‘typeclasses/components/<strong>init</strong>.py’ file.
 You only need to import each module/file from there but importing the right class is a good practice.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.components.health</span> <span class="kn">import</span> <span class="n">Health</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.components.health</span><span class="w"> </span><span class="kn">import</span> <span class="n">Health</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.components</span> <span class="kn">import</span> <span class="n">health</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">health</span>
 </pre></div>
 </div>
 <p>Both of the above examples will work.</p>
@@ -263,18 +263,18 @@ To avoid this, you must set autocreate=True on the field, like this.</p>
 </section>
 <section id="full-example">
 <h2>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems</span> <span class="kn">import</span> <span class="n">components</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">components</span>
 
 
 <span class="c1"># This is the Component class</span>
-<span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Health</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
 
     <span class="c1"># Stores the current and max values as Attributes on the host, defaulting to 100</span>
     <span class="n">current</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="nb">max</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -285,7 +285,7 @@ To avoid this, you must set autocreate=True on the field, like this.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_death</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span>
         <span class="n">hp</span> <span class="o">+=</span> <span class="n">value</span>
         <span class="k">if</span> <span class="n">hp</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_hp</span><span class="p">:</span>
@@ -294,25 +294,25 @@ To avoid this, you must set autocreate=True on the field, like this.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">hp</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">&lt;=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">on_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Behavior is defined on the typeclass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">on_death</span><span class="p">()</span>
 
 
 <span class="c1"># This is how the Character inherits the mixin and registers the component &#39;health&#39;</span>
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">ComponentProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># This is an example of a command that checks for the component</span>
-<span class="k">class</span> <span class="nc">Attack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Attack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;melee&#39;</span><span class="p">,</span> <span class="s1">&#39;hit&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">valid_target</span> <span class="o">=</span> <span class="kc">None</span>

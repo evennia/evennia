@@ -138,11 +138,11 @@ rolls for use by a human game master.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
 <span class="c1"># ...</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">dice</span>  <span class="o">&lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg</span><span class="w"> </span><span class="kn">import</span> <span class="n">dice</span>  <span class="o">&lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">())</span>  <span class="c1"># &lt;---</span>
 
@@ -178,7 +178,7 @@ was.</p>
 <h2>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h2>
 <p>You can specify the first argument as a string on standard RPG d-syntax (NdM,
 where N is the number of dice to roll, and M is the number sides per dice):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.dice</span><span class="w"> </span><span class="kn">import</span> <span class="n">roll</span>
 
 <span class="n">roll</span><span class="p">(</span><span class="s2">&quot;3d10 + 2&quot;</span><span class="p">)</span>
 </pre></div>
@@ -210,9 +210,9 @@ sets of dice and combine them in more advanced ways, you can do so with multiple
 <code class="docutils literal notranslate"><span class="pre">roll()</span></code> calls. Depending on what you need, you may just want to express this as
 helper functions specific for your game.</p>
 <p>Here’s how to roll a D&amp;D advantage roll (roll d20 twice, pick highest):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.dice</span><span class="w"> </span><span class="kn">import</span> <span class="n">roll</span>
 
-    <span class="k">def</span> <span class="nf">roll_d20_with_advantage</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_d20_with_advantage</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get biggest result of two d20 rolls&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;d20&quot;</span><span class="p">),</span> <span class="n">roll</span><span class="p">(</span><span class="s2">&quot;d20&quot;</span><span class="p">))</span>
 
@@ -220,9 +220,9 @@ helper functions specific for your game.</p>
 </div>
 <p>Here’s an example of a Free-League style dice pool, where you roll a pile of d6
 and want to know how many 1s and sixes you get:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.dice</span><span class="w"> </span><span class="kn">import</span> <span class="n">roll</span>
 
-<span class="k">def</span> <span class="nf">roll_dice_pool</span><span class="p">(</span><span class="n">poolsize</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_dice_pool</span><span class="p">(</span><span class="n">poolsize</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (number_of_ones, number_of_sixes)&quot;&quot;&quot;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">poolsize</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>

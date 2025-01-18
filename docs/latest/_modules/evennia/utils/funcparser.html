@@ -136,14 +136,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">callables_from_module</span><span class="p">,</span>
     <span class="n">crop</span><span class="p">,</span>
     <span class="n">int2str</span><span class="p">,</span>
@@ -153,8 +153,8 @@
     <span class="n">safe_convert_to_types</span><span class="p">,</span>
     <span class="n">variable_from_module</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.verb_conjugation.conjugate</span> <span class="kn">import</span> <span class="n">verb_actor_stance_components</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.verb_conjugation.pronouns</span> <span class="kn">import</span> <span class="n">pronoun_to_viewpoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.verb_conjugation.conjugate</span><span class="w"> </span><span class="kn">import</span> <span class="n">verb_actor_stance_components</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.verb_conjugation.pronouns</span><span class="w"> </span><span class="kn">import</span> <span class="n">pronoun_to_viewpoints</span>
 
 <span class="c1"># setup</span>
 
@@ -165,7 +165,7 @@
 
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">_ParsedFunc</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ParsedFunc</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a function parsed from the string</span>
 
@@ -187,14 +187,14 @@
     <span class="n">open_lcurly</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">exec_return</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">infuncstr</span>
 
 
-<div class="viewcode-block" id="ParsingError"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.ParsingError">[docs]</a><span class="k">class</span> <span class="nc">ParsingError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="ParsingError"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.ParsingError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParsingError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Failed to parse for some reason.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -202,14 +202,14 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="FuncParser"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser">[docs]</a><span class="k">class</span> <span class="nc">FuncParser</span><span class="p">:</span>
+<div class="viewcode-block" id="FuncParser"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FuncParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up a parser for strings containing `$funcname(*args, **kwargs)`</span>
 <span class="sd">    substrings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FuncParser.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="FuncParser.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">callables</span><span class="p">,</span>
         <span class="n">start_char</span><span class="o">=</span><span class="n">_START_CHAR</span><span class="p">,</span>
@@ -271,7 +271,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_char</span> <span class="o">=</span> <span class="n">start_char</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_kwargs</span> <span class="o">=</span> <span class="n">default_kwargs</span></div>
 
-<div class="viewcode-block" id="FuncParser.validate_callables"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.validate_callables">[docs]</a>    <span class="k">def</span> <span class="nf">validate_callables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callables</span><span class="p">):</span>
+<div class="viewcode-block" id="FuncParser.validate_callables"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.validate_callables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">validate_callables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callables</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the loaded callables. Each callable must support at least</span>
 <span class="sd">        `funcname(*args, **kwargs)`.</span>
@@ -297,7 +297,7 @@
                 <span class="k">assert</span> <span class="n">mapping</span><span class="o">.</span><span class="n">varargs</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Parse-func callable &#39;</span><span class="si">{</span><span class="n">funcname</span><span class="si">}</span><span class="s2">&#39; does not support *args.&quot;</span>
                 <span class="k">assert</span> <span class="n">mapping</span><span class="o">.</span><span class="n">varkw</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Parse-func callable &#39;</span><span class="si">{</span><span class="n">funcname</span><span class="si">}</span><span class="s2">&#39; does not support **kwargs.&quot;</span></div>
 
-<div class="viewcode-block" id="FuncParser.execute"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsedfunc</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">reserved_kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="FuncParser.execute"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsedfunc</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">reserved_kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a parsed function</span>
 
@@ -362,7 +362,7 @@
                 <span class="k">raise</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">parsedfunc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="FuncParser.parse"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+<div class="viewcode-block" id="FuncParser.parse"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">string</span><span class="p">,</span>
         <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -426,18 +426,20 @@
         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># string parts inside the current level of $funcdef (including $)</span>
         <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ichar</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">escaped</span><span class="p">:</span>
                 <span class="c1"># always store escaped characters verbatim</span>
                 <span class="k">if</span> <span class="n">curr_func</span><span class="p">:</span>
                     <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
+                    <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">+=</span> <span class="n">char</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">fullstr</span> <span class="o">+=</span> <span class="n">char</span>
                 <span class="n">escaped</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="n">escape_char</span><span class="p">:</span>
-                <span class="c1"># don&#39;t store the escape-char itself</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="n">escape_char</span> <span class="ow">and</span> <span class="n">string</span><span class="p">[</span><span class="n">ichar</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">ichar</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="n">escape_char</span><span class="p">:</span>
+                <span class="c1"># don&#39;t store the escape-char itself, but keep one escape-char,</span>
+                <span class="c1"># if it&#39;s followed by another escape-char</span>
                 <span class="n">escaped</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">continue</span>
 
@@ -464,7 +466,8 @@
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lsquare</span> <span class="o">=</span> <span class="n">open_lsquare</span>
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lcurly</span> <span class="o">=</span> <span class="n">open_lcurly</span>
                         <span class="c1"># we must strip the remaining funcstr so it&#39;s not counted twice</span>
-                        <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">=</span> <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)]</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">=</span> <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)]</span>
                         <span class="n">current_kwarg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -669,7 +672,7 @@
 
         <span class="k">return</span> <span class="n">fullstr</span></div>
 
-<div class="viewcode-block" id="FuncParser.parse_to_any"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.parse_to_any">[docs]</a>    <span class="k">def</span> <span class="nf">parse_to_any</span><span class="p">(</span>
+<div class="viewcode-block" id="FuncParser.parse_to_any"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser.parse_to_any">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_to_any</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">reserved_kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -737,7 +740,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="funcparser_callable_eval"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_eval">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_eval"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_eval">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Funcparser callable. This will combine safe evaluations to try to parse the</span>
 <span class="sd">    incoming string into a python object. If it fails, the return will be same</span>
@@ -759,7 +762,7 @@
     <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_toint"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_toint">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_toint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_toint"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_toint">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_toint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Usage: $toint(43.0) -&gt; 43&quot;&quot;&quot;</span>
     <span class="n">inp</span> <span class="o">=</span> <span class="n">funcparser_callable_eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -770,7 +773,7 @@
         <span class="k">return</span> <span class="n">inp</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_int2str"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_int2str">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_int2str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_int2str"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_int2str">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_int2str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $int2str(1) -&gt; &#39;one&#39; etc, up to 12-&gt;twelve.</span>
 
@@ -788,7 +791,7 @@
     <span class="k">return</span> <span class="n">int2str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_an"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_an">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_an</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_an"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_an">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_an</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $an(thing) -&gt; a thing</span>
 
@@ -803,7 +806,7 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<span class="k">def</span> <span class="nf">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper operating on two arguments</span>
 
@@ -837,27 +840,27 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="funcparser_callable_add"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_add">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_add"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_add">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Usage: `$add(val1, val2) -&gt; val1 + val2`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_sub"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_sub">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_sub</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_sub"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_sub">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_sub</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Usage: ``$sub(val1, val2) -&gt; val1 - val2`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_mult"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_mult">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_mult</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_mult"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_mult">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_mult</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Usage: `$mult(val1, val2) -&gt; val1 * val2`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_div"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_div">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_div</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_div"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_div">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_div</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Usage: `$mult(val1, val2) -&gt; val1 / val2`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_apply_operation_two_elements</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_round"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_round">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_round</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_round"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_round">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_round</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Funcparser callable. Rounds an incoming float to a</span>
 <span class="sd">    certain number of significant digits.</span>
@@ -890,7 +893,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_random"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_random">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_random"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_random">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Funcparser callable. Returns a random number between 0 and 1, from 0 to a</span>
 <span class="sd">    maximum value, or within a given range (inclusive).</span>
@@ -934,7 +937,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_randint"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_randint">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_randint"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_randint">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $randint(start, end):</span>
 
@@ -944,7 +947,7 @@
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">funcparser_callable_random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_choice"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_choice">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_choice</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_choice"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_choice">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_choice</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Picks a random choice from a list.</span>
 
@@ -984,7 +987,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_pad"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pad">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_pad"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pad">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Pads text to given width, optionally with fill-characters</span>
 
@@ -1019,7 +1022,7 @@
     <span class="k">return</span> <span class="n">pad</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="n">fillchar</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_crop"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_crop">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_crop"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_crop">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Crops ingoing text to given widths.</span>
 
@@ -1047,7 +1050,7 @@
     <span class="k">return</span> <span class="n">crop</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">suffix</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_space"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_space">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_space</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_space"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_space">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_space</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $space(43)</span>
 
@@ -1063,7 +1066,7 @@
     <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_justify">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_justify">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Justify text across a width, default across screen width.</span>
 
@@ -1098,22 +1101,22 @@
 
 
 <span class="c1"># legacy for backwards compatibility</span>
-<div class="viewcode-block" id="funcparser_callable_left_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_left_justify">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_left_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_left_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_left_justify">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_left_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Usage: $ljust(text)&quot;</span>
     <span class="k">return</span> <span class="n">funcparser_callable_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_right_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_right_justify">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_right_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_right_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_right_justify">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_right_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Usage: $rjust(text)&quot;</span>
     <span class="k">return</span> <span class="n">funcparser_callable_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_center_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_center_justify">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_center_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_center_justify"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_center_justify">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_center_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Usage: $cjust(text)&quot;</span>
     <span class="k">return</span> <span class="n">funcparser_callable_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_clr"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_clr">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_clr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_clr"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_clr">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_clr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Colorizes nested text.</span>
 
@@ -1154,7 +1157,7 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">startclr</span><span class="si">}{</span><span class="n">text</span><span class="si">}{</span><span class="n">endclr</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_pluralize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pluralize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pluralize</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_pluralize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pluralize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_pluralize</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Handles pluralization of a word.</span>
 
@@ -1184,7 +1187,7 @@
     <span class="k">return</span> <span class="n">singular_word</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">))</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">plural_word</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_search"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_search</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_search"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_search</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FuncParser callable. Finds an object based on name or #dbref. Note that</span>
 <span class="sd">    this requries the parser be called with the caller&#39;s Session for proper</span>
@@ -1263,7 +1266,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_list</span> <span class="k">else</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_search_list"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search_list">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_search_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_search_list"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search_list">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_search_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $objlist(#123)</span>
 
@@ -1275,7 +1278,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_you"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_you</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_you"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_you</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1330,7 +1333,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_you_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_you_capitalize</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_you_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you_capitalize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_you_capitalize</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1342,7 +1345,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_your"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_your</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_your"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_your</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1400,7 +1403,7 @@
     <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;s&quot;</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_your_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_your_capitalize</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_your_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your_capitalize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_your_capitalize</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1412,7 +1415,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_conjugate"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_conjugate"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_conjugate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $conj(word, [key])</span>
 
@@ -1458,7 +1461,7 @@
     <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_conjugate_for_pronouns"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate_for_pronouns</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_conjugate_for_pronouns"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate_for_pronouns">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_conjugate_for_pronouns</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1516,7 +1519,7 @@
     <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_pronoun</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1666,7 +1669,7 @@
     <span class="k">return</span> <span class="n">pronoun_1st_or_2nd_person</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">pronoun_3rd_person</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_pronoun_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun_capitalize</span><span class="p">(</span>
+<div class="viewcode-block" id="funcparser_callable_pronoun_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">funcparser_callable_pronoun_capitalize</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

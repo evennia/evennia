@@ -161,18 +161,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">random</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
 
-<span class="kn">from</span> <span class="nn">.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span><span class="p">,</span> <span class="n">CraftingValidationError</span><span class="p">,</span> <span class="n">craft</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CraftingRecipe</span><span class="p">,</span> <span class="n">CraftingValidationError</span><span class="p">,</span> <span class="n">craft</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Sword recipe</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="PigIronRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe">[docs]</a><span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="PigIronRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pig iron is a high-carbon result of melting iron in a blast furnace.</span>
 
@@ -190,7 +190,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="CrucibleSteelRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe">[docs]</a><span class="k">class</span> <span class="nc">CrucibleSteelRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="CrucibleSteelRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CrucibleSteelRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixing pig iron with impurities like ash and sand and melting it in a</span>
 <span class="sd">    crucible produces a medieval level of steel (like damascus steel).</span>
@@ -209,7 +209,7 @@
     <span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">_SwordSmithingBaseRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_SwordSmithingBaseRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A parent for all metallurgy sword-creation recipes. Those have a chance to</span>
 <span class="sd">    failure but since steel is not lost in the process you can always try</span>
@@ -222,7 +222,7 @@
         <span class="s2">&quot;You work and work but you are not happy with the result. You need to start over.&quot;</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Making a sword blade takes skill. Here we emulate this by introducing a</span>
 <span class="sd">        random chance of failure (in a real game this could be a skill check</span>
@@ -255,7 +255,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="SwordBladeRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordBladeRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="SwordBladeRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SwordBladeRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A [sword]blade requires hammering the steel out into shape using heat and</span>
 <span class="sd">    force. This also includes the tang, which is the base for the hilt (the</span>
@@ -275,7 +275,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SwordPommelRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordPommelRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="SwordPommelRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SwordPommelRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The pommel is the &#39;button&#39; or &#39;ball&#39; etc the end of the sword hilt, holding</span>
 <span class="sd">    it together.</span>
@@ -294,7 +294,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SwordGuardRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordGuardRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="SwordGuardRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SwordGuardRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The guard stops the hand from accidentally sliding off the hilt onto the</span>
 <span class="sd">    sword&#39;s blade and also protects the hand when parrying.</span>
@@ -313,7 +313,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="RawhideRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe">[docs]</a><span class="k">class</span> <span class="nc">RawhideRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="RawhideRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RawhideRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rawhide is animal skin cleaned and stripped of hair.</span>
 
@@ -331,7 +331,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="OakBarkRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe">[docs]</a><span class="k">class</span> <span class="nc">OakBarkRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="OakBarkRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OakBarkRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The actual thing needed for tanning leather is Tannin, but we skip</span>
 <span class="sd">    the step of refining tannin from the bark and use the bark as-is.</span>
@@ -356,7 +356,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="LeatherRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe">[docs]</a><span class="k">class</span> <span class="nc">LeatherRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="LeatherRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LeatherRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Leather is produced by tanning rawhide in a process traditionally involving</span>
 <span class="sd">    the chemical Tannin. Here we abbreviate this process a bit. Maybe a</span>
@@ -376,7 +376,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SwordHandleRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordHandleRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="SwordHandleRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SwordHandleRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The handle is the part of the hilt between the guard and the pommel where</span>
 <span class="sd">    you hold the sword. It consists of wooden pieces around the steel tang. It</span>
@@ -396,7 +396,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SwordRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="SwordRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SwordRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A finished sword consists of a Blade ending in a non-sharp part called the</span>
 <span class="sd">    Tang. The cross Guard is put over the tang against the edge of the blade.</span>
@@ -430,7 +430,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<span class="k">class</span> <span class="nc">_MagicRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_MagicRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A base &#39;recipe&#39; to represent magical spells.</span>
 
@@ -457,7 +457,7 @@
     <span class="n">error_too_low_skill_level</span> <span class="o">=</span> <span class="s2">&quot;Your skill </span><span class="si">{skill_name}</span><span class="s2"> is too low to cast </span><span class="si">{spell}</span><span class="s2">.&quot;</span>
     <span class="n">error_no_skill_roll</span> <span class="o">=</span> <span class="s2">&quot;You must have the skill </span><span class="si">{skill_name}</span><span class="s2"> to cast the spell </span><span class="si">{spell}</span><span class="s2">.&quot;</span>
 
-    <span class="k">def</span> <span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is where we do input validation. We want to do the</span>
 <span class="sd">        normal validation of the tools, but also check for a skill</span>
@@ -496,7 +496,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_no_skill_roll</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skill_roll</span><span class="p">,</span> <span class="n">spell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">CraftingValidationError</span>
 
-    <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &#39;Craft&#39; the magical effect. When we get to this point we already know we have all the</span>
 <span class="sd">        prequisite for creating the effect. In this example we will store the effect on the crafter;</span>
@@ -515,7 +515,7 @@
             <span class="c1"># a failure!</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_effects</span>
 
-    <span class="k">def</span> <span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">craft_result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">craft_result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always called at the end of crafting, regardless of successful or not.</span>
 
@@ -533,7 +533,7 @@
         <span class="k">return</span> <span class="n">craft_result</span>
 
 
-<div class="viewcode-block" id="FireballRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe">[docs]</a><span class="k">class</span> <span class="nc">FireballRecipe</span><span class="p">(</span><span class="n">_MagicRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="FireballRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FireballRecipe</span><span class="p">(</span><span class="n">_MagicRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Fireball is a magical effect that can be thrown at a target to cause damage.</span>
 
@@ -550,7 +550,7 @@
     <span class="n">failure_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;self_fire_damage&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mana_cost&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="HealingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe">[docs]</a><span class="k">class</span> <span class="nc">HealingRecipe</span><span class="p">(</span><span class="n">_MagicRecipe</span><span class="p">):</span>
+<div class="viewcode-block" id="HealingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HealingRecipe</span><span class="p">(</span><span class="n">_MagicRecipe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Healing magic will restore a certain amount of health to the target over time.</span>
 
@@ -567,7 +567,7 @@
     <span class="n">failure_effects</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="CmdCast"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast">[docs]</a><span class="k">class</span> <span class="nc">CmdCast</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCast"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdCast</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cast a magical spell.</span>
 
@@ -578,7 +578,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cast&quot;</span>
 
-<div class="viewcode-block" id="CmdCast.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCast.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple parser, assuming spellname doesn&#39;t have spaces.</span>
 <span class="sd">        Stores result in self.target and self.spellname.</span>
@@ -602,7 +602,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span></div>
 
-<div class="viewcode-block" id="CmdCast.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCast.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># all items carried by the caller could work</span>
         <span class="n">possible_tools</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span>
 

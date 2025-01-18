@@ -100,18 +100,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
-<span class="kn">from</span> <span class="nn">django_filters.filters</span> <span class="kn">import</span> <span class="n">EMPTY_VALUES</span><span class="p">,</span> <span class="n">CharFilter</span>
-<span class="kn">from</span> <span class="nn">django_filters.rest_framework.filterset</span> <span class="kn">import</span> <span class="n">FilterSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django_filters.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EMPTY_VALUES</span><span class="p">,</span> <span class="n">CharFilter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django_filters.rest_framework.filterset</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilterSet</span>
 
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
 
 
-<div class="viewcode-block" id="get_tag_query"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.get_tag_query">[docs]</a><span class="k">def</span> <span class="nf">get_tag_query</span><span class="p">(</span><span class="n">tag_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Q</span><span class="p">:</span>
+<div class="viewcode-block" id="get_tag_query"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.get_tag_query">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_tag_query</span><span class="p">(</span><span class="n">tag_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Q</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a Q object for searching by tag names for typeclasses</span>
 <span class="sd">    Args:</span>
@@ -125,7 +125,7 @@
     <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_tagtype</span><span class="o">=</span><span class="n">tag_type</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TagTypeFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.TagTypeFilter">[docs]</a><span class="k">class</span> <span class="nc">TagTypeFilter</span><span class="p">(</span><span class="n">CharFilter</span><span class="p">):</span>
+<div class="viewcode-block" id="TagTypeFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.TagTypeFilter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TagTypeFilter</span><span class="p">(</span><span class="n">CharFilter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class lets you create different filters for tags of a specified db_tagtype.</span>
 
@@ -133,7 +133,7 @@
 
     <span class="n">tag_type</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TagTypeFilter.filter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.TagTypeFilter.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="TagTypeFilter.filter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.TagTypeFilter.filter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># if no value is specified, we don&#39;t use the filter</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">EMPTY_VALUES</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">qs</span>
@@ -141,13 +141,13 @@
         <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">get_tag_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_type</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="AliasFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AliasFilter">[docs]</a><span class="k">class</span> <span class="nc">AliasFilter</span><span class="p">(</span><span class="n">TagTypeFilter</span><span class="p">):</span>
+<div class="viewcode-block" id="AliasFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AliasFilter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AliasFilter</span><span class="p">(</span><span class="n">TagTypeFilter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A filter for objects by their aliases (tags with a tagtype of &#39;alias&#39;&quot;&quot;&quot;</span>
 
     <span class="n">tag_type</span> <span class="o">=</span> <span class="s2">&quot;alias&quot;</span></div>
 
 
-<div class="viewcode-block" id="PermissionFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.PermissionFilter">[docs]</a><span class="k">class</span> <span class="nc">PermissionFilter</span><span class="p">(</span><span class="n">TagTypeFilter</span><span class="p">):</span>
+<div class="viewcode-block" id="PermissionFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.PermissionFilter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PermissionFilter</span><span class="p">(</span><span class="n">TagTypeFilter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A filter for objects by their permissions (tags with a tagtype of &#39;permission&#39;&quot;&quot;&quot;</span>
 
     <span class="n">tag_type</span> <span class="o">=</span> <span class="s2">&quot;permission&quot;</span></div>
@@ -156,7 +156,7 @@
 <span class="n">SHARED_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tags__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tags__db_category&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="BaseTypeclassFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.BaseTypeclassFilterSet">[docs]</a><span class="k">class</span> <span class="nc">BaseTypeclassFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTypeclassFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.BaseTypeclassFilterSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseTypeclassFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A parent class with filters for aliases and permissions</span>
 
@@ -167,7 +167,7 @@
     <span class="n">permission</span> <span class="o">=</span> <span class="n">PermissionFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTypeclassFilterSet.filter_name"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.BaseTypeclassFilterSet.filter_name">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">filter_name</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_name</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filters a queryset by aliases or the key of the typeclass</span>
 <span class="sd">        Args:</span>
@@ -183,13 +183,13 @@
         <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This adds filters for ObjectDB instances - characters, rooms, exits, etc</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ObjectDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span>
             <span class="s2">&quot;db_location__db_key&quot;</span><span class="p">,</span>
@@ -199,12 +199,12 @@
         <span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="AccountDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This adds filters for Account objects&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AccountDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AccountDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">fi</span>
@@ -213,10 +213,10 @@
         <span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="ScriptDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This adds filters for Script objects&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ScriptDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ScriptDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span>
             <span class="s2">&quot;db_desc&quot;</span><span class="p">,</span>
@@ -230,7 +230,7 @@
         <span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="HelpFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.HelpFilterSet">[docs]</a><span class="k">class</span> <span class="nc">HelpFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.HelpFilterSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filter for help entries</span>
 

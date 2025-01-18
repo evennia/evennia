@@ -244,15 +244,15 @@ keep in here.</p>
 ‘temporary character sheet’.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
 
-<span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">chargen_tables</span>
-<span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.random_tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">chargen_tables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">dice</span>
 
-<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="nf">_random_ability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_random_ability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ability_changes</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># how many times we tried swap abilities</span>
 
         <span class="c1"># name will likely be modified later</span>
@@ -336,11 +336,11 @@ Abilities <em>once</em>. We will use this to know if it has been done or not.</p
 <span class="si">{equipment}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">equipment</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">backpack</span>
@@ -371,16 +371,16 @@ This is a bit more involved.</p>
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.spawner</span><span class="w"> </span><span class="kn">import</span> <span class="n">spawn</span>
 
 
-<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># create character object with given abilities</span>
         <span class="n">new_character</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
             <span class="n">EvAdventureCharacter</span><span class="p">,</span>
@@ -436,7 +436,7 @@ armor” etc.</p>
 <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
 
 <span class="c1"># ...</span>
 
@@ -445,7 +445,7 @@ armor” etc.</p>
 
 <span class="c1"># this goes to the bottom of the module</span>
 
-<span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
 
@@ -482,7 +482,7 @@ actions.</p>
 
 <span class="c1"># at the end of the module, but before the `start_chargen` function</span>
 
-<span class="k">def</span> <span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
 
@@ -549,7 +549,7 @@ to each node, since that contains our temporary character sheet.</p>
 
 <span class="c1"># after previous node</span>
 
-<span class="k">def</span> <span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_change_name below to check what user</span>
 <span class="sd">    entered and update the name if appropriate.</span>
@@ -562,7 +562,7 @@ to each node, since that contains our temporary character sheet.</p>
     <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<span class="k">def</span> <span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the random name of the character.</span>
 
@@ -620,7 +620,7 @@ were at.</p>
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_swap_abilities to parse the user&#39;s input and swap ability</span>
 <span class="sd">    values.</span>
@@ -652,7 +652,7 @@ were at.</p>
     <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<span class="k">def</span> <span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One is allowed to swap the values of two abilities around, once.</span>
 
@@ -713,7 +713,7 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
 </section>
 <section id="tying-the-nodes-together">
 <h2><span class="section-number">6.9. </span>Tying the nodes together<a class="headerlink" href="#tying-the-nodes-together" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
 

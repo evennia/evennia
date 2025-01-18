@@ -244,7 +244,7 @@ You<span class="w"> </span>use<span class="w"> </span>Potion<span class="w"> </s
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.combat_base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
    <span class="n">CombatActionAttack</span><span class="p">,</span>
    <span class="n">CombatActionHold</span><span class="p">,</span>
    <span class="n">CombatActionStunt</span><span class="p">,</span>
@@ -253,9 +253,9 @@ You<span class="w"> </span>use<span class="w"> </span>Potion<span class="w"> </s
    <span class="n">EvAdventureCombatBaseHandler</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="n">EvAdventureCombatBaseHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.combat_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCombatBaseHandler</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
@@ -301,11 +301,11 @@ You<span class="w"> </span>use<span class="w"> </span>Potion<span class="w"> </s
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
 	<span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">           Get a listing of the two &#39;sides&#39; of this combat,</span>
 <span class="sd">           m the perspective of the provided combatant.</span>
@@ -338,22 +338,22 @@ You<span class="w"> </span>use<span class="w"> </span>Potion<span class="w"> </s
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
 	<span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
 	        <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleeing_combatants</span>
 	        <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
         <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -373,11 +373,11 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new combatant to the battle. Can be called multiple times safely.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -386,7 +386,7 @@ This is new compared to the base handler.</p>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a combatant from the battle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -403,11 +403,11 @@ This is new compared to the base handler.</p>
 <p>Since you can’t just move away from the room to flee turnbased combat, we need to add a new <code class="docutils literal notranslate"><span class="pre">CombatAction</span></code> subclass like the ones we created in the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html#actions"><span class="std std-doc">base combat lesson</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="n">CombatAction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.combat_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CombatAction</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CombatActionFlee</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionFlee</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start (or continue) fleeing/disengaging from combat.</span>
 
@@ -416,7 +416,7 @@ This is new compared to the base handler.</p>
 <span class="sd">        }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">:</span>
@@ -436,7 +436,7 @@ This is new compared to the base handler.</p>
             <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
 	<span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
@@ -459,11 +459,11 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_dict</span>
 
         <span class="c1"># track who inserted actions this turn (non-persistent)</span>
@@ -533,15 +533,15 @@ This is new compared to the base handler.</p>
 <span class="normal">51</span>
 <span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
         <span class="c1"># this gets the next dict and rotates the queue</span>
 <span class="hll">        <span class="n">action_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span><span class="p">)</span>
 </span>
@@ -564,7 +564,7 @@ This is new compared to the base handler.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span>
 
 
-   <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called every time Script repeats</span>
 <span class="sd">        (every `interval` seconds). Performs a full turn of</span>
@@ -673,16 +673,16 @@ This is new compared to the base handler.</p>
 <span class="normal">70</span>
 <span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_to_string</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-     <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the combat immediately.</span>
 
@@ -692,7 +692,7 @@ This is new compared to the base handler.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if it&#39;s time to stop combat&quot;&quot;&quot;</span>
 
         <span class="c1"># check if anyone is defeated</span>
@@ -756,17 +756,17 @@ This is new compared to the base handler.</p>
 <section id="start-combat">
 <h3><span class="section-number">11.2.8. </span>Start combat<a class="headerlink" href="#start-combat" title="Permalink to this headline">¶</a></h3>
 <p>Since we are using the timer-component of the <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> to tick our combat, we also need a helper method to ‘start’ that.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_to_string</span>
 
 <span class="c1"># in evadventure/combat_turnbased.py</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This actually starts the combat. It&#39;s safe to run this multiple times</span>
 <span class="sd">        since it will only start combat if it isn&#39;t already running.</span>
@@ -784,7 +784,7 @@ This is new compared to the base handler.</p>
 <h2><span class="section-number">11.3. </span>Using EvMenu for the combat menu<a class="headerlink" href="#using-evmenu-for-the-combat-menu" title="Permalink to this headline">¶</a></h2>
 <p>The <em>EvMenu</em> used to create in-game menues in Evennia. We used a simple EvMenu already in the <a class="reference internal" href="Beginner-Tutorial-Chargen.html"><span class="doc std std-doc">Character Generation Lesson</span></a>. This time we’ll need to be a bit more advanced.  While <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">The EvMenu documentation</span></a> describe its functionality in more detail, we will give a quick overview of how it works here.</p>
 <p>An EvMenu is made up of <em>nodes</em>, which are regular functions on this form (somewhat simplified here, there are more options):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;some text to show in the node&quot;</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
@@ -814,7 +814,7 @@ This is new compared to the base handler.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">option</span></code> dict has a key <code class="docutils literal notranslate"><span class="pre">&quot;goto&quot;</span></code> that determines which node the player should jump to if they choose that option. Inside the menu, each node needs to be referenced with these names (like <code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code> etc).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">&quot;goto&quot;</span></code> value of each option can either specify the name directly (like <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code>) <em>or</em> it can be given as a tuple <code class="docutils literal notranslate"><span class="pre">(callable,</span> <span class="pre">{keywords})</span></code>. This <code class="docutils literal notranslate"><span class="pre">callable</span></code> is <em>called</em> and is expected to in turn return the next node-name to use (like <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code>).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">callable</span></code> (often called a “goto callable”) looks very similar to a node function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_goto_when_choosing_option1</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_goto_when_choosing_option1</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># do whatever is needed to determine the next node</span>
     <span class="k">return</span> <span class="n">nodename</span>  <span class="c1"># also nodename, dict works</span>
 </pre></div>
@@ -827,7 +827,7 @@ This is new compared to the base handler.</p>
 <p>The goto-callable must return the name of the next node. Optionally, you can return both  <code class="docutils literal notranslate"><span class="pre">nodename,</span> <span class="pre">{kwargs}</span></code>. If you do the next node will get those kwargs as ingoing <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. This way you can pass information from one node to the next. A special feature is that if <code class="docutils literal notranslate"><span class="pre">nodename</span></code> is returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the <em>current</em> node will be <em>rerun</em> again.</p>
 <p>Here’s a (somewhat contrived) example of how the goto-callable and node-function hang together:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># goto-callable</span>
-<span class="k">def</span> <span class="nf">_my_goto_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_my_goto_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">info_number</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;info_number&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">info_number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;node1&quot;</span>
@@ -836,7 +836,7 @@ This is new compared to the base handler.</p>
 
 
 <span class="c1"># node function</span>
-<span class="k">def</span> <span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Some node text&quot;</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span>
@@ -942,11 +942,11 @@ This is new compared to the base handler.</p>
 <h3><span class="section-number">11.4.2. </span>Getting or setting the combathandler<a class="headerlink" href="#getting-or-setting-the-combathandler" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">turn_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">flee_time</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">turn_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">flee_time</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">EvAdventureTurnbasedCombatHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
         <span class="n">interval</span><span class="o">=</span><span class="n">turn_timeout</span><span class="p">,</span>
@@ -964,7 +964,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
     <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;node_combat&quot;</span>
@@ -980,7 +980,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">_rerun_current_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rerun_current_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
 </pre></div>
 </div>
@@ -1009,7 +1009,7 @@ This is new compared to the base handler.</p>
 <p>Furthermore, we want the ability to go “back” to the previous node like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some other node (shown only as an example)</span>
 
-<span class="k">def</span> <span class="nf">some_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">some_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
@@ -1030,7 +1030,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">_step_wizard</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_step_wizard</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="c1"># get the steps and count them</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="p">[])</span>
@@ -1132,7 +1132,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">node_choose_enemy_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_enemy_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an enemy to target&quot;</span>
 
@@ -1154,15 +1154,15 @@ This is new compared to the base handler.</p>
 </span>    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
 
-<span class="k">def</span> <span class="nf">node_choose_enemy_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_enemy_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
      <span class="c1"># almost the same, except storing &quot;recipient&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">node_choose_allied_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_allied_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
      <span class="c1"># almost the same, except using allies + yourself</span>
 
 
-<span class="k">def</span> <span class="nf">node_choose_allied_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_allied_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
      <span class="c1"># almost the same, except using allies + yourself and storing &quot;recipient&quot;</span>
 </pre></div></td></tr></table></div>
 </div>
@@ -1189,11 +1189,11 @@ This is new compared to the base handler.</p>
 <p>For Stunts, we need to be able to select which <em>Knave</em> Ability (STR, DEX etc) you want to boost/foil.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">node_choose_ability</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_ability</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose the ability to apply&quot;</span>
     <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
 
@@ -1233,7 +1233,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">node_choose_use_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_use_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Select the item&quot;</span>
     <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
 
@@ -1254,7 +1254,7 @@ This is new compared to the base handler.</p>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
 
-<span class="k">def</span> <span class="nf">node_choose_wield_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_choose_wield_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
      <span class="c1"># same except using caller.equipment.get_wieldable_objects_from_backpack()</span>
 
 </pre></div>
@@ -1269,7 +1269,7 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">node_combat</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_combat</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base combat menu&quot;&quot;&quot;</span>
 
     <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
@@ -1370,11 +1370,11 @@ This is new compared to the base handler.</p>
 <p>We will only need one single Command to run the Turnbased combat system. This is the <code class="docutils literal notranslate"><span class="pre">attack</span></code> command. Once you use it once, you will be in the menu.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdTurnAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdTurnAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start or join combat.</span>
 
@@ -1389,11 +1389,11 @@ This is new compared to the base handler.</p>
     <span class="n">turn_timeout</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># seconds</span>
     <span class="n">flee_time</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># rounds</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What are you attacking?&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -1445,12 +1445,12 @@ This is new compared to the base handler.</p>
         <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">TurnCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TurnCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CmdSet for the turn-based combat.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTurnAttack</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -1467,10 +1467,10 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a combatant from the battle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1526,11 +1526,11 @@ This is new compared to the base handler.</p>
 
 <span class="c1"># HEADER</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.combat_turnbased</span> <span class="kn">import</span> <span class="n">TurnCombatCmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.npcs</span> <span class="kn">import</span> <span class="n">EvAdventureNPC</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorials.evadventure.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorials.evadventure.combat_turnbased</span><span class="w"> </span><span class="kn">import</span> <span class="n">TurnCombatCmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorials.evadventure.npcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureNPC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorials.evadventure.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span>
 
 <span class="c1"># CODE</span>
 

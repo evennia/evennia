@@ -158,13 +158,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span>
 
 <span class="c1"># Load name data from Behind the Name lists</span>
 <span class="n">dirpath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
@@ -298,7 +298,7 @@
     <span class="n">_SURNAME_LIST</span> <span class="o">+=</span> <span class="n">custom_last_names</span>
 
 
-<div class="viewcode-block" id="fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.fantasy_name">[docs]</a><span class="k">def</span> <span class="nf">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;harsh&quot;</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.fantasy_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;harsh&quot;</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate made-up names in one of a number of &quot;styles&quot;.</span>
 
@@ -309,7 +309,7 @@
 <span class="sd">                which returns a string if there is only one value and a list if more.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">style_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="n">style_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">style_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_FANTASY_NAME_STRUCTURES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Invalid style name: &#39;</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&#39;. Available style names: </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_FANTASY_NAME_STRUCTURES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -408,7 +408,7 @@
     <span class="k">return</span> <span class="n">name_list</span></div>
 
 
-<div class="viewcode-block" id="first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.first_name">[docs]</a><span class="k">def</span> <span class="nf">first_name</span><span class="p">(</span>
+<div class="viewcode-block" id="first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.first_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">first_name</span><span class="p">(</span>
     <span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">gender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -450,7 +450,7 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-<div class="viewcode-block" id="last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.last_name">[docs]</a><span class="k">def</span> <span class="nf">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.last_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate family names, also known as surnames or last names.</span>
 
@@ -474,7 +474,7 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-<div class="viewcode-block" id="full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.full_name">[docs]</a><span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">surname_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.full_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">full_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">surname_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate complete names with a personal name, family name, and optionally middle names.</span>
 

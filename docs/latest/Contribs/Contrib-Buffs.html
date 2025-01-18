@@ -172,7 +172,7 @@ It is a common design pattern in RPGs, particularly action games.</p>
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>Assign the handler to a property on the object, like so.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@lazy_property</span>
-<span class="k">def</span> <span class="nf">buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">BuffHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -191,12 +191,12 @@ on puppet/unpuppet. You have been warned!</p>
 </div></blockquote>
 <p>Let’s say you want another handler for an object, <code class="docutils literal notranslate"><span class="pre">perks</span></code>, which has a separate database and
 respects playtime buffs. You’d assign this new property as so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BuffableObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">BuffableObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">perks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">BuffHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbkey</span><span class="o">=</span><span class="s1">&#39;perks&#39;</span><span class="p">,</span> <span class="n">autopause</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perks</span>
 </pre></div>
 </div>
@@ -284,7 +284,7 @@ This will return the <code class="docutils literal notranslate"><span class="pre
 the <code class="docutils literal notranslate"><span class="pre">stat</span></code> string).</p>
 <p>For example, let’s say you want to modify how much damage you take. That might look something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The method we call to damage ourselves</span>
-<span class="k">def</span> <span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
     <span class="n">_damage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">damage</span><span class="p">,</span> <span class="s1">&#39;taken_damage&#39;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">-=</span> <span class="n">_damage</span>
 </pre></div>
@@ -320,7 +320,7 @@ applied through the following formula.</p>
 <section id="buff-strength-priority-advanced">
 <h4>Buff Strength Priority (Advanced)<a class="headerlink" href="#buff-strength-priority-advanced" title="Permalink to this headline">¶</a></h4>
 <p>Sometimes you only want to apply the strongest modifier to a stat. This is supported by the optional <code class="docutils literal notranslate"><span class="pre">strongest</span></code> bool arg in the handler’s check method</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
     <span class="n">_damage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">damage</span><span class="p">,</span> <span class="s1">&#39;taken_damage&#39;</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">-=</span> <span class="n">_damage</span>
 </pre></div>
@@ -332,10 +332,10 @@ applied through the following formula.</p>
 <p>Call the handler’s <code class="docutils literal notranslate"><span class="pre">trigger(string)</span></code> method when you want an event call. This will call the <code class="docutils literal notranslate"><span class="pre">at_trigger</span></code> hook method on all buffs with the relevant trigger <code class="docutils literal notranslate"><span class="pre">string</span></code>.</p>
 <p>For example, let’s say you want to trigger a buff to “detonate” when you hit your target with an attack.
 You’d write a buff that might look like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Detonate</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Detonate</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;take_damage&#39;</span><span class="p">]</span>
-    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">take_damage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 </pre></div>
@@ -350,10 +350,10 @@ You’d write a buff that might look like this:</p>
 <p>Ticking buffs are slightly special. They are similar to trigger buffs in that they run code, but instead of
 doing so on an event trigger, they do so on a periodic tick. A common use case for a buff like this is a poison,
 or a heal over time.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">tickrate</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="k">def</span> <span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_dmg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dmg</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacks</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">initial</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
@@ -378,7 +378,7 @@ dictionary (default: empty) to the buff hook methods as keyword arguments (<code
 methods “event-aware” by storing relevant data in the dictionary you feed to the method.</p>
 <p>For example, let’s say you want a “thorns” buff which damages enemies that attack you. Let’s take our <code class="docutils literal notranslate"><span class="pre">take_damage</span></code> method
 and add a context to the mix.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">take_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">take_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;attacker&#39;</span><span class="p">:</span> <span class="n">attacker</span><span class="p">,</span> <span class="s1">&#39;damage&#39;</span><span class="p">:</span> <span class="n">damage</span><span class="p">}</span>
     <span class="n">_damage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">damage</span><span class="p">,</span> <span class="s1">&#39;taken_damage&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s1">&#39;taken_damage&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
@@ -386,11 +386,11 @@ and add a context to the mix.</p>
 </pre></div>
 </div>
 <p>Now we use the values that context passes to the buff kwargs to customize our logic.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ThornsBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ThornsBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;taken_damage&#39;</span><span class="p">]</span>
     <span class="c1"># This is the hook method on our thorns buff</span>
-    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">damage</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">damage</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attacker</span><span class="p">:</span> 
             <span class="k">return</span>
         <span class="n">attacker</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">-=</span> <span class="n">damage</span> <span class="o">*</span> <span class="mf">0.2</span>
@@ -471,7 +471,7 @@ mods of a specific stat string and apply their modifications to the value; howev
 <li><p><code class="docutils literal notranslate"><span class="pre">perstack</span></code>: How much value the modifier grants per stack, <strong>INCLUDING</strong> the first. (default: 0)</p></li>
 </ul>
 <p>The most basic way to add a Mod to a buff is to do so in the buff class definition, like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DamageBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DamageBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">Mod</span><span class="p">(</span><span class="s1">&#39;damage&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
 </pre></div>
 </div>
@@ -484,9 +484,9 @@ never permanently change a stat modified by a buff. To remove the modification, 
 <section id="generating-mods-advanced">
 <h4>Generating Mods (Advanced)<a class="headerlink" href="#generating-mods-advanced" title="Permalink to this headline">¶</a></h4>
 <p>An advanced way to do mods is to generate them when the buff is initialized. This lets you create mods on the fly that are reactive to the game state.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GeneratedStatBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GeneratedStatBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Finds our &quot;modgen&quot; cache value, and generates a mod from it</span>
         <span class="n">modgen</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modgen&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">modgen</span><span class="p">:</span>
@@ -501,10 +501,10 @@ never permanently change a stat modified by a buff. To remove the modification, 
 <p>When the handler’s <code class="docutils literal notranslate"><span class="pre">trigger</span></code> method is called, it searches all buffs on the handler for any with a matchingtrigger,
 then calls their <code class="docutils literal notranslate"><span class="pre">at_trigger</span></code> hooks. Buffs can have multiple triggers, and you can tell which trigger was used by
 the <code class="docutils literal notranslate"><span class="pre">trigger</span></code> argument in the hook.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AmplifyBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AmplifyBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;damage&#39;</span><span class="p">,</span> <span class="s1">&#39;heal&#39;</span><span class="p">]</span> 
 
-    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">trigger</span> <span class="o">==</span> <span class="s1">&#39;damage&#39;</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Damage trigger called!&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">trigger</span> <span class="o">==</span> <span class="s1">&#39;heal&#39;</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Heal trigger called!&#39;</span><span class="p">)</span>
 </pre></div>
@@ -514,12 +514,12 @@ the <code class="docutils literal notranslate"><span class="pre">trigger</span><
 <h3>Ticking<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>A buff which ticks isn’t much different than one which triggers. You’re still executing arbitrary hooks on
 the buff class. To tick, the buff must have a <code class="docutils literal notranslate"><span class="pre">tickrate</span></code> of 1 or higher.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="c1"># this buff will tick 6 times between application and cleanup.</span>
     <span class="n">duration</span> <span class="o">=</span> <span class="mi">30</span>
     <span class="n">tickrate</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="k">def</span> <span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">take_damage</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -537,9 +537,9 @@ If you <strong>are</strong> adding new properties, try to ensure they do not end
 <p>You can restrict whether or not the buff will <code class="docutils literal notranslate"><span class="pre">check</span></code>, <code class="docutils literal notranslate"><span class="pre">trigger</span></code>, or <code class="docutils literal notranslate"><span class="pre">tick</span></code> through defining the <code class="docutils literal notranslate"><span class="pre">conditional</span></code> hook. As long
 as it returns a “truthy” value, the buff will apply itself. This is useful for making buffs dependent on game state - for
 example, if you want a buff that makes the player take more damage when they are on fire:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FireSick</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FireSick</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">FireBuff</span><span class="p">):</span> 
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>

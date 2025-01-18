@@ -95,13 +95,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">permissions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">permissions</span>
 
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_perm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.locks.lockhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_perm</span>
 
 
-<div class="viewcode-block" id="EvenniaPermission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission">[docs]</a><span class="k">class</span> <span class="nc">EvenniaPermission</span><span class="p">(</span><span class="n">permissions</span><span class="o">.</span><span class="n">BasePermission</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPermission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaPermission</span><span class="p">(</span><span class="n">permissions</span><span class="o">.</span><span class="n">BasePermission</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Django Rest Framework permission class that allows us to use Evennia&#39;s</span>
 <span class="sd">    permission structure. Based on the action in a given view, we&#39;ll check a</span>
@@ -116,7 +116,7 @@
     <span class="n">destroy_locks</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">REST_FRAMEWORK</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DEFAULT_DESTROY_LOCKS&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;delete&quot;</span><span class="p">])</span>
     <span class="n">update_locks</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">REST_FRAMEWORK</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DEFAULT_UPDATE_LOCKS&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="EvenniaPermission.has_permission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.has_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPermission.has_permission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.has_permission">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks for permissions</span>
 
 <span class="sd">        Args:</span>
@@ -145,7 +145,7 @@
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># this means we&#39;ll check object-level permissions</span></div>
 
 <div class="viewcode-block" id="EvenniaPermission.check_locks"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.check_locks">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_locks</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">locks</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_locks</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">locks</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks access for user for object with given locks</span>
 <span class="sd">        Args:</span>
 <span class="sd">            obj: Object instance we&#39;re checking</span>
@@ -157,7 +157,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">lock</span><span class="p">)</span> <span class="k">for</span> <span class="n">lock</span> <span class="ow">in</span> <span class="n">locks</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="EvenniaPermission.has_object_permission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.has_object_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPermission.has_object_permission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.has_object_permission">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks object-level permissions after has_permission</span>
 
 <span class="sd">        Args:</span>

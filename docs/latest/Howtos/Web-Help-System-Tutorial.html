@@ -196,9 +196,9 @@ move help_system web  (windows)
 <p>A <em>view</em> in Django is a simple Python function placed in the <code class="docutils literal notranslate"><span class="pre">views.py</span></code> file in your app.  It will
 handle the behavior that is triggered when a user asks for this information by entering a <em>URL</em> (the connection between <em>views</em> and <em>URLs</em> will be discussed later).</p>
 <p>So let’s create our view.  You can open the <code class="docutils literal notranslate"><span class="pre">web/help_system/views.py</span></code> file and paste the following lines:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;help_system/index.html&quot;</span><span class="p">)</span>
 </pre></div>
@@ -239,8 +239,8 @@ handle the behavior that is triggered when a user asks for this information by e
 <p>Open the <code class="docutils literal notranslate"><span class="pre">web/help_system/urls.py</span></code> file (you might have to create it) and make it look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the help_system app</span>
 
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">index</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
@@ -308,7 +308,7 @@ handle the behavior that is triggered when a user asks for this information by e
 <p>One of our requirements is to have a help system tailored to our accounts.  If an account with admin access logs in, the page should display a lot of commands that aren’t accessible to common users. And perhaps even some additional help topics.</p>
 <p>Fortunately, it’s fairly easy to get the logged in account in our view (remember that we’ll do most of our coding there).  The <em>request</em> object, passed to our function, contains a <code class="docutils literal notranslate"><span class="pre">user</span></code> attribute. This attribute will always be there: we cannot test whether it’s <code class="docutils literal notranslate"><span class="pre">None</span></code> or not, for instance.  But when the request comes from a user that isn’t logged in, the <code class="docutils literal notranslate"><span class="pre">user</span></code> attribute will contain an anonymous Django user.  We then can use the <code class="docutils literal notranslate"><span class="pre">is_anonymous</span></code> method to see whether the user is logged-in or not.  Last gift by Evennia, if the user is logged in, <code class="docutils literal notranslate"><span class="pre">request.user</span></code> contains a reference to an account object, which will help us a lot in coupling the game and online system.</p>
 <p>So we might end up with something like:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">character</span><span class="p">:</span>
@@ -318,7 +318,7 @@ handle the behavior that is triggered when a user asks for this information by e
 <blockquote>
 <div><p>Note: this code works when your MULTISESSION_MODE is set to 0 or 1.  When it’s above, you would have something like:</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
@@ -335,9 +335,9 @@ handle the behavior that is triggered when a user asks for this information by e
 </pre></div>
 </div>
 <p>So in our view, we could have something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">Character</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">character</span><span class="p">:</span>
@@ -352,13 +352,13 @@ handle the behavior that is triggered when a user asks for this information by e
 <h2>The full system<a class="headerlink" href="#the-full-system" title="Permalink to this headline">¶</a></h2>
 <p>What we’re going to do is to browse through all commands and help entries, and list all the commands that can be seen by this character (either our ‘anonymous’ character, or our logged-in character).</p>
 <p>The code is longer, but it presents the entire concept in our view.  Edit the “web/help_system/views.py” file and paste into it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.help.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelpEntry</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">Character</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">character</span><span class="p">:</span>
@@ -388,7 +388,7 @@ handle the behavior that is triggered when a user asks for this information by e
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;help_system/index.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_get_topics</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_topics</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the categories and topics for this character.&quot;&quot;&quot;</span>
     <span class="n">cmdset</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">commands</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">commands</span>

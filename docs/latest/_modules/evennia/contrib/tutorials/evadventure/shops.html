@@ -128,21 +128,21 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="n">search_prototype</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">flatten_prototype</span><span class="p">,</span> <span class="n">spawn</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">list_node</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_prototype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.spawner</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatten_prototype</span><span class="p">,</span> <span class="n">spawn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_node</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.equipment</span><span class="w"> </span><span class="kn">import</span> <span class="n">EquipmentError</span>
 
 <span class="c1"># ------------------------------------ Buying from an NPC</span>
 
 
 <div class="viewcode-block" id="BuyItem"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BuyItem</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BuyItem</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Storage container for storing generic info about an item for sale. This means it can be used</span>
 <span class="sd">    both for real objects and for prototypes without constantly having to track which is which.</span>
@@ -170,7 +170,7 @@
     <span class="n">prototype</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="BuyItem.create_from_obj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_obj">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_from_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_from_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a new BuyItem container from a real db obj.</span>
 
@@ -215,7 +215,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuyItem.create_from_prototype"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_prototype">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_from_prototype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototype_or_key</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_from_prototype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototype_or_key</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a new BuyItem container from a prototype.</span>
 
@@ -229,7 +229,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_get_attr_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">prot</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get_attr_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">prot</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            We want the attribute&#39;s value, which is always in the `attrs` field of</span>
 <span class="sd">            the prototype.</span>
@@ -287,14 +287,14 @@
             <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the short description to show in buy list.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> [|y</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">|n coins]&quot;</span>
 
-<div class="viewcode-block" id="BuyItem.get_detail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.get_detail">[docs]</a>    <span class="k">def</span> <span class="nf">get_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuyItem.get_detail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.get_detail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get more info when looking at the item.</span>
 
@@ -309,7 +309,7 @@
 <span class="s2">Attacks using: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">attack_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">|n against |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">defense_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">|n</span>
 <span class="s2">Damage roll: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">damage_roll</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="BuyItem.to_obj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.to_obj">[docs]</a>    <span class="k">def</span> <span class="nf">to_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuyItem.to_obj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.BuyItem.to_obj">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert this into an actual database object that we can trade. This either means</span>
 <span class="sd">        using the stored `.prototype` to spawn a new instance of the object, or to</span>
@@ -321,7 +321,7 @@
         <span class="k">return</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="p">)</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">_get_or_create_buymap</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">shopkeep</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_or_create_buymap</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">shopkeep</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper that fetches or creates the mapping of `{&quot;short description&quot;: BuyItem, ...}`</span>
 <span class="sd">    we need for the buy menu. We cache it on the `_evmenu` object on the caller.</span>
@@ -345,7 +345,7 @@
 
 
 <span class="c1"># Helper functions for building the shop listings and select a ware to buy</span>
-<span class="k">def</span> <span class="nf">_get_all_wares_to_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_wares_to_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper is used by `EvMenu.list_node` to build the list of items to buy.</span>
 
@@ -358,7 +358,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">ware_desc</span> <span class="k">for</span> <span class="n">ware_desc</span> <span class="ow">in</span> <span class="n">buymap</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_select_ware_to_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selected_ware_desc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_select_ware_to_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selected_ware_desc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper is used by `EvMenu.list_node` to operate on what the user selected.</span>
 <span class="sd">    We return `item` in the kwargs to the `node_select_buy` node.</span>
@@ -371,7 +371,7 @@
     <span class="k">return</span> <span class="s2">&quot;node_confirm_buy&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<span class="k">def</span> <span class="nf">_back_to_previous_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_back_to_previous_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Back to previous node is achieved by returning a node of None.</span>
 
@@ -379,7 +379,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<span class="k">def</span> <span class="nf">_buy_ware</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_buy_ware</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Complete the purchase of a ware. At this point the money is deducted</span>
 <span class="sd">    and the item is either spawned from a prototype or simply moved from</span>
@@ -409,7 +409,7 @@
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_get_all_wares_to_buy</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">_select_ware_to_buy</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">node_start_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_start_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Menu node for the caller to buy items from the shopkeep. This assumes `**kwargs` contains</span>
 <span class="sd">    a kwarg `npc` referencing the npc/shopkeep being talked to.</span>
@@ -434,7 +434,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">extra_options</span>
 
 
-<div class="viewcode-block" id="node_confirm_buy"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.node_confirm_buy">[docs]</a><span class="k">def</span> <span class="nf">node_confirm_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_confirm_buy"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.node_confirm_buy">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_confirm_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Menu node reached when a user selects an item in the buy menu. The `item` passed</span>
 <span class="sd">    along in `**kwargs` is the selected item (see `_select_ware_to_buy`, where this is injected).</span>
@@ -466,7 +466,7 @@
 <span class="c1"># ------------------------------------------------- Selling to an NPC</span>
 
 
-<span class="k">def</span> <span class="nf">_get_or_create_sellmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">shopkeep</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_or_create_sellmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">shopkeep</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">sellmap</span><span class="p">:</span>
         <span class="c1"># no sellmap, build one anew</span>
 
@@ -486,7 +486,7 @@
     <span class="k">return</span> <span class="n">sellmap</span>
 
 
-<span class="k">def</span> <span class="nf">_get_all_wares_to_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_wares_to_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all wares available to sell from caller&#39;s inventory. We need to build a</span>
 <span class="sd">    mapping between the descriptors and the items.</span>
@@ -497,7 +497,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">ware_desc</span> <span class="k">for</span> <span class="n">ware_desc</span> <span class="ow">in</span> <span class="n">sellmap</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_sell_ware</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sell_ware</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Complete the sale of a ware. This is were money is gained and the item is removed.</span>
 
@@ -519,7 +519,7 @@
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gYou sold |w</span><span class="si">{obj.key}</span><span class="s2">|g for |y</span><span class="si">{value}</span><span class="s2">|g coins.|n&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_select_ware_to_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selected_ware_desc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_select_ware_to_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selected_ware_desc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Selected one ware to sell. Figure out which one it is using the sellmap.</span>
 <span class="sd">    Store the result as &quot;item&quot; kwarg.</span>
@@ -533,7 +533,7 @@
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_get_all_wares_to_sell</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">_select_ware_to_sell</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">node_start_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_start_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The start-level node for selling items from the user&#39;s inventory. This assumes</span>
 <span class="sd">    `**kwargs` contains a kwarg `npc` referencing the npc/shopkeep being talked to.</span>
@@ -556,7 +556,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">extra_options</span>
 
 
-<div class="viewcode-block" id="node_confirm_sell"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.node_confirm_sell">[docs]</a><span class="k">def</span> <span class="nf">node_confirm_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_confirm_sell"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.shops.html#evennia.contrib.tutorials.evadventure.shops.node_confirm_sell">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_confirm_sell</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In this node we confirm the sell by first investigating the item we are about to sell.</span>
 

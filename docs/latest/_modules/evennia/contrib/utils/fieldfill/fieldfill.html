@@ -231,17 +231,17 @@
 <span class="sd">        the field to False or True.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">evtable</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">delay</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">evtable</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">logger</span>
 
 
-<div class="viewcode-block" id="FieldEvMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.FieldEvMenu">[docs]</a><span class="k">class</span> <span class="nc">FieldEvMenu</span><span class="p">(</span><span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">):</span>
+<div class="viewcode-block" id="FieldEvMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.FieldEvMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FieldEvMenu</span><span class="p">(</span><span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom EvMenu type with its own node formatter - removes extraneous lines</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FieldEvMenu.node_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.FieldEvMenu.node_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
+<div class="viewcode-block" id="FieldEvMenu.node_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.FieldEvMenu.node_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the entirety of the node.</span>
 
@@ -258,7 +258,7 @@
         <span class="k">return</span> <span class="n">nodetext</span></div></div>
 
 
-<div class="viewcode-block" id="init_fill_field"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.init_fill_field">[docs]</a><span class="k">def</span> <span class="nf">init_fill_field</span><span class="p">(</span>
+<div class="viewcode-block" id="init_fill_field"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.init_fill_field">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">init_fill_field</span><span class="p">(</span>
     <span class="n">formtemplate</span><span class="p">,</span>
     <span class="n">caller</span><span class="p">,</span>
     <span class="n">formcallback</span><span class="p">,</span>
@@ -334,7 +334,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="menunode_fieldfill"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.menunode_fieldfill">[docs]</a><span class="k">def</span> <span class="nf">menunode_fieldfill</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="menunode_fieldfill"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.menunode_fieldfill">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menunode_fieldfill</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an EvMenu node, which calls itself over and over in order to</span>
 <span class="sd">    allow a player to enter values into a fillable form. When the form is</span>
@@ -577,7 +577,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="form_template_to_dict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.form_template_to_dict">[docs]</a><span class="k">def</span> <span class="nf">form_template_to_dict</span><span class="p">(</span><span class="n">formtemplate</span><span class="p">):</span>
+<div class="viewcode-block" id="form_template_to_dict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.form_template_to_dict">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">form_template_to_dict</span><span class="p">(</span><span class="n">formtemplate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes a dictionary of form data from the given list-of-dictionaries</span>
 <span class="sd">    form template, as formatted above.</span>
@@ -601,7 +601,7 @@
     <span class="k">return</span> <span class="n">formdata</span></div>
 
 
-<div class="viewcode-block" id="display_formdata"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.display_formdata">[docs]</a><span class="k">def</span> <span class="nf">display_formdata</span><span class="p">(</span><span class="n">formtemplate</span><span class="p">,</span> <span class="n">formdata</span><span class="p">,</span> <span class="n">pretext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">posttext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">borderstyle</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="display_formdata"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.display_formdata">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">display_formdata</span><span class="p">(</span><span class="n">formtemplate</span><span class="p">,</span> <span class="n">formdata</span><span class="p">,</span> <span class="n">pretext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">posttext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">borderstyle</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Displays a form&#39;s current data as a table. Used in the form menu.</span>
 
@@ -649,7 +649,7 @@
 <span class="c1"># EXAMPLE FUNCTIONS / COMMAND STARTS HERE</span>
 
 
-<div class="viewcode-block" id="verify_online_player"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.verify_online_player">[docs]</a><span class="k">def</span> <span class="nf">verify_online_player</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="verify_online_player"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.verify_online_player">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verify_online_player</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Example &#39;verify function&#39; that matches player input to an online character</span>
 <span class="sd">    or else rejects their input as invalid.</span>
@@ -730,7 +730,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="CmdTestMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.CmdTestMenu">[docs]</a><span class="k">class</span> <span class="nc">CmdTestMenu</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTestMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.CmdTestMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdTestMenu</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This test command will initialize a menu that presents you with a form.</span>
 <span class="sd">    You can fill out the fields of this form in any order, and then type in</span>
@@ -748,7 +748,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testmenu&quot;</span>
 
-<div class="viewcode-block" id="CmdTestMenu.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.CmdTestMenu.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTestMenu.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.CmdTestMenu.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -773,7 +773,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="sendmessage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.sendmessage">[docs]</a><span class="k">def</span> <span class="nf">sendmessage</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="sendmessage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.sendmessage">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">sendmessage</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Callback to send a message to a player.</span>
 
@@ -784,7 +784,7 @@
     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="init_delayed_message"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.init_delayed_message">[docs]</a><span class="k">def</span> <span class="nf">init_delayed_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">formdata</span><span class="p">):</span>
+<div class="viewcode-block" id="init_delayed_message"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.fieldfill.fieldfill.html#evennia.contrib.utils.fieldfill.fieldfill.init_delayed_message">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">init_delayed_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">formdata</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes a delayed message, using data from the example form.</span>
 

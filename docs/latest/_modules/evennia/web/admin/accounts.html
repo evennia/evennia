@@ -94,44 +94,44 @@
 <span class="c1"># This sets up how models are displayed</span>
 <span class="c1"># in the web admin interface.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span><span class="p">,</span> <span class="n">messages</span>
-<span class="kn">from</span> <span class="nn">django.contrib.admin.options</span> <span class="kn">import</span> <span class="n">IS_POPUP_VAR</span>
-<span class="kn">from</span> <span class="nn">django.contrib.admin.utils</span> <span class="kn">import</span> <span class="n">unquote</span>
-<span class="kn">from</span> <span class="nn">django.contrib.admin.widgets</span> <span class="kn">import</span> <span class="n">FilteredSelectMultiple</span><span class="p">,</span> <span class="n">ForeignKeyRawIdWidget</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">update_session_auth_hash</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.admin</span> <span class="kn">import</span> <span class="n">UserAdmin</span> <span class="k">as</span> <span class="n">BaseUserAdmin</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserChangeForm</span><span class="p">,</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">PermissionDenied</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">django.template.response</span> <span class="kn">import</span> <span class="n">TemplateResponse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils.decorators</span> <span class="kn">import</span> <span class="n">method_decorator</span>
-<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">escape</span>
-<span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">django.views.decorators.debug</span> <span class="kn">import</span> <span class="n">sensitive_post_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span><span class="p">,</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.admin.options</span><span class="w"> </span><span class="kn">import</span> <span class="n">IS_POPUP_VAR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.admin.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unquote</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.admin.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilteredSelectMultiple</span><span class="p">,</span> <span class="n">ForeignKeyRawIdWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_session_auth_hash</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserAdmin</span> <span class="k">as</span> <span class="n">BaseUserAdmin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserChangeForm</span><span class="p">,</span> <span class="n">UserCreationForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionDenied</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http404</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.template.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">reverse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">method_decorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.html</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.safestring</span><span class="w"> </span><span class="kn">import</span> <span class="n">mark_safe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.decorators.debug</span><span class="w"> </span><span class="kn">import</span> <span class="n">sensitive_post_parameters</span>
 
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
-<span class="kn">from</span> <span class="nn">.attributes</span> <span class="kn">import</span> <span class="n">AttributeInline</span>
-<span class="kn">from</span> <span class="nn">.tags</span> <span class="kn">import</span> <span class="n">TagInline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeInline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagInline</span>
 
 <span class="n">sensitive_post_parameters_m</span> <span class="o">=</span> <span class="n">method_decorator</span><span class="p">(</span><span class="n">sensitive_post_parameters</span><span class="p">())</span>
 
 
 <span class="c1"># handle the custom User editor</span>
-<div class="viewcode-block" id="AccountChangeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm">[docs]</a><span class="k">class</span> <span class="nc">AccountChangeForm</span><span class="p">(</span><span class="n">UserChangeForm</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountChangeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountChangeForm</span><span class="p">(</span><span class="n">UserChangeForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Modify the accountdb class.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AccountChangeForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountChangeForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
 
@@ -180,7 +180,7 @@
         <span class="s2">&quot;Only Superusers can change the user/group permissions below.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AccountChangeForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.clean_username">[docs]</a>    <span class="k">def</span> <span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountChangeForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.clean_username">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean the username and check its existence.</span>
 
@@ -192,7 +192,7 @@
             <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;An account with that name &quot;</span> <span class="s2">&quot;already exists.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="AccountChangeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountChangeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tweak some fields dynamically.</span>
 
@@ -208,12 +208,12 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="AccountCreationForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm">[docs]</a><span class="k">class</span> <span class="nc">AccountCreationForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreationForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountCreationForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new AccountDB instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AccountCreationForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreationForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
 
@@ -229,7 +229,7 @@
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;30 characters or fewer. Letters, spaces, digits and &quot;</span> <span class="s2">&quot;@/./+/-/_ only.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AccountCreationForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm.clean_username">[docs]</a>    <span class="k">def</span> <span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreationForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm.clean_username">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cleanup username.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -239,7 +239,7 @@
         <span class="k">return</span> <span class="n">username</span></div></div>
 
 
-<div class="viewcode-block" id="AccountTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountTagInline">[docs]</a><span class="k">class</span> <span class="nc">AccountTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountTagInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline Account Tags.</span>
 
@@ -249,7 +249,7 @@
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;accountdb&quot;</span></div>
 
 
-<div class="viewcode-block" id="AccountAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">AccountAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAttributeInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline Account Attributes.</span>
 
@@ -259,13 +259,13 @@
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;accountdb&quot;</span></div>
 
 
-<div class="viewcode-block" id="ObjectPuppetInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectPuppetInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectPuppetInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectPuppetInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline creation of puppet-Object in Account.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectCreateForm</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectCreateForm</span>
 
     <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Puppeted Object&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span>
@@ -302,15 +302,15 @@
     <span class="p">)</span>
 
     <span class="c1"># disable adding/deleting this inline - read-only!</span>
-<div class="viewcode-block" id="ObjectPuppetInline.has_add_permission"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline.has_add_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_add_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectPuppetInline.has_add_permission"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline.has_add_permission">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_add_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="ObjectPuppetInline.has_delete_permission"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline.has_delete_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_delete_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectPuppetInline.has_delete_permission"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline.has_delete_permission">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_delete_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
 <div class="viewcode-block" id="AccountAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">AccountDB</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">AccountAdmin</span><span class="p">(</span><span class="n">BaseUserAdmin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AccountAdmin</span><span class="p">(</span><span class="n">BaseUserAdmin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the main creation screen for Users/accounts</span>
 
@@ -379,12 +379,12 @@
         <span class="p">),</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AccountAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.serialized_string">[docs]</a>    <span class="k">def</span> <span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.serialized_string">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the serialized version of the object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbserialize</span>
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
@@ -392,7 +392,7 @@
         <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store this account there.&quot;</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AccountAdmin.puppeted_objects"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.puppeted_objects">[docs]</a>    <span class="k">def</span> <span class="nf">puppeted_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountAdmin.puppeted_objects"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.puppeted_objects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">puppeted_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get any currently puppeted objects (read only list)</span>
 
@@ -413,7 +413,7 @@
         <span class="s2">&quot;this is normal.&quot;</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="AccountAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.get_form">[docs]</a>    <span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.get_form">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides help texts.</span>
 
@@ -434,7 +434,7 @@
         <span class="k">return</span> <span class="n">form</span></div>
 
 <div class="viewcode-block" id="AccountAdmin.user_change_password"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.user_change_password">[docs]</a>    <span class="nd">@sensitive_post_parameters_m</span>
-    <span class="k">def</span> <span class="nf">user_change_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">form_url</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_change_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">form_url</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">unquote</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_change_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">PermissionDenied</span>
@@ -497,7 +497,7 @@
             <span class="n">context</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="AccountAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.save_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Custom save actions.</span>
 
@@ -515,9 +515,9 @@
             <span class="n">obj</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">at_account_creation</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AccountAdmin.response_add"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.response_add">[docs]</a>    <span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
-        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<div class="viewcode-block" id="AccountAdmin.response_add"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.response_add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>
 
         <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:accounts_accountdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span></div></div>
 </pre></div>

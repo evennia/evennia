@@ -160,26 +160,26 @@ Evennia actually inherit from a child of <code class="docutils literal notransla
 knows all the mux-like syntax like <code class="docutils literal notranslate"><span class="pre">/switches</span></code>, splitting by “=” etc.  Below we’ll avoid mux-
 specifics and use the base <code class="docutils literal notranslate"><span class="pre">Command</span></code> class directly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># basic Command definition</span>
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-    <span class="k">class</span> <span class="nc">MyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">MyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">       </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">       This is the help-text for the command</span>
 <span class="sd">       &quot;&quot;&quot;</span>
        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mycommand&quot;</span>
-       <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
            <span class="c1"># parsing the command line here</span>
-       <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
            <span class="c1"># executing the command here</span>
 </pre></div>
 </div>
 <p>Here is a minimalistic command with no custom parsing:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-    <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
-        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># echo the caller&#39;s input back to the caller</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -282,9 +282,9 @@ truthfully report this value - that case the <code class="docutils literal notra
 </ul>
 <p>Finally, you should always make an informative <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">doc string</a> (<code class="docutils literal notranslate"><span class="pre">__doc__</span></code>) at the top of your class. This string is dynamically read by the <a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help System</span></a> to create the help entry for this command. You should decide on a way to format your help and stick to that.</p>
 <p>Below is how you define a simple alternative “<code class="docutils literal notranslate"><span class="pre">smile</span></code>” command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdSmile</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdSmile</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A smile command</span>
 
@@ -305,11 +305,11 @@ truthfully report this value - that case the <code class="docutils literal notra
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Very trivial parser&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This actually does things&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -357,13 +357,13 @@ possible. Only if there is a collision, will the prefix be shown in the help sys
 <section id="exiting-a-command">
 <h2>Exiting a command<a class="headerlink" href="#exiting-a-command" title="Permalink to this headline">¶</a></h2>
 <p>Normally you just use <code class="docutils literal notranslate"><span class="pre">return</span></code> in one of your Command class’ hook methods to exit that method. That will however still fire the other hook methods of the Command in sequence. That’s usually what you want but sometimes it may be useful to just abort the command, for example if you find some unacceptable input in your parse method. To exit the command this way you can raise <code class="docutils literal notranslate"><span class="pre">evennia.InterruptCommand</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterruptCommand</span>
 
-<span class="k">class</span> <span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
    <span class="c1"># ...</span>
 
-   <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
        <span class="c1"># ...</span>
        <span class="c1"># if this fires, `func()` and `at_post_cmd` will not</span>
        <span class="c1"># be called at all</span>
@@ -383,9 +383,9 @@ the current execution of your command and wait for more before processing.</p>
 <div><p>Note that you <em>cannot</em> just drop <code class="docutils literal notranslate"><span class="pre">yield</span></code> into any code and expect it to pause. Evennia will only pause for you if you <code class="docutils literal notranslate"><span class="pre">yield</span></code> inside the Command’s <code class="docutils literal notranslate"><span class="pre">func()</span></code> method. Don’t expect it to work anywhere else.</p>
 </div></blockquote>
 <p>Here’s an example of a command using a small pause of five seconds between messages:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdWait</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdWait</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dummy command to show how to wait</span>
 
@@ -398,7 +398,7 @@ the current execution of your command and wait for more before processing.</p>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Command execution.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Beginner-Tutorial to wait ...&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="mi">5</span>
@@ -421,7 +421,7 @@ the current execution of your command and wait for more before processing.</p>
 </pre></div>
 </div>
 <p>Here’s a very simple example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdConfirm</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdConfirm</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dummy command to show confirmation.</span>
@@ -433,7 +433,7 @@ the current execution of your command and wait for more before processing.</p>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;confirm&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to go on?&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Yes!&quot;</span><span class="p">)</span>
@@ -461,12 +461,12 @@ the current execution of your command and wait for more before processing.</p>
 <li><p>New session connection (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_LOGINSTART</span></code>). This command name should be put in the <code class="docutils literal notranslate"><span class="pre">settings.CMDSET_UNLOGGEDIN</span></code>. Whenever a new connection is established, this command is always called on the server (default is to show the login screen).</p></li>
 </ul>
 <p>Below is an example of redefining what happens when the account doesn’t provide any input (e.g. just presses return). Of course the new system command must be added to a cmdset as well before it will work.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">Command</span>
 
-    <span class="k">class</span> <span class="nc">MyNoInputCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">MyNoInputCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="s2">&quot;Usage: Just press return, I dare you&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">syscmdkeys</span><span class="o">.</span><span class="n">CMD_NOINPUT</span>
-        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Don&#39;t just press return like that, talk to me!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -499,10 +499,10 @@ the current execution of your command and wait for more before processing.</p>
 <div><p>Note: On a server reload, all Commands are rebuilt and memory is flushed.</p>
 </div></blockquote>
 <p>To show this in practice, consider this command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTestID</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdTestID</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testid&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;xval&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">xval</span> <span class="o">=</span> <span class="mi">0</span>
@@ -527,9 +527,9 @@ the current execution of your command and wait for more before processing.</p>
 <h2>Create a command on the fly<a class="headerlink" href="#create-a-command-on-the-fly" title="Permalink to this headline">¶</a></h2>
 <p><em>This is also an advanced topic.</em></p>
 <p>Commands can also be created and added to a cmdset on the fly. Creating a class instance with a keyword argument, will assign that keyword argument as a property on this paricular command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MyCommand</span><span class="p">(</span><span class="n">myvar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 
@@ -582,7 +582,7 @@ corresponds to a known command. This is how the command handler sequence looks f
 Evennia does not use this return value at all by default. If you do, you must
 thus do so asynchronously, using callbacks.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="c1"># in command class func()</span>
-     <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned is </span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
      <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="s2">&quot;longrunning&quot;</span><span class="p">)</span>
      <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>

@@ -131,13 +131,13 @@ location.</p>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/npcs.py  (for example)</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">Character</span>
 
-<span class="k">class</span> <span class="nc">NPC</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NPC</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A NPC typeclass which extends the character class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_char_entered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_char_entered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A simple is_aggressive check.</span>
 <span class="sd">        Can be expanded upon later.</span>
@@ -157,15 +157,15 @@ location.</p>
 <p>Whenever <em>something</em> enters the <code class="docutils literal notranslate"><span class="pre">Room</span></code>, its <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_receive" title="evennia.objects.objects.DefaultObject.at_object_receive"><span class="xref myst py py-meth">at_object_receive</span></a> hook will be called. So we should override it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Room</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
 
     <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arriving_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arriving_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">arriving_obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span> 
             <span class="c1"># this has an active acccount - a player character</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>

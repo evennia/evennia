@@ -171,18 +171,18 @@ need to disengage from the first combat before they could join another).</p>
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/combat_handler.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/combat_handler.py</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">world.rules</span> <span class="kn">import</span> <span class="n">resolve_combat</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">world.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_combat</span>
 
-<span class="k">class</span> <span class="nc">CombatHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements the combat handler.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># standard Script hooks </span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when script is first created&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;combat_handler_</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -198,7 +198,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="c1"># number of actions entered per combatant</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">_init_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This initializes handler back-reference </span>
 <span class="sd">        and combat cmdset on a character</span>
@@ -206,7 +206,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_cleanup_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cleanup_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove character from handler and clean </span>
 <span class="sd">        it of the back-reference and cmdset</span>
@@ -218,7 +218,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="k">del</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span>
         <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called on first start but also when the script is restarted</span>
 <span class="sd">        after a server reboot. We need to re-assign this combat handler to </span>
@@ -227,13 +227,13 @@ need to disengage from the first combat before they could join another).</p>
         <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called just before the script is stopped/destroyed.&quot;</span>
         <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="c1"># note: the list() call above disconnects list from database</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every self.interval seconds (turn timeout) or </span>
 <span class="sd">        when force_repeat is called (because everyone has entered their </span>
@@ -253,7 +253,7 @@ need to disengage from the first combat before they could join another).</p>
 
     <span class="c1"># Combat-handler methods</span>
 
-    <span class="k">def</span> <span class="nf">add_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="s2">&quot;Add combatant to handler&quot;</span>
         <span class="n">dbref</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>        
@@ -263,7 +263,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="c1"># set up back-reference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
        
-    <span class="k">def</span> <span class="nf">remove_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="s2">&quot;Remove combatant from handler&quot;</span>
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
@@ -271,12 +271,12 @@ need to disengage from the first combat before they could join another).</p>
             <span class="c1"># if no more characters in battle, kill this handler</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">msg_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">msg_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="s2">&quot;Send message to all combatants&quot;</span>
         <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by combat commands to register an action with the handler.</span>
 
@@ -298,7 +298,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">check_end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the command to eventually trigger </span>
 <span class="sd">        the resolution of the turn. We check if everyone</span>
@@ -310,7 +310,7 @@ need to disengage from the first combat before they could join another).</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span> 
 
-    <span class="k">def</span> <span class="nf">end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This resolves all actions by calling the rules module. </span>
 <span class="sd">        It then resets everything and starts the next turn. It</span>
@@ -346,9 +346,9 @@ their actions once they have been added (but before the last one has added their
 <p>We create them in <code class="docutils literal notranslate"><span class="pre">mygame/commands/combat.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    hit an enemy</span>
 
@@ -361,7 +361,7 @@ their actions once they have been added (but before the last one has added their
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;strike&quot;</span><span class="p">,</span> <span class="s2">&quot;slash&quot;</span><span class="p">]</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implements the command&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: hit &lt;target&gt;&quot;</span><span class="p">)</span>
@@ -385,16 +385,16 @@ their actions once they have been added (but before the last one has added their
 <p>We just need to put them all in a cmdset. We do this at the end of the same module:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="k">class</span> <span class="nc">CombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_cmdset&quot;</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">10</span> 
     <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHit</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdParry</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFeint</span><span class="p">())</span>
@@ -424,12 +424,12 @@ subsequent attack and so on …</em></p>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 
 <span class="c1"># messages </span>
 
-<span class="k">def</span> <span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called by the combat handler</span>
 <span class="sd">    actiondict is a dictionary with a list of two actions</span>
@@ -509,10 +509,10 @@ subsequent attack and so on …</em></p>
 <p>This is the last component we need, a command to initiate combat. This will tie everything together. We store this with the other combat commands.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_script</span>
 
 
-<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    initiates combat</span>
 
@@ -525,7 +525,7 @@ subsequent attack and so on …</em></p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Handle command&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>

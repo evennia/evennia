@@ -153,11 +153,11 @@ from <strong>SlowExit</strong> instead.</p>
 <p>To get the ability to change your speed and abort your movement, import</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">slow_exit</span>  <span class="o">&lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">slow_exit</span>  <span class="o">&lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">SlowDoorCmdSet</span><span class="p">)</span>  <span class="o">&lt;---</span>
 </pre></div>

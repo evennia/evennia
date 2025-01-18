@@ -156,7 +156,7 @@ doesn’t matter, only its tag.</p></li>
 <section id="crafting-in-game">
 <h2>Crafting in game<a class="headerlink" href="#crafting-in-game" title="Permalink to this headline">¶</a></h2>
 <p>The default <strong>craft</strong> command handles all crafting needs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">spiked</span> <span class="n">club</span> <span class="kn">from</span> <span class="nn">club</span><span class="p">,</span> <span class="n">nails</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">spiked</span> <span class="n">club</span> <span class="kn">from</span><span class="w"> </span><span class="nn">club</span><span class="p">,</span> <span class="n">nails</span>
 </pre></div>
 </div>
 <p>Here, <strong>spiked club</strong> specifies the recipe while <strong>club</strong> and <strong>nails</strong> are objects
@@ -165,7 +165,7 @@ crafting (by default only if crafting was successful).</p>
 <p>A recipe can also require <em>tools</em> (like the <strong>hammer</strong> above). These must be
 either in inventory <em>or</em> be in the current location. Tools are <em>not</em> consumed
 during the crafting process.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">wooden</span> <span class="n">doll</span> <span class="kn">from</span> <span class="nn">wood</span> <span class="k">with</span> <span class="n">knife</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">wooden</span> <span class="n">doll</span> <span class="kn">from</span><span class="w"> </span><span class="nn">wood</span> <span class="k">with</span> <span class="n">knife</span>
 </pre></div>
 </div>
 </section>
@@ -175,7 +175,7 @@ during the crafting process.</p>
 specifies the name of the recipe to use and expects all suitable
 ingredients/tools as arguments (consumables and tools should be added together,
 tools will be identified before consumables).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">crafting</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">crafting</span>
 
 <span class="n">spiked_club</span> <span class="o">=</span> <span class="n">crafting</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;spiked club&quot;</span><span class="p">,</span> <span class="n">club</span><span class="p">,</span> <span class="n">nails</span><span class="p">)</span>
 </pre></div>
@@ -201,9 +201,9 @@ crafting (<strong>CraftingRecipe</strong>) using objects and prototypes.</p>
 hood. See the <strong>CraftingRecipe</strong> class for details of which properties and
 methods are available to override - the craft behavior can be modified
 substantially this way.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.crafting.crafting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
-<span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="c1"># Pig iron is a high-carbon result of melting iron in a blast furnace.</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;pig iron&quot;</span>  <span class="c1"># this is what crafting.craft and CmdCraft uses</span>
@@ -467,7 +467,7 @@ difference between them is that the former is not consumed in the crafting
 process. So if you need a hammer and anvil to craft a sword, they are
 ‘tools’ whereas the materials of the sword are ‘consumables’.</p>
 <p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FlourRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FlourRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;flour&quot;</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;windmill&#39;</span><span class="p">]</span>
     <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wheat&quot;</span><span class="p">]</span>
@@ -479,7 +479,7 @@ process. So if you need a hammer and anvil to craft a sword, they are
         <span class="p">}</span>
     <span class="p">]</span>
 
-<span class="k">class</span> <span class="nc">BreadRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BreadRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bread&quot;</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;roller&quot;</span><span class="p">,</span> <span class="s2">&quot;owen&quot;</span><span class="p">]</span>
     <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flour&quot;</span><span class="p">,</span> <span class="s2">&quot;egg&quot;</span><span class="p">,</span> <span class="s2">&quot;egg&quot;</span><span class="p">,</span> <span class="s2">&quot;salt&quot;</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;yeast&quot;</span><span class="p">]</span>
@@ -934,9 +934,9 @@ things in the current location, like a furnace, windmill or anvil.</p>
 </pre></div>
 </div>
 <p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">craft</span> <span class="n">snowball</span> <span class="kn">from</span> <span class="nn">snow</span>
-<span class="n">craft</span> <span class="n">puppet</span> <span class="kn">from</span> <span class="nn">piece</span> <span class="n">of</span> <span class="n">wood</span> <span class="n">using</span> <span class="n">knife</span>
-<span class="n">craft</span> <span class="n">bread</span> <span class="kn">from</span> <span class="nn">flour</span><span class="p">,</span> <span class="n">butter</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">yeast</span> <span class="n">using</span> <span class="n">owen</span><span class="p">,</span> <span class="n">bowl</span><span class="p">,</span> <span class="n">roller</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">craft</span> <span class="n">snowball</span> <span class="kn">from</span><span class="w"> </span><span class="nn">snow</span>
+<span class="n">craft</span> <span class="n">puppet</span> <span class="kn">from</span><span class="w"> </span><span class="nn">piece</span> <span class="n">of</span> <span class="n">wood</span> <span class="n">using</span> <span class="n">knife</span>
+<span class="n">craft</span> <span class="n">bread</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flour</span><span class="p">,</span> <span class="n">butter</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">yeast</span> <span class="n">using</span> <span class="n">owen</span><span class="p">,</span> <span class="n">bowl</span><span class="p">,</span> <span class="n">roller</span>
 <span class="n">craft</span> <span class="n">fireball</span> <span class="n">using</span> <span class="n">wand</span><span class="p">,</span> <span class="n">spellbook</span>
 </pre></div>
 </div>

@@ -138,12 +138,12 @@ cmdset. This will make the trade (or barter) command available
 in-game.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">barter</span>  <span class="c1"># &lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">barter</span>  <span class="c1"># &lt;---</span>
 
 <span class="c1"># ...</span>
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at</span> <span class="n">cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at</span> <span class="n">cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">barter</span><span class="o">.</span><span class="n">CmdsetTrade</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
 

@@ -94,8 +94,8 @@
 <span class="sd">Tests for the Random Name Generator</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.utils.name_generator</span> <span class="kn">import</span> <span class="n">namegen</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.utils.name_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">namegen</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="n">_INVALID_STYLES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;missing_keys&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -119,8 +119,8 @@
 <span class="n">namegen</span><span class="o">.</span><span class="n">_FANTASY_NAME_STRUCTURES</span> <span class="o">|=</span> <span class="n">_INVALID_STYLES</span>
 
 
-<div class="viewcode-block" id="TestNameGenerator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator">[docs]</a><span class="k">class</span> <span class="nc">TestNameGenerator</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestNameGenerator.test_fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_fantasy_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_fantasy_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestNameGenerator</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator.test_fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_fantasy_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_fantasy_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
 
@@ -151,7 +151,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNameGenerator.test_structure_validation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_structure_validation">[docs]</a>    <span class="k">def</span> <span class="nf">test_structure_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator.test_structure_validation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_structure_validation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_structure_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that validation raises the correct errors for invalid inputs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -164,7 +164,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;invalid_length&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNameGenerator.test_first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_first_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_first_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator.test_first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_first_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_first_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
 
@@ -193,7 +193,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNameGenerator.test_last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_last_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_last_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator.test_last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_last_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_last_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
 
@@ -215,7 +215,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNameGenerator.test_full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_full_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNameGenerator.test_full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_full_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
 

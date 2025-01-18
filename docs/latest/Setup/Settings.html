@@ -140,9 +140,9 @@ heavily documented and up-to-date, so you should refer to this file directly for
 It may be tempting to copy <em>everything</em> from <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> into your own settings file just to have it all in one place. Don’t do this. By copying only what you need, you can easier track what you changed.</p>
 </div>
 <p>In code, the settings is accessed through</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
      <span class="c1"># or (shorter):</span>
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
      <span class="c1"># example:</span>
     <span class="n">servername</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_NAME</span>
 </pre></div>

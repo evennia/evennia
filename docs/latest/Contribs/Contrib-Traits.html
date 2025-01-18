@@ -168,21 +168,21 @@ define it explicitly. You can combine both styles if you like.</p>
 <p>Here’s an example for adding the TraitHandler to the Character class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.traits</span><span class="w"> </span><span class="kn">import</span> <span class="n">TraitHandler</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .traits</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># (or wherever you want)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -202,13 +202,13 @@ fields. The drawback is that you must make sure that the name of your Traits don
 other properties/methods on your class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.traits</span><span class="w"> </span><span class="kn">import</span> <span class="n">TraitProperty</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -517,19 +517,19 @@ from poison slowly draining your health, to resting gradually increasing it.</p>
 the existing Trait classes).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file, say, &#39;mygame/world/traits.py&#39;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">StaticTrait</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.traits</span><span class="w"> </span><span class="kn">import</span> <span class="n">StaticTrait</span>
 
-<span class="k">class</span> <span class="nc">RageTrait</span><span class="p">(</span><span class="n">StaticTrait</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RageTrait</span><span class="p">(</span><span class="n">StaticTrait</span><span class="p">):</span>
 
     <span class="n">trait_type</span> <span class="o">=</span> <span class="s2">&quot;rage&quot;</span>
     <span class="n">default_keys</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;rage&quot;</span><span class="p">:</span> <span class="mi">0</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">berserk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">berserk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">100</span>
 
-    <span class="k">def</span> <span class="nf">sedate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sedate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
@@ -551,9 +551,9 @@ default (0). Above we also added some helper methods.</p>
 <p>Remember that you can use <code class="docutils literal notranslate"><span class="pre">.get_trait(&quot;name&quot;)</span></code> to access other traits on the
 same handler.  Let’s say that the rage modifier is actually limited by
 the characters’s current STR value times 3, with a max of 100:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RageTrait</span><span class="p">(</span><span class="n">StaticTrait</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RageTrait</span><span class="p">(</span><span class="n">StaticTrait</span><span class="p">):</span>
     <span class="c1">#...</span>
-    <span class="k">def</span> <span class="nf">berserk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">berserk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_trait</span><span class="p">(</span><span class="s2">&quot;STR&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -561,7 +561,7 @@ the characters’s current STR value times 3, with a max of 100:</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="as-traitproperty">
 <h1>as TraitProperty<a class="headerlink" href="#as-traitproperty" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">rage</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -570,31 +570,31 @@ the characters’s current STR value times 3, with a max of 100:</p>
 <p>Sometimes, it is easier to top-level classify traits, such as stats, skills, or other categories of traits you want to handle independantly of each other. Here is an example showing an example on the object typeclass, expanding on the first installation example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.traits</span><span class="w"> </span><span class="kn">import</span> <span class="n">TraitHandler</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .traits</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .stats</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_attribute_key</span><span class="o">=</span><span class="s2">&quot;stats&quot;</span><span class="p">)</span>
 
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">skills</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">skills</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .skills</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_attribute_key</span><span class="o">=</span><span class="s2">&quot;skills&quot;</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># (or wherever you want)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>

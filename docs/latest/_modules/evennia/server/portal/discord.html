@@ -101,24 +101,24 @@
 <span class="sd">added to `server/conf/secret_settings.py` as your  DISCORD_BOT_TOKEN</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
 
-<span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.twisted.websocket</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">WebSocketClientFactory</span><span class="p">,</span>
     <span class="n">WebSocketClientProtocol</span><span class="p">,</span>
     <span class="n">connectWS</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">ssl</span><span class="p">,</span> <span class="n">task</span>
-<span class="kn">from</span> <span class="nn">twisted.web.client</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">FileBodyProducer</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">readBody</span>
-<span class="kn">from</span> <span class="nn">twisted.web.http_headers</span> <span class="kn">import</span> <span class="n">Headers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">ssl</span><span class="p">,</span> <span class="n">task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">FileBodyProducer</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">readBody</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.http_headers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span>
 
-<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">delay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">delay</span>
 
 <span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
 
@@ -142,13 +142,13 @@
 
 
 <span class="c1"># create quiet HTTP pool to muffle GET/POST requests</span>
-<div class="viewcode-block" id="QuietConnectionPool"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.QuietConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">QuietConnectionPool</span><span class="p">(</span><span class="n">HTTPConnectionPool</span><span class="p">):</span>
+<div class="viewcode-block" id="QuietConnectionPool"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.QuietConnectionPool">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">QuietConnectionPool</span><span class="p">(</span><span class="n">HTTPConnectionPool</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A quiet version of the HTTPConnectionPool which sets the factory&#39;s</span>
 <span class="sd">    `noisy` property to False to muffle log output.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="QuietConnectionPool.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.QuietConnectionPool.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="QuietConnectionPool.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.QuietConnectionPool.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="o">.</span><span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
@@ -156,7 +156,7 @@
 <span class="n">_AGENT</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">QuietConnectionPool</span><span class="p">(</span><span class="n">reactor</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="should_retry"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.should_retry">[docs]</a><span class="k">def</span> <span class="nf">should_retry</span><span class="p">(</span><span class="n">status_code</span><span class="p">):</span>
+<div class="viewcode-block" id="should_retry"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.should_retry">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">should_retry</span><span class="p">(</span><span class="n">status_code</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to check if the request should be retried later.</span>
 
@@ -175,7 +175,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory">[docs]</a><span class="k">class</span> <span class="nc">DiscordWebsocketServerFactory</span><span class="p">(</span><span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DiscordWebsocketServerFactory</span><span class="p">(</span><span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized websocket client factory that navigates the Discord gateway process.</span>
 
@@ -189,13 +189,13 @@
     <span class="n">resume_url</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">is_connecting</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">sessionhandler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.get_gateway_url"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.get_gateway_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_gateway_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.get_gateway_url"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.get_gateway_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_gateway_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># get the websocket gateway URL from Discord</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">_AGENT</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="sa">b</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
@@ -210,7 +210,7 @@
             <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">cbResponse</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">cbResponse</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">readBody</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_init</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -220,7 +220,7 @@
 
         <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">cbResponse</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.websocket_init"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.websocket_init">[docs]</a>    <span class="k">def</span> <span class="nf">websocket_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.websocket_init"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.websocket_init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">websocket_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        callback for when the URL is gotten</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -245,7 +245,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;Discord did not return a websocket URL; connection cancelled.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build new instance of protocol</span>
 
@@ -265,7 +265,7 @@
         <span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span>
         <span class="k">return</span> <span class="n">protocol</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.startedConnecting">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tracks reconnections for debugging.</span>
 
@@ -275,7 +275,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Connecting to Discord...&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.reconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a reconnection of the bot protocol. This requires</span>
 <span class="sd">        de-registering the session and then reattaching a new one.</span>
@@ -295,7 +295,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">sendClose</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">server_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordWebsocketServerFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordWebsocketServerFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordWebsocketServerFactory.start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Connect protocol to remote server&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="p">:</span>
@@ -308,7 +308,7 @@
             <span class="n">connectWS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="DiscordClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient">[docs]</a><span class="k">class</span> <span class="nc">DiscordClient</span><span class="p">(</span><span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DiscordClient</span><span class="p">(</span><span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the Discord client</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -320,14 +320,14 @@
     <span class="n">session_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">discord_id</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="DiscordClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">WebSocketClientProtocol</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">_BASE_SESSION_CLASS</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.at_login">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DiscordClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onOpen">[docs]</a>    <span class="k">def</span> <span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onOpen">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when connection is established.</span>
 
@@ -340,7 +340,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onMessage">[docs]</a>    <span class="k">def</span> <span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onMessage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback fired when a complete WebSocket message was received.</span>
 
@@ -404,7 +404,7 @@
                 <span class="c1"># general message, pass on to data_in</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.onClose">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is executed when the connection is lost for whatever</span>
 <span class="sd">        reason. it can also be called directly, from the disconnect</span>
@@ -425,7 +425,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discord connection lost.&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_send_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Post JSON data to the websocket</span>
 
@@ -435,7 +435,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_post_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_post_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Post JSON data to a REST API endpoint</span>
 
@@ -460,7 +460,7 @@
             <span class="n">body</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">cbResponse</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">cbResponse</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">readBody</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_response</span><span class="p">)</span>
@@ -470,7 +470,7 @@
 
         <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">cbResponse</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DiscordClient.post_response"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.post_response">[docs]</a>    <span class="k">def</span> <span class="nf">post_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.post_response"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.post_response">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the response from sending a POST request</span>
 
@@ -481,7 +481,7 @@
         <span class="k">if</span> <span class="s2">&quot;errors&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.handle_error"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.handle_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.handle_error"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.handle_error">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        General hook for processing errors.</span>
 
@@ -491,7 +491,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DiscordClient.resume"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.resume">[docs]</a>    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.resume"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.resume">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after a reconnection to re-identify and replay missed events</span>
 
@@ -511,7 +511,7 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.disconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for the engine to call in order to</span>
 <span class="sd">        disconnect this protocol.</span>
@@ -522,7 +522,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLOSE_STATUS_CODE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.identify"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.identify">[docs]</a>    <span class="k">def</span> <span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.identify"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.identify">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send Discord authentication. This should be sent once heartbeats begin.</span>
 
@@ -541,7 +541,7 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.connection_ready"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.connection_ready">[docs]</a>    <span class="k">def</span> <span class="nf">connection_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.connection_ready"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.connection_ready">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connection_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process READY data for relevant bot info.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -549,7 +549,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;session_id&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discord_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DiscordClient.doHeartbeat"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.doHeartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">doHeartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.doHeartbeat"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.doHeartbeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">doHeartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send heartbeat to Discord.</span>
 
@@ -570,7 +570,7 @@
             <span class="c1"># we didn&#39;t get a response since the last heartbeat; reconnect</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">reconnect</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DiscordClient.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_channel">[docs]</a>    <span class="k">def</span> <span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_channel">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a message from an Evennia channel to a Discord channel.</span>
 
@@ -582,7 +582,7 @@
         <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;channels/</span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">/messages&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.send_nickname"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_nickname">[docs]</a>    <span class="k">def</span> <span class="nf">send_nickname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.send_nickname"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_nickname">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_nickname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Changes a user&#39;s nickname on a Discord server.</span>
 
@@ -593,18 +593,18 @@
         <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;guilds/</span><span class="si">{</span><span class="n">guild_id</span><span class="si">}</span><span class="s2">/members/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;PATCH&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.send_role"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_role">[docs]</a>    <span class="k">def</span> <span class="nf">send_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.send_role"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_role">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;guilds/</span><span class="si">{</span><span class="n">guild_id</span><span class="si">}</span><span class="s2">/members/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/roles/</span><span class="si">{</span><span class="n">role_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscordClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_default">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ignore other outputfuncs</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DiscordClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscordClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.data_in">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process incoming data from Discord and sent to the Evennia server</span>
 

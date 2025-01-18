@@ -495,8 +495,8 @@ which can lead to the amp connection locking up.</p>
 <p>To test, add the following code to the beginning of
 <strong>evennia.server.amp_client.AMPServerClientProtocol.data_to_portal</strong>, then
 run multiple commands until the error trigger:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">twisted.protocols.amp</span> <span class="kn">import</span> <span class="n">AmpBox</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.protocols.amp</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpBox</span>
 <span class="n">always_fail</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">if</span> <span class="n">always_fail</span> <span class="ow">or</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
     <span class="n">breaker</span> <span class="o">=</span> <span class="n">AmpBox</span><span class="p">()</span>

@@ -94,18 +94,18 @@
 <span class="c1"># This sets up how models are displayed</span>
 <span class="c1"># in the web admin interface.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
-<span class="kn">from</span> <span class="nn">.attributes</span> <span class="kn">import</span> <span class="n">AttributeInline</span>
-<span class="kn">from</span> <span class="nn">.tags</span> <span class="kn">import</span> <span class="n">TagInline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeInline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagInline</span>
 
 
-<div class="viewcode-block" id="ScriptForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptForm">[docs]</a><span class="k">class</span> <span class="nc">ScriptForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
     <span class="n">db_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Name/Key&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Script identifier, shown in listings etc.&quot;</span>
     <span class="p">)</span>
@@ -142,7 +142,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ScriptTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptTagInline">[docs]</a><span class="k">class</span> <span class="nc">ScriptTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptTagInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline script tags.</span>
 
@@ -152,7 +152,7 @@
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;scriptdb&quot;</span></div>
 
 
-<div class="viewcode-block" id="ScriptAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ScriptAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAttributeInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline attribute tags.</span>
 
@@ -163,7 +163,7 @@
 
 
 <div class="viewcode-block" id="ScriptAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ScriptDB</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ScriptAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScriptAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Displaying the main Script page.</span>
 
@@ -206,12 +206,12 @@
     <span class="p">)</span>
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ScriptTagInline</span><span class="p">,</span> <span class="n">ScriptAttributeInline</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ScriptAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.serialized_string">[docs]</a>    <span class="k">def</span> <span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.serialized_string">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the serialized version of the object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbserialize</span>
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
@@ -219,7 +219,7 @@
         <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store this script there.&quot;</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="ScriptAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.get_form">[docs]</a>    <span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.get_form">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides help texts.</span>
 
@@ -229,7 +229,7 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;help_texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help_texts</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScriptAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptAdmin.save_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Model-save hook.</span>
 

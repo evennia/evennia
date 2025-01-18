@@ -141,7 +141,7 @@ IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</
 <li><p>CmdMail (IC + OOC mail, sent between players)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmds.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">mail</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">mail</span>
 
 <span class="c1"># in AccountCmdSet.at_cmdset_creation:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mail</span><span class="o">.</span><span class="n">CmdMail</span><span class="p">())</span>
@@ -151,7 +151,7 @@ IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</
 <li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmds.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">mail</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">mail</span>
 
 <span class="c1"># in CharacterCmdSet.at_cmdset_creation:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mail</span><span class="o">.</span><span class="n">CmdMailCharacter</span><span class="p">())</span>

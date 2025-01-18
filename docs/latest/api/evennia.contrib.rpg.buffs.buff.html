@@ -143,7 +143,7 @@ and a command which applies buffs.</p>
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Assign the handler to a property on the object, like so.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@lazy_property</span>
-<span class="k">def</span> <span class="nf">buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">BuffHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -171,7 +171,7 @@ optional arguments to customize the buff’s duration, stacks, and so on.</p>
 This will return the value, modified by and relevant buffs on the handler’s owner (identified by
 the <strong>stat</strong> string). For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The method we call to damage ourselves</span>
-<span class="k">def</span> <span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
     <span class="n">_damage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">damage</span><span class="p">,</span> <span class="s1">&#39;taken_damage&#39;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">-=</span> <span class="n">_damage</span>
 </pre></div>
@@ -181,16 +181,16 @@ the <strong>stat</strong> string). For example:</p>
 <h3>Trigger<a class="headerlink" href="#trigger" title="Permalink to this headline">¶</a></h3>
 <p>Call the handler <strong>trigger(triggerstring)</strong> method wherever you want an event call. This
 will call the <strong>at_trigger</strong> hook method on all buffs with the relevant trigger.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">Detonate</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">Detonate</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;take_damage&#39;</span><span class="p">]</span>
-    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">take_damage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 
-<span class="k">def</span> <span class="nf">Character</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">Character</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s1">&#39;take_damage&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">-=</span> <span class="n">_damage</span>
 </pre></div>
@@ -199,10 +199,10 @@ will call the <strong>at_trigger</strong> hook method on all buffs with the rele
 <section id="tick">
 <h3>Tick<a class="headerlink" href="#tick" title="Permalink to this headline">¶</a></h3>
 <p>Ticking a buff happens automatically once applied, as long as the buff’s <strong>tickrate</strong> is more than 0.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">Poison</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="n">tickrate</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="k">def</span> <span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_dmg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dmg</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacks</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">initial</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>

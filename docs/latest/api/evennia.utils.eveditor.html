@@ -129,17 +129,17 @@ editor) as far as reasonable.</p>
 <li><p>in-built help</p></li>
 </ul>
 <p>To use the editor, just import EvEditor from this module and initialize it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.eveditor</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvEditor</span>
 
 <span class="c1"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
-<span class="k">def</span> <span class="nf">_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
 
-<span class="k">def</span> <span class="nf">_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="k">def</span> <span class="nf">_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Custom quit message&quot;</span><span class="p">)</span>
 
 <span class="c1"># start the editor</span>
@@ -356,7 +356,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':::', ':', ':i', ':q!', ':!', ':s', ':r', ':f', ':UU', ':DD', '::', ':&lt;', ':q', ':fi', ':w', ':fd', ':j', ':I', ':h', ':dw', ':u', ':S', ':x', ':wq', ':dd', ':y', ':echo', ':A', ':p', ':&gt;', ':uu', ':=']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':I', ':q', ':dw', ':p', ':UU', ':!', ':h', ':echo', ':S', '::', ':&gt;', ':u', ':fd', ':r', ':w', ':A', ':f', ':DD', ':', ':s', ':wq', ':y', ':j', ':&lt;', ':i', ':dd', ':q!', ':fi', ':::', ':x', ':uu', ':=']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -384,7 +384,7 @@ efficient presentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '::: : :i :q! :! :s :r :f :UU :DD :: :&lt; :q :fi :w :fd :j :I :h :dw :u :S :x :wq :dd :y :echo :A :p :&gt; :uu :=', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' ::: : :i :q! :! :s :r :f :UU :DD :: :&lt; :q :fi :w :fd :j :I :h :dw :u :S :x :wq :dd :y :echo :A :p :&gt; :uu :=', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':I :q :dw :p :UU :! :h :echo :S :: :&gt; :u :fd :r :w :A :f :DD : :s :wq :y :j :&lt; :i :dd :q! :fi ::: :x :uu :=', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' :I :q :dw :p :UU :! :h :echo :S :: :&gt; :u :fd :r :w :A :f :DD : :s :wq :y :j :&lt; :i :dd :q! :fi ::: :x :uu :=', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

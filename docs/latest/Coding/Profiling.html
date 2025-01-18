@@ -143,7 +143,7 @@
 <p>Python’s <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module is very good for testing small things. For example, in
 order to test if it is faster to use a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop or a list comprehension you
 could use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">timeit</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span><span class="w"> </span><span class="nn">timeit</span>
     <span class="c1"># Time to do 1000000 for loops</span>
     <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">&quot;for i in range(100):</span><span class="se">\n</span><span class="s2">    a.append(i)&quot;</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="s2">&quot;a = []&quot;</span><span class="p">)</span>
    <span class="o">&lt;&lt;&lt;</span> <span class="mf">10.70982813835144</span>
@@ -174,8 +174,8 @@ could use the following code:</p>
 </pre></div>
 </div>
 <p>Then in the shell</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pstats</span>
-<span class="kn">from</span> <span class="nn">pstats</span> <span class="kn">import</span> <span class="n">SortKey</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pstats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pstats</span><span class="w"> </span><span class="kn">import</span> <span class="n">SortKey</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="s1">&#39;server/log/server.prof&#39;</span><span class="p">)</span>
 <span class="n">p</span><span class="o">.</span><span class="n">strip_dirs</span><span class="p">()</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
@@ -260,7 +260,7 @@ be able to connect with an <em>existing</em> user since the password hasher chan
 
 <span class="c1"># actions</span>
 
-<span class="k">def</span> <span class="nf">c_login</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">c_login</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Character-</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">pwd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;23fwsf23sdfw23wef23&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
@@ -268,10 +268,10 @@ be able to connect with an <em>existing</em> user since the password hasher chan
         <span class="sa">f</span><span class="s2">&quot;connect </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pwd</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">c_logout</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">c_logout</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">c_look</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">c_look</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;look here&quot;</span><span class="p">,</span> <span class="s2">&quot;look me&quot;</span><span class="p">)</span>
 
 <span class="c1"># this is read by dummyrunner.</span>

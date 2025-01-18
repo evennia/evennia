@@ -117,13 +117,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
-<span class="kn">from</span> <span class="nn">evennia.scripts.manager</span> <span class="kn">import</span> <span class="n">ScriptDBManager</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDBManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ScriptDB&quot;</span><span class="p">,)</span>
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
@@ -137,7 +137,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="ScriptDB"><a class="viewcode-back" href="../../../api/evennia.scripts.models.html#evennia.scripts.models.ScriptDB">[docs]</a><span class="k">class</span> <span class="nc">ScriptDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptDB"><a class="viewcode-back" href="../../../api/evennia.scripts.models.html#evennia.scripts.models.ScriptDB">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScriptDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Script database representation.</span>
 
@@ -216,7 +216,7 @@
     <span class="n">__defaultclasspath__</span> <span class="o">=</span> <span class="s2">&quot;evennia.scripts.scripts.DefaultScript&quot;</span>
     <span class="n">__applabel__</span> <span class="o">=</span> <span class="s2">&quot;scripts&quot;</span>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Script&quot;</span>
 
@@ -227,7 +227,7 @@
     <span class="c1">#</span>
 
     <span class="c1"># obj property</span>
-    <span class="k">def</span> <span class="nf">__get_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property wrapper that homogenizes access to either the</span>
 <span class="sd">        db_account or db_obj field, using the same object property</span>
@@ -239,7 +239,7 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;db_obj&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span>
 
-    <span class="k">def</span> <span class="nf">__set_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__set_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set account or obj to their right database field. If</span>
 <span class="sd">        a dbref is given, assume ObjectDB.</span>

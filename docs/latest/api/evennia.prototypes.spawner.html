@@ -121,7 +121,7 @@ dictionary forms. These use a prototype architecture to define
 unique objects without having to make a Typeclass for each.</p>
 <p>There  main function is <strong>spawn(*prototype)</strong>, where the <strong>prototype</strong>
 is a dictionary like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span><span class="p">,</span> <span class="n">spawner</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">prototypes</span><span class="p">,</span> <span class="n">spawner</span>
 
 <span class="n">prot</span> <span class="o">=</span> <span class="p">{</span>
  <span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="s2">&quot;goblin&quot;</span><span class="p">,</span>
@@ -201,7 +201,7 @@ a callable in an Attribute, embed it in a tuple to the <strong>args</strong> key
 <p>By specifying the “prototype_parent” key, the prototype becomes a child of
 the given prototype, inheritng all prototype slots it does not explicitly
 define itself, while overloading those that it does specify.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 
 <span class="p">{</span>

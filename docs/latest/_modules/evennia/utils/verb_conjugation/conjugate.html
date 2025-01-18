@@ -104,7 +104,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">_VERBS_FILE</span> <span class="o">=</span> <span class="s2">&quot;verbs.txt&quot;</span>
 
@@ -169,7 +169,7 @@
             <span class="n">verb_lemmas</span><span class="p">[</span><span class="n">tense</span><span class="p">]</span> <span class="o">=</span> <span class="n">infinitive</span>
 
 
-<div class="viewcode-block" id="verb_infinitive"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_infinitive">[docs]</a><span class="k">def</span> <span class="nf">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_infinitive"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_infinitive">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the uninflected form of the verb, like &#39;are&#39; -&gt; &#39;be&#39;</span>
 
@@ -184,7 +184,7 @@
     <span class="k">return</span> <span class="n">verb_lemmas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verb_conjugate"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_conjugate">[docs]</a><span class="k">def</span> <span class="nf">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="o">=</span><span class="s2">&quot;infinitive&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_conjugate"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_conjugate">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="o">=</span><span class="s2">&quot;infinitive&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inflects the verb to the given tense.</span>
 
@@ -227,7 +227,7 @@
         <span class="k">return</span> <span class="n">verb</span></div>
 
 
-<div class="viewcode-block" id="verb_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present">[docs]</a><span class="k">def</span> <span class="nf">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inflects the verb in the present tense.</span>
 
@@ -256,7 +256,7 @@
     <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;infinitive&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verb_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present_participle">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inflects the verb in the present participle.</span>
 
@@ -273,7 +273,7 @@
     <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;present participle&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verb_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past">[docs]</a><span class="k">def</span> <span class="nf">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Inflects the verb in the past tense.</span>
@@ -305,7 +305,7 @@
     <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;past&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verb_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past_participle">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inflects the verb in the present participle.</span>
 
@@ -322,7 +322,7 @@
     <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;past participle&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verb_all_tenses"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_all_tenses">[docs]</a><span class="k">def</span> <span class="nf">verb_all_tenses</span><span class="p">():</span>
+<div class="viewcode-block" id="verb_all_tenses"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_all_tenses">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_all_tenses</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all all possible verb tenses.</span>
 
@@ -334,7 +334,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">verb_tenses_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="verb_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_tense">[docs]</a><span class="k">def</span> <span class="nf">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_tense">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a string from verb_tenses_keys representing the verb&#39;s tense.</span>
 
@@ -359,7 +359,7 @@
             <span class="k">return</span> <span class="n">tense</span></div>
 
 
-<div class="viewcode-block" id="verb_is_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_tense">[docs]</a><span class="k">def</span> <span class="nf">verb_is_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_is_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_tense">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_is_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether the verb is in the given tense.</span>
 
@@ -375,7 +375,7 @@
     <span class="k">return</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span> <span class="o">==</span> <span class="n">tense</span></div>
 
 
-<div class="viewcode-block" id="verb_is_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present">[docs]</a><span class="k">def</span> <span class="nf">verb_is_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_is_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_is_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether the verb is in the present tense.</span>
 
@@ -400,7 +400,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="verb_is_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_is_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_is_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present_participle">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_is_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether the verb is in present participle.</span>
 
@@ -416,7 +416,7 @@
     <span class="k">return</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;present participle&quot;</span></div>
 
 
-<div class="viewcode-block" id="verb_is_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past">[docs]</a><span class="k">def</span> <span class="nf">verb_is_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_is_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_is_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether the verb is in the past tense.</span>
 
@@ -442,7 +442,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="verb_is_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_is_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_is_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past_participle">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_is_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether the verb is in past participle.</span>
 
@@ -457,7 +457,7 @@
     <span class="k">return</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;past participle&quot;</span></div>
 
 
-<div class="viewcode-block" id="verb_actor_stance_components"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_actor_stance_components">[docs]</a><span class="k">def</span> <span class="nf">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">plural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="verb_actor_stance_components"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_actor_stance_components">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">plural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Figure out actor stance components of a verb.</span>
 

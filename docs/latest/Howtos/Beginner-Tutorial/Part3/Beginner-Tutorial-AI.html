@@ -200,25 +200,25 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 <span class="normal">25</span>
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/ai.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
 
-<span class="k">class</span> <span class="nc">AIHandler</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AIHandler</span><span class="p">:</span>
     <span class="n">attribute_name</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
     <span class="n">attribute_category</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
 </span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span>
 </span><span class="hll">                                           <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">,</span>
 </span><span class="hll">                                           <span class="n">default</span><span class="o">=</span><span class="s2">&quot;idle&quot;</span><span class="p">)</span>
-</span>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">state</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">)</span>
 </span>
-    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
 <span class="hll">            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 </span>            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
@@ -233,13 +233,13 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 </aside>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># just an example, don&#39;t put this anywhere yet</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">evadventure.ai</span> <span class="kn">import</span> <span class="n">AIHandler</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIHandler</span> 
 
-<span class="k">class</span> <span class="nc">MyMob</span><span class="p">(</span><span class="n">SomeParent</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">MyMob</span><span class="p">(</span><span class="n">SomeParent</span><span class="p">):</span> 
 
     <span class="nd">@lazy_property</span>
-    <span class="k">class</span> <span class="nc">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">class</span><span class="w"> </span><span class="nc">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -307,20 +307,20 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 <span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/ai.py </span>
 
 <span class="c1"># ... </span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="k">class</span> <span class="nc">AIHandler</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AIHandler</span><span class="p">:</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of potential targets for the NPC to combat.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;is_pc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_pc</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of exits that the NPC can traverse. Optionally exclude a destination.</span>
 <span class="sd">        </span>
@@ -334,7 +334,7 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
             <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="n">exclude_destination</span> <span class="ow">and</span> <span class="n">exi</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
         <span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a dictionary of probabilities, return the key of the chosen probability.</span>
 
@@ -395,30 +395,30 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 
 <span class="c1"># ... </span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span> 
-<span class="kn">from</span> <span class="nn">.ai</span> <span class="kn">import</span> <span class="n">AIHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIHandler</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
 
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">pass</span> 
 
-    <span class="k">def</span> <span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">pass</span> 
 
-    <span class="k">def</span> <span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">pass</span> 
 
-    <span class="k">def</span> <span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">pass</span> 
 
-    <span class="k">def</span> <span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
 </pre></div>
@@ -435,13 +435,13 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 
 <span class="c1"># ... </span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        roam, moving randomly to a new room. If a target is found, switch to combat state.</span>
 
@@ -466,11 +466,11 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flee from the current room, avoiding going back to the room from which we came. If no exits</span>
 <span class="sd">        are found, switch to roam state.</span>
@@ -555,7 +555,7 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
 
 <span class="hll">    <span class="n">combat_probabilities</span> <span class="o">=</span> <span class="p">{</span>
 </span>        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
@@ -567,7 +567,7 @@ At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tic
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manage the combat/combat state of the mob.</span>
 

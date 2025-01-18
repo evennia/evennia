@@ -125,41 +125,41 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">random_probability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_probability</span>
 
 
-<div class="viewcode-block" id="AIHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler">[docs]</a><span class="k">class</span> <span class="nc">AIHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="AIHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AIHandler</span><span class="p">:</span>
 
     <span class="n">attribute_name</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
     <span class="n">attribute_category</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
 
-<div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;idle&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="AIHandler.set_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.set_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.set_state">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AIHandler.get_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.get_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_state">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span></div>
 
-<div class="viewcode-block" id="AIHandler.get_targets"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets">[docs]</a>    <span class="k">def</span> <span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.get_targets"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_targets">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of potential targets for the NPC to combat.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;is_pc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_pc</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="AIHandler.get_traversable_exits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits">[docs]</a>    <span class="k">def</span> <span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.get_traversable_exits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.get_traversable_exits">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of exits that the NPC can traverse. Optionally exclude a destination.</span>
 
@@ -173,7 +173,7 @@
             <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="n">exclude_destination</span> <span class="ow">and</span> <span class="n">exi</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="AIHandler.random_probability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability">[docs]</a>    <span class="k">def</span> <span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.random_probability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.random_probability">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a dictionary of probabilities, return the key of the chosen probability.</span>
 
@@ -197,7 +197,7 @@
             <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;=</span> <span class="n">total</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">key</span></div>
 
-<div class="viewcode-block" id="AIHandler.run"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.run"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
@@ -205,7 +205,7 @@
             <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI error in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (running state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="AIMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin">[docs]</a><span class="k">class</span> <span class="nc">AIMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="AIMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AIMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin for adding AI to an Object. This is a simple state machine. Just add more `ai_*` methods</span>
 <span class="sd">    to the object to make it do more things.</span>
@@ -216,7 +216,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AIMixin.ai"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIMixin.ai">[docs]</a>    <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 </pre></div>
 

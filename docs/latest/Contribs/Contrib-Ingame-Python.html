@@ -351,10 +351,10 @@ the <code class="docutils literal notranslate"><span class="pre">EVENTS_WITH_VAL
 <p>You also have to add the <code class="docutils literal notranslate"><span class="pre">&#64;call</span></code> command to your Character CmdSet.  This command allows your users
 to add, edit and delete callbacks in-game.  In your <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets</span></code>, it might look like
 this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.commands</span> <span class="kn">import</span> <span class="n">CmdCallback</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdCallback</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -362,7 +362,7 @@ this:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -376,9 +376,9 @@ this:</p>
 <p>Finally, to use the in-game Python system, you need to have your typeclasses inherit from the modified event
 classes.  For instance, in your <code class="docutils literal notranslate"><span class="pre">typeclasses/characters.py</span></code> module, you should change inheritance
 like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.typeclasses</span> <span class="kn">import</span> <span class="n">EventCharacter</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">EventCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">EventCharacter</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 </pre></div>
@@ -830,8 +830,8 @@ also need to register this class, to tell the in-game Python system that it cont
 this typeclass.</p>
 <p>Here, we want to add a “push” event on objects.  In your <code class="docutils literal notranslate"><span class="pre">typeclasses/objects.py</span></code> file, you should
 write something like:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="n">register_events</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.typeclasses</span> <span class="kn">import</span> <span class="n">EventObject</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_events</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventObject</span>
 
 <span class="n">EVENT_PUSH</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">A character push the object.</span>
@@ -844,7 +844,7 @@ write something like:</p>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="nd">@register_events</span>
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">EventObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">EventObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -892,9 +892,9 @@ specified in the order chosen when <a class="reference internal" href="#adding-n
 <p>Following the same example, so far, we have created an event on all objects, called “push”.  This
 event is never fired for the time being.  We could add a “push” command, taking as argument the name
 of an object.  If this object is valid, it will call its “push” event.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdPush</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdPush</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Push something.</span>
@@ -908,7 +908,7 @@ of an object.  If this object is valid, it will call its “push” event.</p>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when pushing something.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: push &lt;something&gt;&quot;</span><span class="p">)</span>
@@ -944,7 +944,7 @@ create a simple object:</p>
 </pre></div>
 </div>
 <p>In the callback you could write:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 <span class="n">number</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You push a rock... is... it... going... to... move?&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
@@ -993,10 +993,10 @@ event definition.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">phrase_event</span></code> should be used for phrase parameters.</p></li>
 </ul>
 <p>For example, here is the definition of the “say” event:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="n">register_events</span><span class="p">,</span> <span class="n">phrase_event</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.ingame_python.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_events</span><span class="p">,</span> <span class="n">phrase_event</span>
 <span class="c1"># ...</span>
 <span class="nd">@register_events</span>
-<span class="k">class</span> <span class="nc">SomeTypeclass</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SomeTypeclass</span><span class="p">:</span>
     <span class="n">_events</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;say&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;speaker&quot;</span><span class="p">,</span> <span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">CHARACTER_SAY</span><span class="p">,</span> <span class="n">phrase_event</span><span class="p">),</span>
     <span class="p">}</span>

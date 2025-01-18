@@ -260,14 +260,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">codecs</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">_ENCODINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ENCODINGS</span>
 <span class="n">_RE_INSERT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\#\s*?INSERT (.*)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
@@ -284,7 +284,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="read_batchfile"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.read_batchfile">[docs]</a><span class="k">def</span> <span class="nf">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="read_batchfile"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.read_batchfile">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This reads the contents of a batch-file.  Filename is considered</span>
 <span class="sd">    to be a python path to a batch file relative the directory</span>
@@ -337,13 +337,13 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="BatchCommandProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCommandProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCommandProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BatchCommandProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class implements a batch-command processor.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BatchCommandProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCommandProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This parses the lines of a batch-command-file.</span>
 
@@ -374,7 +374,7 @@
 
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.ev&quot;</span><span class="p">))</span>
 
-        <span class="k">def</span> <span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Map replace entries&quot;&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">path</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -397,25 +397,25 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="tb_filename"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_filename">[docs]</a><span class="k">def</span> <span class="nf">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+<div class="viewcode-block" id="tb_filename"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_filename">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to get filename from traceback&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span></div>
 
 
-<div class="viewcode-block" id="tb_iter"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_iter">[docs]</a><span class="k">def</span> <span class="nf">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+<div class="viewcode-block" id="tb_iter"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_iter">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Traceback iterator.&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="n">tb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">tb</span>
         <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span></div>
 
 
-<div class="viewcode-block" id="BatchCodeProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCodeProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BatchCodeProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements a batch-code processor</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BatchCodeProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This parses the lines of a batch-code file</span>
 
@@ -447,7 +447,7 @@
 
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">))</span>
 
-        <span class="k">def</span> <span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Run parse_file on the import before sub:ing it into this file&quot;&quot;&quot;</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -479,7 +479,7 @@
         <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"># batchcode code:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">codes</span></div>
 
-<div class="viewcode-block" id="BatchCodeProcessor.code_exec"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">[docs]</a>    <span class="k">def</span> <span class="nf">code_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_environ</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor.code_exec"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">code_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_environ</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a single code block, including imports and appending</span>
 <span class="sd">        global vars.</span>

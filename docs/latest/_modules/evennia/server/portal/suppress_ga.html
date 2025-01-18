@@ -106,7 +106,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 
 <span class="n">SUPPRESS_GA</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># b&quot;\x03&quot;</span>
 
@@ -115,14 +115,14 @@
 <span class="c1"># try to get the customized mssp info, if it exists.</span>
 
 
-<div class="viewcode-block" id="SuppressGA"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA">[docs]</a><span class="k">class</span> <span class="nc">SuppressGA</span><span class="p">:</span>
+<div class="viewcode-block" id="SuppressGA"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SuppressGA</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SuppressGA.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="SuppressGA.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize suppression of GO-AHEADs.</span>
 
@@ -139,7 +139,7 @@
         <span class="c1"># tell the client that we prefer to suppress GA ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SuppressGA.wont_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">wont_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="SuppressGA.wont_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wont_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when client requests to not suppress GA.</span>
 
@@ -150,7 +150,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SuppressGA.will_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">will_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="SuppressGA.will_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">will_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Client will suppress GA</span>
 

@@ -95,29 +95,29 @@
 <span class="sd">Evennia server. It is instantiated by the evennia/server/server.py module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
 
-<span class="kn">import</span> <span class="nn">django</span>
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
-<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span>
-<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span>
-<span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="kn">import</span> <span class="n">MultiService</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">django</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">connection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperationalError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">internet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.application.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoopingCall</span>
 
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
 
-<div class="viewcode-block" id="EvenniaServerService"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService">[docs]</a><span class="k">class</span> <span class="nc">EvenniaServerService</span><span class="p">(</span><span class="n">MultiService</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_wrap_sigint_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaServerService</span><span class="p">(</span><span class="n">MultiService</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_sigint_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;web_root&quot;</span><span class="p">):</span>
             <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">web_root</span><span class="o">.</span><span class="n">empty_threadpool</span><span class="p">()</span>
             <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -126,7 +126,7 @@
         <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">())</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvenniaServerService.__init__"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.__init__"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_protocol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by amp factory</span>
@@ -162,13 +162,13 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.server_maintenance"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.server_maintenance">[docs]</a>    <span class="k">def</span> <span class="nf">server_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.server_maintenance"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.server_maintenance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">server_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This maintenance function handles repeated checks and updates that</span>
 <span class="sd">        the server needs to do. It is called every minute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flush_cache</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">conditional_flush</span> <span class="k">as</span> <span class="n">_FLUSH_CACHE</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.idmapper.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">conditional_flush</span> <span class="k">as</span> <span class="n">_FLUSH_CACHE</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_flush_cache</span> <span class="o">=</span> <span class="n">_FLUSH_CACHE</span>
 
@@ -216,7 +216,7 @@
             <span class="k">if</span> <span class="n">unpuppet_count</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ran unpuppet-hooks for </span><span class="si">{</span><span class="n">unpuppet_count</span><span class="si">}</span><span class="s2"> link-dead puppets.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.process_idle_timeouts"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.process_idle_timeouts">[docs]</a>    <span class="k">def</span> <span class="nf">process_idle_timeouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.process_idle_timeouts"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.process_idle_timeouts">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_idle_timeouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># handle idle timeouts</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -236,7 +236,7 @@
                 <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span></div>
 
     <span class="c1"># Server startup methods</span>
-<div class="viewcode-block" id="EvenniaServerService.privilegedStartService"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.privilegedStartService">[docs]</a>    <span class="k">def</span> <span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.privilegedStartService"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.privilegedStartService">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="c1"># Tell the system the server is starting up; some things are not available yet</span>
@@ -264,7 +264,7 @@
             <span class="n">ENABLED</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;grapevine&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_INDEX_ENABLED</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.game_index_client.service</span> <span class="kn">import</span> <span class="n">EvenniaGameIndexService</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.game_index_client.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaGameIndexService</span>
 
             <span class="n">egi_service</span> <span class="o">=</span> <span class="n">EvenniaGameIndexService</span><span class="p">()</span>
             <span class="n">egi_service</span><span class="o">.</span><span class="n">setServiceParent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -282,7 +282,7 @@
         <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server server_starting_mode couldn&#39;t unset - db not set up.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.register_plugins"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">register_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.register_plugins"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_plugins">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">SERVER_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SERVICES_PLUGIN_MODULES</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">plugin_module</span> <span class="ow">in</span> <span class="n">SERVER_SERVICES_PLUGIN_MODULES</span><span class="p">:</span>
             <span class="c1"># external plugin protocols - load here</span>
@@ -292,7 +292,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load plugin module </span><span class="si">{</span><span class="n">plugin_module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.register_amp"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_amp">[docs]</a>    <span class="k">def</span> <span class="nf">register_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.register_amp"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_amp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># The AMP protocol handles the communication between</span>
         <span class="c1"># the portal and the mud server. Only reason to ever deactivate</span>
         <span class="c1"># it would be during testing and debugging.</span>
@@ -303,17 +303,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;amp </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">AMP_PORT</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">amp_client</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">amp_client</span>
 
         <span class="n">factory</span> <span class="o">=</span> <span class="n">amp_client</span><span class="o">.</span><span class="n">AMPClientFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_service</span> <span class="o">=</span> <span class="n">internet</span><span class="o">.</span><span class="n">TCPClient</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AMP_HOST</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">AMP_PORT</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_service</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s2">&quot;ServerAMPClient&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_service</span><span class="o">.</span><span class="n">setServiceParent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.register_webserver"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_webserver">[docs]</a>    <span class="k">def</span> <span class="nf">register_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.register_webserver"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.register_webserver">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Start a django-compatible webserver.</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.webserver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">DjangoWebRoot</span><span class="p">,</span>
             <span class="n">LockableThreadPool</span><span class="p">,</span>
             <span class="n">PrivateStaticRoot</span><span class="p">,</span>
@@ -360,7 +360,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;webserver&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;webserver: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">serverport</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.sqlite3_prep"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.sqlite3_prep">[docs]</a>    <span class="k">def</span> <span class="nf">sqlite3_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.sqlite3_prep"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.sqlite3_prep">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sqlite3_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Optimize some SQLite stuff at startup since we</span>
 <span class="sd">        can&#39;t save it to the database.</span>
@@ -378,7 +378,7 @@
             <span class="k">for</span> <span class="n">pragma</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">SQLITE3_PRAGMAS</span><span class="p">:</span>
                 <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">pragma</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.update_defaults"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.update_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">update_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.update_defaults"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.update_defaults">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We make sure to store the most important object defaults here, so</span>
 <span class="sd">        we can catch if they change and update them on-objects automatically.</span>
@@ -467,7 +467,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.run_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.run_initial_setup">[docs]</a>    <span class="k">def</span> <span class="nf">run_initial_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.run_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.run_initial_setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run_initial_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is triggered by the amp protocol when the connection</span>
 <span class="sd">        to the portal has been established.</span>
@@ -501,14 +501,14 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error in initial setup. Stopping Server + Portal.&quot;</span><span class="p">)</span>
                 <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_shutdown</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.create_default_channels"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.create_default_channels">[docs]</a>    <span class="k">def</span> <span class="nf">create_default_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.create_default_channels"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.create_default_channels">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_default_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        check so default channels exist on every restart, create if not.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AccountDB</span><span class="p">,</span> <span class="n">ChannelDB</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span><span class="p">,</span> <span class="n">ChannelDB</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_channel</span>
 
         <span class="n">superuser</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -529,7 +529,7 @@
                 <span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">chan_info</span><span class="p">)</span>
                 <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">superuser</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.run_init_hooks"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.run_init_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">run_init_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.run_init_hooks"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.run_init_hooks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run_init_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the amp client once receiving sync back from Portal</span>
 
@@ -537,7 +537,7 @@
 <span class="sd">            mode (str): One of shutdown, reload or reset</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedObject</span>
 
         <span class="c1"># start server time and maintenance task</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_maintenance</span><span class="p">)</span>
@@ -563,7 +563,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;Evennia Server successfully restarted in &#39;reset&#39; mode.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span>
             <span class="c1"># clear eventual lingering session storages</span>
@@ -577,7 +577,7 @@
         <span class="n">evennia</span><span class="o">.</span><span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvenniaServerService.shutdown"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.shutdown">[docs]</a>    <span class="nd">@defer</span><span class="o">.</span><span class="n">inlineCallbacks</span>
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shuts down the server from inside it.</span>
 
@@ -611,7 +611,7 @@
             <span class="k">yield</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span>
             <span class="c1"># only save monitor state on reload, not on shutdown/reset</span>
-            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.monitorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
             <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -641,12 +641,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span>
 
         <span class="c1"># tickerhandler state should always be saved.</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.tickerhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
         <span class="c1"># on-demand handler state should always be saved.</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.ondemandhandler</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.ondemandhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
 
         <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
@@ -664,7 +664,7 @@
         <span class="c1"># we make sure the proper gametime is saved as late as possible</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;runtime&quot;</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">gametime</span><span class="o">.</span><span class="n">runtime</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.get_info_dict"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.get_info_dict"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.get_info_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the server info, for display.</span>
 
@@ -673,7 +673,7 @@
 
     <span class="c1"># server start/stop hooks</span>
 
-    <span class="k">def</span> <span class="nf">_call_start_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_start_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for calling hooks on all modules.</span>
 
@@ -685,13 +685,13 @@
             <span class="k">if</span> <span class="n">hook</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">hookname</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                 <span class="n">hook</span><span class="p">()</span>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_init"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_init"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called first when the server is starting, before any other hooks, regardless of how it&#39;s starting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_init&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every time the server starts up, regardless of</span>
 <span class="sd">        how it was shut down.</span>
@@ -699,7 +699,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_start&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_stop">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called just before a server is shut down, regardless</span>
 <span class="sd">        of it is fore a reload, reset or shutdown.</span>
@@ -707,14 +707,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_stop&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_reload_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_reload_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when server starts back up after a reload.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_reload_start&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_post_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_post_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_post_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_post_portal_sync">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_post_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called just after the portal has finished syncing back data to the server</span>
 <span class="sd">        after reconnecting.</span>
@@ -724,11 +724,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.monitorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
         <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.tickerhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
@@ -736,13 +736,13 @@
         <span class="n">evennia</span><span class="o">.</span><span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_scripts_after_server_start</span><span class="p">()</span>
 
         <span class="c1"># start the task handler</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.taskhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">TASK_HANDLER</span>
 
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">create_delays</span><span class="p">()</span>
 
         <span class="c1"># start the On-demand handler</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.ondemandhandler</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.ondemandhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
 
         <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
@@ -752,27 +752,21 @@
         <span class="c1"># delete the temporary setting</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_restart_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_reload_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_reload_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_reload_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_reload_stop">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_reload_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only time the server stops before a reload.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_reload_stop&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_cold_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_cold_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_cold_start"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_cold_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_cold_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server starts &quot;cold&quot;, i.e. after a</span>
 <span class="sd">        shutdown or a reset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># We need to do this just in case the server was killed in a way where</span>
-        <span class="c1"># the normal cleanup operations did not have time to run.</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-
-        <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span><span class="p">()</span>
-
         <span class="c1"># Remove non-persistent scripts</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="n">script</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
@@ -787,7 +781,7 @@
                 <span class="n">guest</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_call_start_stop</span><span class="p">(</span><span class="s2">&quot;at_server_cold_start&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaServerService.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_cold_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaServerService.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.at_server_cold_stop">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server goes down due to a shutdown or reset.</span>
 

@@ -115,31 +115,31 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings_default</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings_default</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.accounts</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultAccount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
     <span class="n">DefaultObject</span><span class="p">,</span>
     <span class="n">DefaultRoom</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.scripts</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.serversession</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSession</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.idmapper.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">flush_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="n">_RE_STRIP_EVMENU</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
@@ -205,18 +205,18 @@
 
 
 <span class="c1"># mocking of evennia.utils.utils.delay</span>
-<div class="viewcode-block" id="mockdelay"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdelay">[docs]</a><span class="k">def</span> <span class="nf">mockdelay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="mockdelay"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdelay">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mockdelay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Deferred</span><span class="p">()</span></div>
 
 
 <span class="c1"># mocking of twisted&#39;s deferLater</span>
-<div class="viewcode-block" id="mockdeferLater"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdeferLater">[docs]</a><span class="k">def</span> <span class="nf">mockdeferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="mockdeferLater"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdeferLater">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mockdeferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Deferred</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="unload_module"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.unload_module">[docs]</a><span class="k">def</span> <span class="nf">unload_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="unload_module"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.unload_module">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unload_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reset import so one can mock global constants.</span>
 
@@ -252,12 +252,12 @@
         <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">modulename</span><span class="p">]</span></div>
 
 
-<span class="k">def</span> <span class="nf">_mock_deferlater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mock_deferlater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Deferred</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="EvenniaTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="EvenniaTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaTestMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evennia test environment mixin</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -269,7 +269,7 @@
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">DefaultRoom</span>
     <span class="n">script_typeclass</span> <span class="o">=</span> <span class="n">DefaultScript</span>
 
-<div class="viewcode-block" id="EvenniaTestMixin.create_accounts"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">create_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_accounts"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_accounts">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span>
             <span class="s2">&quot;TestAccount&quot;</span><span class="p">,</span>
             <span class="n">email</span><span class="o">=</span><span class="s2">&quot;test@test.com&quot;</span><span class="p">,</span>
@@ -284,7 +284,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.teardown_accounts"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">teardown_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.teardown_accounts"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">teardown_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;account2&quot;</span><span class="p">):</span>
@@ -292,7 +292,7 @@
 
     <span class="c1"># Set up fake prototype module for allowing tests to use named prototypes.</span>
 <div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;room_desc&quot;</span>
 
@@ -301,7 +301,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">exit_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room2</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.create_objs"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_objs">[docs]</a>    <span class="k">def</span> <span class="nf">create_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_objs"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_objs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
         <span class="p">)</span>
@@ -309,7 +309,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">object_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Obj2&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.create_chars"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_chars">[docs]</a>    <span class="k">def</span> <span class="nf">create_chars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_chars"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_chars">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_chars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Char&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
         <span class="p">)</span>
@@ -322,10 +322,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.create_script"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_script">[docs]</a>    <span class="k">def</span> <span class="nf">create_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_script"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_script">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Script&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.setup_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setup_session">[docs]</a>    <span class="k">def</span> <span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.setup_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setup_session">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dummysession</span> <span class="o">=</span> <span class="n">ServerSession</span><span class="p">()</span>
         <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">)</span>
         <span class="n">dummysession</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="mi">1</span>
@@ -336,12 +336,12 @@
         <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.teardown_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.teardown_session">[docs]</a>    <span class="k">def</span> <span class="nf">teardown_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.teardown_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.teardown_session">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">teardown_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sessions&quot;</span><span class="p">):</span>
             <span class="k">del</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="EvenniaTestMixin.setUp"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.scripts.taskhandler.deferLater&quot;</span><span class="p">,</span> <span class="n">_mock_deferlater</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up testing environment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -362,7 +362,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_session</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">flush_cache</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -381,7 +381,7 @@
 
 
 <div class="viewcode-block" id="EvenniaCommandTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
-<span class="k">class</span> <span class="nc">EvenniaCommandTestMixin</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvenniaCommandTestMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin to add to a test in order to provide the `.call` helper for</span>
 <span class="sd">    testing the execution and returns of a command.</span>
@@ -416,7 +416,7 @@
 <span class="s2">==============================================================================</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
-<div class="viewcode-block" id="EvenniaCommandTestMixin.call"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+<div class="viewcode-block" id="EvenniaCommandTestMixin.call"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmdobj</span><span class="p">,</span>
         <span class="n">input_args</span><span class="p">,</span>
@@ -650,18 +650,18 @@
 
 
 <div class="viewcode-block" id="BaseEvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">BaseEvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseEvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base test (with no default objects) but with enforced default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseEvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseEvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For use with gamedir settings; Just like the normal test case, only for naming consistency.</span>
 
@@ -676,20 +676,20 @@
 <span class="sd">        Django ID cache not being flushed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="EvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="BaseEvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">BaseEvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseEvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class parent has all default objects and uses only default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="EvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This test class is intended for inheriting in mygame tests.</span>
 <span class="sd">    It helps ensure your tests are run with your own objects</span>
@@ -716,14 +716,14 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Commands only using the default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="EvenniaCommandTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaCommandTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTest">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parent class to inherit from - makes tests use your own</span>
 <span class="sd">    classes and settings in mygame.</span>

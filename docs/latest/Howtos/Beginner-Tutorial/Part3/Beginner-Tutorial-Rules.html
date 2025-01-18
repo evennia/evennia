@@ -200,30 +200,30 @@ in a rulebook.</p>
 <h2><span class="section-number">2.3. </span>Rolling dice<a class="headerlink" href="#rolling-dice" title="Permalink to this headline">¶</a></h2>
 <p>We will start by making a dice roller. Let’s group all of our dice rolling into a structure like this
 (not functional code yet):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
 
-   <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># get result of one generic roll, for any type and number of dice</span>
        
-   <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
        <span class="c1"># get result of normal d20 roll, with advantage/disadvantage (or not)</span>
        
-   <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># do a saving throw against a specific target number</span>
        
-   <span class="k">def</span> <span class="nf">opposed_saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">opposed_saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># do an opposed saving throw against a target&#39;s defense</span>
 
-   <span class="k">def</span> <span class="nf">roll_random_table</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">roll_random_table</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># make a roll against a random table (loaded elsewere)</span>
   
-   <span class="k">def</span> <span class="nf">morale_check</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">morale_check</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># roll a 2d6 morale check for a target</span>
       
-   <span class="k">def</span> <span class="nf">heal_from_rest</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">heal_from_rest</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># heal 1d8 when resting+eating, but not more than max value.</span>
        
-   <span class="k">def</span> <span class="nf">roll_death</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="nf">roll_death</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
        <span class="c1"># roll to determine penalty when hitting 0 HP. </span>
        
        
@@ -239,7 +239,7 @@ module if you wanted.</p>
 <p>This structure (called a <em>singleton</em>) means we group all dice rolls into one class that we then initiate
 into a variable <code class="docutils literal notranslate"><span class="pre">dice</span></code> at the end of the module. This means that we can do the following from other
 modules:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">dice</span> 
 
     <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">)</span>
 </pre></div>
@@ -249,11 +249,11 @@ modules:</p>
 <p>We want to be able to do <code class="docutils literal notranslate"><span class="pre">roll(&quot;1d20&quot;)</span></code> and get a random result back from the roll.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
     
-    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Roll XdY dice, where X is the number of dice </span>
 <span class="sd">        and Y the number of sides per die. </span>
@@ -316,12 +316,12 @@ crazy big so the loop takes forever!</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">roll_string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="n">roll_string</span><span class="p">):</span>
         <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">advantage</span> <span class="ow">or</span> <span class="n">disadvantage</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">advantage</span> <span class="ow">and</span> <span class="n">disadvantage</span><span class="p">):</span>
             <span class="c1"># normal roll - advantage/disadvantage not set or they cancel </span>
@@ -361,17 +361,17 @@ Attribute is available as <code class="docutils literal notranslate"><span class
 <code class="docutils literal notranslate"><span class="pre">character.strength</span></code>, <code class="docutils literal notranslate"><span class="pre">character.constitution</span></code>, <code class="docutils literal notranslate"><span class="pre">character.charisma</span></code> etc to get the relevant Abilities.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 <span class="c1"># ...</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
 
-    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
         <span class="c1"># ...</span>
    
-    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
         <span class="c1"># ...</span>
        
-    <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
                      <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Do a saving throw, trying to beat a target.</span>
@@ -417,20 +417,20 @@ to beat is always the relevant bonus + 10 in <em>Knave</em>. So if the enemy def
 roll higher than <code class="docutils literal notranslate"><span class="pre">13</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
     
-    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
         <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
         <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">saving_throw</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
         <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">opposed_saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposed_saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> 
                              <span class="n">attack_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">defense_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span><span class="p">,</span>
                              <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">defender_defense</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="n">defense_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span> 
@@ -450,11 +450,11 @@ roll higher than <code class="docutils literal notranslate"><span class="pre">13
 when things go south. The standard morale value is 9.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
 
     <span class="c1"># ...</span>
     
-    <span class="k">def</span> <span class="nf">morale_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">morale_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span> 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;2d6&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="s2">&quot;morale&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
     
 </pre></div>
@@ -469,13 +469,13 @@ health on game entities. We will need <code class="docutils literal notranslate"
 <code class="docutils literal notranslate"><span class="pre">1d8</span> <span class="pre">+</span> <span class="pre">CON</span></code> HP.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">heal_from_rest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">heal_from_rest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        A night&#39;s rest retains 1d8 + CON HP  </span>
 <span class="sd">        </span>
@@ -548,13 +548,13 @@ be obvious, and in some games you could be asked to roll a lower dice to only ge
 early table results, for example).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">choice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">choice</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
     
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">roll_random_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dieroll</span><span class="p">,</span> <span class="n">table_choices</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_random_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dieroll</span><span class="p">,</span> <span class="n">table_choices</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Args: </span>
 <span class="sd">             dieroll (str): A die roll string, like &quot;1d20&quot;.</span>
@@ -661,14 +661,14 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 <span class="p">)</span>
     
     
-<span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
     
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">roll_random_table</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_random_table</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
         <span class="c1"># ... </span>
         
-    <span class="k">def</span> <span class="nf">roll_death</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_death</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span> 
         <span class="n">ability_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">,</span> <span class="n">death_table</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ability_name</span> <span class="o">==</span> <span class="s2">&quot;dead&quot;</span><span class="p">:</span>
@@ -709,19 +709,19 @@ a message if they survive, to let them know what happened.</p>
 <p>Testing the <code class="docutils literal notranslate"><span class="pre">rules</span></code> module will also showcase some very useful tools when testing.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_rules.py </span>
 
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span> 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">rules</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span> 
 
-<span class="k">class</span> <span class="nc">TestEvAdventureRuleEngine</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestEvAdventureRuleEngine</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
    
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before every test method&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">EvAdventureRollEngine</span><span class="p">()</span>
     
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evadventure.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">mock_randint</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">4</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>     
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;2d6&quot;</span><span class="p">),</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>     

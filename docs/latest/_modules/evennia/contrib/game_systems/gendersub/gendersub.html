@@ -133,10 +133,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 
 <span class="c1"># gender maps</span>
 
@@ -151,7 +151,7 @@
 <span class="c1"># in-game command for setting the gender</span>
 
 
-<div class="viewcode-block" id="SetGender"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.SetGender">[docs]</a><span class="k">class</span> <span class="nc">SetGender</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="SetGender"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.SetGender">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SetGender</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets gender on yourself</span>
 
@@ -164,7 +164,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;sex&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;call:all()&quot;</span>
 
-<div class="viewcode-block" id="SetGender.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.SetGender.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SetGender.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.SetGender.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -180,20 +180,20 @@
 <span class="c1"># Gender-aware character class</span>
 
 
-<div class="viewcode-block" id="GenderCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter">[docs]</a><span class="k">class</span> <span class="nc">GenderCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GenderCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Character class aware of gender.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GenderCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter.at_object_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once when the object is created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="s2">&quot;ambiguous&quot;</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get pronoun from the pronoun marker in the text. This is used as</span>
 <span class="sd">        the callable for the re.sub function.</span>
@@ -216,7 +216,7 @@
         <span class="n">pronoun</span> <span class="o">=</span> <span class="n">_GENDER_PRONOUN_MAP</span><span class="p">[</span><span class="n">gender</span><span class="p">][</span><span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
         <span class="k">return</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">pronoun</span>
 
-<div class="viewcode-block" id="GenderCharacter.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.gendersub.html#evennia.contrib.game_systems.gendersub.gendersub.GenderCharacter.msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emits something to a session attached to the object.</span>
 <span class="sd">        Overloads the default msg() implementation to include</span>

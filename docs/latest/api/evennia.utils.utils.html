@@ -1479,7 +1479,7 @@ Implementation in the werkzeug suite:
 mainly used to lazy-load handlers:</p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@lazy_property</span>
-<span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1697,7 +1697,7 @@ function has no arg or kwarg named ‘caller’.</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@interactive</span>
-<span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This is a test&quot;</span><span class="p">)</span>
     <span class="c1"># wait five seconds</span>
     <span class="k">yield</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>

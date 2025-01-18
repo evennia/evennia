@@ -173,16 +173,16 @@ object that calls the command is denoted by a class property as <code class="doc
 Account object. For a more familiar Diku feel, create a variable that becomes the account object as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mygame/commands/command.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Command Evennia Object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="c1"># then you can access the account object directly by using the familiar ch.</span>
         <span class="n">ch</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
@@ -195,16 +195,16 @@ Account object. For a more familiar Diku feel, create a variable that becomes th
 room object and you need to access the account object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mygame/typeclasses/room.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultRoom</span>
 
-<span class="k">class</span> <span class="nc">MyRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
     <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">is_account_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_account_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
         <span class="c1"># a test to see if object is an account</span>
         <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">myMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">myMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1">#self.caller would not make any sense, since self refers to the</span>
         <span class="c1"># object of &#39;DefaultRoom&#39;, you must find the character obj first:</span>
         <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
@@ -263,7 +263,7 @@ in Evennia.</p>
 can either create this directly in-game with the &#64;py command or create it in another file to do some
 checks and balances if for whatever reason the script needs to be created again. It
 can be done like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_script</span>
 
 <span class="n">mob_db</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.DefaultScript&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mobdb&quot;</span><span class="p">,</span>
                        <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

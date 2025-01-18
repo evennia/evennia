@@ -123,7 +123,7 @@ the instantiated TICKER_HANDLER instance in this module. This
 instance is run by the server; it will save its status across
 server reloads and be started automaticall on boot.</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.tickerhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
 <span class="c1"># call tick myobj.at_tick(*args, **kwargs) every 15 seconds</span>
 <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">myobj</span><span class="o">.</span><span class="n">at_tick</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -155,12 +155,12 @@ to remove.</p>
 <p>The TickerHandler’s functionality can be overloaded by modifying the
 Ticker class and then changing TickerPool and TickerHandler to use the
 custom classes</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyTicker</span><span class="p">(</span><span class="n">Ticker</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyTicker</span><span class="p">(</span><span class="n">Ticker</span><span class="p">):</span>
     <span class="c1"># [doing custom stuff]</span>
 
-<span class="k">class</span> <span class="nc">MyTickerPool</span><span class="p">(</span><span class="n">TickerPool</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTickerPool</span><span class="p">(</span><span class="n">TickerPool</span><span class="p">):</span>
     <span class="n">ticker_class</span> <span class="o">=</span> <span class="n">MyTicker</span>
-<span class="k">class</span> <span class="nc">MyTickerHandler</span><span class="p">(</span><span class="n">TickerHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTickerHandler</span><span class="p">(</span><span class="n">TickerHandler</span><span class="p">):</span>
     <span class="n">ticker_pool_class</span> <span class="o">=</span> <span class="n">MyTickerPool</span>
 </pre></div>
 </div>

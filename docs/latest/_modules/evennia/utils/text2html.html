@@ -100,11 +100,11 @@
 <span class="sd">(extensively modified by Griatch 2010)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">html</span> <span class="kn">import</span> <span class="n">escape</span> <span class="k">as</span> <span class="n">html_escape</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span> <span class="k">as</span> <span class="n">html_escape</span>
 
-<span class="kn">from</span> <span class="nn">.ansi</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.hex_colors</span> <span class="kn">import</span> <span class="n">HexColors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.hex_colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">HexColors</span>
 
 <span class="c1"># All xterm256 RGB equivalents</span>
 
@@ -114,7 +114,7 @@
 <span class="n">hex_colors</span> <span class="o">=</span> <span class="n">HexColors</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="TextToHTMLparser"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser">[docs]</a><span class="k">class</span> <span class="nc">TextToHTMLparser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TextToHTMLparser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class describes a parser for converting from ANSI to html.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -193,7 +193,7 @@
     <span class="n">re_mxplink</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
     <span class="n">re_mxpurl</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lu(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TextToHTMLparser.remove_bells"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.remove_bells">[docs]</a>    <span class="k">def</span> <span class="nf">remove_bells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.remove_bells"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.remove_bells">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_bells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove ansi specials</span>
 
@@ -206,7 +206,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ANSI_BEEP</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.remove_backspaces"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.remove_backspaces">[docs]</a>    <span class="k">def</span> <span class="nf">remove_backspaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.remove_backspaces"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.remove_backspaces">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_backspaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes special escape sequences</span>
 
@@ -223,7 +223,7 @@
             <span class="n">text</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="n">backspace_or_eol</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">text</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.convert_linebreaks"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.convert_linebreaks">[docs]</a>    <span class="k">def</span> <span class="nf">convert_linebreaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.convert_linebreaks"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.convert_linebreaks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_linebreaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extra method for cleaning linebreaks</span>
 
@@ -236,7 +236,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.convert_urls"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.convert_urls">[docs]</a>    <span class="k">def</span> <span class="nf">convert_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.convert_urls"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.convert_urls">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace urls (http://...) by valid HTML.</span>
 
@@ -268,7 +268,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">text</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.sub_mxp_links"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.sub_mxp_links"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        replaces MXP links with HTML code.</span>
@@ -288,7 +288,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.sub_mxp_urls"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.sub_mxp_urls"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        replaces MXP links with HTML code.</span>
@@ -303,7 +303,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.sub_text"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_text">[docs]</a>    <span class="k">def</span> <span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.sub_text"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_text">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        for handling all substitutions.</span>
@@ -325,7 +325,7 @@
             <span class="k">return</span> <span class="n">text</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.format_styles"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.format_styles">[docs]</a>    <span class="k">def</span> <span class="nf">format_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.format_styles"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.format_styles">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a string with parsed ANSI codes and replaces them with</span>
 <span class="sd">        HTML spans and CSS classes.</span>
@@ -484,7 +484,7 @@
         <span class="c1"># recombine back into string</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TextToHTMLparser.parse"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToHTMLparser.parse"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main access function, converts a text containing ANSI codes</span>
 <span class="sd">        into html statements.</span>
@@ -522,7 +522,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="parse_html"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.parse_html">[docs]</a><span class="k">def</span> <span class="nf">parse_html</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">HTML_PARSER</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_html"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.parse_html">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_html</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">HTML_PARSER</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a string, replace ANSI markup with html</span>
 <span class="sd">    &quot;&quot;&quot;</span>

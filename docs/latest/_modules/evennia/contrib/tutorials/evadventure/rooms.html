@@ -101,10 +101,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span>
 
 <span class="n">CHAR_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;|w@|n&quot;</span>
 <span class="n">CHAR_ALT_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;|w&gt;|n&quot;</span>
@@ -130,7 +130,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="EvAdventureRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple room supporting some EvAdventure-specifics.</span>
 
@@ -140,11 +140,11 @@
     <span class="n">allow_pvp</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">allow_death</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureRoom.format_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom.format_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">format_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appearance</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRoom.format_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom.format_appearance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appearance</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Don&#39;t left-strip the appearance string&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">appearance</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvAdventureRoom.get_display_header"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom.get_display_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRoom.get_display_header"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom.get_display_header">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the current location as a mini-map.</span>
 
@@ -176,7 +176,7 @@
         <span class="k">return</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">map_grid</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventurePvPRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventurePvPRoom">[docs]</a><span class="k">class</span> <span class="nc">EvAdventurePvPRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventurePvPRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventurePvPRoom">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventurePvPRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Room where PvP can happen, but noone gets killed.</span>
 
@@ -185,7 +185,7 @@
     <span class="n">allow_combat</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">allow_pvp</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventurePvPRoom.get_display_footer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventurePvPRoom.get_display_footer">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventurePvPRoom.get_display_footer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rooms.html#evennia.contrib.tutorials.evadventure.rooms.EvAdventurePvPRoom.get_display_footer">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Customize footer of description.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

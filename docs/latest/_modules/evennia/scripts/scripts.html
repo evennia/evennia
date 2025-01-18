@@ -97,18 +97,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.manager</span> <span class="kn">import</span> <span class="n">ScriptManager</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span><span class="p">,</span> <span class="n">maybeDeferred</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.scripts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span><span class="p">,</span> <span class="n">maybeDeferred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoopingCall</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DefaultScript&quot;</span><span class="p">,</span> <span class="s2">&quot;DoNothing&quot;</span><span class="p">,</span> <span class="s2">&quot;Store&quot;</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">ExtendedLoopingCall</span><span class="p">(</span><span class="n">LoopingCall</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtendedLoopingCall</span><span class="p">(</span><span class="n">LoopingCall</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom child of LoopingCall that can start at a delay different than</span>
 <span class="sd">    `self.interval` and self.count=0. This allows it to support pausing</span>
@@ -119,7 +119,7 @@
     <span class="n">start_delay</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">callcount</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count_start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count_start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start running function every interval seconds.</span>
 
@@ -177,7 +177,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_scheduleFrom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">deferred</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tick one step. We update callcount (tracks number of calls) as</span>
 <span class="sd">        well as null start_delay (needed in order to correctly</span>
@@ -191,7 +191,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span><span class="p">:</span>
             <span class="n">LoopingCall</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force-fire the callback</span>
 
@@ -206,7 +206,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
         <span class="bp">self</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">next_call_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_call_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the next call time. This also takes the eventual effect</span>
 <span class="sd">        of start_delay into account.</span>
@@ -223,7 +223,7 @@
             <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_runtime</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">))</span>
 
 
-<span class="k">class</span> <span class="nc">ScriptBase</span><span class="p">(</span><span class="n">ScriptDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScriptBase</span><span class="p">(</span><span class="n">ScriptDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for scripts. Don&#39;t inherit from this, inherit from the</span>
 <span class="sd">    class `DefaultScript` below instead.</span>
@@ -234,13 +234,13 @@
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ScriptManager</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{cls}</span><span class="s2"> </span><span class="si">{key}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If we&#39;re flushing this object, make sure the LoopingCall is gone too.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -250,7 +250,7 @@
         <span class="c1"># TODO - restart anew ?</span>
         <span class="k">return</span> <span class="n">ret</span>
 
-    <span class="k">def</span> <span class="nf">_start_task</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -344,7 +344,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_pause_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auto_pause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pause_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auto_pause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pause task where it is, saving the current status.</span>
 
@@ -365,7 +365,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">at_pause</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="n">auto_pause</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_unpause_task</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unpause_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_unpause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">old_interval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -407,7 +407,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_stop_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stop_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop task runner and delete the task.</span>
 
@@ -430,7 +430,7 @@
         <span class="k">if</span> <span class="n">task_stopped</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_step_errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_step_errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback for runner errors</span>
 
@@ -448,7 +448,7 @@
             <span class="k">pass</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">estring</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_step_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_step_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step task runner. No try..except needed due to defer wrap.</span>
 
@@ -477,7 +477,7 @@
             <span class="k">if</span> <span class="n">maxcount</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">maxcount</span> <span class="o">&lt;=</span> <span class="n">callcount</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_step_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_step_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step task. This groups error handling.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -489,7 +489,7 @@
 
     <span class="c1"># Access methods / hooks</span>
 
-    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called after very first time this object is saved.</span>
 <span class="sd">        Generally, you don&#39;t need to overload this, but only the hooks</span>
@@ -561,7 +561,7 @@
                 <span class="c1"># autostart the script</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">(</span><span class="n">force_restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the Script. Normally stops any timer task. This fires at_script_delete before</span>
 <span class="sd">        deletion.</span>
@@ -579,7 +579,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Changes fundamental aspects of the type. Usually changes are made in at_script creation</span>
 <span class="sd">        instead.</span>
@@ -587,7 +587,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Script is cached in the idmapper. This is usually more reliable</span>
 <span class="sd">        than overriding `__init__` since the latter can be called at unexpected times.</span>
@@ -595,14 +595,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should be overridden in child.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when script is deleted, before the script timer stops.</span>
 
@@ -612,14 +612,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If returning False, `at_repeat` will not be called and timer will stop</span>
 <span class="sd">        updating.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called repeatedly every `interval` seconds, once `.start()` has</span>
 <span class="sd">        been called on the Script at least once.</span>
@@ -631,16 +631,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start/Unpause timer component, optionally with new values. If given,</span>
 <span class="sd">        this will update the Script&#39;s fields. This will start `at_repeat` being</span>
@@ -670,7 +670,7 @@
     <span class="c1"># legacy alias</span>
     <span class="n">update</span> <span class="o">=</span> <span class="n">start</span>
 
-    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the Script&#39;s timer component. This will not delete the Sctipt,</span>
 <span class="sd">        just stop the regular firing of `at_repeat`. Running `.start()` will</span>
@@ -682,7 +682,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manually the Script&#39;s timer component manually.</span>
 
@@ -692,7 +692,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manually unpause a Paused Script.</span>
 
@@ -702,7 +702,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unpause_task</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">time_until_next_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_until_next_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get time until the script fires it `at_repeat` hook again.</span>
 
@@ -724,7 +724,7 @@
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">remaining_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remaining_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the number of returning repeats for limited Scripts.</span>
 
@@ -738,7 +738,7 @@
             <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_repeats</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">callcount</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">reset_callcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_callcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset the count of the number of calls done.</span>
 
@@ -754,7 +754,7 @@
         <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">callcount</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fire a premature triggering of the script callback. This</span>
 <span class="sd">        will reset the timer and count down repeats as if the script</span>
@@ -765,7 +765,7 @@
             <span class="n">task</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="DefaultScript"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript">[docs]</a><span class="k">class</span> <span class="nc">DefaultScript</span><span class="p">(</span><span class="n">ScriptBase</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DefaultScript</span><span class="p">(</span><span class="n">ScriptBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base TypeClass for all Scripts. Scripts describe</span>
 <span class="sd">    all entities/systems without a physical existence in the game world</span>
@@ -851,7 +851,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DefaultScript.create"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides a passthrough interface to the utils.create_script() function.</span>
 
@@ -879,14 +879,14 @@
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only called once, when script is first created.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.is_valid"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.is_valid"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.is_valid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Is called to check if the script&#39;s timer is valid to run at this time.</span>
 <span class="sd">        Should return a boolean. If False, the timer will be stopped.</span>
@@ -894,7 +894,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called whenever the script timer is started, which for persistent</span>
 <span class="sd">        timed scripts is at least once every server start. It will also be</span>
@@ -908,7 +908,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_repeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called repeatedly if this Script is set to repeat regularly.</span>
 
@@ -919,7 +919,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_pause"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_pause">[docs]</a>    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_pause"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_pause">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this script&#39;s timer pauses.</span>
 
@@ -931,7 +931,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_stop"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_stop"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_stop">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called whenever when it&#39;s time for this script&#39;s timer to stop (either</span>
 <span class="sd">        because is_valid returned False, it ran out of iterations or it was manuallys</span>
@@ -944,7 +944,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_script_delete"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_script_delete"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_delete">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Script is deleted, before stopping the timer.</span>
 
@@ -954,7 +954,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_reload">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever the server is shutting down for</span>
 <span class="sd">        restart/reboot. If you want to, for example, save</span>
@@ -963,14 +963,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_shutdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever the server is shutting down fully</span>
 <span class="sd">        (i.e. not for a restart).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_server_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.at_server_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called after the server has started. It can be used to add</span>
 <span class="sd">        post-startup setup for Scripts without a timer component (for which at_start</span>
@@ -983,12 +983,12 @@
 <span class="c1"># Some useful default Script types used by Evennia.</span>
 
 
-<div class="viewcode-block" id="DoNothing"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DoNothing">[docs]</a><span class="k">class</span> <span class="nc">DoNothing</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="DoNothing"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DoNothing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DoNothing</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A script that does nothing. Used as default fallback.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DoNothing.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DoNothing.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DoNothing.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DoNothing.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the script</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -996,12 +996,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is an empty placeholder script.&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="Store"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.Store">[docs]</a><span class="k">class</span> <span class="nc">Store</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="Store"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.Store">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Store</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple storage script</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Store.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.Store.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Store.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.Store.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the script</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -95,16 +95,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.spawner</span><span class="w"> </span><span class="kn">import</span> <span class="n">spawn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
 
-<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">chargen_tables</span>
-<span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.random_tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">chargen_tables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">dice</span>
 
 <span class="n">_ABILITIES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;STR&quot;</span><span class="p">:</span> <span class="s2">&quot;strength&quot;</span><span class="p">,</span>
@@ -132,7 +132,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="TemporaryCharacterSheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet">[docs]</a><span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+<div class="viewcode-block" id="TemporaryCharacterSheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This collects all the rules for generating a new character. An instance of this class is used</span>
 <span class="sd">    to pass around the current character state during character generation and also applied to</span>
@@ -152,10 +152,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_random_ability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_random_ability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TemporaryCharacterSheet.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TemporaryCharacterSheet.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># name will likely be modified later</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d282&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
@@ -209,7 +209,7 @@
             <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;general gear 2&quot;</span><span class="p">]),</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="TemporaryCharacterSheet.show_sheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.show_sheet">[docs]</a>    <span class="k">def</span> <span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TemporaryCharacterSheet.show_sheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.show_sheet">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a temp character sheet, a compressed version of the real thing.</span>
 
@@ -232,7 +232,7 @@
             <span class="n">equipment</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">equipment</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TemporaryCharacterSheet.apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="TemporaryCharacterSheet.apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.apply">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once the chargen is complete, call this create and set up the character.</span>
 
@@ -289,7 +289,7 @@
 <span class="c1"># chargen menu</span>
 
 
-<div class="viewcode-block" id="node_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_chargen">[docs]</a><span class="k">def</span> <span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_chargen">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This node is the central point of chargen. We return here to see our current</span>
 <span class="sd">    sheet and break off to edit different parts of it.</span>
@@ -315,7 +315,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<span class="k">def</span> <span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_change_name below to check what user entered and update the name if appropriate.</span>
 
@@ -327,7 +327,7 @@
     <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<div class="viewcode-block" id="node_change_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_change_name">[docs]</a><span class="k">def</span> <span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_change_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_change_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the random name of the character.</span>
 
@@ -343,7 +343,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<span class="k">def</span> <span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_swap_abilities to parse the user&#39;s input and swap ability</span>
 <span class="sd">    values.</span>
@@ -375,7 +375,7 @@
     <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
 
 
-<div class="viewcode-block" id="node_swap_abilities"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_swap_abilities">[docs]</a><span class="k">def</span> <span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_swap_abilities"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_swap_abilities">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One is allowed to swap the values of two abilities around, once.</span>
 
@@ -403,7 +403,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_apply_character"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_apply_character">[docs]</a><span class="k">def</span> <span class="nf">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_apply_character"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_apply_character">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    End chargen and create the character. We will also puppet it.</span>
 
@@ -417,7 +417,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="start_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.start_chargen">[docs]</a><span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="start_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.start_chargen">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
 

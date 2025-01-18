@@ -241,9 +241,9 @@ access) and the IC “Character objects”.</p>
 
 <span class="c1"># [...]</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="c1"># [...]</span>
-    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method customizes how character names are displayed. We assume</span>
 <span class="sd">        only permissions of types &quot;Developers&quot; and &quot;Admins&quot; require</span>
@@ -286,13 +286,13 @@ Evennia’s default “mux-like” commands here.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> and add a new Command class at the bottom:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
 <span class="c1"># [...]</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
-<span class="k">class</span> <span class="nc">CmdMakeGM</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdMakeGM</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change an account&#39;s GM status</span>
 
@@ -307,7 +307,7 @@ Evennia’s default “mux-like” commands here.</p>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Developers)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;RP&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implement the command&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -356,11 +356,11 @@ expected by our new <code class="docutils literal notranslate"><span class="pre"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmdsets.py</span>
 
 <span class="c1"># [...]</span>
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdMakeGM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdMakeGM</span>
 
-<span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
     <span class="c1"># [...]</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># [...]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMakeGM</span><span class="p">())</span>
 
@@ -391,7 +391,7 @@ expected by our new <code class="docutils literal notranslate"><span class="pre"
 <p><a class="reference internal" href="../Components/EvTable.html"><span class="doc std std-doc">EvTable</span></a> is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this can be tried out in a Python shell like iPython</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">evtable</span>
 
 <span class="c1"># we hardcode these for now, we&#39;ll get them as input later</span>
 <span class="n">STR</span><span class="p">,</span> <span class="n">CON</span><span class="p">,</span> <span class="n">DEX</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">WIS</span><span class="p">,</span> <span class="n">CHA</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">13</span>
@@ -482,7 +482,7 @@ Within each block (which must be separated from one another by at least one non-
 <span class="n">ADVANTAGES</span> <span class="o">=</span> <span class="s2">&quot;Language-wiz, Intimidation, Firebreathing&quot;</span>
 <span class="n">DISADVANTAGES</span> <span class="o">=</span> <span class="s2">&quot;Bad body odor, Poor eyesight, Troubled history&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">evform</span>
 
 <span class="c1"># load the form from the module</span>
 <span class="n">form</span> <span class="o">=</span> <span class="n">evform</span><span class="o">.</span><span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;world/charsheetform.py&quot;</span><span class="p">)</span>
@@ -528,13 +528,13 @@ example.</p>
 <p>We will assume we go with the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> example above. We now need to attach this to a Character so it can be modified. For this we will modify our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class a little more:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/character.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evform</span><span class="p">,</span> <span class="n">evtable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">evform</span><span class="p">,</span> <span class="n">evtable</span>
 
 <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;called only once, when object is first created&quot;</span>
         <span class="c1"># we will use this to stop account from changing sheet</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">False</span>
@@ -550,7 +550,7 @@ example.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">charsheet</span> <span class="o">=</span> <span class="n">evform</span><span class="o">.</span><span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;world/charsheetform.py&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_charsheet</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">update_charsheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_charsheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call this to update the sheet after any of the ingoing data</span>
 <span class="sd">        has changed.</span>
@@ -587,7 +587,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <span class="n">ALLOWED_FIELDNAMES</span> <span class="o">=</span> <span class="n">ALLOWED_ATTRS</span> <span class="o">+</span> \
                      <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;advantages&quot;</span><span class="p">,</span> <span class="s2">&quot;disadvantages&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_validate_fieldname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_fieldname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
     <span class="s2">&quot;Helper function to validate field names.&quot;</span>
     <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_FIELDNAMES</span><span class="p">:</span>
         <span class="n">list_of_fieldnames</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_FIELDNAMES</span><span class="p">)</span>
@@ -599,7 +599,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="k">class</span> <span class="nc">CmdSheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdSheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edit a field on the character sheet</span>
 
@@ -625,7 +625,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: perm(Players)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;RP&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># not enough arguments. Display the sheet</span>
@@ -662,7 +662,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <p>Game masters use basically the same input as Players do to edit a character sheet, except they can do it on other players than themselves. They are also not stopped by any <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> flags.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># continuing in mygame/commands/command.py</span>
 
-<span class="k">class</span> <span class="nc">CmdGMsheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdGMsheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GM-modification of char sheets</span>
 
@@ -685,7 +685,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: perm(Admins)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;RP&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: @gmsheet character [= fieldname value]&quot;</span><span class="p">)</span>

@@ -106,10 +106,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="n">LINKS_SUB</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 <span class="n">URL_SUB</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lu(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
@@ -122,7 +122,7 @@
 <span class="n">MXP_URL</span> <span class="o">=</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s1">&#39;&lt;A HREF=&quot;</span><span class="se">\\</span><span class="s1">1&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">2&quot;</span> <span class="o">+</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s2">&quot;&lt;/A&gt;&quot;</span>
 
 
-<div class="viewcode-block" id="mxp_parse"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.mxp_parse">[docs]</a><span class="k">def</span> <span class="nf">mxp_parse</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="mxp_parse"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.mxp_parse">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mxp_parse</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replaces links to the correct format for MXP.</span>
 
@@ -140,13 +140,13 @@
     <span class="k">return</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="Mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp">[docs]</a><span class="k">class</span> <span class="nc">Mxp</span><span class="p">:</span>
+<div class="viewcode-block" id="Mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Mxp</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MXP protocol.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Mxp.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Mxp.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the protocol by checking if the client supports it.</span>
 
@@ -159,7 +159,7 @@
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">MXP_ENABLED</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">MXP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_mxp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_mxp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mxp.no_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.no_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">no_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Mxp.no_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.no_mxp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">no_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Client reports to not support MXP.</span>
 
@@ -170,7 +170,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;MXP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mxp.do_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.do_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">do_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Mxp.do_mxp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mxp.html#evennia.server.portal.mxp.Mxp.do_mxp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Client reports to support MXP.</span>
 

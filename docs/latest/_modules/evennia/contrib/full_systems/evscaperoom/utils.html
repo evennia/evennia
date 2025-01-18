@@ -98,18 +98,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">justify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">justify</span>
 
 <span class="n">_BASE_TYPECLASS_PATH</span> <span class="o">=</span> <span class="s2">&quot;evscaperoom.objects.&quot;</span>
 <span class="n">_RE_PERSPECTIVE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;~(\w+)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
 <span class="n">_RE_THING</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\*(\w+)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="create_evscaperoom_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_evscaperoom_object">[docs]</a><span class="k">def</span> <span class="nf">create_evscaperoom_object</span><span class="p">(</span>
+<div class="viewcode-block" id="create_evscaperoom_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_evscaperoom_object">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_evscaperoom_object</span><span class="p">(</span>
     <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -158,7 +158,7 @@
     <span class="k">return</span> <span class="n">new_obj</span></div>
 
 
-<div class="viewcode-block" id="create_fantasy_word"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_fantasy_word">[docs]</a><span class="k">def</span> <span class="nf">create_fantasy_word</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="create_fantasy_word"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_fantasy_word">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_fantasy_word</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a random semi-pronouncable &#39;word&#39;.</span>
 
@@ -196,7 +196,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="parse_for_perspectives"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_perspectives">[docs]</a><span class="k">def</span> <span class="nf">parse_for_perspectives</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_for_perspectives"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_perspectives">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_for_perspectives</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a string with special markers to produce versions both</span>
 <span class="sd">    intended for the person doing the action (&#39;you&#39;) and for those</span>
@@ -214,7 +214,7 @@
 <span class="sd">        -&gt;  &quot;You open&quot;, &quot;Bob opens&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_replace_third_person</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_replace_third_person</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">lmatch</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">lmatch</span> <span class="o">==</span> <span class="s2">&quot;you&quot;</span><span class="p">:</span>
@@ -235,7 +235,7 @@
     <span class="k">return</span> <span class="n">first_person</span><span class="p">,</span> <span class="n">third_person</span></div>
 
 
-<div class="viewcode-block" id="parse_for_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_things">[docs]</a><span class="k">def</span> <span class="nf">parse_for_things</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">things_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">clr</span><span class="o">=</span><span class="s2">&quot;|y&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_for_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_things">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_for_things</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">things_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">clr</span><span class="o">=</span><span class="s2">&quot;|y&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse string for special *thing markers and decorate</span>
 <span class="sd">    it.</span>
@@ -261,7 +261,7 @@
         <span class="k">return</span> <span class="n">_RE_THING</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">[\1]|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clr</span><span class="p">),</span> <span class="n">string</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_msg_borders"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.add_msg_borders">[docs]</a><span class="k">def</span> <span class="nf">add_msg_borders</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="add_msg_borders"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.add_msg_borders">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">add_msg_borders</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="s2">&quot;Add borders above/below text block&quot;</span>
     <span class="n">maxwidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
     <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;|w&quot;</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="n">maxwidth</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
@@ -269,7 +269,7 @@
     <span class="k">return</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="msg_cinematic"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.msg_cinematic">[docs]</a><span class="k">def</span> <span class="nf">msg_cinematic</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="msg_cinematic"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.msg_cinematic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">msg_cinematic</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display a text as a &#39;cinematic&#39; - centered and</span>
 <span class="sd">    surrounded by borders.</span>

@@ -136,8 +136,8 @@
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span>    <span class="kn">import</span> <span class="nn">random</span>
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span>    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span>
     
     <span class="n">ECHOES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The sky is clear.&quot;</span><span class="p">,</span> 
               <span class="s2">&quot;Clouds gather overhead.&quot;</span><span class="p">,</span>
@@ -145,14 +145,14 @@
               <span class="s2">&quot;A breeze of wind is felt.&quot;</span><span class="p">,</span>
               <span class="s2">&quot;The wind is picking up&quot;</span><span class="p">]</span> <span class="c1"># etc  </span>
 
-    <span class="k">class</span> <span class="nc">WeatherRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">WeatherRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
         <span class="s2">&quot;This room is ticked at regular intervals&quot;</span>        
        
-        <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;called only when the object is first created&quot;</span>
             <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_weather_update</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">at_weather_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">at_weather_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="s2">&quot;ticked at regular intervals&quot;</span>
             <span class="n">echo</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">ECHOES</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>

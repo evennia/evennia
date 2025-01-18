@@ -94,23 +94,23 @@
 <span class="sd">This defines how to edit help entries in Admin.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
-<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.help.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelpEntry</span>
 
-<span class="kn">from</span> <span class="nn">.tags</span> <span class="kn">import</span> <span class="n">TagInline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagInline</span>
 
 
-<div class="viewcode-block" id="HelpTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpTagInline">[docs]</a><span class="k">class</span> <span class="nc">HelpTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpTagInline">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;helpentry&quot;</span></div>
 
 
-<div class="viewcode-block" id="HelpEntryForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryForm">[docs]</a><span class="k">class</span> <span class="nc">HelpEntryForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntryForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpEntryForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
     <span class="s2">&quot;Defines how to display the help entry&quot;</span>
 
-<div class="viewcode-block" id="HelpEntryForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="HelpEntryForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
 
@@ -129,7 +129,7 @@
 
 
 <div class="viewcode-block" id="HelpEntryAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HelpEntry</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">HelpEntryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelpEntryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
     <span class="s2">&quot;Sets up the admin manaager for help entries&quot;</span>
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">HelpTagInline</span><span class="p">]</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">)</span>

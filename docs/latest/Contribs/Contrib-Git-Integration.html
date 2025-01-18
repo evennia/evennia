@@ -149,11 +149,11 @@ extra requirements:</p>
 <p>This utility adds a simple assortment of ‘git’ commands. Import the module into your commands and add it to your command set to make it available.</p>
 <p>Specifically, in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.utils.git_integration</span> <span class="kn">import</span> <span class="n">GitCmdSet</span>   <span class="c1"># &lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.utils.git_integration</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitCmdSet</span>   <span class="c1"># &lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">Character_CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">Character_CmdSet</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GitCmdSet</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
 

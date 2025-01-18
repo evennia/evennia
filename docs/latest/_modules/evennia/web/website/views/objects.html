@@ -95,18 +95,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.mixins</span> <span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">PermissionDenied</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseBadRequest</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionDenied</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseBadRequest</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EvenniaCreateView</span><span class="p">,</span>
     <span class="n">EvenniaDeleteView</span><span class="p">,</span>
     <span class="n">EvenniaDetailView</span><span class="p">,</span>
@@ -114,7 +114,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -152,7 +152,7 @@
     <span class="c1"># The order you specify here will be followed.</span>
     <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ObjectDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView.get_context_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds an &#39;attributes&#39; list to the request context consisting of the</span>
 <span class="sd">        attributes specified at the class level, and in the order provided.</span>
@@ -189,7 +189,7 @@
         <span class="c1"># Return the comprehensive context object</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="ObjectDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView.get_object">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that provides some important Evennia-specific</span>
 <span class="sd">        functionality.</span>
@@ -228,7 +228,7 @@
         <span class="k">return</span> <span class="n">obj</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectCreateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectCreateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectCreateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectCreateView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -244,7 +244,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDeleteView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDeleteView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view for obvious reasons!</span>
 
@@ -265,7 +265,7 @@
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span></div>
 
 
-<div class="viewcode-block" id="ObjectUpdateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -287,7 +287,7 @@
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>
 
-<div class="viewcode-block" id="ObjectUpdateView.get_success_url"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.get_success_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.get_success_url"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.get_success_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook.</span>
 
@@ -300,7 +300,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_url</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">web_get_detail_url</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ObjectUpdateView.get_initial"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.get_initial">[docs]</a>    <span class="k">def</span> <span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.get_initial"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.get_initial">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook, modified for Evennia.</span>
 
@@ -322,7 +322,7 @@
 
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="ObjectUpdateView.form_valid"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.form_valid"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView.form_valid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook.</span>
 

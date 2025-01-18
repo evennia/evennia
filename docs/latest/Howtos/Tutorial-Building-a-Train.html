@@ -139,11 +139,11 @@ move the Train, which brings along everyone inside it.</p>
 create a new file, for instance in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/train.py</span></code> with the following content:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/train.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># We&#39;ll add in code here later.</span>
         <span class="k">pass</span>
 
@@ -171,9 +171,9 @@ available to whomever is either inside it or in the same room as the train.</p>
 <p>Let’s create a new command module as <code class="docutils literal notranslate"><span class="pre">mygame/commands/train.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/train.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
 
-<span class="k">class</span> <span class="nc">CmdEnterTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEnterTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    entering the train</span>
 <span class="sd">    </span>
@@ -186,13 +186,13 @@ available to whomever is either inside it or in the same room as the train.</p>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;enter train&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You board the train.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;board&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    leaving the train </span>
 <span class="sd"> </span>
@@ -206,15 +206,15 @@ available to whomever is either inside it or in the same room as the train.</p>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;leave train&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">location</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;disembark&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">CmdSetTrain</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdSetTrain</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEnterTrain</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLeaveTrain</span><span class="p">())</span>
 </pre></div>
@@ -226,12 +226,12 @@ current location of the train (back outside to its current location). We stacked
 <p>To make the commands work we need to add this cmdset to our train typeclass:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/typeclasses/train.py</span>
 
-<span class="kn">from</span> <span class="nn">commands.train</span> <span class="kn">import</span> <span class="n">CmdSetTrain</span>
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.train</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSetTrain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
 
-<span class="k">class</span> <span class="nc">TrainObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetTrain</span><span class="p">)</span>
 
 </pre></div>
@@ -258,7 +258,7 @@ already, but none that we can use for locking a command in this particular case.
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="c1"># file mygame/server/conf/lockfuncs.py</span>
 
-<span class="k">def</span> <span class="nf">cmdinside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cmdinside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: cmdinside() </span>
 <span class="sd">    Used to lock commands and only allows access if the command</span>
@@ -277,12 +277,12 @@ the check will fail.</p>
 <p>The next step is to actually use this new lock function to create a lock of type <code class="docutils literal notranslate"><span class="pre">cmd</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file commands/train.py</span>
 <span class="o">...</span>
-<span class="k">class</span> <span class="nc">CmdEnterTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEnterTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;enter train&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not cmdinside()&quot;</span>
     <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;leave train&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:cmdinside()&quot;</span>
     <span class="c1"># ...</span>
@@ -323,13 +323,13 @@ things we need to consider for this:</p>
 <p>Next we will tell the train how to move and which route to take.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file typeclasses/train.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">search_object</span>
 
-<span class="kn">from</span> <span class="nn">commands.train</span> <span class="kn">import</span> <span class="n">CmdSetTrain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.train</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSetTrain</span>
 
-<span class="k">class</span> <span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetTrain</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">driving</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># The direction our train is driving (1 for forward, -1 for backwards)</span>
@@ -337,13 +337,13 @@ things we need to consider for this:</p>
         <span class="c1"># The rooms our train will pass through (change to fit your game)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#2&quot;</span><span class="p">,</span> <span class="s2">&quot;#47&quot;</span><span class="p">,</span> <span class="s2">&quot;#50&quot;</span><span class="p">,</span> <span class="s2">&quot;#53&quot;</span><span class="p">,</span> <span class="s2">&quot;#56&quot;</span><span class="p">,</span> <span class="s2">&quot;#59&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">start_driving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_driving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">driving</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">stop_driving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_driving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">driving</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">goto_next_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">goto_next_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">currentroom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">dbref</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">currentroom</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">direction</span>
 
@@ -381,41 +381,41 @@ care of the driving.</p>
 <p>Let’s make a new file in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/trainscript.py</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/typeclasses/trainscript.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
-<span class="k">class</span> <span class="nc">TrainStoppedScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainStoppedScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;trainstopped&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">30</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">repeats</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">start_driving</span><span class="p">()</span>        
 
-    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TrainDrivingScript</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">TrainDrivingScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainDrivingScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;traindriving&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">driving</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">driving</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">goto_next_room</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TrainStoppedScript</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -426,11 +426,11 @@ in one of those two states - both scripts take care of adding the other one once
 train again., and we’re ready to ride it around!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file typeclasses/train.py</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.trainscript</span> <span class="kn">import</span> <span class="n">TrainStoppedScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.trainscript</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainStoppedScript</span>
 
-<span class="k">class</span> <span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TrainStoppedScript</span><span class="p">)</span>
 </pre></div>

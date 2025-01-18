@@ -136,20 +136,20 @@ and <code class="docutils literal notranslate"><span class="pre">add()</span></c
 <h2>Base Handler example<a class="headerlink" href="#base-handler-example" title="Permalink to this headline">¶</a></h2>
 <p>Here is a base way to set up an on-object handler:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
 
-<span class="k">class</span> <span class="nc">NameChanger</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NameChanger</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
 
-    <span class="k">def</span> <span class="nf">add_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;self.obj.key_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="c1"># make a test object</span>
-<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="nd">@lazy_property</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">namechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">namechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
        <span class="k">return</span> <span class="n">NameChanger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
@@ -180,25 +180,25 @@ that represents the quest. Let’s make it simple as an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in mygame/world/quests.py</span>
 
 
-<span class="k">class</span> <span class="nc">Quest</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Quest</span><span class="p">:</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;The quest for the red key&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
-    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># uses self.current_step to check</span>
         <span class="c1"># progress of this quest</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
 
-    <span class="k">def</span> <span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># check here if quest-step is complete</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;find_the_red_key&quot;</span>
-    <span class="k">def</span> <span class="nf">step_find_the_red_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_find_the_red_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># check if step is complete</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;hand_in_quest&quot;</span>
-    <span class="k">def</span> <span class="nf">step_hand_in_quest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_hand_in_quest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># check if handed in quest to quest giver</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># finished</span>
 
@@ -214,27 +214,27 @@ normal Python class with no connection to the database.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in the same mygame/world/quests.py</span>
 
 
-<span class="k">class</span> <span class="nc">QuestHandler</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QuestHandler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>  <span class="c1"># important</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">questclass</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">questclass</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">questclass</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">questclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">quest</span><span class="o">.</span><span class="n">check_progress</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span><span class="p">:</span>
             <span class="c1"># .do_save is set on handler by Quest if it wants to save progress</span>
@@ -260,32 +260,32 @@ out if the quest is complete (the <code class="docutils literal notranslate"><sp
 they have the red key, for example), it also allows the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to tell the handler when its state
 changed and it should be saved.</p>
 <p>We change the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> such:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbserialize</span>
 
 
-<span class="k">class</span> <span class="nc">Quest</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Quest</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbunserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">quests</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span>
 
     <span class="nd">@current_step</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># this triggers save in handler!</span>
 
@@ -310,15 +310,15 @@ objects</span></a> in the Attributes</p>
 <p>The final thing we need to do is to add the quest-handler to the character:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">.world.quests</span> <span class="kn">import</span> <span class="n">QuestHandler</span>  <span class="c1"># as an example</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.world.quests</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuestHandler</span>  <span class="c1"># as an example</span>
 
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QuestHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 </pre></div>

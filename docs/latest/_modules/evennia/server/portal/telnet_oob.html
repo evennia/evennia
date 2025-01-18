@@ -116,14 +116,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 
 <span class="c1"># General Telnet</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch.telnet</span><span class="w"> </span><span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span>
 
 <span class="c1"># MSDP-relevant telnet cmd/opt-codes</span>
 <span class="n">MSDP</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">69</span><span class="p">])</span>
@@ -163,12 +163,12 @@
 <span class="c1"># MSDP/GMCP communication handler</span>
 
 
-<div class="viewcode-block" id="TelnetOOB"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB">[docs]</a><span class="k">class</span> <span class="nc">TelnetOOB</span><span class="p">:</span>
+<div class="viewcode-block" id="TelnetOOB"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TelnetOOB</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MSDP and GMCP protocols.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TelnetOOB.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initiates by storing the protocol on itself and trying to</span>
 <span class="sd">        determine if the client supports MSDP.</span>
@@ -189,7 +189,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">GMCP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_gmcp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_gmcp</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oob_reported</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.no_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.no_msdp">[docs]</a>    <span class="k">def</span> <span class="nf">no_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.no_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.no_msdp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">no_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Client reports No msdp supported or wanted.</span>
 
@@ -200,7 +200,7 @@
         <span class="c1"># no msdp, check GMCP</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.do_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.do_msdp">[docs]</a>    <span class="k">def</span> <span class="nf">do_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.do_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.do_msdp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Client reports that it supports msdp.</span>
 
@@ -212,7 +212,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;OOB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.no_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.no_gmcp">[docs]</a>    <span class="k">def</span> <span class="nf">no_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.no_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.no_gmcp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">no_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If this is reached, it means neither MSDP nor GMCP is</span>
 <span class="sd">        supported.</span>
@@ -223,7 +223,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.do_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.do_gmcp">[docs]</a>    <span class="k">def</span> <span class="nf">do_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.do_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.do_gmcp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when client confirms that it can do MSDP or GMCP.</span>
 
@@ -237,7 +237,7 @@
 
     <span class="c1"># encoders</span>
 
-<div class="viewcode-block" id="TelnetOOB.encode_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.encode_msdp">[docs]</a>    <span class="k">def</span> <span class="nf">encode_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.encode_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.encode_msdp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">encode_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encode into a valid MSDP command.</span>
 
@@ -308,7 +308,7 @@
         <span class="c1"># print(&quot;msdp_string:&quot;, msdp_string)  # DEBUG</span>
         <span class="k">return</span> <span class="n">msdp_string</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.encode_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.encode_gmcp">[docs]</a>    <span class="k">def</span> <span class="nf">encode_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.encode_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.encode_gmcp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">encode_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encode into GMCP messages.</span>
 
@@ -372,7 +372,7 @@
         <span class="c1"># print(&quot;gmcp string&quot;, gmcp_string)  # DEBUG</span>
         <span class="k">return</span> <span class="n">gmcp_string</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.decode_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.decode_msdp">[docs]</a>    <span class="k">def</span> <span class="nf">decode_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.decode_msdp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.decode_msdp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">decode_msdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decodes incoming MSDP data.</span>
 
@@ -470,7 +470,7 @@
         <span class="c1"># print(&quot;msdp data in:&quot;, cmds)  # DEBUG</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="o">**</span><span class="n">cmds</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TelnetOOB.decode_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.decode_gmcp">[docs]</a>    <span class="k">def</span> <span class="nf">decode_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.decode_gmcp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.decode_gmcp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">decode_gmcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decodes incoming GMCP data on the form &#39;varname &lt;structure&gt;&#39;.</span>
 
@@ -521,7 +521,7 @@
 
     <span class="c1"># access methods</span>
 
-<div class="viewcode-block" id="TelnetOOB.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.data_out">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a MSDP- or GMCP-valid subnegotiation across the protocol.</span>
 

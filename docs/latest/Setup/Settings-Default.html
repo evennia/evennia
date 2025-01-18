@@ -116,7 +116,7 @@
 its comments to see what each setting does and copy only what you want
 to change into <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>.</p>
 <p>Example of accessing settings:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span> <span class="o">==</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Yay!&quot;</span><span class="p">)</span>
@@ -138,11 +138,11 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">django.contrib.messages</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">messages</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Evennia base server config</span>
@@ -1382,7 +1382,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># Django extesions are useful third-party tools that are not</span>
 <span class="c1"># always included in the default django distro.</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">django_extensions</span>  <span class="c1"># noqa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">django_extensions</span>  <span class="c1"># noqa</span>
 
     <span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;django_extensions&quot;</span><span class="p">]</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>

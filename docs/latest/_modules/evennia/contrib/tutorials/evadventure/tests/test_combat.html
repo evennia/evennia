@@ -95,25 +95,25 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseEvenniaTest</span><span class="p">,</span>
     <span class="n">EvenniaCommandTestMixin</span><span class="p">,</span>
     <span class="n">EvenniaTestCase</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">combat_base</span><span class="p">,</span> <span class="n">combat_turnbased</span><span class="p">,</span> <span class="n">combat_twitch</span>
-<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">..npcs</span> <span class="kn">import</span> <span class="n">EvAdventureMob</span>
-<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">EvAdventureConsumable</span><span class="p">,</span> <span class="n">EvAdventureRunestone</span><span class="p">,</span> <span class="n">EvAdventureWeapon</span>
-<span class="kn">from</span> <span class="nn">..rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">combat_base</span><span class="p">,</span> <span class="n">combat_turnbased</span><span class="p">,</span> <span class="n">combat_twitch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..npcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureMob</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureConsumable</span><span class="p">,</span> <span class="n">EvAdventureRunestone</span><span class="p">,</span> <span class="n">EvAdventureWeapon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span>
 
 
-<span class="k">class</span> <span class="nc">_CombatTestBase</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CombatTestBase</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up common entities for testing combat:</span>
 
@@ -126,7 +126,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testroom&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchar&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span>
@@ -147,20 +147,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler">[docs]</a><span class="k">class</span> <span class="nc">TestEvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestEvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the base functionality of the base combat handler.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This also tests the `get_or_create_combathandler` classfunc&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combat_base</span><span class="o">.</span><span class="n">EvAdventureCombatBaseHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.test_combathandler_msg"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.test_combathandler_msg">[docs]</a>    <span class="k">def</span> <span class="nf">test_combathandler_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.test_combathandler_msg"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.test_combathandler_msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_combathandler_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test sending messages to all in handler&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
@@ -174,7 +174,7 @@
             <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;testchar&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="s2">&quot;testmonster&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.test_get_combat_summary"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.test_get_combat_summary">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.test_get_combat_summary"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.test_get_combat_summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test combat summary&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span>
@@ -197,13 +197,13 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestCombatActionsBase"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase">[docs]</a><span class="k">class</span> <span class="nc">TestCombatActionsBase</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCombatActionsBase"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestCombatActionsBase</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for testing all subclasses of CombatAction in combat_base.py</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestCombatActionsBase.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCombatActionsBase.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combat_base</span><span class="o">.</span><span class="n">EvAdventureCombatBaseHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span>
@@ -220,7 +220,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_disadvantage</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCombatActionsBase.test_base_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_base_action">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCombatActionsBase.test_base_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_base_action">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_base_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">action</span> <span class="o">=</span> <span class="n">combat_base</span><span class="o">.</span><span class="n">CombatAction</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
         <span class="p">)</span>
@@ -230,7 +230,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCombatActionsBase.test_attack__miss"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_attack__miss">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_attack__miss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_attack__miss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">actiondict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">}</span>
 
         <span class="n">mock_randint</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># target has default armor 11, so 8+1 str will miss</span>
@@ -239,7 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">hp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCombatActionsBase.test_attack__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_attack__success">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_attack__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_attack__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">actiondict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">}</span>
 
         <span class="n">mock_randint</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">11</span>  <span class="c1"># 11 + 1 str will hit beat armor 11</span>
@@ -249,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">hp</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCombatActionsBase.test_stunt_fail"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_stunt_fail">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
             <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span>
@@ -264,7 +264,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">give_advantage</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestCombatActionsBase.test_stunt_advantage__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_stunt_advantage__success">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_advantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_advantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
             <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span>
@@ -279,7 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">give_advantage</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCombatActionsBase.test_stunt_disadvantage__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_stunt_disadvantage__success">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_disadvantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_disadvantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
             <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
@@ -293,7 +293,7 @@
         <span class="n">action</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">give_disadvantage</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCombatActionsBase.test_use_item"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_use_item">[docs]</a>    <span class="k">def</span> <span class="nf">test_use_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCombatActionsBase.test_use_item"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_use_item">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_use_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use up a potion during combat.</span>
 
@@ -317,7 +317,7 @@
         <span class="n">action</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># deleted, it was used up</span></div>
 
-<div class="viewcode-block" id="TestCombatActionsBase.test_swap_wielded_weapon_or_spell"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_swap_wielded_weapon_or_spell">[docs]</a>    <span class="k">def</span> <span class="nf">test_swap_wielded_weapon_or_spell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCombatActionsBase.test_swap_wielded_weapon_or_spell"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestCombatActionsBase.test_swap_wielded_weapon_or_spell">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_swap_wielded_weapon_or_spell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        First draw a weapon (from empty fists), then swap that out to another weapon, then</span>
 <span class="sd">        swap to a spell rune.</span>
@@ -378,7 +378,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureTurnbasedCombatHandlerTest</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureTurnbasedCombatHandlerTest</span><span class="p">(</span><span class="n">_CombatTestBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test methods on the turn-based combat handler and actions</span>
 
@@ -394,7 +394,7 @@
         <span class="p">),</span>
         <span class="n">new</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="c1"># add target to combat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="p">(</span>
@@ -405,11 +405,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}):</span>
         <span class="n">action_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">action_classes</span><span class="p">[</span><span class="n">action_dict</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">action_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_run_actions</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_actions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">,</span> <span class="n">action_dict2</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">},</span> <span class="n">combatant_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_msg</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -425,7 +425,7 @@
             <span class="c1"># this works because we mock target.msg in SetUp</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">target_msg</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_combatanthandler_setup"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_combatanthandler_setup">[docs]</a>    <span class="k">def</span> <span class="nf">test_combatanthandler_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_combatanthandler_setup"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_combatanthandler_setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_combatanthandler_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Testing all is set up correctly in the combathandler&quot;&quot;&quot;</span>
 
         <span class="n">chandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
@@ -450,19 +450,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">chandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">),</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">chandler</span><span class="o">.</span><span class="n">defeated_combatants</span><span class="p">),</span> <span class="p">{})</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a combatant.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">combatants</span><span class="p">),</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}})</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_stop_combat"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">test_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_stop_combat"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_stop_combat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stopping combat, making sure combathandler is deleted.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">stop_combat</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_get_sides"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_get_sides"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_get_sides">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Getting the sides of combat&quot;&quot;&quot;</span>
 
         <span class="n">combatant2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
@@ -485,7 +485,7 @@
         <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span><span class="p">),</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">target2</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">combatant2</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action">[docs]</a>    <span class="k">def</span> <span class="nf">test_queue_and_execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_queue_and_execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Queue actions and execute&quot;&quot;&quot;</span>
 
         <span class="n">hold</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}</span>
@@ -506,7 +506,7 @@
         <span class="p">)</span>
         <span class="n">mock_action</span><span class="o">.</span><span class="n">execute</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_execute_full_turn"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_execute_full_turn">[docs]</a>    <span class="k">def</span> <span class="nf">test_execute_full_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_execute_full_turn"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_execute_full_turn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_execute_full_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a full (passive) turn&quot;&quot;&quot;</span>
 
         <span class="n">hold</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}</span>
@@ -522,7 +522,7 @@
             <span class="p">[</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">),</span> <span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)],</span> <span class="n">any_order</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_action__action_ticks_turn"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_action__action_ticks_turn">[docs]</a>    <span class="k">def</span> <span class="nf">test_action__action_ticks_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_action__action_ticks_turn"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_action__action_ticks_turn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_action__action_ticks_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that action execution ticks turns&quot;&quot;&quot;</span>
 
         <span class="n">actiondict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}</span>
@@ -532,7 +532,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_attack__success__kill"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_attack__success__kill">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_attack__success__kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_attack__success__kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that the combathandler is deleted once there are no more enemies&quot;&quot;&quot;</span>
         <span class="n">actiondict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">}</span>
 
@@ -543,7 +543,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_stunt_fail"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_stunt_fail">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
             <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span>
@@ -558,7 +558,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">{})</span></div>
 
 <div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_stunt_advantage__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_stunt_advantage__success">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_advantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_advantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test so the advantage matrix is updated correctly&quot;&quot;&quot;</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
@@ -575,7 +575,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_stunt_disadvantage__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_stunt_disadvantage__success">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_base.rules.randint&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_stunt_disadvantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt_disadvantage__success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test so the disadvantage matrix is updated correctly&quot;&quot;&quot;</span>
         <span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
@@ -591,7 +591,7 @@
             <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]),</span> <span class="kc">True</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_flee__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_flee__success">[docs]</a>    <span class="k">def</span> <span class="nf">test_flee__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_flee__success"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_flee__success">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_flee__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test fleeing twice, leading to leaving combat.</span>
 
@@ -626,8 +626,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler">[docs]</a><span class="k">class</span> <span class="nc">TestEvAdventureTwitchCombatHandler</span><span class="p">(</span><span class="n">EvenniaCommandTestMixin</span><span class="p">,</span> <span class="n">_CombatTestBase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestEvAdventureTwitchCombatHandler</span><span class="p">(</span><span class="n">EvenniaCommandTestMixin</span><span class="p">,</span> <span class="n">_CombatTestBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="c1"># in order to use the EvenniaCommandTestMixin we need these variables defined</span>
@@ -645,21 +645,21 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_get_sides"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_get_sides"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_get_sides">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">sides</span><span class="p">,</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_give_advantage"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_give_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">test_give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_give_advantage"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_give_advantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">advantage_against</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_give_disadvantage"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_give_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">test_give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_give_disadvantage"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_give_disadvantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">disadvantage_against</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_queue_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_queue_action">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">999</span><span class="p">))</span>
-    <span class="k">def</span> <span class="nf">test_queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test so the queue action cleans up tickerhandler correctly&quot;&quot;&quot;</span>
 
         <span class="n">actiondict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}</span>
@@ -673,7 +673,7 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_execute_next_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_execute_next_action">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">action_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">,</span>
             <span class="s2">&quot;dummy&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
@@ -688,7 +688,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_check_stop_combat"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_check_stop_combat">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test combat-stop functionality&quot;&quot;&quot;</span>
 
         <span class="c1"># noone remains (both combatant/target &lt;0 hp</span>
@@ -716,13 +716,13 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_hold"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_hold">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_hold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_hold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">combat_twitch</span><span class="o">.</span><span class="n">CmdHold</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You hold back, doing nothing&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">action_dict</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_attack"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_attack">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test attack action in the twitch combathandler&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">combat_twitch</span><span class="o">.</span><span class="n">CmdAttack</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;You attack testmonster!&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
@@ -732,7 +732,7 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_stunt"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_stunt">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_stunt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stunt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">boost_result</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
             <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span>
@@ -786,7 +786,7 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_useitem"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_useitem">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_useitem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_useitem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">item</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="n">EvAdventureConsumable</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;potion&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;uses&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
         <span class="p">)</span>
@@ -809,7 +809,7 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_wield"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_wield">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.combat_twitch.repeat&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_wield</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_wield</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sword</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;sword&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span>
         <span class="n">runestone</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;runestone&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>

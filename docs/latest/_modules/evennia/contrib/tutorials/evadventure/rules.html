@@ -100,22 +100,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
-<span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">death_and_dismemberment</span> <span class="k">as</span> <span class="n">death_table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.random_tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">death_and_dismemberment</span> <span class="k">as</span> <span class="n">death_table</span>
 
 <span class="c1"># Basic rolls</span>
 
 
-<div class="viewcode-block" id="EvAdventureRollEngine"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
+<div class="viewcode-block" id="EvAdventureRollEngine"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This groups all dice rolls of EvAdventure. These could all have been normal functions, but we</span>
 <span class="sd">    are group them in a class to make them easier to partially override and replace later.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_string</span><span class="p">,</span> <span class="n">max_number</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_string</span><span class="p">,</span> <span class="n">max_number</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        NOTE: In evennia/contribs/rpg/dice/ is a more powerful dice roller with</span>
 <span class="sd">        more features, such as modifiers, secret rolls etc. This is much simpler and only</span>
@@ -158,7 +158,7 @@
         <span class="c1"># At this point we know we have valid input - roll and add dice together</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">diesize</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.roll_with_advantage_or_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_with_advantage_or_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.roll_with_advantage_or_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_with_advantage_or_disadvantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Base roll of d20, or 2d20, based on dis/advantage given.</span>
 
@@ -179,7 +179,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.saving_throw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.saving_throw">[docs]</a>    <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.saving_throw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.saving_throw">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">saving_throw</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">character</span><span class="p">,</span>
         <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span>
@@ -246,7 +246,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span> <span class="o">+</span> <span class="n">modifier</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">txt</span></div>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.opposed_saving_throw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.opposed_saving_throw">[docs]</a>    <span class="k">def</span> <span class="nf">opposed_saving_throw</span><span class="p">(</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.opposed_saving_throw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.opposed_saving_throw">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">opposed_saving_throw</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">attacker</span><span class="p">,</span>
         <span class="n">defender</span><span class="p">,</span>
@@ -293,7 +293,7 @@
 
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">txt</span></div>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.roll_random_table"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_random_table">[docs]</a>    <span class="k">def</span> <span class="nf">roll_random_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dieroll</span><span class="p">,</span> <span class="n">table_choices</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.roll_random_table"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_random_table">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">roll_random_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dieroll</span><span class="p">,</span> <span class="n">table_choices</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a roll on a random table.</span>
 
@@ -348,7 +348,7 @@
 
     <span class="c1"># specific rolls / actions</span>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.morale_check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.morale_check">[docs]</a>    <span class="k">def</span> <span class="nf">morale_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.morale_check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.morale_check">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">morale_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A morale check is done for NPCs/monsters. It&#39;s done with a 2d6 against</span>
 <span class="sd">        their morale.</span>
@@ -362,7 +362,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;2d6&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">defender</span><span class="o">.</span><span class="n">morale</span></div>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.heal_from_rest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.heal_from_rest">[docs]</a>    <span class="k">def</span> <span class="nf">heal_from_rest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.heal_from_rest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.heal_from_rest">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">heal_from_rest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A meal and a full night&#39;s rest allow for regaining 1d8 + Const bonus HP.</span>
 
@@ -381,7 +381,7 @@
         <span class="s2">&quot;disfigured&quot;</span><span class="p">:</span> <span class="s2">&quot;charisma&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="EvAdventureRollEngine.roll_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_death">[docs]</a>    <span class="k">def</span> <span class="nf">roll_death</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureRollEngine.roll_death"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.rules.html#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine.roll_death">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">roll_death</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Happens when hitting &lt;= 0 hp. unless dead,</span>
 

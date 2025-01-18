@@ -217,8 +217,8 @@ you are okay with them running <em>arbitrary Python code</em> on your server.</p
 <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code> and create a new file there named <code class="docutils literal notranslate"><span class="pre">batchcode_map.py</span></code>:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
 <span class="c1"># We use the create_object function to call into existence a </span>
 <span class="c1"># DefaultObject named &quot;Map&quot; wherever you are standing.</span>
@@ -262,8 +262,8 @@ coastal beach and the crossroads which connects them. Create a new batchcode fil
 <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>, named <code class="docutils literal notranslate"><span class="pre">batchcode_world.py</span></code>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_world.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
-<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
 
 <span class="c1"># We begin by creating our rooms so we can detail them later.</span>
 
@@ -368,7 +368,7 @@ of characters allowing us to pick out the characters we need.</p>
 <span class="c1"># those characters with world_map[5][5] where world_map[row][column].</span>
 <span class="n">world_map</span> <span class="o">=</span> <span class="n">world_map</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">return_map</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_map</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function returns the whole map</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -381,7 +381,7 @@ of characters allowing us to pick out the characters we need.</p>
     
     <span class="k">return</span> <span class="nb">map</span>
 
-<span class="k">def</span> <span class="nf">return_minimap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_minimap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function returns only part of the map.</span>
 <span class="sd">    Returning all chars in a 2 char radius from (x,y)</span>
@@ -400,9 +400,9 @@ of characters allowing us to pick out the characters we need.</p>
 a reference to our map module. Make sure to import our map_module!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">map_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">world</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_module</span>
 
 <span class="nb">map</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Map&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 
@@ -428,8 +428,8 @@ again</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame\world\batchcode_world.py</span>
 
 <span class="c1"># Add to imports</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
-<span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">map_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">evtable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">world</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_module</span>
 
 <span class="c1"># [...]</span>
 

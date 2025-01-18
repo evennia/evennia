@@ -97,14 +97,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search_object</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">objects</span> <span class="k">as</span> <span class="n">tut_objects</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">objects</span> <span class="k">as</span> <span class="n">tut_objects</span>
 
 
-<div class="viewcode-block" id="CmdMobOnOff"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff">[docs]</a><span class="k">class</span> <span class="nc">CmdMobOnOff</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMobOnOff"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdMobOnOff</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Activates/deactivates Mob</span>
 
@@ -122,7 +122,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;moboff&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:superuser()&quot;</span>
 
-<div class="viewcode-block" id="CmdMobOnOff.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMobOnOff.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses the mob&#39;s set_alive/set_dead methods</span>
 <span class="sd">        to turn on/off the mob.&quot;</span>
@@ -139,16 +139,16 @@
             <span class="n">mob</span><span class="o">.</span><span class="n">set_dead</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="MobCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet">[docs]</a><span class="k">class</span> <span class="nc">MobCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="MobCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MobCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Holds the admin command controlling the mob</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MobCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MobCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMobOnOff</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="Mob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob">[docs]</a><span class="k">class</span> <span class="nc">Mob</span><span class="p">(</span><span class="n">tut_objects</span><span class="o">.</span><span class="n">TutorialObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Mob</span><span class="p">(</span><span class="n">tut_objects</span><span class="o">.</span><span class="n">TutorialObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a state-machine AI mobile. It has several states which are</span>
 <span class="sd">    controlled from setting various Attributes. All default to True:</span>
@@ -186,7 +186,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Mob.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When initialized from cache (after a server reboot), set up</span>
 <span class="sd">        the AI state.</span>
@@ -197,7 +197,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_hunting</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_immortal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">immortal</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_dead</span></div>
 
-<div class="viewcode-block" id="Mob.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_object_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called the first time the object is created.</span>
 <span class="sd">        We set up the base properties and flags here.</span>
@@ -252,7 +252,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tutorial_info</span> <span class="o">=</span> <span class="s2">&quot;This is an object with simple state AI, using a ticker to move.&quot;</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_ticker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">hook_key</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_ticker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">hook_key</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set how often the given hook key should</span>
 <span class="sd">        be &quot;ticked&quot;.</span>
@@ -292,7 +292,7 @@
                 <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook_key</span><span class="p">),</span> <span class="n">idstring</span><span class="o">=</span><span class="n">idstring</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_find_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Scan the given location for suitable targets (this is defined</span>
 <span class="sd">        as Characters) to attack.  Will ignore superusers.</span>
@@ -311,7 +311,7 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">targets</span> <span class="k">else</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Mob.set_alive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_alive">[docs]</a>    <span class="k">def</span> <span class="nf">set_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.set_alive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_alive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the mob to &quot;alive&quot; mode. This effectively</span>
 <span class="sd">        resurrects it from the dead state.</span>
@@ -326,7 +326,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">patrolling</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_patrolling</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mob.set_dead"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_dead">[docs]</a>    <span class="k">def</span> <span class="nf">set_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.set_dead"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_dead">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the mob to &quot;dead&quot; mode. This turns it off</span>
 <span class="sd">        and makes sure it can take no more damage.</span>
@@ -341,14 +341,14 @@
         <span class="c1"># we shall return after some time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_ticker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">death_pace</span><span class="p">,</span> <span class="s2">&quot;set_alive&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mob.start_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_idle">[docs]</a>    <span class="k">def</span> <span class="nf">start_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.start_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_idle">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starts just standing around. This will kill</span>
 <span class="sd">        the ticker and do nothing more.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_ticker</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mob.start_patrolling"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_patrolling">[docs]</a>    <span class="k">def</span> <span class="nf">start_patrolling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.start_patrolling"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_patrolling">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_patrolling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the patrolling state by</span>
 <span class="sd">        registering us with the ticker-handler</span>
@@ -364,7 +364,7 @@
         <span class="c1"># for the tutorial, we also heal the mob in this mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">full_health</span></div>
 
-<div class="viewcode-block" id="Mob.start_hunting"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_hunting">[docs]</a>    <span class="k">def</span> <span class="nf">start_hunting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.start_hunting"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_hunting">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_hunting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the hunting state</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -376,7 +376,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_hunting</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_attacking</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Mob.start_attacking"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_attacking">[docs]</a>    <span class="k">def</span> <span class="nf">start_attacking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.start_attacking"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_attacking">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_attacking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the attacking state</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -388,7 +388,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_hunting</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_attacking</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Mob.do_patrol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_patrol">[docs]</a>    <span class="k">def</span> <span class="nf">do_patrol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.do_patrol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_patrol">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_patrol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called repeatedly during patrolling mode.  In this mode, the</span>
 <span class="sd">        mob scans its surroundings and randomly chooses a viable exit.</span>
@@ -415,7 +415,7 @@
             <span class="c1"># no exits! teleport to home to get away.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mob.do_hunting"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_hunting">[docs]</a>    <span class="k">def</span> <span class="nf">do_hunting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.do_hunting"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_hunting">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_hunting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called regularly when in hunting mode. In hunting mode the mob</span>
 <span class="sd">        scans adjacent rooms for enemies and moves towards them to</span>
@@ -446,7 +446,7 @@
             <span class="c1"># no exits! teleport to home to get away.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mob.do_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_attack">[docs]</a>    <span class="k">def</span> <span class="nf">do_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.do_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_attack">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called regularly when in attacking mode. In attacking mode</span>
 <span class="sd">        the mob will bring its weapons to bear on any targets</span>
@@ -483,7 +483,7 @@
 
     <span class="c1"># response methods - called by other objects</span>
 
-<div class="viewcode-block" id="Mob.at_hit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_hit">[docs]</a>    <span class="k">def</span> <span class="nf">at_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weapon</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.at_hit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_hit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weapon</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Someone landed a hit on us. Check our status</span>
 <span class="sd">        and start attacking if not already doing so.</span>
@@ -512,7 +512,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">aggressive</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_attacking</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_attacking</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mob.at_new_arrival"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_new_arrival">[docs]</a>    <span class="k">def</span> <span class="nf">at_new_arrival</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_character</span><span class="p">):</span>
+<div class="viewcode-block" id="Mob.at_new_arrival"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_new_arrival">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_new_arrival</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is triggered whenever a new character enters the room.</span>
 <span class="sd">        This is called by the TutorialRoom the mob stands in and</span>

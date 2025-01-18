@@ -95,18 +95,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">evennia.web.website</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.website</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 
-<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">EvenniaCreateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaCreateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span>
 
 
-<div class="viewcode-block" id="AccountMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountMixin">[docs]</a><span class="k">class</span> <span class="nc">AccountMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is used to grant abilities to classes it is added to.</span>
 
@@ -122,7 +122,7 @@
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">AccountForm</span></div>
 
 
-<div class="viewcode-block" id="AccountCreateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountCreateView">[docs]</a><span class="k">class</span> <span class="nc">AccountCreateView</span><span class="p">(</span><span class="n">AccountMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountCreateView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountCreateView</span><span class="p">(</span><span class="n">AccountMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Account creation view.</span>
 
@@ -132,7 +132,7 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/registration/register.html&quot;</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AccountCreateView.form_valid"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreateView.form_valid"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.accounts.html#evennia.web.website.views.accounts.AccountCreateView.form_valid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook, modified for Evennia.</span>
 

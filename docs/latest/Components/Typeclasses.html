@@ -178,14 +178,14 @@
 <ol>
 <li><p>A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types.</p></li>
 <li><p>Due to its connection to the database, the typeclass’ name must be <em>unique</em> across the <em>entire</em> server namespace. That is, there must never be two same-named classes defined anywhere. So the below code would give an error (since <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is now globally found both in this module and in the default library):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span> <span class="k">as</span> <span class="n">BaseObject</span>
-<span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span> <span class="k">as</span> <span class="n">BaseObject</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefaultObject</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
      <span class="k">pass</span>
 </pre></div>
 </div>
 </li>
 <li><p>A typeclass’ <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should normally not be overloaded. This has mostly to do with the fact that the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method is not called in a predictable way. Instead Evennia suggest you use the <code class="docutils literal notranslate"><span class="pre">at_*_creation</span></code> hooks (like <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> for Objects) for setting things the very first time the typeclass is saved to the database or the <code class="docutils literal notranslate"><span class="pre">at_init</span></code> hook which is called every time the object is cached to memory. If you know what you are doing and want to use <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it <em>must</em> both accept arbitrary keyword arguments and use <code class="docutils literal notranslate"><span class="pre">super</span></code> to call its parent:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># my content</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># my content</span>
@@ -200,9 +200,9 @@
 <section id="creating-a-new-typeclass">
 <h3>Creating a new typeclass<a class="headerlink" href="#creating-a-new-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>It’s easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python class inheriting from an existing typeclass. Here is an example of creating a new type of Object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
-    <span class="k">class</span> <span class="nc">Furniture</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Furniture</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
         <span class="c1"># this defines what &#39;furniture&#39; is, like</span>
         <span class="c1"># storing who sits on it or something.</span>
         <span class="k">pass</span>
@@ -218,7 +218,7 @@ convenient) way is to create an instance of the class and then save it manually 
 </div>
 <p>To use this you must give the database field names as keywords to the call. Which are available depends on the entity you are creating, but all start with <code class="docutils literal notranslate"><span class="pre">db_*</span></code> in Evennia. This is a method you may be familiar with if you know Django from before.</p>
 <p>It is recommended that you instead use the <code class="docutils literal notranslate"><span class="pre">create_*</span></code> functions to create typeclassed entities:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
 
 <span class="n">chair</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">Furniture</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Chair&quot;</span><span class="p">)</span>
 <span class="c1"># or (if your typeclass is in a module furniture.py)</span>
@@ -287,7 +287,7 @@ database.</p></li>
 </pre></div>
 </div>
 <p>To make sure to search, say, all <code class="docutils literal notranslate"><span class="pre">Scripts</span></code> <em>regardless</em> of typeclass, you need to query from the database model itself. So for Objects, this would be <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> in the diagram above. Here’s an example for Scripts:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScriptDB</span>
 <span class="n">matches</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__contains</span><span class="o">=</span><span class="s2">&quot;Combat&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -310,7 +310,7 @@ database.</p></li>
 </pre></div>
 </div>
 <p>The above examples can be run in the command prompt created by <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code>. You could also run it all in-game using <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>. That however requires you to put the code (including imports) as one single line using <code class="docutils literal notranslate"><span class="pre">;</span></code> and <a class="reference external" href="http://www.secnetix.de/olli/Python/list_comprehensions.hawk">list comprehensions</a>, like this (ignore the line break, that’s only for readability in the wiki):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="kn">from</span> <span class="nn">typeclasses.furniture</span> <span class="kn">import</span> <span class="n">Furniture</span><span class="p">;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.furniture</span><span class="w"> </span><span class="kn">import</span> <span class="n">Furniture</span><span class="p">;</span>
 <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">Furniture</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worth</span><span class="p">]</span>
 </pre></div>
 </div>

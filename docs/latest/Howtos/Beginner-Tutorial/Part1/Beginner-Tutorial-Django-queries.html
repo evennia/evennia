@@ -280,7 +280,7 @@ possible.</p>
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">Character</span>
 
 <span class="n">will_transform</span> <span class="o">=</span> <span class="p">(</span>
 <span class="hll">    <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>
@@ -349,7 +349,7 @@ of Daltons and non-prisoners.</p>
 <p>Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room with a certain level of <code class="docutils literal notranslate"><span class="pre">lycanthropy</span></code> - we decide that if they have been <em>newly bitten</em>, they should also turn, <em>regardless</em> of their lycanthropy level (more dramatic that way!).</p>
 <p>Let’s say that getting bitten means that you’ll get assigned a Tag <code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code>.</p>
 <p>This is how we’d change our query:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
 
 <span class="n">will_transform</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>
@@ -365,7 +365,7 @@ of Daltons and non-prisoners.</p>
 </pre></div>
 </div>
 <p>That’s quite compact. It may be easier to see what’s going on if written this way:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
 
 <span class="n">q_moonlit</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
 <span class="n">q_lycanthropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -396,7 +396,7 @@ sure that there is only one instance of each Character in the result.</p>
 <p>What if we wanted to filter on some condition that isn’t represented easily by a
 field on the object? An example would wanting to find rooms only containing <em>five or more objects</em>.</p>
 <p>We <em>could</em> do it like this (don’t actually do it this way!):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Room</span>
 
   <span class="n">all_rooms</span> <span class="o">=</span> <span class="n">Rooms</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
@@ -425,8 +425,8 @@ directly in the database:</p>
 <span class="normal">6</span>
 <span class="normal">7</span>
 <span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Room</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Count</span>
 
 <span class="n">rooms</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Room</span><span class="o">.</span><span class="n">objects</span>
@@ -455,8 +455,8 @@ should be greater than or equal to 5.</p></li>
 query? For example, what if instead of having 5 or more objects, we only wanted
 objects that had a bigger inventory than they had tags (silly example, but …)?</p>
 <p>This can be with Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/models/expressions/#f-expressions">F objects</a>. So-called F expressions allow you to do a query that looks at a value of each object in the database.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">F</span>
-<span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Room</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Room</span><span class="o">.</span><span class="n">objects</span>
@@ -481,8 +481,8 @@ objects that had a bigger inventory than they had tags (silly example, but …)?
 <span class="normal">6</span>
 <span class="normal">7</span>
 <span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
-<span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Count</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Room</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>

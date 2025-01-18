@@ -234,11 +234,11 @@ lock our red chests:</p>
 then take the key and do an access check:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some typeclass file where chest is defined</span>
 
-<span class="k">class</span> <span class="nc">TreasureChest</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TreasureChest</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
   <span class="c1"># ...</span>
 
-  <span class="k">def</span> <span class="nf">open_chest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">who</span><span class="p">,</span> <span class="n">tried_key</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">open_chest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">who</span><span class="p">,</span> <span class="n">tried_key</span><span class="p">):</span>
 
       <span class="k">if</span> <span class="ow">not</span> <span class="n">chest</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">who</span><span class="p">,</span> <span class="n">tried_key</span><span class="p">,</span> <span class="s2">&quot;unlock&quot;</span><span class="p">):</span>
           <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The key does not fit!&quot;</span><span class="p">)</span>

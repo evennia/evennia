@@ -163,9 +163,9 @@
     
     <span class="c1"># This will be included in all other #CODE blocks</span>
     
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
-    <span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button</span>
-    <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorial_examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">red_button</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
     
     <span class="n">limbo</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s1">&#39;Limbo&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     
@@ -217,9 +217,9 @@
 </div>
 <p>This shows that you are on the first <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block, the first of only two commands in this batch file. Observe that the block has <em>not</em> actually been executed at this point!</p>
 <p>To take a look at the full code snippet you are about to run, use <code class="docutils literal notranslate"><span class="pre">ll</span></code> (a batch-processor version of <code class="docutils literal notranslate"><span class="pre">look</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
-    <span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button</span>
-    <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.tutorial_examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">red_button</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
     
     <span class="n">limbo</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;Limbo&#39;</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 

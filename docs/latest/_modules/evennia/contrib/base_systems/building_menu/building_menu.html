@@ -214,17 +214,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span>
-<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">dedent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">getfullargspec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">textwrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">dedent</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.eveditor</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
 <span class="c1"># Constants</span>
 <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
@@ -233,7 +233,7 @@
 
 
 <span class="c1"># Private functions</span>
-<span class="k">def</span> <span class="nf">_menu_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_menu_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_building_menu_to_edit&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">attr</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
@@ -242,7 +242,7 @@
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_menu_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_menu_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
     <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_building_menu_to_edit&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">attr</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
@@ -254,7 +254,7 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_menu_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_menu_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">BuildingMenuCmdSet</span><span class="p">,</span>
         <span class="n">persistent</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_building_menu</span> <span class="ow">and</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_building_menu</span><span class="o">.</span><span class="n">persistent</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">,</span>
@@ -263,7 +263,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_building_menu</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">back</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_call_or_get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">choice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_or_get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">choice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call the value, if appropriate, or just return it.</span>
 
@@ -331,7 +331,7 @@
 <span class="c1"># Helper functions, to be used in menu choices</span>
 
 
-<div class="viewcode-block" id="menu_setattr"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_setattr">[docs]</a><span class="k">def</span> <span class="nf">menu_setattr</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="menu_setattr"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_setattr">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menu_setattr</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the value at the specified attribute.</span>
 
@@ -368,7 +368,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="menu_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_quit">[docs]</a><span class="k">def</span> <span class="nf">menu_quit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+<div class="viewcode-block" id="menu_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_quit">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menu_quit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Quit the menu, closing the CmdSet.</span>
 
@@ -396,7 +396,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;It looks like the building menu has already been closed.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="menu_edit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_edit">[docs]</a><span class="k">def</span> <span class="nf">menu_edit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="menu_edit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_edit">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">menu_edit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Open the EvEditor to edit a specified attribute.</span>
 
@@ -422,17 +422,17 @@
 <span class="c1"># Building menu commands and CmdSet</span>
 
 
-<div class="viewcode-block" id="CmdNoInput"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput">[docs]</a><span class="k">class</span> <span class="nc">CmdNoInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoInput"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdNoInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;No input has been found.&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOINPUT</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdNoInput.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoInput.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;building_menu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdNoInput.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoInput.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the menu or choice text.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
@@ -442,17 +442,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">BuildingMenuCmdSet</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdNoMatch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch">[docs]</a><span class="k">class</span> <span class="nc">CmdNoMatch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoMatch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdNoMatch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;No input has been found.&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdNoMatch.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoMatch.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;building_menu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdNoMatch.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoMatch.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the proper menu or redirect to nomatch.&quot;&quot;&quot;</span>
         <span class="n">raw_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -483,14 +483,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rUnknown command: </span><span class="si">{}</span><span class="s2">|n.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_string</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="BuildingMenuCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BuildingMenuCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenuCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BuildingMenuCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Building menu CmdSet.&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;building_menu&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
 
-<div class="viewcode-block" id="BuildingMenuCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenuCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Populates the cmdset with commands.&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdsetobj</span>
 
@@ -509,10 +509,10 @@
 <span class="c1"># Menu classes</span>
 
 
-<div class="viewcode-block" id="Choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice">[docs]</a><span class="k">class</span> <span class="nc">Choice</span><span class="p">:</span>
+<div class="viewcode-block" id="Choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Choice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A choice object, created by `add_choice`.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Choice.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Choice.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -565,15 +565,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span></div>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Choice (title=</span><span class="si">{}</span><span class="s2">, key=</span><span class="si">{}</span><span class="s2">)&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a tuple of keys separated by `sep_keys`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">sep_keys</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Choice.format_text"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.format_text">[docs]</a>    <span class="k">def</span> <span class="nf">format_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Choice.format_text"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.format_text">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the choice text and return it, or an empty string.&quot;&quot;&quot;</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
@@ -585,7 +585,7 @@
 
         <span class="k">return</span> <span class="n">text</span></div>
 
-<div class="viewcode-block" id="Choice.enter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.enter">[docs]</a>    <span class="k">def</span> <span class="nf">enter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="Choice.enter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.enter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the user opens the choice.</span>
 
 <span class="sd">        Args:</span>
@@ -602,7 +602,7 @@
                 <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Choice.nomatch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.nomatch">[docs]</a>    <span class="k">def</span> <span class="nf">nomatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="Choice.nomatch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.nomatch">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">nomatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the user entered something in the choice.</span>
 
 <span class="sd">        Args:</span>
@@ -626,7 +626,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Choice.leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.leave">[docs]</a>    <span class="k">def</span> <span class="nf">leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="Choice.leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.leave">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the user closes the choice.</span>
 
 <span class="sd">        Args:</span>
@@ -644,7 +644,7 @@
             <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="BuildingMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu">[docs]</a><span class="k">class</span> <span class="nc">BuildingMenu</span><span class="p">:</span>
+<div class="viewcode-block" id="BuildingMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BuildingMenu</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class allowing to create and set building menus to edit specific objects.</span>
 
@@ -671,7 +671,7 @@
     <span class="n">joker_key</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>  <span class="c1"># The special key meaning &quot;anything&quot; in a choice key</span>
     <span class="n">min_shortcut</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># The minimum length of shortcuts when `key` is not set</span>
 
-<div class="viewcode-block" id="BuildingMenu.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BuildingMenu.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -721,7 +721,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_keys_choice</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current choice or None.</span>
 
 <span class="sd">        Returns:</span>
@@ -756,7 +756,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">relevant_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">relevant_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Only return the relevant choices according to the current meny key.</span>
 
 <span class="sd">        Returns:</span>
@@ -791,7 +791,7 @@
 
         <span class="k">return</span> <span class="n">relevant</span>
 
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the menu in a attributes on the caller.</span>
 
 <span class="sd">        If `persistent` is set to `True`, also save in a persistent attribute.</span>
@@ -809,7 +809,7 @@
                 <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span><span class="p">,</span>
             <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_add_keys_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_keys_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the choices&#39; keys if some choices don&#39;t have valid keys.&quot;&quot;&quot;</span>
         <span class="c1"># If choices have been added without keys, try to guess them</span>
         <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="p">:</span>
@@ -836,7 +836,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot guess the key for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">choice</span><span class="p">))</span>
 
-<div class="viewcode-block" id="BuildingMenu.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the sub-menu to edit the specified object.</span>
 
 <span class="sd">        Args:</span>
@@ -849,7 +849,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.add_choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice">[docs]</a>    <span class="k">def</span> <span class="nf">add_choice</span><span class="p">(</span>
+<div class="viewcode-block" id="BuildingMenu.add_choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_choice</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -968,7 +968,7 @@
 
         <span class="k">return</span> <span class="n">choice</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.add_choice_edit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_edit">[docs]</a>    <span class="k">def</span> <span class="nf">add_choice_edit</span><span class="p">(</span>
+<div class="viewcode-block" id="BuildingMenu.add_choice_edit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_edit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_choice_edit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;description&quot;</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span>
@@ -1004,7 +1004,7 @@
             <span class="n">title</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance</span><span class="p">,</span> <span class="n">on_enter</span><span class="o">=</span><span class="n">on_enter</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.add_choice_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_quit">[docs]</a>    <span class="k">def</span> <span class="nf">add_choice_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;quit the menu&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_enter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.add_choice_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_quit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_choice_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;quit the menu&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_enter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a simple choice just to quit the building menu.</span>
 
@@ -1027,7 +1027,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">can_quit</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">on_enter</span><span class="o">=</span><span class="n">on_enter</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.open"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.open"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open the building menu for the caller.</span>
 
 <span class="sd">        Note:</span>
@@ -1047,7 +1047,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BuildingMenuCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">persistent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.open_parent_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_parent_menu">[docs]</a>    <span class="k">def</span> <span class="nf">open_parent_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.open_parent_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_parent_menu">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">open_parent_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open the parent menu, using `self.parents`.</span>
 
 <span class="sd">        Note:</span>
@@ -1085,7 +1085,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">building_menu</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.open_submenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_submenu">[docs]</a>    <span class="k">def</span> <span class="nf">open_submenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">submenu_class</span><span class="p">,</span> <span class="n">submenu_obj</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.open_submenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_submenu">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">open_submenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">submenu_class</span><span class="p">,</span> <span class="n">submenu_obj</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Open a sub-menu, closing the current menu and opening the new one.</span>
 
@@ -1131,7 +1131,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">building_menu</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">back</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.move">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">back</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move inside the menu.</span>
 
@@ -1180,7 +1180,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.close"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.close"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the building menu, removing the CmdSet.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">BuildingMenuCmdSet</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">BuildingMenuCmdSet</span><span class="p">)</span>
@@ -1190,13 +1190,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_building_menu&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># Display methods.  Override for customization</span>
-<div class="viewcode-block" id="BuildingMenu.display_title"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_title">[docs]</a>    <span class="k">def</span> <span class="nf">display_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.display_title"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_title">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the menu title to be displayed.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_call_or_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.display_choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_choice">[docs]</a>    <span class="k">def</span> <span class="nf">display_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choice</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.display_choice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_choice">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choice</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the specified choice.</span>
 
 <span class="sd">        Args:</span>
@@ -1224,7 +1224,7 @@
 
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="BuildingMenu.display"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildingMenu.display"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the entire menu or a single choice, depending on the keys.&quot;&quot;&quot;</span>
         <span class="n">choice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_choice</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="ow">and</span> <span class="n">choice</span><span class="p">:</span>
@@ -1237,7 +1237,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuildingMenu.restore"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.restore">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore the building menu for the caller.</span>
 
 <span class="sd">        Args:</span>
@@ -1286,7 +1286,7 @@
 
 
 <span class="c1"># Generic building menu and command</span>
-<div class="viewcode-block" id="GenericBuildingMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu">[docs]</a><span class="k">class</span> <span class="nc">GenericBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericBuildingMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GenericBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A generic building menu, allowing to edit any object.</span>
 
 <span class="sd">    This is more a demonstration menu.  By default, it allows to edit the</span>
@@ -1295,7 +1295,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GenericBuildingMenu.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericBuildingMenu.init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu.init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the meny, adding the &#39;key&#39; and &#39;description&#39; choices.</span>
 
 <span class="sd">        Args:</span>
@@ -1326,7 +1326,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;db.desc&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="GenericBuildingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd">[docs]</a><span class="k">class</span> <span class="nc">GenericBuildingCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericBuildingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GenericBuildingCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic building command.</span>
 
@@ -1346,7 +1346,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@edit&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-<div class="viewcode-block" id="GenericBuildingCmd.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericBuildingCmd.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You should provide an argument to this function: the object to edit.&quot;</span><span class="p">)</span>
             <span class="k">return</span>

@@ -97,11 +97,11 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
 
 
-<div class="viewcode-block" id="TutorialMirror"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror">[docs]</a><span class="k">class</span> <span class="nc">TutorialMirror</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialMirror"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TutorialMirror</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple mirror object that</span>
 <span class="sd">    - echoes back the description of the object looking at it</span>
@@ -110,7 +110,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TutorialMirror.return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialMirror.return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror.return_appearance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This formats the description of this object. Called by the &#39;look&#39; command.</span>
 
@@ -125,7 +125,7 @@
             <span class="k">return</span> <span class="s2">&quot;The image of yourself stretches into infinity.&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> shows your reflection:</span><span class="se">\n</span><span class="si">{</span><span class="n">looker</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-<div class="viewcode-block" id="TutorialMirror.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialMirror.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.mirror.mirror.html#evennia.contrib.tutorials.mirror.mirror.TutorialMirror.msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply override .msg to echo back to the messenger or to the current</span>
 <span class="sd">        location.</span>

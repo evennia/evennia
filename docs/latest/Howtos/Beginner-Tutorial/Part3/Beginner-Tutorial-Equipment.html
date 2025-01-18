@@ -148,7 +148,7 @@
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     
     <span class="n">BACKPACK</span> <span class="o">=</span> <span class="s2">&quot;backpack&quot;</span>
     <span class="n">WEAPON_HAND</span> <span class="o">=</span> <span class="s2">&quot;weapon_hand&quot;</span>
@@ -173,17 +173,17 @@
 <p>This is the start of our handler:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
     <span class="n">save_attribute</span> <span class="o">=</span> <span class="s2">&quot;inventory_slots&quot;</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
         <span class="c1"># here obj is the character we store the handler on </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span> 
         
-    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load our data from an Attribute on `self.obj`&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_attribute</span><span class="p">,</span>
@@ -198,7 +198,7 @@
             <span class="p">}</span> 
         <span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save our data back to the same Attribute&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_attribute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inventory&quot;</span><span class="p">)</span> 
 </pre></div>
@@ -209,17 +209,17 @@ we will add it to the Character:</p>
 
 <span class="c1"># ... </span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentHandler</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.equipment</span><span class="w"> </span><span class="kn">import</span> <span class="n">EquipmentHandler</span> 
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
     
     <span class="c1"># ... </span>
 
     <span class="nd">@lazy_property</span> 
-    <span class="k">def</span> <span class="nf">equipment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">equipment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">EquipmentHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -262,25 +262,25 @@ we will skip that for this tutorial.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
 
     <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">at_pre_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called by Evennia before object arrives &#39;in&#39; this character (that is,</span>
 <span class="sd">        if they pick up something). If it returns False, move is aborted.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">validate_slot_usage</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Called by Evennia when object leaves the Character. </span>
 <span class="sd">        </span>
@@ -299,22 +299,22 @@ we will skip that for this tutorial.</p>
 <p>Let’s start with implementing the first method we came up with above, <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
 
-<span class="k">class</span> <span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;All types of equipment-errors&quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Max amount of slots, based on CON defense (CON + 10)&quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>
         
-    <span class="k">def</span> <span class="nf">count_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Count current slot usage&quot;&quot;&quot;</span> 
         <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
         <span class="n">wield_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
@@ -327,7 +327,7 @@ we will skip that for this tutorial.</p>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">wield_usage</span> <span class="o">+</span> <span class="n">backpack_usage</span>
     
-    <span class="k">def</span> <span class="nf">validate_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">          </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">          Check if obj can fit in equipment, based on its size.</span>
 <span class="sd">          </span>
@@ -407,15 +407,15 @@ together.</p>
 <p>We will make it so <code class="docutils literal notranslate"><span class="pre">.add</span></code> puts something in the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> location and <code class="docutils literal notranslate"><span class="pre">remove</span></code> drops it, wherever it is (even if it was in your hands).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
      
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Put something in the backpack.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -423,7 +423,7 @@ together.</p>
 	        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 	        <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
- <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_or_slot</span><span class="p">):</span>
+ <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_or_slot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove specific object or objects from a slot.</span>
 
@@ -468,15 +468,15 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <p>With the help of <code class="docutils literal notranslate"><span class="pre">.remove()</span></code> and <code class="docutils literal notranslate"><span class="pre">.add()</span></code>  we can get things in and out of the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> equipment location. We also need to grab stuff from the backpack and wield or wear it. We add a <code class="docutils literal notranslate"><span class="pre">.move</span></code> method  on the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> to do this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
     
-    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
 <span class="w">         </span><span class="sd">&quot;&quot;&quot;Move object from backpack to its intended `inventory_use_slot`.&quot;&quot;&quot;</span> 
          
         <span class="c1"># make sure to remove from equipment/backpack first, to avoid double-adding</span>
@@ -522,15 +522,15 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <p>In order to visualize our inventory, we need some method to get everything we are carrying.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all objects in inventory, regardless of location.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -553,17 +553,17 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <p>It’s convenient to have the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> easily tell you what weapon is currently wielded and what <em>armor</em> level all worn equipment provides. Otherwise you’d need to figure out what item is in which wield-slot and to add up armor slots manually every time you need to know.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_bare_hand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_bare_hand</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EquipmentHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">(</span>
@@ -577,7 +577,7 @@ double-check we can actually fit the thing, then we add the item to the backpack
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># first checks two-handed wield, then one-handed; the two</span>
         <span class="c1"># should never appear simultaneously anyhow (checked in `move` method).</span>
         <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
@@ -603,11 +603,11 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
 <span class="sd">        </span>
@@ -618,14 +618,14 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <p>This means that the equipmenthandler will check the NPC, and since it’s not a equippable thing, an <code class="docutils literal notranslate"><span class="pre">EquipmentError</span></code> will be raised, failing the creation. Since we want to be able to create npcs etc easily, we will handle this error with a <code class="docutils literal notranslate"><span class="pre">try...except</span></code> statement like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
 <span class="c1"># ... </span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span> 
-<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.equipment</span><span class="w"> </span><span class="kn">import</span> <span class="n">EquipmentError</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
 <span class="sd">        </span>
@@ -668,21 +668,21 @@ have <code class="docutils literal notranslate"><span class="pre">EquipmentHandl
 passing these into the handler’s methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_equipment.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span> 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span> 
 
-<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">EvAdventureHelmet</span><span class="p">,</span> <span class="n">EvAdventureWeapon</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">EvAdventureHelmet</span><span class="p">,</span> <span class="n">EvAdventureWeapon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
 
-<span class="k">class</span> <span class="nc">TestEquipment</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">TestEquipment</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span> 
     
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;testchar&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureHelmet</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;helmet&quot;</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;weapon&quot;</span><span class="p">)</span> 
          
-    <span class="k">def</span> <span class="nf">test_add_remove</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_add_remove</span><span class="p">):</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">],</span>

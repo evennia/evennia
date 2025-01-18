@@ -95,10 +95,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 
-<div class="viewcode-block" id="HexColors"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors">[docs]</a><span class="k">class</span> <span class="nc">HexColors</span><span class="p">:</span>
+<div class="viewcode-block" id="HexColors"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HexColors</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This houses a method for converting hex codes to xterm truecolor codes</span>
 <span class="sd">    or falls back to evennia xterm256 codes to be handled by sub_xterm256</span>
@@ -126,7 +126,7 @@
     <span class="c1"># Our matchers for use with ANSIParser and ANSIString</span>
     <span class="n">hex_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_RE_HEX_PATTERN</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_split_hex_to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_hex_to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Splits hex string into separate bytes:</span>
 <span class="sd">            #00FF00 -&gt; (&#39;00&#39;, &#39;FF&#39;, &#39;00&#39;)</span>
@@ -151,7 +151,7 @@
 
         <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span>
 
-    <span class="k">def</span> <span class="nf">_grey_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grey_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a grey greyscale integer</span>
 
@@ -160,10 +160,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-</span> <span class="mi">8</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_hue_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_hue_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-</span> <span class="mi">45</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">40</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_hex_to_rgb_24_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hex_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_hex_to_rgb_24_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hex_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a hex color code (#000 or #000000) into</span>
 <span class="sd">        a 3-int tuple (0, 255, 90)</span>
@@ -181,7 +181,7 @@
 
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_rgb_24_bit_to_256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rgb_24_bit_to_256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        converts 0-255 hex color codes to 0-5</span>
 
@@ -197,7 +197,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hue_int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hue_int</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hue_int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HexColors.sub_truecolor"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors.sub_truecolor">[docs]</a>    <span class="k">def</span> <span class="nf">sub_truecolor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="HexColors.sub_truecolor"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors.sub_truecolor">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_truecolor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span> <span class="n">truecolor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a hex string to xterm truecolor code, greyscale, or</span>
 <span class="sd">        falls back to evennia xterm256 to be handled by sub_xterm256</span>
@@ -235,7 +235,7 @@
             <span class="n">xtag</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;8;2;</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">m&quot;</span>
             <span class="k">return</span> <span class="n">xtag</span></div>
 
-<div class="viewcode-block" id="HexColors.xterm_truecolor_to_html_style"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors.xterm_truecolor_to_html_style">[docs]</a>    <span class="k">def</span> <span class="nf">xterm_truecolor_to_html_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="HexColors.xterm_truecolor_to_html_style"><a class="viewcode-back" href="../../../api/evennia.utils.hex_colors.html#evennia.utils.hex_colors.HexColors.xterm_truecolor_to_html_style">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">xterm_truecolor_to_html_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts xterm truecolor to an html style property</span>
 

@@ -180,7 +180,7 @@ The path you provide is relative to the evennia or mygame folder.</p>
 For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/default_cmdsets.py</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">mapbuilder</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">mapbuilder</span>
 
     <span class="o">...</span>
 
@@ -211,18 +211,18 @@ convenience The below example code should be in <code class="docutils literal no
 <section id="example-one">
 <h3>Example One<a class="headerlink" href="#example-one" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <span class="c1"># mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND</span>
 
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="c1"># Add the necessary imports for your instructions here.</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 
 <span class="c1"># A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an</span>
@@ -236,7 +236,7 @@ convenience The below example code should be in <code class="docutils literal no
 <span class="s1">≈≈≈≈≈</span>
 <span class="s1">&#39;&#39;&#39;</span>
 
-<span class="k">def</span> <span class="nf">example1_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example1_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;A basic example of build instructions. Make sure to include **kwargs</span>
 <span class="sd">    in the arguments and return an instance of the room for exit generation.&#39;&#39;&#39;</span>
 
@@ -251,7 +251,7 @@ convenience The below example code should be in <code class="docutils literal no
     <span class="k">return</span> <span class="n">room</span>
 
 
-<span class="k">def</span> <span class="nf">example1_build_mountains</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example1_build_mountains</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;A room that is a little more advanced&#39;&#39;&#39;</span>
 
     <span class="c1"># Create the room.</span>
@@ -277,7 +277,7 @@ convenience The below example code should be in <code class="docutils literal no
     <span class="k">return</span> <span class="n">room</span>
 
 
-<span class="k">def</span> <span class="nf">example1_build_temple</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example1_build_temple</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;A unique room that does not need to be as general&#39;&#39;&#39;</span>
 
     <span class="c1"># Create the room.</span>
@@ -339,7 +339,7 @@ convenience The below example code should be in <code class="docutils literal no
 <span class="s1">≈ ≈ ≈ ≈ ≈</span>
 <span class="s1">&#39;&#39;&#39;</span>
 
-<span class="k">def</span> <span class="nf">example2_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example2_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;A basic room&#39;&#39;&#39;</span>
     <span class="c1"># If on anything other than the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -352,7 +352,7 @@ convenience The below example code should be in <code class="docutils literal no
 
     <span class="k">return</span> <span class="n">room</span>
 
-<span class="k">def</span> <span class="nf">example2_build_verticle_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example2_build_verticle_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms north and south.&#39;&#39;&#39;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -373,7 +373,7 @@ convenience The below example code should be in <code class="docutils literal no
     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;caller&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Connected: &quot;</span> <span class="o">+</span> <span class="n">north_room</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &amp; &quot;</span> <span class="o">+</span> <span class="n">south_room</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">example2_build_horizontal_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example2_build_horizontal_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms east and west.&#39;&#39;&#39;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

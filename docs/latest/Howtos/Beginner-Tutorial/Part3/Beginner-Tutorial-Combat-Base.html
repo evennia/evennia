@@ -163,15 +163,15 @@
 <p>Below, methods with <code class="docutils literal notranslate"><span class="pre">pass</span></code> will be filled out this lesson while those raising <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> will be different for Twitch/Turnbased combat and will be implemented in their respective lessons following this one.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_base.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
 
-<span class="k">class</span> <span class="nc">CombatFailure</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatFailure</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">	</span><span class="sd">&quot;&quot;&quot;If some error happens in combat&quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultSCript</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultSCript</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">	This should be created when combat starts. It &#39;ticks&#39; the combat </span>
 <span class="sd">	and tracks all sides of it.</span>
@@ -183,18 +183,18 @@
     <span class="n">fallback_action_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@classmethod</span> 
-    <span class="k">def</span> <span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Get or create combathandler on `obj`.&quot;&quot;&quot;</span> 
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Send a message to all combatants.</span>
 <span class="sd">		</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>  <span class="c1"># TODO</span>
      
-    <span class="k">def</span> <span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Get a nicely formatted &#39;battle report&#39; of combat, from the </span>
 <span class="sd">        perspective of the combatant.</span>
@@ -204,7 +204,7 @@
 
 	<span class="c1"># implemented differently by Twitch- and Turnbased combat</span>
 
-    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Get who&#39;s still alive on the two sides of combat, as a </span>
 <span class="sd">        tuple `([allies], [enemies])` from the perspective of `combatant` </span>
@@ -213,35 +213,35 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span> 
 
-    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Give advantage to recipient against target.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span> 
 
-    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Give disadvantage to recipient against target. </span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Does combatant have advantage against target?</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span> 
 
-    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Does combatant have disadvantage against target?</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Queue an action for the combatant by providing </span>
 <span class="sd">        action dict.</span>
@@ -249,28 +249,28 @@
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Perform a combatant&#39;s next action.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Start combat.</span>
 <span class="sd">        </span>
 <span class="sd">    	&quot;&quot;&quot;</span> 
     	<span class="k">raise</span> <span class="ne">NotImplementedError</span>
     
-    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the combat is over and if it should be stopped.</span>
 <span class="sd">         </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span> 
         
-    <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Stop combat and do cleanup.</span>
 <span class="sd">        </span>
@@ -288,16 +288,16 @@
 <p>We expect to create the script “on” an object (which one we don’t know yet, but we expect it to be a typeclassed entity).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_base.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_script</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span> 
 
     <span class="c1"># ... </span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get or create a combathandler on `obj`.</span>
 <span class="sd">    </span>
@@ -351,10 +351,10 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span> 
 	<span class="c1"># ... </span>
 
-	<span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Central place for sending messages to combatants. This allows</span>
 <span class="sd">        for adding any combat-specific text-decoration in one place.</span>
@@ -483,15 +483,15 @@
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvTable</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
 	<span class="c1"># ... </span>
 
-	<span class="k">def</span> <span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+	<span class="k">def</span><span class="w"> </span><span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 
 <span class="hll">        <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
 </span>        <span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">allies</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">enemies</span><span class="p">)</span>
@@ -619,9 +619,9 @@
 <p>Once our <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> identifies the particular action we should use, we need something that reads those keys/values and actually <em>performs</em> the action.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_base.py </span>
 
-<span class="k">class</span> <span class="nc">CombatAction</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatAction</span><span class="p">:</span> 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combathandler</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combathandler</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combathandler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="o">=</span> <span class="n">combatant</span>
 
@@ -634,23 +634,23 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">setattr</span></code> Python standard function assigns the keys/values of the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> to be properties “on” this action. This is very convenient to use in other methods. So for the <code class="docutils literal notranslate"><span class="pre">stunt</span></code>  action, other methods could just access <code class="docutils literal notranslate"><span class="pre">self.key</span></code>, <code class="docutils literal notranslate"><span class="pre">self.recipient</span></code>, <code class="docutils literal notranslate"><span class="pre">self.target</span></code> and so on directly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_base.py </span>
 
-<span class="k">class</span> <span class="nc">CombatAction</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatAction</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="s2">&quot;Send message to others in combat&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="n">broadcast</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">can_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">       </span><span class="sd">&quot;&quot;&quot;Return False if combatant can&#39;s use this action right now&quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="kc">True</span> 
 
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Does the actional action&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">post_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after `execute`&quot;&quot;&quot;</span>
         <span class="k">pass</span> 
 </pre></div>
@@ -668,7 +668,7 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CombatActionHold</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionHold</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    Action that does nothing </span>
 <span class="sd">    </span>
@@ -687,7 +687,7 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CombatActionAttack</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionAttack</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
 <span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     A regular attack, using a wielded weapon.</span>
 <span class="sd"> </span>
@@ -698,7 +698,7 @@
 <span class="sd"> </span>
 <span class="sd">     &quot;&quot;&quot;</span>
  
-     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
          <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
          <span class="n">weapon</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">weapon</span>
          <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
@@ -718,7 +718,7 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CombatActionStunt</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionStunt</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform a stunt the grants a beneficiary (can be self) advantage on their next action against a </span>
 <span class="sd">    target. Whenever performing a stunt that would affect another negatively (giving them</span>
@@ -737,7 +737,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
         <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
         <span class="n">recipient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span>  <span class="c1"># the one to receive the effect of the stunt</span>
@@ -800,7 +800,7 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CombatActionUseItem</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionUseItem</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use an item in combat. This is meant for one-off or limited-use items (so things like scrolls and potions, not swords and shields). If this is some sort of weapon or spell rune, we refer to the item to determine what to use for attack/defense rolls.</span>
 
@@ -812,7 +812,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
@@ -835,7 +835,7 @@
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">CombatActionWield</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombatActionWield</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wield a new weapon (or spell) from your inventory. This will </span>
 <span class="sd">	    swap out the one you are currently wielding, if any.</span>
@@ -847,7 +847,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
 
 </pre></div>
@@ -903,18 +903,18 @@
 <span class="normal">36</span>
 <span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/tests/test_combat.py </span>
 
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTestCase</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">combat_base</span>
-<span class="kn">from</span> <span class="nn">..rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
-<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">combat_base</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
 
 
-<span class="k">class</span> <span class="nc">TestEvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestEvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 
 		<span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testroom&quot;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchar&quot;</span><span class="p">)</span>
@@ -922,7 +922,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combat_base</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">test_get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="c1"># do the test from perspective of combatant</span>
 <span class="hll">	    <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span>

@@ -108,13 +108,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_xyzgrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ansi</span>
 
 <span class="n">_HELP_SHORT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">evennia xyzgrid help | list | init | add | spawn | initpath | delete [&lt;options&gt;]</span>
@@ -259,7 +259,7 @@
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show help &lt;command&gt; aid.</span>
 
@@ -271,7 +271,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
 
-<span class="k">def</span> <span class="nf">_option_list</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_list</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List/view grid.</span>
 
@@ -280,7 +280,7 @@
     <span class="n">xyzgrid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
 
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">xyzgrid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
@@ -343,7 +343,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Legend (all elements may not be present on map):</span><span class="se">\n</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">legend</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_option_init</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_init</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize a new grid. Will fail if a Grid already exists.</span>
 
@@ -352,7 +352,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The grid is initalized as the Script &#39;</span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;(</span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_option_add</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_add</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add one or more map to the grid. Supports `add path,path,path,...`</span>
 
@@ -360,7 +360,7 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
 
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
@@ -383,7 +383,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added (or readded) </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">xymap_data_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> XYMaps to grid.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_option_spawn</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_spawn</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    spawn the grid or part of it.</span>
 
@@ -391,7 +391,7 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
 
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
@@ -433,7 +433,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_option_initpath</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_initpath</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (Re)Initialize the pathfinding matrices for grid or part of it.</span>
 
@@ -441,7 +441,7 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
 
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
@@ -456,7 +456,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... done. Data cached to </span><span class="si">{</span><span class="n">cachepath</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_option_delete</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_option_delete</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete the grid or parts of it. Allows mapname,mapname, ...</span>
 
@@ -465,7 +465,7 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
 
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
@@ -513,7 +513,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="xyzcommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.launchcmd.html#evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand">[docs]</a><span class="k">def</span> <span class="nf">xyzcommand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="xyzcommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.launchcmd.html#evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">xyzcommand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evennia launcher command. This is made available as `evennia xyzgrid` on the command line,</span>
 <span class="sd">    once added to `settings.EXTRA_LAUNCHER_COMMANDS`.</span>

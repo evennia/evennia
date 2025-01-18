@@ -175,9 +175,9 @@ answer is that it came from the <code class="docutils literal notranslate"><span
 mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a new file mygame/commands/mechcommands.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">CmdShoot</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdShoot</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Firing the mech’s gun</span>
 
@@ -190,7 +190,7 @@ mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shoot&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fire&quot;</span><span class="p">,</span> <span class="s2">&quot;fire!&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This actually does the shooting&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -209,7 +209,7 @@ mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
                 <span class="sa">f</span><span class="s2">&quot;BOOM! The mech fires its gun at </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">CmdLaunch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdLaunch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="c1"># make your own &#39;launch&#39;-command here as an exercise!</span>
     <span class="c1"># (it&#39;s very similar to the &#39;shoot&#39; command above).</span>
 
@@ -221,16 +221,16 @@ damage to the target, but this is enough for now.</p>
 <p>Now we shove our commands into a command set. A <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">Command Set</span></a> (CmdSet) is a container holding any number of commands. The command set is what we will store on the mech.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in the same file mygame/commands/mechcommands.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="k">class</span> <span class="nc">MechCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MechCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This allows mechs to do do mech stuff.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mechcmdset&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called once, when cmdset is first created&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdShoot</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLaunch</span><span class="p">())</span>
@@ -264,15 +264,15 @@ server. Now we want to make the mech an actual object “type” so we can creat
 behind the scenes. A Typeclass is created in a normal Python source file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in the new file mygame/typeclasses/mech.py</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
-<span class="kn">from</span> <span class="nn">commands.mechcommands</span> <span class="kn">import</span> <span class="n">MechCmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.mechcommands</span><span class="w"> </span><span class="kn">import</span> <span class="n">MechCmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="k">class</span> <span class="nc">Mech</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Mech</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This typeclass describes an armed Mech.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This is called only when object is first created&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MechCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

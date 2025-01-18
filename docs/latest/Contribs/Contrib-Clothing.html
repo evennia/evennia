@@ -143,18 +143,18 @@ a very pretty dress and a pair of regular ol&#39; shoes.
 <p>To install, import this module and have your default character
 inherit from ClothedCharacter in your game’s <code class="docutils literal notranslate"><span class="pre">characters.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.clothing</span> <span class="kn">import</span> <span class="n">ClothedCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.clothing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClothedCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ClothedCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ClothedCharacter</span><span class="p">):</span>
 
 </pre></div>
 </div>
 <p>And then add <code class="docutils literal notranslate"><span class="pre">ClothedCharacterCmdSet</span></code> in your character set in
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.clothing</span> <span class="kn">import</span> <span class="n">ClothedCharacterCmdSet</span> <span class="c1"># &lt;--</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.clothing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClothedCharacterCmdSet</span> <span class="c1"># &lt;--</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
      <span class="c1"># ...</span>
      <span class="n">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 

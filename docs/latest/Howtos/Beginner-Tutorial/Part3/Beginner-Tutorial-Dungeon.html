@@ -417,11 +417,11 @@ We will expand on this for dungeon rooms.</p>
 <span class="normal">45</span>
 <span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
-<span class="kn">from</span> <span class="nn">.rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span> 
 
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dangerous dungeon room.</span>
 
@@ -434,7 +434,7 @@ We will expand on this for dungeon rooms.</p>
     <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">xy_coords</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the `not_clear` tag on the room. This is removed when the room is</span>
 <span class="sd">        &#39;cleared&#39;, whatever that means for each room.</span>
@@ -445,14 +445,14 @@ We will expand on this for dungeon rooms.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
 </span>    
-    <span class="k">def</span> <span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
 </span>    
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">))</span>
 </span>
-<span class="hll">    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 </span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show if the room is &#39;cleared&#39; or not as part of its description.</span>
 
@@ -487,27 +487,27 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultExit</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dungeon exit. This will not create the target room until it&#39;s traversed.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We want to block progressing forward unless the room is clear.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:not objloctag(not_clear, dungeon_room)&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>  <span class="c1"># to be implemented! </span>
 
-    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when failing to traverse.</span>
 
@@ -638,12 +638,12 @@ We will expand on this for dungeon rooms.</p>
 <span class="normal">70</span>
 <span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One script is created for every dungeon &#39;instance&#39; created. The branch is</span>
 <span class="sd">    responsible for determining what is created next when a character enters an</span>
@@ -668,7 +668,7 @@ We will expand on this for dungeon rooms.</p>
     <span class="n">start_room</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tell the system the given exit was traversed. This allows us to track</span>
 <span class="sd">        how many unvisited paths we have so as to not have it grow</span>
@@ -678,7 +678,7 @@ We will expand on this for dungeon rooms.</p>
         <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create outgoing exit from a room. The target room is not yet created.</span>
 
@@ -691,14 +691,14 @@ We will expand on this for dungeon rooms.</p>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean up the dungeon branch.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>  <span class="c1"># to be implemented</span>
         
-    <span class="k">def</span> <span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
 
@@ -728,7 +728,7 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">def</span> <span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin room generator</span>
 
@@ -790,15 +790,15 @@ We will expand on this for dungeon rooms.</p>
 <p>If have done that it will be easy to find all characters and rooms associated with the branch in order to do this cleanup operation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean up the dungeon branch, removing players safely</span>
 
@@ -921,16 +921,16 @@ We will expand on this for dungeon rooms.</p>
 <span class="normal">82</span>
 <span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
 
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">shuffle</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
 
@@ -1026,10 +1026,10 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
 
 <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when traversing. `target_location` will be pointing back to</span>
 <span class="sd">        ourselves if the target was not yet created. It checks the current</span>
@@ -1093,16 +1093,16 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonStartRoomExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonStartRoomExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">reset_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flush the exit, so next traversal creates a new dungeon branch.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
 </span>
-    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When traversing create a new branch if one is not already assigned.</span>
 
@@ -1143,21 +1143,21 @@ We will expand on this for dungeon rooms.</p>
 <p>Both of these scripts are expected to be created ‘on’ the start room, so <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will be the start room.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureStartRoomResetter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureStartRoomResetter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple ticker-script. Introduces a chance of the room&#39;s exits cycling every</span>
 <span class="sd">    interval.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_startroom_resetter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called every time the script repeats.</span>
 
@@ -1173,7 +1173,7 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleanup script. After some time a dungeon branch will &#39;collapse&#39;, forcing all players in it</span>
 <span class="sd">    back to the start room.</span>
@@ -1183,10 +1183,10 @@ We will expand on this for dungeon rooms.</p>
     <span class="c1"># set at creation time when the start room is created</span>
     <span class="n">branch_max_life</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_branch_deleter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Go through all dungeon-branchs and find which ones are too old.</span>
 
@@ -1210,7 +1210,7 @@ We will expand on this for dungeon rooms.</p>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureDungeonStartRoom</span><span class="p">(</span><span class="n">EvAdventureDungeonRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonStartRoom</span><span class="p">(</span><span class="n">EvAdventureDungeonRoom</span><span class="p">):</span>
 
     <span class="n">recycle_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 5 mins</span>
     <span class="n">branch_check_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>  <span class="c1"># one hour</span>
@@ -1219,13 +1219,13 @@ We will expand on this for dungeon rooms.</p>
     <span class="c1"># allow for a custom room_generator function</span>
     <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">room_generator</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;|yYou sense that if you want to team up, &quot;</span>
             <span class="s2">&quot;you must all pick the same path from here ... or you&#39;ll quickly get separated.|n&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># want to set the script interval on creation time, so we use create_script with obj=self</span>
         <span class="c1"># instead of self.scripts.add() here</span>
         <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
@@ -1239,7 +1239,7 @@ We will expand on this for dungeon rooms.</p>
             <span class="n">attributes</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;branch_max_life&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">),),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure to clean the dungeon branch-tag from characters when leaving a dungeon branch.</span>
 

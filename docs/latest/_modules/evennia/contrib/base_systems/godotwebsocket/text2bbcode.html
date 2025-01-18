@@ -96,8 +96,8 @@
 <span class="sd">This file contains the necessary code and data to convert text with color tags to bbcode (For godot)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.text2html</span> <span class="kn">import</span> <span class="n">TextToHTMLparser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.text2html</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextToHTMLparser</span>
 
 <span class="c1"># All xterm256 RGB equivalents</span>
 
@@ -626,37 +626,37 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="RootTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag">[docs]</a><span class="k">class</span> <span class="nc">RootTag</span><span class="p">:</span>
+<div class="viewcode-block" id="RootTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RootTag</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Root tag class made to contain other tags.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;child&quot;</span><span class="p">,)</span>
 
-<div class="viewcode-block" id="RootTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RootTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="ChildTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag">[docs]</a><span class="k">class</span> <span class="nc">ChildTag</span><span class="p">:</span>
+<div class="viewcode-block" id="ChildTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChildTag</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A node made to be contained.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ChildTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="ChildTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
         <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
             <span class="n">parent</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="ChildTag.set_parent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.set_parent">[docs]</a>    <span class="k">def</span> <span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="ChildTag.set_parent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.set_parent">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
         <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
             <span class="n">parent</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">self</span></div></div>
 
 
-<div class="viewcode-block" id="TextTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag">[docs]</a><span class="k">class</span> <span class="nc">TextTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
+<div class="viewcode-block" id="TextTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TextTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node to output regular text.</span>
 <span class="sd">    Output: SomeText</span>
@@ -664,16 +664,16 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TextTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="BBCodeTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag">[docs]</a><span class="k">class</span> <span class="nc">BBCodeTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
+<div class="viewcode-block" id="BBCodeTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BBCodeTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base BBCodeTag node to encapsulate and be encapsulated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -685,15 +685,15 @@
 
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-<div class="viewcode-block" id="BBCodeTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="BBCodeTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 
-<div class="viewcode-block" id="UnderlineTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UnderlineTag">[docs]</a><span class="k">class</span> <span class="nc">UnderlineTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<div class="viewcode-block" id="UnderlineTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UnderlineTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UnderlineTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node for underlined text.</span>
 <span class="sd">    Output: [u]Underlined Text[/u]</span>
@@ -702,7 +702,7 @@
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;u&quot;</span></div>
 
 
-<div class="viewcode-block" id="BlinkTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BlinkTag">[docs]</a><span class="k">class</span> <span class="nc">BlinkTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<div class="viewcode-block" id="BlinkTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BlinkTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BlinkTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node for blinking text.</span>
 <span class="sd">    Output: [blink]Blinking Text[/blink]</span>
@@ -711,7 +711,7 @@
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;blink&quot;</span></div>
 
 
-<div class="viewcode-block" id="ColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag">[docs]</a><span class="k">class</span> <span class="nc">ColorTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<div class="viewcode-block" id="ColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ColorTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node for foreground color.</span>
 <span class="sd">    Output: [fgcolor=#000000]Colorized Text[/fgcolor]</span>
@@ -725,15 +725,15 @@
 
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;color&quot;</span>
 
-<div class="viewcode-block" id="ColorTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">color_hex</span><span class="p">):</span>
+<div class="viewcode-block" id="ColorTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">color_hex</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color_hex</span> <span class="o">=</span> <span class="n">color_hex</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">color_hex</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 
-<div class="viewcode-block" id="BGColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BGColorTag">[docs]</a><span class="k">class</span> <span class="nc">BGColorTag</span><span class="p">(</span><span class="n">ColorTag</span><span class="p">):</span>
+<div class="viewcode-block" id="BGColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BGColorTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BGColorTag</span><span class="p">(</span><span class="n">ColorTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node for background color.</span>
 <span class="sd">    Output: [bgcolor=#000000]Colorized Text[/bgcolor]</span>
@@ -742,7 +742,7 @@
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;bgcolor&quot;</span></div>
 
 
-<div class="viewcode-block" id="UrlTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag">[docs]</a><span class="k">class</span> <span class="nc">UrlTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<div class="viewcode-block" id="UrlTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UrlTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A BBCodeTag node used for urls.</span>
 <span class="sd">    Output: [url=www.example.com]Child Text[/url]</span>
@@ -757,21 +757,21 @@
 
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span>
 
-<div class="viewcode-block" id="UrlTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">url_data</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="UrlTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">url_data</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url_data</span> <span class="o">=</span> <span class="n">url_data</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url_data</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 
-<div class="viewcode-block" id="TextToBBCODEparser"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser">[docs]</a><span class="k">class</span> <span class="nc">TextToBBCODEparser</span><span class="p">(</span><span class="n">TextToHTMLparser</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TextToBBCODEparser</span><span class="p">(</span><span class="n">TextToHTMLparser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class describes a parser for converting from ANSI to BBCode.</span>
 <span class="sd">    It inherits from the TextToHTMLParser and overrides the specifics for bbcode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TextToBBCODEparser.convert_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.convert_urls">[docs]</a>    <span class="k">def</span> <span class="nf">convert_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.convert_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.convert_urls">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts urls within text to bbcode style</span>
 
@@ -784,7 +784,7 @@
         <span class="c1"># Converts to bbcode styled urls</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_url</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[url=\1]\1[/url]\2&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_links">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        replaces MXP links with bbcode.</span>
@@ -801,7 +801,7 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        replaces MXP links with bbcode.</span>
@@ -816,7 +816,7 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="TextToBBCODEparser.sub_text"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_text">[docs]</a>    <span class="k">def</span> <span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.sub_text"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_text">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
 <span class="sd">        for handling all substitutions.</span>
@@ -834,7 +834,7 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TextToBBCODEparser.format_styles"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.format_styles">[docs]</a>    <span class="k">def</span> <span class="nf">format_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.format_styles"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.format_styles">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a string with parsed ANSI codes and replaces them with bbcode style tags</span>
 
@@ -1003,7 +1003,7 @@
         <span class="c1"># recombine back into string</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_text_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_text_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
         <span class="n">child</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">child</span>
         <span class="k">while</span> <span class="n">child</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">TextTag</span><span class="p">):</span>
@@ -1013,7 +1013,7 @@
 
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TextToBBCODEparser.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToBBCODEparser.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main access function, converts a text containing ANSI codes</span>
 <span class="sd">        into html statements.</span>
@@ -1048,7 +1048,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="parse_to_bbcode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.parse_to_bbcode">[docs]</a><span class="k">def</span> <span class="nf">parse_to_bbcode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">BBCODE_PARSER</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_to_bbcode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.parse_to_bbcode">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_to_bbcode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">BBCODE_PARSER</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a string, replace ANSI markup with bbcode</span>
 <span class="sd">    &quot;&quot;&quot;</span>

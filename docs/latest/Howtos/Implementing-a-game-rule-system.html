@@ -168,7 +168,7 @@ roll or change them.</p></li>
 choose to either store things as individual <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and
 <code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is to look at the <a class="reference internal" href="../Contribs/Contrib-Traits.html"><span class="doc std std-doc">Trait handler contrib</span></a>. Finally you could even go with a <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">custom django model</span></a>. Which is the better depends on your game and the complexity of your system.</p></li>
 <li><p>Make a clear <a class="reference external" href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your rules. That is, make methods/functions that you feed with, say, your Character and which skill you want to check. That is, you want something similar to this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">world</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_skill</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="s2">&quot;swords&quot;</span><span class="p">)</span>
 </pre></div>
@@ -210,15 +210,15 @@ weather, NPC artificial intelligence and game economy. Basically everything abou
 <section id="character">
 <h3>Character<a class="headerlink" href="#character" title="Permalink to this headline">¶</a></h3>
 <p>The Character typeclass is simple. It goes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. There is already an empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class there that Evennia will look to and use.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom rule-restricted character. We randomize</span>
 <span class="sd">    the initial skill and ability values bettween 1-10.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called only when first created&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">=</span> <span class="mi">100</span>
@@ -239,23 +239,23 @@ the following command:</p>
 <section id="rule-module">
 <h3>Rule module<a class="headerlink" href="#rule-module" title="Permalink to this headline">¶</a></h3>
 <p>This is a module <code class="docutils literal notranslate"><span class="pre">mygame/world/rules.py</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 
-<span class="k">def</span> <span class="nf">roll_hit</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_hit</span><span class="p">():</span>
     <span class="s2">&quot;Roll 1d100&quot;</span>
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">roll_dmg</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_dmg</span><span class="p">():</span>
     <span class="s2">&quot;Roll 1d6&quot;</span>
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">check_defeat</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_defeat</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="s2">&quot;Checks if a character is &#39;defeated&#39;.&quot;</span>
     <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
        <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You fall down, defeated!&quot;</span><span class="p">)</span>
        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">=</span> <span class="mi">100</span>   <span class="c1"># reset</span>
 
-<span class="k">def</span> <span class="nf">add_XP</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_XP</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
     <span class="s2">&quot;Add XP to character, tracking level increases.&quot;</span>
     <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">XP</span> <span class="o">+=</span> <span class="n">amount</span>
     <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">XP</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
@@ -264,7 +264,7 @@ the following command:</p>
         <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">+=</span> <span class="mi">2</span>
         <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are now level </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">skill_combat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">skill_combat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This determines outcome of combat. The one who</span>
 <span class="sd">    rolls under their combat skill AND higher than</span>
@@ -299,7 +299,7 @@ the following command:</p>
 
 <span class="n">SKILLS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;combat&quot;</span><span class="p">:</span> <span class="n">skill_combat</span><span class="p">}</span>
 
-<span class="k">def</span> <span class="nf">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="n">skillname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="n">skillname</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the outcome of a skill challenge between</span>
 <span class="sd">    two characters based on the skillname given.</span>
@@ -318,10 +318,10 @@ function <code class="docutils literal notranslate"><span class="pre">roll_chall
 <p>In this example, the skill function actually does a lot - it not only rolls results, it also informs
 everyone of their results via <code class="docutils literal notranslate"><span class="pre">character.msg()</span></code> calls.</p>
 <p>Here is an example of usage in a game command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">world</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span>
 
-<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    attack an opponent</span>
 
@@ -331,7 +331,7 @@ everyone of their results via <code class="docutils literal notranslate"><span c
 <span class="sd">    This will attack a target in the same room, dealing</span>
 <span class="sd">    damage with your bare hands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implementing combat&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>

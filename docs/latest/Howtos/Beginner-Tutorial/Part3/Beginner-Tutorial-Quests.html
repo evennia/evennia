@@ -202,17 +202,17 @@
 <span class="normal">44</span>
 <span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/quests.py</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureQuestHandler</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuestHandler</span><span class="p">:</span>
     <span class="n">quest_storage_attribute_key</span> <span class="o">=</span> <span class="s2">&quot;_quests&quot;</span>
     <span class="n">quest_storage_attribute_category</span> <span class="o">=</span> <span class="s2">&quot;evadventure&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">quests</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
 </span>
-    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
 </span><span class="hll">            <span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_key</span><span class="p">,</span>
 </span><span class="hll">            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_category</span><span class="p">,</span>
@@ -222,25 +222,25 @@
         <span class="k">for</span> <span class="n">quest_key</span><span class="p">,</span> <span class="n">quest_class</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 <span class="hll">            <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">[</span><span class="n">quest_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 </span>
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 </span><span class="hll">            <span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_key</span><span class="p">,</span>
 </span><span class="hll">            <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="p">,</span>
 </span><span class="hll">            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_storage_attribute_category</span><span class="p">,</span>
 </span><span class="hll">        <span class="p">)</span>
 </span>    
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_class</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_class</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="p">[</span><span class="n">quest_class</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="p">[</span><span class="n">quest_class</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">quest_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
         <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quest_classes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">quest_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -263,14 +263,14 @@
 <p>This is how it would be used in practice:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some questing code </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
-<span class="kn">from</span> <span class="nn">evadventure</span> <span class="kn">import</span> <span class="n">quests</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure</span><span class="w"> </span><span class="kn">import</span> <span class="n">quests</span> 
 
-<span class="k">class</span> <span class="nc">EvAdventureSuperQuest</span><span class="p">(</span><span class="n">quests</span><span class="o">.</span><span class="n">EvAdventureQuest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureSuperQuest</span><span class="p">(</span><span class="n">quests</span><span class="o">.</span><span class="n">EvAdventureQuest</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;superquest&quot;</span>
     <span class="c1"># quest implementation here</span>
 
-<span class="k">def</span> <span class="nf">start_super_quest</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_super_quest</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EvAdventureSuperQuest</span><span class="p">)</span>
 
 </pre></div>
@@ -283,7 +283,7 @@
 Instead we store only the classes, instantiate those classes with the Character, and let the quest store its state flags separately, like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/quests.py </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureQuestHandler</span><span class="p">:</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuestHandler</span><span class="p">:</span> 
 
     <span class="c1"># ... </span>
     <span class="n">quest_data_attribute_template</span> <span class="o">=</span> <span class="s2">&quot;_quest_data_</span><span class="si">{quest_key}</span><span class="s2">&quot;</span>
@@ -291,7 +291,7 @@ Instead we store only the classes, instantiate those classes with the Character,
 
     <span class="c1"># ... </span>
 
-    <span class="k">def</span> <span class="nf">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
         <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">quest</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -300,7 +300,7 @@ Instead we store only the classes, instantiate those classes with the Character,
                 <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_category</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">load_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quest_key</span><span class="o">=</span><span class="n">quest_key</span><span class="p">),</span>
             <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_data_attribute_category</span><span class="p">,</span>
@@ -315,14 +315,14 @@ Instead we store only the classes, instantiate those classes with the Character,
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">evadventure.quests</span> <span class="kn">import</span> <span class="n">EvAdventureQuestHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure.quests</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureQuestHandler</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
     <span class="c1"># ...</span>
 
     <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
         <span class="k">return</span> <span class="n">EvAdventureQuestHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="c1"># ...</span>
@@ -377,13 +377,13 @@ Instead we store only the classes, instantiate those classes with the Character,
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">EvAdventureQuest</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuest</span><span class="p">:</span>
 
 <span class="hll">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;base-quest&quot;</span>
 </span>    <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Base quest&quot;</span>
     <span class="n">start_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quester</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quester</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">quester</span> <span class="o">=</span> <span class="n">quester</span>
 </span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">load_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;current_step&quot;</span><span class="p">)</span>
@@ -391,27 +391,27 @@ Instead we store only the classes, instantiate those classes with the Character,
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span>
 
-    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">remove_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">save_quest_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="o">.</span><span class="n">quests</span>
 
 <span class="hll">    <span class="nd">@property</span>
-</span><span class="hll">    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span>
 </span>
     <span class="nd">@current_step</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">step_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;current_step&quot;</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
 </pre></div></td></tr></table></div>
@@ -428,37 +428,37 @@ Instead we store only the classes, instantiate those classes with the Character,
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">EvAdventureQuest</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuest</span><span class="p">:</span>
 
     <span class="c1"># ... </span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;started&quot;</span><span class="p">)</span>
 
     <span class="nd">@status</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;completed&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_abandoned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_abandoned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;abandoned&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span>
 
-    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;completed&quot;</span>
 
-    <span class="k">def</span> <span class="nf">abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;abandoned&quot;</span>
 
-    <span class="k">def</span> <span class="nf">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
 
 
@@ -473,10 +473,10 @@ Instead we store only the classes, instantiate those classes with the Character,
     <span class="n">help_start</span> <span class="o">=</span> <span class="s2">&quot;You need to start first&quot;</span>
     <span class="n">help_end</span> <span class="o">=</span> <span class="s2">&quot;You need to end the quest&quot;</span>
 
-    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;abandoned&quot;</span><span class="p">,</span> <span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">):</span>
             <span class="n">help_resource</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;help_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                                     <span class="sa">f</span><span class="s2">&quot;You have </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2"> this quest.&quot;</span><span class="p">)</span>
@@ -502,19 +502,19 @@ Instead we store only the classes, instantiate those classes with the Character,
 <h3><span class="section-number">14.2.1. </span>Example quest<a class="headerlink" href="#example-quest" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some quest module, like world/myquests.py</span>
 
-<span class="kn">from</span> <span class="nn">evadventure.quests</span> <span class="kn">import</span> <span class="n">EvAdventureQuest</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure.quests</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureQuest</span> 
 
-<span class="k">class</span> <span class="nc">ShortQuest</span><span class="p">(</span><span class="n">EvAdventureQuest</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">ShortQuest</span><span class="p">(</span><span class="n">EvAdventureQuest</span><span class="p">):</span> 
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;simple-quest&quot;</span>
     <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A very simple quest.&quot;</span>
 
-    <span class="k">def</span> <span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Example step!&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Quest started!&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;end&quot;</span>
 
-    <span class="k">def</span> <span class="nf">step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_completed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quester</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Quest ended!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
@@ -524,8 +524,8 @@ Instead we store only the classes, instantiate those classes with the Character,
 <p>This is a very simple quest that will resolve on its own after two <code class="docutils literal notranslate"><span class="pre">.progress()</span></code> checks. Here’s the full life cycle of this quest:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some module somewhere, using evennia shell or in-game using py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span> 
-<span class="kn">from</span> <span class="nn">world.myquests</span> <span class="kn">import</span> <span class="n">ShortQuest</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">world.myquests</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShortQuest</span> 
 
 <span class="n">character</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;MyCharacterName&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ShortQuest</span><span class="p">)</span>
@@ -543,7 +543,7 @@ Instead we store only the classes, instantiate those classes with the Character,
 <p>The player must know which quests they have and be able to inspect them. Here’s a simple <code class="docutils literal notranslate"><span class="pre">quests</span></code> command to handle this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/quests.py</span>
 
-<span class="k">class</span> <span class="nc">CmdQuests</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdQuests</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List all quests and their statuses as well as get info about the status of</span>
 <span class="sd">    a specific quest.</span>
@@ -556,10 +556,10 @@ Instead we store only the classes, instantiate those classes with the Character,
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quests&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;quest&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quest_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quest_name</span><span class="p">:</span>
             <span class="n">quest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quest_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">quest</span><span class="p">:</span>

@@ -146,9 +146,9 @@ imported from the new folder. For this tutorial, here’s what the example conte
 module should look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/story.py</span>
 
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
 
-<span class="k">def</span> <span class="nf">storypage</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">storypage</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;story.html&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -203,11 +203,11 @@ and corresponding path to <code class="docutils literal notranslate"><span class
 <span class="sd">The main web/urls.py includes these routes for all urls (the root of the url)</span>
 <span class="sd">so it can reroute to all website pages.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
 
-<span class="kn">from</span> <span class="nn">web.website</span> <span class="kn">import</span> <span class="n">story</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.website</span><span class="w"> </span><span class="kn">import</span> <span class="n">story</span>
 
-<span class="kn">from</span> <span class="nn">evennia.web.website.urls</span> <span class="kn">import</span> <span class="n">urlpatterns</span> <span class="k">as</span> <span class="n">evennia_website_urlpatterns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.web.website.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlpatterns</span> <span class="k">as</span> <span class="n">evennia_website_urlpatterns</span>
 
 <span class="c1"># add patterns here</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>

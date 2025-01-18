@@ -95,17 +95,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mux_comms_cmds</span> <span class="k">as</span> <span class="n">comms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">mux_comms_cmds</span> <span class="k">as</span> <span class="n">comms</span>
 
 
-<div class="viewcode-block" id="TestLegacyMuxComms"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms">[docs]</a><span class="k">class</span> <span class="nc">TestLegacyMuxComms</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestLegacyMuxComms</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the legacy comms contrib.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdChannelCreate</span><span class="p">(),</span>
@@ -114,7 +114,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_toggle_com"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_toggle_com">[docs]</a>    <span class="k">def</span> <span class="nf">test_toggle_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_toggle_com"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_toggle_com">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_toggle_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdAddCom</span><span class="p">(),</span>
             <span class="s2">&quot;tc = testchan&quot;</span><span class="p">,</span>
@@ -128,7 +128,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_all_com"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_all_com">[docs]</a>    <span class="k">def</span> <span class="nf">test_all_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_all_com"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_all_com">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_all_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdAllCom</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -136,7 +136,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_clock"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_clock">[docs]</a>    <span class="k">def</span> <span class="nf">test_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_clock"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_clock">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdClock</span><span class="p">(),</span>
             <span class="s2">&quot;testchan=send:all()&quot;</span><span class="p">,</span>
@@ -144,7 +144,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_cdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cdesc">[docs]</a>    <span class="k">def</span> <span class="nf">test_cdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_cdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cdesc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_cdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdCdesc</span><span class="p">(),</span>
             <span class="s2">&quot;testchan = Test Channel&quot;</span><span class="p">,</span>
@@ -152,7 +152,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_cwho"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cwho">[docs]</a>    <span class="k">def</span> <span class="nf">test_cwho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_cwho"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cwho">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_cwho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdCWho</span><span class="p">(),</span>
             <span class="s2">&quot;testchan&quot;</span><span class="p">,</span>
@@ -160,7 +160,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_cboot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cboot">[docs]</a>    <span class="k">def</span> <span class="nf">test_cboot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_cboot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cboot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_cboot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># No one else connected to boot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdCBoot</span><span class="p">(),</span>
@@ -169,7 +169,7 @@
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestLegacyMuxComms.test_cdestroy"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cdestroy">[docs]</a>    <span class="k">def</span> <span class="nf">test_cdestroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLegacyMuxComms.test_cdestroy"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.mux_comms_cmds.tests.html#evennia.contrib.base_systems.mux_comms_cmds.tests.TestLegacyMuxComms.test_cdestroy">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_cdestroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdCdestroy</span><span class="p">(),</span>
             <span class="s2">&quot;testchan&quot;</span><span class="p">,</span>

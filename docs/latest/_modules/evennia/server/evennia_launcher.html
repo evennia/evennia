@@ -103,23 +103,23 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
-<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">check_output</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">argparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">distutils.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">LooseVersion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">check_output</span>
 
-<span class="kn">import</span> <span class="nn">django</span>
-<span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">execute_from_command_line</span>
-<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">ProgrammingError</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">endpoints</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">django</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_from_command_line</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgrammingError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">endpoints</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">amp</span>
 
 <span class="c1"># Signal processing</span>
 <span class="n">SIG</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span>
@@ -128,7 +128,7 @@
 <span class="c1"># Set up the main python paths to Evennia</span>
 <span class="n">EVENNIA_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>  <span class="c1"># noqa</span>
 
 <span class="n">EVENNIA_LIB</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_ROOT</span><span class="p">,</span> <span class="s2">&quot;evennia&quot;</span><span class="p">)</span>
 <span class="n">EVENNIA_SERVER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_LIB</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">)</span>
@@ -571,11 +571,11 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">_is_windows</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_windows</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_file_names_compact</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_file_names_compact</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">):</span>
     <span class="s2">&quot;Compact the output of filenames with same base dir&quot;</span>
     <span class="n">dirname1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath1</span><span class="p">)</span>
     <span class="n">dirname2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath2</span><span class="p">)</span>
@@ -586,14 +586,14 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_print_info</span><span class="p">(</span><span class="n">portal_info_dict</span><span class="p">,</span> <span class="n">server_info_dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_print_info</span><span class="p">(</span><span class="n">portal_info_dict</span><span class="p">,</span> <span class="n">server_info_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format info dicts from the Portal/Server for display</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">8</span>
 
-    <span class="k">def</span> <span class="nf">_prepare_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -601,7 +601,7 @@
             <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">out</span>
 
-    <span class="k">def</span> <span class="nf">_strip_empty_lines</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_strip_empty_lines</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
     <span class="n">pstr</span><span class="p">,</span> <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
@@ -620,12 +620,12 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">top_border</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">border</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
     <span class="s2">&quot;Unpack the status information&quot;</span>
     <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_get_twistd_cmdline</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_twistd_cmdline</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compile the command line for starting a Twisted application using the &#39;twistd&#39; executable.</span>
 
@@ -658,7 +658,7 @@
     <span class="k">return</span> <span class="n">portal_cmd</span><span class="p">,</span> <span class="n">server_cmd</span>
 
 
-<span class="k">def</span> <span class="nf">_reactor_stop</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_reactor_stop</span><span class="p">():</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">NO_REACTOR_STOP</span><span class="p">:</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
@@ -670,7 +670,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="MsgStatus"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgStatus">[docs]</a><span class="k">class</span> <span class="nc">MsgStatus</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgStatus"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MsgStatus</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ping between AMP services</span>
 
@@ -682,7 +682,7 @@
     <span class="n">response</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span></div>
 
 
-<div class="viewcode-block" id="MsgLauncher2Portal"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgLauncher2Portal">[docs]</a><span class="k">class</span> <span class="nc">MsgLauncher2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgLauncher2Portal"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgLauncher2Portal">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MsgLauncher2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Message Launcher -&gt; Portal</span>
 
@@ -694,16 +694,16 @@
     <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="AMPLauncherProtocol"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPLauncherProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AMPLauncherProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines callbacks to the launcher</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_status</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a waiter for a status return.</span>
 
@@ -711,7 +711,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">on_status</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AMPLauncherProtocol.receive_status_from_portal"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal">[docs]</a>    <span class="nd">@MsgStatus</span><span class="o">.</span><span class="n">responder</span>
-    <span class="k">def</span> <span class="nf">receive_status_from_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">receive_status_from_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a status signal from portal - fire next queued</span>
 <span class="sd">        callback</span>
@@ -727,7 +727,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)}</span></div></div>
 
 
-<div class="viewcode-block" id="send_instruction"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.send_instruction">[docs]</a><span class="k">def</span> <span class="nf">send_instruction</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="send_instruction"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.send_instruction">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">send_instruction</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send instruction and handle the response.</span>
 
@@ -740,15 +740,15 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_AMP_UNCONFIGURED</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="n">callback</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">errback</span><span class="p">:</span>
             <span class="n">errback</span><span class="p">(</span><span class="n">fail</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_on_connect</span><span class="p">(</span><span class="n">prot</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_connect</span><span class="p">(</span><span class="n">prot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This fires with the protocol when connection is established. We</span>
 <span class="sd">        immediately send off the instruction</span>
@@ -758,11 +758,11 @@
         <span class="n">AMP_CONNECTION</span> <span class="o">=</span> <span class="n">prot</span>
         <span class="n">_send</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_on_connect_fail</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_connect_fail</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="s2">&quot;This is called if portal is not reachable.&quot;</span>
         <span class="n">errback</span><span class="p">(</span><span class="n">fail</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_send</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">PSTATUS</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">AMP_CONNECTION</span><span class="o">.</span><span class="n">callRemote</span><span class="p">(</span><span class="n">MsgStatus</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span>
                 <span class="n">_callback</span><span class="p">,</span> <span class="n">_errback</span>
@@ -786,14 +786,14 @@
         <span class="k">return</span> <span class="n">deferred</span></div>
 
 
-<div class="viewcode-block" id="query_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_status">[docs]</a><span class="k">def</span> <span class="nf">query_status</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="query_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_status">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">query_status</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send status ping to portal</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wmap</span> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="s2">&quot;NOT RUNNING&quot;</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callback</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="n">callback</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -808,7 +808,7 @@
             <span class="p">)</span>
             <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="n">pstatus</span><span class="p">,</span> <span class="n">sstatus</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Portal: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">Server: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wmap</span><span class="p">[</span><span class="n">pstatus</span><span class="p">],</span> <span class="n">wmap</span><span class="p">[</span><span class="n">sstatus</span><span class="p">]))</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
@@ -816,7 +816,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_callback</span><span class="p">,</span> <span class="n">_errback</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="wait_for_status_reply"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status_reply">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status_reply</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+<div class="viewcode-block" id="wait_for_status_reply"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status_reply">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">wait_for_status_reply</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wait for an explicit STATUS signal to be sent back from Evennia.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -826,7 +826,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Evennia connection established.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span>
+<div class="viewcode-block" id="wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">wait_for_status</span><span class="p">(</span>
     <span class="n">portal_running</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">server_running</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">20</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -845,7 +845,7 @@
 <span class="sd">        retries (int): How many times to retry before timing out and calling `errback`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callback</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">prun</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">portal_running</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prun</span> <span class="o">==</span> <span class="n">portal_running</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="n">server_running</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">srun</span> <span class="o">==</span> <span class="n">server_running</span>
@@ -874,7 +874,7 @@
                     <span class="n">retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_errback</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Portal not running</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -913,12 +913,12 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
+<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.collectstatic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">collectstatic</span><span class="p">():</span>
     <span class="s2">&quot;Run the collectstatic django command&quot;</span>
     <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;collectstatic&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_evennia">[docs]</a><span class="k">def</span> <span class="nf">start_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="start_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_evennia">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">start_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will start Evennia anew by launching the Evennia Portal (which in turn</span>
 <span class="sd">    will start the Server)</span>
@@ -926,18 +926,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">portal_cmd</span><span class="p">,</span> <span class="n">server_cmd</span> <span class="o">=</span> <span class="n">_get_twistd_cmdline</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_fail</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fail</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">fail</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_server_started</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_started</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server started.</span><span class="se">\n</span><span class="s2">Evennia running.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">response</span>
             <span class="n">_print_info</span><span class="p">(</span><span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_portal_started</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_started</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="s2">&quot;... Portal started.</span><span class="se">\n</span><span class="s2">Server starting </span><span class="si">{}</span><span class="s2"> ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="s2">&quot;(under cProfile)&quot;</span> <span class="k">if</span> <span class="n">sprofiler</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -946,7 +946,7 @@
         <span class="n">wait_for_status_reply</span><span class="p">(</span><span class="n">_server_started</span><span class="p">)</span>
         <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">prun</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">ppid</span><span class="p">,</span> <span class="n">spid</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Portal is already running as process </span><span class="si">{pid}</span><span class="s2">. Not restarted.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="n">ppid</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">srun</span><span class="p">:</span>
@@ -956,7 +956,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server starting </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;(under cProfile)&quot;</span> <span class="k">if</span> <span class="n">sprofiler</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
             <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">,</span> <span class="n">_server_started</span><span class="p">,</span> <span class="n">_fail</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Portal starting </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;(under cProfile)&quot;</span> <span class="k">if</span> <span class="n">pprofiler</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_is_windows</span><span class="p">():</span>
@@ -974,7 +974,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reload_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reload_evennia">[docs]</a><span class="k">def</span> <span class="nf">reload_evennia</span><span class="p">(</span><span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="reload_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reload_evennia">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reload_evennia</span><span class="p">(</span><span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will instruct the Portal to reboot the Server component. We</span>
 <span class="sd">    do this manually by telling the server to shutdown (in reload mode)</span>
@@ -984,19 +984,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">server_cmd</span> <span class="o">=</span> <span class="n">_get_twistd_cmdline</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_server_restarted</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_restarted</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server re-started.&quot;</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_server_reloaded</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_reloaded</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;reset&quot;</span> <span class="k">if</span> <span class="n">reset</span> <span class="k">else</span> <span class="s2">&quot;reloaded&quot;</span><span class="p">))</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_server_stopped</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_stopped</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
         <span class="n">wait_for_status_reply</span><span class="p">(</span><span class="n">_server_reloaded</span><span class="p">)</span>
         <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">srun</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;resetting&quot;</span> <span class="k">if</span> <span class="n">reset</span> <span class="k">else</span> <span class="s2">&quot;reloading&quot;</span><span class="p">))</span>
@@ -1007,7 +1007,7 @@
             <span class="n">wait_for_status_reply</span><span class="p">(</span><span class="n">_server_restarted</span><span class="p">)</span>
             <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia not running. Starting ...&quot;</span><span class="p">)</span>
         <span class="n">start_evennia</span><span class="p">()</span>
 
@@ -1015,22 +1015,22 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="stop_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_evennia">[docs]</a><span class="k">def</span> <span class="nf">stop_evennia</span><span class="p">():</span>
+<div class="viewcode-block" id="stop_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_evennia">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">stop_evennia</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This instructs the Portal to stop the Server and then itself.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_portal_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Portal stopped.</span><span class="se">\n</span><span class="s2">Evennia shut down.&quot;</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server stopped.</span><span class="se">\n</span><span class="s2">Stopping Portal ...&quot;</span><span class="p">)</span>
         <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSHUTD</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">wait_for_status</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_stopped</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">prun</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">ppid</span><span class="p">,</span> <span class="n">spid</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">srun</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server stopping ...&quot;</span><span class="p">)</span>
@@ -1041,14 +1041,14 @@
             <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSHUTD</span><span class="p">,</span> <span class="p">{})</span>
             <span class="n">wait_for_status</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_stopped</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia not running.&quot;</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reboot_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reboot_evennia">[docs]</a><span class="k">def</span> <span class="nf">reboot_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="reboot_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reboot_evennia">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reboot_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is essentially an evennia stop &amp;&amp; evennia start except we make sure</span>
 <span class="sd">    the system has successfully shut down before starting it again.</span>
@@ -1058,18 +1058,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">AMP_CONNECTION</span>
 
-    <span class="k">def</span> <span class="nf">_portal_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Portal stopped. Evennia shut down. Rebooting ...&quot;</span><span class="p">)</span>
         <span class="k">global</span> <span class="n">AMP_CONNECTION</span>
         <span class="n">AMP_CONNECTION</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">start_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server stopped.</span><span class="se">\n</span><span class="s2">Stopping Portal ...&quot;</span><span class="p">)</span>
         <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSHUTD</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">wait_for_status</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_stopped</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">prun</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">ppid</span><span class="p">,</span> <span class="n">spid</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">srun</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server stopping ...&quot;</span><span class="p">)</span>
@@ -1080,7 +1080,7 @@
             <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSHUTD</span><span class="p">,</span> <span class="p">{})</span>
             <span class="n">wait_for_status</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_stopped</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia not running. Starting ...&quot;</span><span class="p">)</span>
         <span class="n">start_evennia</span><span class="p">()</span>
 
@@ -1088,7 +1088,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_only_server"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_only_server">[docs]</a><span class="k">def</span> <span class="nf">start_only_server</span><span class="p">():</span>
+<div class="viewcode-block" id="start_only_server"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_only_server">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">start_only_server</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tell portal to start server (debug)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1098,13 +1098,13 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_server_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_server_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_server_interactive</span><span class="p">():</span>
+<div class="viewcode-block" id="start_server_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_server_interactive">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">start_server_interactive</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the Server under control of the launcher process (foreground)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_iserver</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iserver</span><span class="p">():</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">server_twistd_cmd</span> <span class="o">=</span> <span class="n">_get_twistd_cmdline</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">server_twistd_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--nodaemon&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Server in interactive mode (stop with Ctrl-C)...&quot;</span><span class="p">)</span>
@@ -1119,7 +1119,7 @@
     <span class="n">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="n">_iserver</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_portal_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_portal_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_portal_interactive</span><span class="p">():</span>
+<div class="viewcode-block" id="start_portal_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_portal_interactive">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">start_portal_interactive</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the Portal under control of the launcher process (foreground)</span>
 
@@ -1133,7 +1133,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_iportal</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iportal</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="n">portal_twistd_cmd</span><span class="p">,</span> <span class="n">server_twistd_cmd</span> <span class="o">=</span> <span class="n">_get_twistd_cmdline</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">portal_twistd_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--nodaemon&quot;</span><span class="p">)</span>
 
@@ -1153,14 +1153,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Portal stopped (leaving interactive mode).&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia must be shut down completely before running Portal in interactive mode.&quot;</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_iportal</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="stop_server_only"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_server_only">[docs]</a><span class="k">def</span> <span class="nf">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="stop_server_only"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_server_only">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only stop the Server-component of Evennia (this is not useful except for debug)</span>
 
@@ -1172,14 +1172,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_server_stopped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">when_stopped</span><span class="p">:</span>
             <span class="n">when_stopped</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... Server stopped.&quot;</span><span class="p">)</span>
             <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">srun</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">srun</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server stopping ...&quot;</span><span class="p">)</span>
@@ -1195,7 +1195,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is not running.&quot;</span><span class="p">)</span>
                 <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia is not running.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">interactive</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start Evennia normally first, then use `istart` to switch to interactive mode.&quot;</span><span class="p">)</span>
@@ -1204,27 +1204,27 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="query_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_info">[docs]</a><span class="k">def</span> <span class="nf">query_info</span><span class="p">():</span>
+<div class="viewcode-block" id="query_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">query_info</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the info strings from the running Evennia</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_got_status</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_got_status</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">_parse_status</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
         <span class="n">_print_info</span><span class="p">(</span><span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
         <span class="n">_reactor_stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_running</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
         <span class="n">query_status</span><span class="p">(</span><span class="n">_got_status</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_portal_not_running</span><span class="p">(</span><span class="n">fail</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evennia is not running.&quot;</span><span class="p">)</span>
 
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tail_log_files"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.tail_log_files">[docs]</a><span class="k">def</span> <span class="nf">tail_log_files</span><span class="p">(</span><span class="n">filename1</span><span class="p">,</span> <span class="n">filename2</span><span class="p">,</span> <span class="n">start_lines1</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">start_lines2</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="tail_log_files"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.tail_log_files">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tail_log_files</span><span class="p">(</span><span class="n">filename1</span><span class="p">,</span> <span class="n">filename2</span><span class="p">,</span> <span class="n">start_lines1</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">start_lines2</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tail two logfiles interactively, combining their output to stdout</span>
 
@@ -1241,7 +1241,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">REACTOR_RUN</span>
 
-    <span class="k">def</span> <span class="nf">_file_changed</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">prev_size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_file_changed</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">prev_size</span><span class="p">):</span>
         <span class="s2">&quot;Get size of file in bytes, get diff compared with previous size&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">new_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -1249,10 +1249,10 @@
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">new_size</span> <span class="o">!=</span> <span class="n">prev_size</span><span class="p">,</span> <span class="n">new_size</span>
 
-    <span class="k">def</span> <span class="nf">_get_new_lines</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">old_linecount</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_new_lines</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">old_linecount</span><span class="p">):</span>
         <span class="s2">&quot;count lines, get the ones not counted before&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_block</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">65536</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_block</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">65536</span><span class="p">):</span>
             <span class="s2">&quot;File block generator for quick traversal&quot;</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">dat</span> <span class="o">=</span> <span class="n">filehandle</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
@@ -1297,7 +1297,7 @@
         <span class="c1"># only actually return the new lines</span>
         <span class="k">return</span> <span class="n">lines_found</span><span class="p">[</span><span class="o">-</span><span class="n">lines_to_get</span><span class="p">:],</span> <span class="n">new_linecount</span>
 
-    <span class="k">def</span> <span class="nf">_tail_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">file_size</span><span class="p">,</span> <span class="n">line_count</span><span class="p">,</span> <span class="n">max_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tail_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">file_size</span><span class="p">,</span> <span class="n">line_count</span><span class="p">,</span> <span class="n">max_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This will cycle repeatedly, printing new lines&quot;&quot;&quot;</span>
 
         <span class="c1"># poll for changes</span>
@@ -1338,7 +1338,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="evennia_version"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.evennia_version">[docs]</a><span class="k">def</span> <span class="nf">evennia_version</span><span class="p">():</span>
+<div class="viewcode-block" id="evennia_version"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.evennia_version">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">evennia_version</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the Evennia version info from the main package.</span>
 
@@ -1367,7 +1367,7 @@
 <span class="n">EVENNIA_VERSION</span> <span class="o">=</span> <span class="n">evennia_version</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="check_main_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_main_evennia_dependencies">[docs]</a><span class="k">def</span> <span class="nf">check_main_evennia_dependencies</span><span class="p">():</span>
+<div class="viewcode-block" id="check_main_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_main_evennia_dependencies">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_main_evennia_dependencies</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks and imports the Evennia dependencies. This must be done</span>
 <span class="sd">    already before the paths are set up.</span>
@@ -1377,7 +1377,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_test_python_version</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_python_version</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test Python version&quot;&quot;&quot;</span>
         <span class="n">python_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
         <span class="n">python_curr</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">python_version</span><span class="p">)</span>
@@ -1397,10 +1397,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_test_twisted_version</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_twisted_version</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test Twisted version&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">twisted</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">twisted</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NOTWISTED</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1419,10 +1419,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_test_django_version</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_django_version</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test Django version&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">django</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">django</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NODJANGO</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1455,7 +1455,7 @@
     <span class="k">return</span> <span class="nb">all</span><span class="p">((</span><span class="n">_test_python_version</span><span class="p">(),</span> <span class="n">_test_twisted_version</span><span class="p">(),</span> <span class="n">_test_django_version</span><span class="p">()))</span></div>
 
 
-<div class="viewcode-block" id="set_gamedir"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.set_gamedir">[docs]</a><span class="k">def</span> <span class="nf">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="set_gamedir"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.set_gamedir">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set GAMEDIR based on path, by figuring out where the setting file</span>
 <span class="sd">    is inside the directory tree. This allows for running the launcher</span>
@@ -1478,13 +1478,13 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="create_secret_key"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_secret_key">[docs]</a><span class="k">def</span> <span class="nf">create_secret_key</span><span class="p">():</span>
+<div class="viewcode-block" id="create_secret_key"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_secret_key">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_secret_key</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Randomly create the secret key for the settings file</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">random</span>
-    <span class="kn">import</span> <span class="nn">string</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
 
     <span class="n">secret_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
         <span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">)</span>
@@ -1498,7 +1498,7 @@
     <span class="k">return</span> <span class="n">secret_key</span></div>
 
 
-<div class="viewcode-block" id="create_settings_file"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_settings_file">[docs]</a><span class="k">def</span> <span class="nf">create_settings_file</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">secret_settings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="create_settings_file"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_settings_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_settings_file</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">secret_settings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses the template settings file to build a working settings file.</span>
 
@@ -1548,7 +1548,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">settings_string</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_game_directory">[docs]</a><span class="k">def</span> <span class="nf">create_game_directory</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+<div class="viewcode-block" id="create_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_game_directory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_game_directory</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize a new game directory named dirname</span>
 <span class="sd">    at the current path. This means copying the</span>
@@ -1573,7 +1573,7 @@
     <span class="n">create_settings_file</span><span class="p">(</span><span class="n">secret_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span> <span class="nf">create_superuser</span><span class="p">():</span>
+<div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_superuser</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the superuser account</span>
 
@@ -1582,14 +1582,14 @@
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Create a superuser below. The superuser is Account #1, the &#39;owner&#39; &quot;</span>
         <span class="s2">&quot;account of the server. Email is optional and can be empty.</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
 
     <span class="n">username</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EVENNIA_SUPERUSER_USERNAME&quot;</span><span class="p">)</span>
     <span class="n">email</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EVENNIA_SUPERUSER_EMAIL&quot;</span><span class="p">)</span>
     <span class="n">password</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EVENNIA_SUPERUSER_PASSWORD&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">username</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
 
         <span class="n">superuser</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_superuser</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="n">superuser</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -1597,7 +1597,7 @@
         <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span> <span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check so the database exists.</span>
 
@@ -1610,7 +1610,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check so a database exists and is accessible</span>
-    <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">connection</span>
 
     <span class="n">tables</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">introspection</span><span class="o">.</span><span class="n">get_table_list</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">())</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tables</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># django 1.8+</span>
@@ -1619,7 +1619,7 @@
         <span class="c1"># database exists and seems set up. Initialize evennia.</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
     <span class="c1"># Try to get Account#1</span>
-    <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -1652,7 +1652,7 @@
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="c1"># continue with the</span>
-            <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
             <span class="n">new</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
             <span class="n">other</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
@@ -1664,7 +1664,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.getenv">[docs]</a><span class="k">def</span> <span class="nf">getenv</span><span class="p">():</span>
+<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.getenv">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getenv</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get current environment and add PYTHONPATH.</span>
 
@@ -1678,7 +1678,7 @@
     <span class="k">return</span> <span class="n">env</span></div>
 
 
-<div class="viewcode-block" id="get_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.get_pid">[docs]</a><span class="k">def</span> <span class="nf">get_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.get_pid">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the PID (Process ID) by trying to access an PID file.</span>
 
@@ -1697,7 +1697,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="del_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.del_pid">[docs]</a><span class="k">def</span> <span class="nf">del_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
+<div class="viewcode-block" id="del_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.del_pid">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">del_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The pidfile should normally be removed after a process has</span>
 <span class="sd">    finished, but when sending certain signals they remain, so we need</span>
@@ -1711,7 +1711,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.kill">[docs]</a><span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">killsignal</span><span class="o">=</span><span class="n">SIG</span><span class="p">):</span>
+<div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.kill">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">killsignal</span><span class="o">=</span><span class="n">SIG</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send a kill signal to a process based on PID. A customized</span>
 <span class="sd">    success/error message will be returned. If clean=True, the system</span>
@@ -1734,7 +1734,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">_is_windows</span><span class="p">():</span>
         <span class="c1"># Windows signal sending is very limited.</span>
-        <span class="kn">from</span> <span class="nn">win32api</span> <span class="kn">import</span> <span class="n">GenerateConsoleCtrlEvent</span><span class="p">,</span> <span class="n">SetConsoleCtrlHandler</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">win32api</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateConsoleCtrlEvent</span><span class="p">,</span> <span class="n">SetConsoleCtrlHandler</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Windows can only send a SIGINT-like signal to</span>
@@ -1779,7 +1779,7 @@
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_version_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.show_version_info">[docs]</a><span class="k">def</span> <span class="nf">show_version_info</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="show_version_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.show_version_info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">show_version_info</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display version info.</span>
 
@@ -1790,9 +1790,9 @@
 <span class="sd">        version_info (str): A complete version info string.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-    <span class="kn">import</span> <span class="nn">twisted</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">twisted</span>
 
     <span class="k">return</span> <span class="n">VERSION_INFO</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">version</span><span class="o">=</span><span class="n">EVENNIA_VERSION</span><span class="p">,</span>
@@ -1804,7 +1804,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="error_check_python_modules"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.error_check_python_modules">[docs]</a><span class="k">def</span> <span class="nf">error_check_python_modules</span><span class="p">(</span><span class="n">show_warnings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="error_check_python_modules"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.error_check_python_modules">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">error_check_python_modules</span><span class="p">(</span><span class="n">show_warnings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Import settings modules in settings. This will raise exceptions on</span>
 <span class="sd">    pure python-syntax issues which are hard to catch gracefully with</span>
@@ -1817,9 +1817,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-    <span class="k">def</span> <span class="nf">_imp</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_imp</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="s2">&quot;helper method&quot;</span>
         <span class="n">mod</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span>
         <span class="k">if</span> <span class="n">split</span><span class="p">:</span>
@@ -1827,7 +1827,7 @@
         <span class="nb">__import__</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">fromlist</span><span class="p">])</span>
 
     <span class="c1"># check the historical deprecations</span>
-    <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">deprecations</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecations</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">deprecations</span><span class="o">.</span><span class="n">check_errors</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
@@ -1846,7 +1846,7 @@
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOCK_FUNC_MODULES</span><span class="p">:</span>
         <span class="n">_imp</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdsethandler</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmdsethandler</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdsethandler</span><span class="o">.</span><span class="n">import_cmdset</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_UNLOGGEDIN</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: CMDSET_UNLOGGED failed to load!&quot;</span><span class="p">)</span>
@@ -1870,7 +1870,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="init_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.init_game_directory">[docs]</a><span class="k">def</span> <span class="nf">init_game_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">check_db</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">need_gamedir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="init_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.init_game_directory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">init_game_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">check_db</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">need_gamedir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to analyze the given path to find settings.py - this defines</span>
 <span class="sd">    the game directory and also sets PYTHONPATH as well as the django</span>
@@ -1905,10 +1905,10 @@
 
     <span class="c1"># test existence of the settings module</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No module named&quot;</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">traceback</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_SETTINGS</span><span class="p">)</span>
@@ -2008,7 +2008,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">INFO_WINDOWS_BATFILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">twistd_path</span><span class="o">=</span><span class="n">twistd_path</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="run_dummyrunner"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_dummyrunner">[docs]</a><span class="k">def</span> <span class="nf">run_dummyrunner</span><span class="p">(</span><span class="n">number_of_dummies</span><span class="p">):</span>
+<div class="viewcode-block" id="run_dummyrunner"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_dummyrunner">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_dummyrunner</span><span class="p">(</span><span class="n">number_of_dummies</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start an instance of the dummyrunner</span>
 
@@ -2034,18 +2034,18 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="run_connect_wizard"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_connect_wizard">[docs]</a><span class="k">def</span> <span class="nf">run_connect_wizard</span><span class="p">():</span>
+<div class="viewcode-block" id="run_connect_wizard"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_connect_wizard">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_connect_wizard</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the linking wizard, for adding new external connections.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">.connection_wizard</span> <span class="kn">import</span> <span class="n">ConnectionWizard</span><span class="p">,</span> <span class="n">node_start</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.connection_wizard</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionWizard</span><span class="p">,</span> <span class="n">node_start</span>
 
     <span class="n">wizard</span> <span class="o">=</span> <span class="n">ConnectionWizard</span><span class="p">()</span>
     <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_settings"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.list_settings">[docs]</a><span class="k">def</span> <span class="nf">list_settings</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+<div class="viewcode-block" id="list_settings"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.list_settings">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">list_settings</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the server settings. We only display the Evennia specific</span>
 <span class="sd">    settings here. The result will be printed to the terminal.</span>
@@ -2054,9 +2054,9 @@
 <span class="sd">        keys (str or list): Setting key or keys to inspect.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">evtable</span>
 
     <span class="n">evsettings</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">SETTINGS_DOTPATH</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span><span class="p">:</span>
@@ -2076,7 +2076,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="run_custom_commands"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_custom_commands">[docs]</a><span class="k">def</span> <span class="nf">run_custom_commands</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="run_custom_commands"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_custom_commands">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_custom_commands</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inject a custom option into the evennia launcher command chain.</span>
 
@@ -2100,9 +2100,9 @@
 <span class="sd">            evennia mycmd foo bar</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">importlib</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 
-    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># a dict of {option: callable(*args), ...}</span>
@@ -2122,7 +2122,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="run_menu"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_menu">[docs]</a><span class="k">def</span> <span class="nf">run_menu</span><span class="p">():</span>
+<div class="viewcode-block" id="run_menu"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_menu">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_menu</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This launches an interactive menu.</span>
 
@@ -2204,7 +2204,7 @@
         <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the evennia launcher main program.</span>
 

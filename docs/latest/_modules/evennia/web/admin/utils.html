@@ -95,12 +95,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_all_cmdsets</span><span class="p">,</span> <span class="n">get_all_typeclasses</span><span class="p">,</span> <span class="n">inherits_from</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_all_cmdsets</span><span class="p">,</span> <span class="n">get_all_typeclasses</span><span class="p">,</span> <span class="n">inherits_from</span>
 
 
-<div class="viewcode-block" id="get_and_load_typeclasses"><a class="viewcode-back" href="../../../../api/evennia.web.admin.utils.html#evennia.web.admin.utils.get_and_load_typeclasses">[docs]</a><span class="k">def</span> <span class="nf">get_and_load_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excluded_parents</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_and_load_typeclasses"><a class="viewcode-back" href="../../../../api/evennia.web.admin.utils.html#evennia.web.admin.utils.get_and_load_typeclasses">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_and_load_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excluded_parents</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all typeclasses. We we need to initialize things here</span>
 <span class="sd">    for them to be actually available in the admin process.</span>
@@ -118,7 +118,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># this is necessary in order to have typeclasses imported and accessible</span>
     <span class="c1"># in the inheritance tree.</span>
-    <span class="kn">import</span> <span class="nn">evennia</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
     <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
@@ -153,7 +153,7 @@
     <span class="k">return</span> <span class="p">[(</span><span class="n">path</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">tpaths</span> <span class="k">if</span> <span class="n">path</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="get_and_load_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.web.admin.utils.html#evennia.web.admin.utils.get_and_load_cmdsets">[docs]</a><span class="k">def</span> <span class="nf">get_and_load_cmdsets</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excluded_parents</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_and_load_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.web.admin.utils.html#evennia.web.admin.utils.get_and_load_cmdsets">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_and_load_cmdsets</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excluded_parents</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all cmdsets available or as children based on a parent cmdset.  We need</span>
 <span class="sd">    to initialize things here to make sure as much as possible is loaded in the</span>
@@ -168,7 +168,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># we must do this to have cmdsets imported and accessible in the inheritance tree.</span>
-    <span class="kn">import</span> <span class="nn">evennia</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
     <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 

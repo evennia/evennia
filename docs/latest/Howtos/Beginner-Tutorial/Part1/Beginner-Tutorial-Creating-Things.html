@@ -209,7 +209,7 @@ are available on <code class="docutils literal notranslate"><span class="pre">ev
 </div>
 <p>Since we didn’t specify the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> as the first argument, the default given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code>  (<code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code> out of the box) will be used.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_object</span></code> has <a class="reference internal" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_object" title="evennia.utils.create.create_object"><span class="xref myst py py-func">a lot of options</span></a>. A more detailed example in code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
 
 <span class="n">meadow</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Meadow&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -237,8 +237,8 @@ Forest -&gt; west -&gt; Meadow
 </pre></div>
 </div>
 <p>In-game you do this with <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> and <code class="docutils literal notranslate"><span class="pre">dig</span></code> commands, bit if you want to ever set up these links in code, you can do it like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span> 
-<span class="kn">from</span> <span class="nn">mygame.typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">mygame.typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span> 
 
 <span class="c1"># rooms</span>
 <span class="n">meadow</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Meadow&quot;</span><span class="p">)</span>
@@ -257,7 +257,7 @@ Forest -&gt; west -&gt; Meadow
 You can find the parent class for Accounts in <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>.</p>
 <p>Normally, you want to create the Account when a user authenticates. By default, this happens in the <code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">account</span></code> and <code class="docutils literal notranslate"><span class="pre">login</span></code> default commands in the <code class="docutils literal notranslate"><span class="pre">UnloggedInCmdSet</span></code>. This means that customizing this just means replacing those commands!</p>
 <p>So normally you’d modify those commands rather than make something from scratch. But here’s the principle:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_account</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_account</span> 
 
 <span class="n">new_account</span> <span class="o">=</span> <span class="n">create_account</span><span class="p">(</span>
             <span class="n">accountname</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> 
@@ -285,7 +285,7 @@ channel/sub channel name
 </pre></div>
 </div>
 <p>Creating channels follows a familiar syntax:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_channel</span>
 
 <span class="n">new_channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="n">channelname</span><span class="p">)</span>
 </pre></div>
@@ -296,7 +296,7 @@ channel/sub channel name
 <h2><span class="section-number">10.5. </span>Creating Scripts<a class="headerlink" href="#creating-scripts" title="Permalink to this headline">¶</a></h2>
 <p>A <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> is an entity that has no in-game location. It can be used to store arbitrary data and is often used for game systems that need persistent storage but which you can’t ‘look’ at in-game. Examples are economic systems, weather and combat handlers.</p>
 <p>Scripts are multi-use and depending on what they do, a given script can either be ‘global’ or be attached “to” another object (like a Room or Character).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span><span class="p">,</span> <span class="n">search_object</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_script</span><span class="p">,</span> <span class="n">search_object</span> 
 <span class="c1"># global script </span>
 <span class="n">new_script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.MyScript&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
 

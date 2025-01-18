@@ -156,18 +156,18 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 </div>
 <p>Importing anything from inside this folder from anywhere else under <code class="docutils literal notranslate"><span class="pre">mygame</span></code> will be done by</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># from anywhere in mygame/</span>
-<span class="kn">from</span> <span class="nn">evadventure.yourmodulename</span> <span class="kn">import</span> <span class="n">whatever</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure.yourmodulename</span><span class="w"> </span><span class="kn">import</span> <span class="n">whatever</span>
 </pre></div>
 </div>
 <p>This is the ‘absolute path` type of import.</p>
 <p>Between two modules both in <code class="docutils literal notranslate"><span class="pre">evadventure/</span></code>, you can use a ‘relative’ import with <code class="docutils literal notranslate"><span class="pre">.</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># from a module inside mygame/evadventure</span>
-<span class="kn">from</span> <span class="nn">.yourmodulename</span> <span class="kn">import</span> <span class="n">whatever</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.yourmodulename</span><span class="w"> </span><span class="kn">import</span> <span class="n">whatever</span>
 </pre></div>
 </div>
 <p>From e.g. inside <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/</span></code> you can import from one level above using <code class="docutils literal notranslate"><span class="pre">..</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># from mygame/evadventure/tests/</span>
-<span class="kn">from</span> <span class="nn">..yourmodulename</span> <span class="kn">import</span> <span class="n">whatever</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..yourmodulename</span><span class="w"> </span><span class="kn">import</span> <span class="n">whatever</span>
 </pre></div>
 </div>
 </section>
@@ -181,9 +181,9 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 <p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html">enum</a> (enumeration) is a way to establish constants in Python. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/evadventure/enums.py</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="k">class</span> <span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 
     <span class="n">STR</span> <span class="o">=</span> <span class="s2">&quot;strength&quot;</span>
 
@@ -192,7 +192,7 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 <p>You can then access an enum like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># from another module in mygame/evadventure</span>
 
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
 <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span>   <span class="c1"># the enum itself</span>
 <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># this is the string &quot;strength&quot;</span>
@@ -206,7 +206,7 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 <p>Below is the <code class="docutils literal notranslate"><span class="pre">enum.py</span></code> module needed for <em>Knave</em>. It covers the basic aspects of the rule system we need to track. (Check out the <em>Knave</em> rules.) Should you later use another rule system, you’ll likely expand on your enums gradually as you figure out what you’ll need.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
 
-<span class="k">class</span> <span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The six base ability-bonuses and other</span>
 <span class="sd">    abilities</span>
@@ -286,7 +286,7 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">get_obj_stats</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_obj_stats</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a string of stats about the object.</span>
 
@@ -336,13 +336,13 @@ is an example of the testing module. To dive deeper into unit testing in Evennia
 <p>Here’s a module for  testing <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_utils.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">..import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..import</span> <span class="n">utils</span>
 
-<span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestUtils</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># make a simple object to test with</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">,</span>

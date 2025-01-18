@@ -90,24 +90,24 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.utils.git_integration.git_integration</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
-<span class="kn">import</span> <span class="nn">git</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">git</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_command</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_to_string</span>
 
 
-<div class="viewcode-block" id="GitCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand">[docs]</a><span class="k">class</span> <span class="nc">GitCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GitCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The shared functionality between git/git evennia</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GitCommand.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the arguments, set default arg to &#39;status&#39; and check for existence of currently targeted repo</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -149,14 +149,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">type_err</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InterruptCommand</span></div>
 
-<div class="viewcode-block" id="GitCommand.short_sha"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.short_sha">[docs]</a>    <span class="k">def</span> <span class="nf">short_sha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">hexsha</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.short_sha"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.short_sha">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">short_sha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">hexsha</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Utility: Get the short SHA of a commit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">short_sha</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="n">hexsha</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">short_sha</span></div>
 
-<div class="viewcode-block" id="GitCommand.get_status"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.get_status"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the status of the active git repository, displaying unstaged changes/untracked files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -175,7 +175,7 @@
             <span class="n">status_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Untracked files:|/    |x</span><span class="si">{</span><span class="s1">&#39;|/    &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">untracked_files</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
         <span class="k">return</span> <span class="n">status_msg</span></div>
 
-<div class="viewcode-block" id="GitCommand.get_branches"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_branches">[docs]</a>    <span class="k">def</span> <span class="nf">get_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.get_branches"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_branches">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display current and available branches.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -185,7 +185,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">branch_msg</span></div>
 
-<div class="viewcode-block" id="GitCommand.checkout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.checkout">[docs]</a>    <span class="k">def</span> <span class="nf">checkout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.checkout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.checkout">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">checkout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check out a specific branch.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -209,7 +209,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checked out |w</span><span class="si">{</span><span class="n">to_branch</span><span class="si">}</span><span class="s2">|n successfully. Server restart initiated.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GitCommand.pull"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.pull"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.pull">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to pull new code.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -228,7 +228,7 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GitCommand.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCommand.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provide basic Git functionality within the game.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -253,7 +253,7 @@
             <span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;collectstatic&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdGitEvennia"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGitEvennia">[docs]</a><span class="k">class</span> <span class="nc">CmdGitEvennia</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGitEvennia"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGitEvennia">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdGitEvennia</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pull the latest code from the evennia core or checkout a different branch.</span>
 
@@ -276,7 +276,7 @@
     <span class="n">remote_link</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/evennia/evennia.git&quot;</span></div>
 
 
-<div class="viewcode-block" id="CmdGit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGit">[docs]</a><span class="k">class</span> <span class="nc">CmdGit</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGit">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdGit</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pull the latest code from your repository or checkout a different branch.</span>
 
@@ -300,12 +300,12 @@
 
 
 <span class="c1"># CmdSet for easily install all commands</span>
-<div class="viewcode-block" id="GitCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCmdSet">[docs]</a><span class="k">class</span> <span class="nc">GitCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GitCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The git command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GitCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GitCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGit</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGitEvennia</span><span class="p">)</span></div></div>
 </pre></div>

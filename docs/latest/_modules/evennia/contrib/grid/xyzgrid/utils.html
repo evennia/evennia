@@ -123,8 +123,8 @@
 <span class="c1"># errors for Map system</span>
 
 
-<div class="viewcode-block" id="MapError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError">[docs]</a><span class="k">class</span> <span class="nc">MapError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-<div class="viewcode-block" id="MapError.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">node_or_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MapError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MapError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="MapError.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">node_or_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">node_or_link</span><span class="p">:</span>
             <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span>
@@ -136,11 +136,11 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="MapParserError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapParserError">[docs]</a><span class="k">class</span> <span class="nc">MapParserError</span><span class="p">(</span><span class="n">MapError</span><span class="p">):</span>
+<div class="viewcode-block" id="MapParserError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapParserError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MapParserError</span><span class="p">(</span><span class="n">MapError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="MapTransition"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapTransition">[docs]</a><span class="k">class</span> <span class="nc">MapTransition</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+<div class="viewcode-block" id="MapTransition"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapTransition">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MapTransition</span><span class="p">(</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used when signaling to the parser that a link</span>
 <span class="sd">    leads to another map.</span>

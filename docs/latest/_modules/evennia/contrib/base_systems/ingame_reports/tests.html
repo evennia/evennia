@@ -90,33 +90,33 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.ingame_reports.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">TempMsg</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TempMsg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">menu</span><span class="p">,</span> <span class="n">reports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">menu</span><span class="p">,</span> <span class="n">reports</span>
 
 
-<span class="k">class</span> <span class="nc">_MockQuerySet</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_MockQuerySet</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">exclude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exclude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 
-<span class="k">def</span> <span class="nf">_mock_pre</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mock_pre</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;helper to mock at_pre_cmd&quot;&quot;&quot;</span>
     <span class="n">cmdobj</span><span class="o">.</span><span class="n">hub</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="TestReportCommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.tests.html#evennia.contrib.base_systems.ingame_reports.tests.TestReportCommands">[docs]</a><span class="k">class</span> <span class="nc">TestReportCommands</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestReportCommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.tests.html#evennia.contrib.base_systems.ingame_reports.tests.TestReportCommands">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestReportCommands</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestReportCommands.test_report_cmd_base"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.tests.html#evennia.contrib.base_systems.ingame_reports.tests.TestReportCommands.test_report_cmd_base">[docs]</a>    <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">create</span><span class="p">,</span> <span class="s2">&quot;create_message&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
-    <span class="k">def</span> <span class="nf">test_report_cmd_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_report_cmd_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;verify that the base command functionality works&quot;&quot;&quot;</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">reports</span><span class="o">.</span><span class="n">ReportCmdBase</span>
 
@@ -136,7 +136,7 @@
 
 <div class="viewcode-block" id="TestReportCommands.test_ideas_list"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.tests.html#evennia.contrib.base_systems.ingame_reports.tests.TestReportCommands.test_ideas_list">[docs]</a>    <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">create</span><span class="p">,</span> <span class="s2">&quot;create_message&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
     <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">reports</span><span class="p">,</span> <span class="s2">&quot;datetime_format&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;now&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_ideas_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_datetime_format</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_ideas_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_datetime_format</span><span class="p">):</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">reports</span><span class="o">.</span><span class="n">CmdIdea</span>
 
         <span class="n">fake_ideas</span> <span class="o">=</span> <span class="n">_MockQuerySet</span><span class="p">([</span><span class="n">TempMsg</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;idea </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -158,7 +158,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;ideas&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">expected</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReportCommands.test_cmd_manage_reports"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.tests.html#evennia.contrib.base_systems.ingame_reports.tests.TestReportCommands.test_cmd_manage_reports">[docs]</a>    <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">reports</span><span class="o">.</span><span class="n">evmenu</span><span class="p">,</span> <span class="s2">&quot;EvMenu&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_cmd_manage_reports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evmenu_mock</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_manage_reports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evmenu_mock</span><span class="p">):</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">reports</span><span class="o">.</span><span class="n">CmdManageReports</span>
         <span class="n">hub</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 

@@ -155,7 +155,7 @@ Hello World!
 </div>
 <p>If you followed earlier tutorial lessons, the <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file should look like this (if
 not, make it so):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -247,9 +247,9 @@ Closing the Python console.
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">module docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
-<span class="k">class</span> <span class="nc">Script</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Script</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class docstring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -275,11 +275,11 @@ as a black box.</p>
 <p>A ‘class’ can be seen as a ‘template’ for a ‘type’ of object. The class describes the basic functionality of everyone of that class. For example, we could have a class <code class="docutils literal notranslate"><span class="pre">Monster</span></code> which has resources for moving itself from room to room.</p>
 <p>Open a new file <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Add the following simple class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monster</span><span class="p">:</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Monster&quot;</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 </pre></div>
@@ -324,12 +324,12 @@ Monster is moving!
 instance. We can have them move as many times as we want. But no matter how many monsters we create, they will all show the same printout since <code class="docutils literal notranslate"><span class="pre">key</span></code> is always fixed as “Monster”.</p>
 <p>Let’s make the class a little more flexible:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monster</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 </pre></div>
@@ -362,7 +362,7 @@ Fluffy is moving!
 <section id="whats-so-good-about-objects">
 <h3><span class="section-number">5.2.2. </span>What’s so good about objects?<a class="headerlink" href="#whats-so-good-about-objects" title="Permalink to this headline">¶</a></h3>
 <p>So far all we’ve seen a class do is to behave like our first <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function but being more complex. We could just have made a function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="k">def</span> <span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="k">def</span><span class="w"> </span><span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -389,27 +389,27 @@ Fluffy, the red dragon is moving!
 <p>Classes can <em>inherit</em> from each other. A “child” class will inherit everything from its “parent” class. But if the child adds something with the same name as its parent, it will <em>override</em> whatever it got from its parent.</p>
 <p>Let’s expand <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> with another class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monster</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a base class for Monster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a dragon monster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> flies through the air high above!&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -437,9 +437,9 @@ Smaug breathes fire!
 <p>One can also force a class to use resources from the parent even if you are overriding some of it. This is done with the <code class="docutils literal notranslate"><span class="pre">super()</span></code> method. Modify your <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> class as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
 
@@ -468,14 +468,14 @@ The world trembles.
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">module docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectParent</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class docstring </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class docstring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -490,11 +490,11 @@ The world trembles.
 <span class="sd">...</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultRoom</span>
 
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectParent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectParent</span>
 
-<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Room</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	...</span>
 <span class="sd">    &quot;&quot;&quot;</span>

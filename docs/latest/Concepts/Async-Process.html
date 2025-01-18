@@ -152,11 +152,11 @@ executed in the same strict order they were coded.</p>
 <p>This is equivalent to something like <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code> except <code class="docutils literal notranslate"><span class="pre">delay</span></code> is asynchronous while <code class="docutils literal notranslate"><span class="pre">sleep</span></code> would lock the entire server for the duration of the sleep.</p>
 </aside>
 <p>The <code class="docutils literal notranslate"><span class="pre">delay</span></code> function is a much simpler sibling to <code class="docutils literal notranslate"><span class="pre">run_async</span></code>. It is in fact just a way to delay the execution of a command until a future time.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">delay</span>
 
      <span class="c1"># [...]</span>
      <span class="c1"># e.g. inside a Command, where `self.caller` is available</span>
-     <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Returning!&quot;</span><span class="p">)</span>
      <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
@@ -171,10 +171,10 @@ executed in the same strict order they were coded.</p>
 <section id="utils-interactive-decorator">
 <h2><code class="docutils literal notranslate"><span class="pre">&#64;utils.interactive</span></code> decorator<a class="headerlink" href="#utils-interactive-decorator" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code> [decorator](<a class="reference external" href="https://realpython.com/primer-on-python-">https://realpython.com/primer-on-python-</a> decorators/) makes any function or method possible to ‘pause’ and/or await player input in an interactive way.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">interactive</span>
 
     <span class="nd">@interactive</span>
-    <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
         
       <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
           <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Getting ready to wait ...&quot;</span><span class="p">)</span>
@@ -196,10 +196,10 @@ executed in the same strict order they were coded.</p>
 <ul class="simple">
 <li><p>You can’t use  <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">&lt;value&gt;</span></code> from a generator (just an empty <code class="docutils literal notranslate"><span class="pre">return</span></code> works). To return a value from a function/method you have decorated with <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code>, you must instead use a special Twisted function  <code class="docutils literal notranslate"><span class="pre">twisted.internet.defer.returnValue</span></code>. Evennia also makes this function  conveniently available from <code class="docutils literal notranslate"><span class="pre">evennia.utils</span></code>:</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">returnValue</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">returnValue</span>
 
 <span class="nd">@interactive</span>
-<span class="k">def</span> <span class="nf">myfunc</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">myfunc</span><span class="p">():</span>
 
     <span class="c1"># ... </span>
     <span class="n">result</span> <span class="o">=</span> <span class="mi">10</span>
@@ -222,7 +222,7 @@ executed in the same strict order they were coded.</p>
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">function</span></code> will be called asynchronously with <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span><span class="n">long_running_function</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
@@ -239,7 +239,7 @@ line quite pointless for processing any data from the function. Instead one has 
 <li><p><code class="docutils literal notranslate"><span class="pre">at_return(r)</span></code> (the <em>callback</em>) is called when the asynchronous function (<code class="docutils literal notranslate"><span class="pre">long_running_function</span></code>
 above) finishes successfully. The argument <code class="docutils literal notranslate"><span class="pre">r</span></code> will then be the return value of that function (or
 <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_return</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span><span class="w"> </span><span class="nf">at_return</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -250,7 +250,7 @@ This exception is passed to the errback wrapped in a <em>Failure</em> object <co
 errback of your own, Evennia will automatically add one that silently writes errors to the evennia
 log. An example of an errback is found below:</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">def</span> <span class="nf">at_err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">def</span><span class="w"> </span><span class="nf">at_err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There was an error:&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -259,22 +259,22 @@ log. An example of an errback is found below:</p></li>
 errback.</p></li>
 </ul>
 <p>An example of making an asynchronous call from inside a <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Command</span></a> definition:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">Command</span>
 
-    <span class="k">class</span> <span class="nc">CmdAsync</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">CmdAsync</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;asynccommand&quot;</span>
     
-       <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>     
+       <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>     
            
-           <span class="k">def</span> <span class="nf">long_running_function</span><span class="p">():</span>  
+           <span class="k">def</span><span class="w"> </span><span class="nf">long_running_function</span><span class="p">():</span>  
                <span class="c1">#[... lots of time-consuming code  ...]</span>
                <span class="k">return</span> <span class="n">final_value</span>
            
-           <span class="k">def</span> <span class="nf">at_return_function</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+           <span class="k">def</span><span class="w"> </span><span class="nf">at_return_function</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The final value is </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
-           <span class="k">def</span> <span class="nf">at_err_function</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+           <span class="k">def</span><span class="w"> </span><span class="nf">at_err_function</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There was an error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
            <span class="c1"># do the async call, setting all callbacks</span>

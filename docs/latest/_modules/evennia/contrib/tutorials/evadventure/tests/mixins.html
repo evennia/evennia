@@ -95,27 +95,27 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">enums</span>
-<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">enums</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..objects</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EvAdventureArmor</span><span class="p">,</span>
     <span class="n">EvAdventureHelmet</span><span class="p">,</span>
     <span class="n">EvAdventureObject</span><span class="p">,</span>
     <span class="n">EvAdventureShield</span><span class="p">,</span>
     <span class="n">EvAdventureWeapon</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span>
 
 
-<div class="viewcode-block" id="EvAdventureMixin"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="EvAdventureMixin"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides a set of pre-made characters.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvAdventureMixin.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMixin.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testroom&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>

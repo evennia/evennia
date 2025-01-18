@@ -90,20 +90,20 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.game_systems.storage.storage</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.search</span> <span class="kn">import</span> <span class="n">search_object_by_tag</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_to_string</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object_by_tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
 
 <span class="n">SHARED_TAG_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;shared&quot;</span>
 
 
-<div class="viewcode-block" id="StorageCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCommand">[docs]</a><span class="k">class</span> <span class="nc">StorageCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCommand">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StorageCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shared functionality for storage-related commands</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StorageCommand.at_pre_cmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCommand.at_pre_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageCommand.at_pre_cmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCommand.at_pre_cmd">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current location is tagged as a storage location</span>
 <span class="sd">        Every stored object is tagged on storage, and untagged on retrieval</span>
@@ -129,7 +129,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdStore"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStore">[docs]</a><span class="k">class</span> <span class="nc">CmdStore</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStore"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStore">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdStore</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Store something in a storage location.</span>
 
@@ -141,7 +141,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Storage&quot;</span>
 
-<div class="viewcode-block" id="CmdStore.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStore.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStore.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStore.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the item in question to store, then store it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -165,7 +165,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You fail to store </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> here.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdRetrieve"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdRetrieve">[docs]</a><span class="k">class</span> <span class="nc">CmdRetrieve</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRetrieve"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdRetrieve">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdRetrieve</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve something from a storage location.</span>
 
@@ -177,7 +177,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Storage&quot;</span>
 
-<div class="viewcode-block" id="CmdRetrieve.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdRetrieve.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRetrieve.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdRetrieve.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve the item in question if possible</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -198,7 +198,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You fail to retrieve </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdList"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdList">[docs]</a><span class="k">class</span> <span class="nc">CmdList</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdList"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdList">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdList</span><span class="p">(</span><span class="n">StorageCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List items in the storage location.</span>
 
@@ -210,7 +210,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Storage&quot;</span>
 
-<div class="viewcode-block" id="CmdList.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdList.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdList.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdList.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List items in the storage</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -221,7 +221,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stored here:</span><span class="se">\n</span><span class="si">{</span><span class="n">list_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currently_stored</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdStorage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStorage">[docs]</a><span class="k">class</span> <span class="nc">CmdStorage</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStorage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStorage">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdStorage</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make the current location a storage room, or delete it as a storage and move all stored objects into the room contents.</span>
 
@@ -238,7 +238,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@storage&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Builder)&quot;</span>
 
-<div class="viewcode-block" id="CmdStorage.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStorage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStorage.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.CmdStorage.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the storage location.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -270,12 +270,12 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This is now a storage location with id: </span><span class="si">{</span><span class="n">new_storage_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="StorageCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCmdSet">[docs]</a><span class="k">class</span> <span class="nc">StorageCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StorageCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CmdSet for all storage-related commands</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StorageCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.storage.storage.html#evennia.contrib.game_systems.storage.storage.StorageCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStore</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdRetrieve</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdList</span><span class="p">)</span>

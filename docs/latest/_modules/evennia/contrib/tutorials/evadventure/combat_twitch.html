@@ -99,9 +99,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">default_cmds</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">display_len</span><span class="p">,</span>
     <span class="n">inherits_from</span><span class="p">,</span>
     <span class="n">list_to_string</span><span class="p">,</span>
@@ -110,8 +110,8 @@
     <span class="n">unrepeat</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
-<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.combat_base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CombatActionAttack</span><span class="p">,</span>
     <span class="n">CombatActionHold</span><span class="p">,</span>
     <span class="n">CombatActionStunt</span><span class="p">,</span>
@@ -119,10 +119,10 @@
     <span class="n">CombatActionWield</span><span class="p">,</span>
     <span class="n">EvAdventureCombatBaseHandler</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ABILITY_REVERSE_MAP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABILITY_REVERSE_MAP</span>
 
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureCombatTwitchHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureCombatTwitchHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is created on the combatant when combat starts. It tracks only the combatants</span>
 <span class="sd">    side of the combat and handles when the next action will happen.</span>
@@ -150,7 +150,7 @@
     <span class="c1"># stores the current ticker reference, so we can manipulate it later</span>
     <span class="n">current_ticker_ref</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Central place for sending messages to combatants. This allows</span>
 <span class="sd">        for adding any combat-specific text-decoration in one place.</span>
@@ -172,10 +172,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="n">broadcast</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.at_init">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TwitchLookCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.get_sides"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.get_sides"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.get_sides">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a listing of the two &#39;sides&#39; of this combat, from the perspective of the provided</span>
 <span class="sd">        combatant. The sides don&#39;t need to be balanced.</span>
@@ -214,7 +214,7 @@
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
         <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.give_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.give_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_advantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Let a benefiter gain advantage against the target.</span>
 
@@ -228,7 +228,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">advantage_against</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.give_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.give_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_disadvantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Let an affected party gain disadvantage against a target.</span>
 
@@ -240,7 +240,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_against</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.has_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.has_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_advantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a given combatant has advantage against a target.</span>
 
@@ -251,7 +251,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">advantage_against</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.has_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.has_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_disadvantage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a given combatant has disadvantage against a target.</span>
 
@@ -262,7 +262,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_against</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.queue_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.queue_action">[docs]</a>    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.queue_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.queue_action">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Schedule the next action to fire.</span>
 
@@ -290,7 +290,7 @@
             <span class="c1"># the tickerhandler&#39;s ref to make sure we can remove it later</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_ticker_ref</span> <span class="o">=</span> <span class="n">repeat</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_next_action</span><span class="p">,</span> <span class="n">id_string</span><span class="o">=</span><span class="s2">&quot;combat&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.execute_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.execute_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.execute_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.execute_next_action">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Triggered after a delay by the command</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -310,7 +310,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">check_stop_combat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.check_stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.check_stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.check_stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.check_stop_combat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the combat is over.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -339,7 +339,7 @@
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_combat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureCombatTwitchHandler.stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.stop_combat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop combat immediately.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -349,13 +349,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">_BaseTwitchCombatCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_BaseTwitchCombatCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parent class for all twitch-combat commnads.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_pre_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before parsing.</span>
 
@@ -364,7 +364,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fight here!&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InterruptCommand</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle parsing of most supported combat syntaxes (except stunts).</span>
 
@@ -388,7 +388,7 @@
             <span class="n">rhs</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">rhs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get or create the combathandler assigned to this combatant.</span>
 
@@ -405,7 +405,7 @@
         <span class="k">return</span> <span class="n">EvAdventureCombatTwitchHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attack a target. Will keep attacking the target until</span>
 <span class="sd">    combat ends or another combat action is taken.</span>
@@ -419,7 +419,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hit&quot;</span><span class="p">]</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdAttack.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAttack.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
             <span class="k">return</span>
@@ -431,8 +431,8 @@
         <span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(attack) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)!&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdLook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook">[docs]</a><span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">,</span> <span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
-<div class="viewcode-block" id="CmdLook.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdLook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">,</span> <span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdLook.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># get regular look, followed by a combat summary</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -442,7 +442,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="n">pad</span><span class="p">(</span><span class="s1">&#39; Combat Status &#39;</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="n">maxwidth</span><span class="p">,</span><span class="w"> </span><span class="n">fillchar</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">|n</span><span class="se">\n</span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdHold"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold">[docs]</a><span class="k">class</span> <span class="nc">CmdHold</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHold"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdHold</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hold back your blows, doing nothing.</span>
 
@@ -453,13 +453,13 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hold&quot;</span>
 
-<div class="viewcode-block" id="CmdHold.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHold.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">()</span>
         <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">})</span>
         <span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;$You() $conj(hold) back, doing nothing.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdStunt"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt">[docs]</a><span class="k">class</span> <span class="nc">CmdStunt</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStunt"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdStunt</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform a combat stunt, that boosts an ally against a target, or</span>
 <span class="sd">    foils an enemy, giving them disadvantage against an ally.</span>
@@ -486,7 +486,7 @@
     <span class="p">)</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdStunt.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStunt.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">or</span> <span class="s2">&quot; &quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
@@ -538,7 +538,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdStunt.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStunt.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
             <span class="k">return</span>
@@ -562,7 +562,7 @@
         <span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;$You() prepare a stunt!&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUseItem"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem">[docs]</a><span class="k">class</span> <span class="nc">CmdUseItem</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUseItem"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdUseItem</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use an item in combat. The item must be in your inventory to use.</span>
 
@@ -580,7 +580,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;use&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdUseItem.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUseItem.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -590,7 +590,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">or</span> <span class="s2">&quot;me&quot;</span></div>
 
-<div class="viewcode-block" id="CmdUseItem.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUseItem.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">get_usable_objects_from_backpack</span><span class="p">()</span>
         <span class="p">)</span>
@@ -609,7 +609,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdWield"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield">[docs]</a><span class="k">class</span> <span class="nc">CmdWield</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWield"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdWield</span><span class="p">(</span><span class="n">_BaseTwitchCombatCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wield a weapon or spell-rune. You will the wield the item, swapping with any other item(s) you</span>
 <span class="sd">    were wielded before.</span>
@@ -630,13 +630,13 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wield&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdWield.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWield.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What do you want to wield?&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InterruptCommand</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdWield.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWield.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">get_wieldable_objects_from_backpack</span><span class="p">()</span>
         <span class="p">)</span>
@@ -648,14 +648,14 @@
         <span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() reach for </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TwitchCombatCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TwitchCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="TwitchCombatCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TwitchCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add to character, to be able to attack others in a twitch-style way.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;twitch_combat_cmdset&quot;</span>
 
-<div class="viewcode-block" id="TwitchCombatCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TwitchCombatCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAttack</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHold</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStunt</span><span class="p">())</span>
@@ -663,14 +663,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdWield</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="TwitchLookCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TwitchLookCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="TwitchLookCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TwitchLookCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will be added/removed dynamically when in combat.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;twitch_look_cmdset&quot;</span>
 
-<div class="viewcode-block" id="TwitchLookCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TwitchLookCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_twitch.html#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLook</span><span class="p">())</span></div></div>
 </pre></div>
 

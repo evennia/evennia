@@ -744,9 +744,9 @@ custom directions outside of the cardinal directions + up/down. The exit’s key
 </ul>
 <p>Below is an example that changes the map’s nodes to show up as red
 (maybe for a lava map?):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">xymap_legend</span>
 
-<span class="k">class</span> <span class="nc">RedMapNode</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapNode</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RedMapNode</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapNode</span><span class="p">):</span>
     <span class="n">display_symbol</span> <span class="o">=</span> <span class="s2">&quot;|r#|n&quot;</span>
 
 
@@ -1105,7 +1105,7 @@ time.</p>
 different (unused) unique symbol in your map legend:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in your map definition module</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">xymap_legend</span>
 
 <span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 
@@ -1150,7 +1150,7 @@ must be customized in a child class for every transition.</p>
 added, with different map-legend symbols:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in your map definition module (let&#39;s say this is mapB)</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">xymap_legend</span>
 
 <span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 
@@ -1167,11 +1167,11 @@ added, with different map-legend symbols:</p>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="k">class</span> <span class="nc">TransitionToMapA</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransitionToMapA</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition to MapA&quot;&quot;&quot;</span>
     <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;mapA&quot;</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">TransitionToMapC</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransitionToMapC</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition to MapB&quot;&quot;&quot;</span>
     <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;mapC&quot;</span><span class="p">)</span>
 

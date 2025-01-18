@@ -95,13 +95,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">health_bar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">health_bar</span>
 
 
-<div class="viewcode-block" id="TestHealthBar"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.health_bar.tests.html#evennia.contrib.rpg.health_bar.tests.TestHealthBar">[docs]</a><span class="k">class</span> <span class="nc">TestHealthBar</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestHealthBar.test_healthbar"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.health_bar.tests.html#evennia.contrib.rpg.health_bar.tests.TestHealthBar.test_healthbar">[docs]</a>    <span class="k">def</span> <span class="nf">test_healthbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestHealthBar"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.health_bar.tests.html#evennia.contrib.rpg.health_bar.tests.TestHealthBar">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestHealthBar</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestHealthBar.test_healthbar"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.health_bar.tests.html#evennia.contrib.rpg.health_bar.tests.TestHealthBar.test_healthbar">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_healthbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">expected_bar_str</span> <span class="o">=</span> <span class="s2">&quot;|[R|w|n|[B|w            test0 / 200test             |n&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">health_bar</span><span class="o">.</span><span class="n">display_meter</span><span class="p">(</span>

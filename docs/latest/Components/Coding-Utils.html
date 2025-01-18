@@ -155,7 +155,7 @@ on all objects. This will search for objects in the same location and inside the
 <p>Give the keyword <code class="docutils literal notranslate"><span class="pre">global_search=True</span></code> to extend search to encompass entire database. Aliases will also be matched by this search. You will find multiple examples of this functionality in the default command set.</p>
 <p>If you need to search for objects in a code module you can use the functions in
 <code class="docutils literal notranslate"><span class="pre">evennia.utils.search</span></code>. You can access these as shortcuts <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span>
      <span class="n">obj</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -173,7 +173,7 @@ on all objects. This will search for objects in the same location and inside the
 <section id="create">
 <h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <p>Apart from the in-game build commands (<code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> etc), you can also build all of Evennia’s game entities directly in code (for example when defining new create commands).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
    <span class="n">myobj</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_objects</span><span class="p">(</span><span class="s2">&quot;game.gamesrc.objects.myobj.MyObj&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyObj&quot;</span><span class="p">)</span>
 </pre></div>
@@ -192,7 +192,7 @@ on all objects. This will search for objects in the same location and inside the
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
 <p>Normally you can use Python <code class="docutils literal notranslate"><span class="pre">print</span></code> statements to see output to the terminal/log. The <code class="docutils literal notranslate"><span class="pre">print</span></code>
 statement should only be used for debugging though. For producion output, use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> which will create proper logs either to terminal or to file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
      <span class="c1">#</span>
      <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;This is an Error!&quot;</span><span class="p">)</span>
      <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;This is a Warning!&quot;</span><span class="p">)</span>
@@ -220,7 +220,7 @@ kill the server.</p>
 <section id="game-time">
 <h3>Game time<a class="headerlink" href="#game-time" title="Permalink to this headline">¶</a></h3>
 <p>Evennia tracks the current server time. You can access this time via the <code class="docutils literal notranslate"><span class="pre">evennia.gametime</span></code> shortcut:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">gametime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">gametime</span>
 
 <span class="c1"># all the functions below return times in seconds).</span>
 
@@ -246,9 +246,9 @@ kill the server.</p>
 </div>
 <p>The setting <code class="docutils literal notranslate"><span class="pre">TIME_FACTOR</span></code> determines how fast/slow in-game time runs compared to the real world. The setting <code class="docutils literal notranslate"><span class="pre">TIME_GAME_EPOCH</span></code> sets the starting game epoch (in seconds). The functions from the <code class="docutils literal notranslate"><span class="pre">gametime</span></code> module all return their times in seconds. You can convert this to whatever units of time you desire for your game. You can use the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command to view the server time info.
 You can also <em>schedule</em> things to happen at specific in-game times using the <a class="reference internal" href="../api/evennia.utils.gametime.html#evennia.utils.gametime.schedule" title="evennia.utils.gametime.schedule"><span class="xref myst py py-func">gametime.schedule</span></a> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
-<span class="k">def</span> <span class="nf">church_clock</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">church_clock</span><span class="p">:</span>
     <span class="n">limbo</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Limbo&quot;</span><span class="p">)</span>
     <span class="n">limbo</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The church clock chimes two.&quot;</span><span class="p">)</span>
 
@@ -269,9 +269,9 @@ You can also <em>schedule</em> things to happen at specific in-game times using 
 <section id="utils-delay">
 <h3>utils.delay()<a class="headerlink" href="#utils-delay" title="Permalink to this headline">¶</a></h3>
 <p>This allows for making a delayed call.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
-<span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_callback</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 <span class="c1"># wait 10 seconds before sending &quot;Echo!&quot; to obj (which we assume is defined)</span>
@@ -292,7 +292,7 @@ You can also <em>schedule</em> things to happen at specific in-game times using 
 will only catch immediate dependence). This function also accepts as input any combination of
 classes, instances or python-paths-to-classes.</p>
 <p>Note that Python code should usually work with <a class="reference external" href="https://en.wikipedia.org/wiki/Duck_typing">duck typing</a>. But in Evennia’s case it can sometimes be useful to check if an object inherits from a given <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> as a way of identification. Say for example that we have a typeclass <em>Animal</em>. This has a subclass <em>Felines</em> which in turn has a subclass <em>HouseCat</em>. Maybe there are a bunch of other animal types too, like horses and dogs. Using <code class="docutils literal notranslate"><span class="pre">inherits_from</span></code> will allow you to check for all animals in one go:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
      <span class="k">if</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;typeclasses.objects.animals.Animal&quot;</span><span class="p">):</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The bouncer stops you in the door. He says: &#39;No talking animals allowed.&#39;&quot;</span><span class="p">)</span>
 </pre></div>

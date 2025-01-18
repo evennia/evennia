@@ -147,11 +147,11 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
 
-<div class="viewcode-block" id="CooldownHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler">[docs]</a><span class="k">class</span> <span class="nc">CooldownHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="CooldownHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CooldownHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler for cooldowns. This can be attached to any object that supports DB</span>
 <span class="sd">    attributes (like a Character or Account).</span>
@@ -187,7 +187,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;db_attribute&quot;</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CooldownHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">db_attribute</span><span class="o">=</span><span class="s2">&quot;cooldowns&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">db_attribute</span><span class="o">=</span><span class="s2">&quot;cooldowns&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">db_attribute</span><span class="p">):</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_attribute</span><span class="p">,</span> <span class="p">{})</span>
 
@@ -197,13 +197,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of all keys in this object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-<div class="viewcode-block" id="CooldownHandler.ready"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.ready">[docs]</a>    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.ready"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.ready">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether all of the provided cooldowns are ready (expired). If a</span>
 <span class="sd">        requested cooldown does not exist, it is considered ready.</span>
@@ -215,7 +215,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_left</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">use_int</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="CooldownHandler.time_left"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.time_left">[docs]</a>    <span class="k">def</span> <span class="nf">time_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">use_int</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.time_left"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.time_left">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">time_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">use_int</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the maximum amount of time left on one or more given cooldowns.</span>
 <span class="sd">        If a requested cooldown does not exist, it is considered to have 0 time</span>
@@ -236,7 +236,7 @@
         <span class="n">left</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cooldowns</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="k">if</span> <span class="n">use_int</span> <span class="k">else</span> <span class="n">left</span></div>
 
-<div class="viewcode-block" id="CooldownHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds/sets a given cooldown to last for a specific amount of time.</span>
 
@@ -252,7 +252,7 @@
 
     <span class="nb">set</span> <span class="o">=</span> <span class="n">add</span>
 
-<div class="viewcode-block" id="CooldownHandler.extend"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.extend"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.extend">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a specific amount of time to an existing cooldown.</span>
 
@@ -269,7 +269,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cooldown</span><span class="p">,</span> <span class="n">time_left</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">time_left</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CooldownHandler.reset"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.reset"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets a given cooldown.</span>
 
@@ -279,13 +279,13 @@
         <span class="k">if</span> <span class="n">cooldown</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">cooldown</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="CooldownHandler.clear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.clear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.clear">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets all cooldowns.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CooldownHandler.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CooldownHandler.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.cooldowns.cooldowns.html#evennia.contrib.game_systems.cooldowns.cooldowns.CooldownHandler.cleanup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes all expired cooldowns. This helps keep attribute storage</span>
 <span class="sd">        requirements small.</span>

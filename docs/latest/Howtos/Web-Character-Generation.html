@@ -225,9 +225,9 @@ AccountID from the AccountDB object.</p></li>
 <p>Our <code class="docutils literal notranslate"><span class="pre">models.py</span></code> file should look something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/chargen/models.py</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
-<span class="k">class</span> <span class="nc">CharApp</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharApp</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">app_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">AutoField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">char_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Character Name&#39;</span><span class="p">)</span>
     <span class="n">date_applied</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Date Applied&#39;</span><span class="p">)</span>
@@ -260,9 +260,9 @@ specific web page. We will use three views and three pages here:</p>
 <p>We’ll want characters to be able to see their created characters so let’s</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CharApp</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">current_user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="c1"># current user logged in</span>
     <span class="n">p_id</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span> <span class="c1"># the account id</span>
     <span class="c1"># submitted Characters by this account</span>
@@ -283,7 +283,7 @@ specific web page. We will use three views and three pages here:</p>
 <p>We will use the account ID again just to double-check that whoever tries to check our character page is actually the account who owns the application.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
 
-<span class="k">def</span> <span class="nf">detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app_id</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app_id</span><span class="p">):</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_id</span><span class="o">=</span><span class="n">app_id</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">char_name</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">background</span>
@@ -302,9 +302,9 @@ specific web page. We will use three views and three pages here:</p>
 <p>The form itself we will define first. In our simple example we are just looking for the Character’s name and background. This form we create in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/forms.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/forms.py</span>
 
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 
-<span class="k">class</span> <span class="nc">AppForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Character Name&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Background&#39;</span><span class="p">)</span>
 </pre></div>
@@ -312,15 +312,15 @@ specific web page. We will use three views and three pages here:</p>
 <p>Now we make use of this form in our view.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
 
-<span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
-<span class="kn">from</span> <span class="nn">web.chargen.forms</span> <span class="kn">import</span> <span class="n">AppForm</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.chargen.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CharApp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.chargen.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
 
-<span class="k">def</span> <span class="nf">creating</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">creating</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
         <span class="n">form</span> <span class="o">=</span> <span class="n">AppForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
@@ -375,16 +375,16 @@ specific web page. We will use three views and three pages here:</p>
 <p>After all of this, our <code class="docutils literal notranslate"><span class="pre">views.py</span></code> file should look like something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
 
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
-<span class="kn">from</span> <span class="nn">web.chargen.forms</span> <span class="kn">import</span> <span class="n">AppForm</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.chargen.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CharApp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.chargen.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">current_user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="c1"># current user logged in</span>
     <span class="n">p_id</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span> <span class="c1"># the account id</span>
     <span class="c1"># submitted apps under this account</span>
@@ -392,7 +392,7 @@ specific web page. We will use three views and three pages here:</p>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sub_apps&#39;</span><span class="p">:</span> <span class="n">sub_apps</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/index.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app_id</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app_id</span><span class="p">):</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_id</span><span class="o">=</span><span class="n">app_id</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">char_name</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">background</span>
@@ -402,7 +402,7 @@ specific web page. We will use three views and three pages here:</p>
         <span class="s1">&#39;p_id&#39;</span><span class="p">:</span> <span class="n">p_id</span><span class="p">,</span> <span class="s1">&#39;submitted&#39;</span><span class="p">:</span> <span class="n">submitted</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/detail.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">creating</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">creating</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
         <span class="n">form</span> <span class="o">=</span> <span class="n">AppForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
@@ -456,8 +456,8 @@ specific web page. We will use three views and three pages here:</p>
 <p>URL patterns helps redirect requests from the web browser to the right views. These patterns are created in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/urls.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">web.chargen</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web.chargen</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># url: /chargen/</span>
@@ -473,7 +473,7 @@ specific web page. We will use three views and three pages here:</p>
 <p>To add this to our website, we must also update the main <code class="docutils literal notranslate"><span class="pre">mygame/website/urls.py</span></code> file; this will help tying our new chargen app in with the rest of the website. <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> variable, and change it to include:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in file mygame/website/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># make all chargen endpoints available under /chargen url</span>
@@ -628,10 +628,10 @@ reCAPCHA</a> designed by Google.  Not only is it easy to use, it is user-friendl
 <section id="step-3-adding-the-capcha-to-our-form">
 <h3>Step 3: Adding the CAPCHA to our form<a class="headerlink" href="#step-3-adding-the-capcha-to-our-form" title="Permalink to this headline">¶</a></h3>
 <p>Finally we have to add the CAPCHA to our form.  It will be pretty easy too.  First, open your <code class="docutils literal notranslate"><span class="pre">web/chargen/forms.py</span></code> file.  We’re going to add a new field, but hopefully, all the hard work has been done for us.  Update at your convenience, You might end up with something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">nocaptcha_recaptcha.fields</span> <span class="kn">import</span> <span class="n">NoReCaptchaField</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nocaptcha_recaptcha.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoReCaptchaField</span>
 
-<span class="k">class</span> <span class="nc">AppForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Character Name&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Background&#39;</span><span class="p">)</span>
     <span class="n">captcha</span> <span class="o">=</span> <span class="n">NoReCaptchaField</span><span class="p">()</span>

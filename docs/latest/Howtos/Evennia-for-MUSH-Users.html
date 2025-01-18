@@ -226,9 +226,9 @@ commands) are available to the player from moment to moment depending on circums
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># the file mygame/commands/default_cmdsets.py</span>
 <span class="c1"># [...] </span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">multidescer</span>   <span class="c1"># &lt;- added now</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">multidescer</span>   <span class="c1"># &lt;- added now</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The CharacterCmdSet contains general in-game commands like look,</span>
 <span class="sd">    get etc available on in-game Character objects. It is merged with</span>
@@ -236,7 +236,7 @@ commands) are available to the player from moment to moment depending on circums
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>

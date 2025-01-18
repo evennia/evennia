@@ -96,19 +96,19 @@
 <span class="sd">This file contains the base class to inherit for creating new components.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span>
-<span class="kn">from</span> <span class="nn">.listing</span> <span class="kn">import</span> <span class="n">COMPONENT_LISTING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.listing</span><span class="w"> </span><span class="kn">import</span> <span class="n">COMPONENT_LISTING</span>
 
 
-<div class="viewcode-block" id="BaseComponent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.BaseComponent">[docs]</a><span class="k">class</span> <span class="nc">BaseComponent</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseComponent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.BaseComponent">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseComponent</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the metaclass for components,</span>
 <span class="sd">    responsible for registering components to the listing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Every class that uses this metaclass will be registered</span>
 <span class="sd">        as a component in the Component Listing using its name.</span>
@@ -140,7 +140,7 @@
         <span class="k">return</span> <span class="n">new_type</span></div>
 
 
-<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">BaseComponent</span><span class="p">):</span>
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Component</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">BaseComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for components.</span>
 <span class="sd">    Any component must inherit from this class to be considered for usage.</span>
@@ -155,12 +155,12 @@
 
     <span class="n">_fields</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Component.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;All Components must have a name&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span></div>
 
 <div class="viewcode-block" id="Component.default_create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.default_create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">default_create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when the host is created</span>
 <span class="sd">         and should return the base initialized state of a component.</span>
@@ -176,7 +176,7 @@
         <span class="k">return</span> <span class="n">new</span></div>
 
 <div class="viewcode-block" id="Component.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method to call when supplying kwargs to initialize a component.</span>
 
@@ -196,7 +196,7 @@
 
         <span class="k">return</span> <span class="n">new</span></div>
 
-<div class="viewcode-block" id="Component.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.cleanup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This deletes all component attributes from the host&#39;s db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -204,7 +204,7 @@
             <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Component.load"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a component instance</span>
 <span class="sd">         This is called whenever a component is loaded (ex: Server Restart)</span>
@@ -218,7 +218,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Component.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_added">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method called when a component is registered on a host.</span>
 
@@ -231,7 +231,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span></div>
 
-<div class="viewcode-block" id="Component.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_removed">[docs]</a>    <span class="k">def</span> <span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_removed">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method called when a component is removed from a host.</span>
 
@@ -245,7 +245,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s AttributeHandler.</span>
 
@@ -256,7 +256,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">attributes</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s primary key.</span>
 
@@ -272,7 +272,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">pk</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s In-Memory AttributeHandler (Non Persisted).</span>
 
@@ -283,15 +283,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">nattributes</span>
 
 <div class="viewcode-block" id="Component.add_field"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.add_field">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">add_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span></div>
 
 <div class="viewcode-block" id="Component.get_fields"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.get_fields">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Component.get_component_slot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.get_component_slot">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_component_slot</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_component_slot</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span></div></div>
 </pre></div>
 

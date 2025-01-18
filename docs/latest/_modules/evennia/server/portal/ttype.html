@@ -104,7 +104,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 
 <span class="c1"># telnet option codes</span>
 <span class="n">TTYPE</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">24</span><span class="p">])</span>  <span class="c1"># b&quot;\x18&quot;</span>
@@ -128,14 +128,14 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="Ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype">[docs]</a><span class="k">class</span> <span class="nc">Ttype</span><span class="p">:</span>
+<div class="viewcode-block" id="Ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Ttype</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles ttype negotiations. Called and initiated by the</span>
 <span class="sd">    telnet protocol.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Ttype.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Ttype.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize ttype by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports ttype.</span>
@@ -160,7 +160,7 @@
         <span class="c1"># ask if client will ttype, connect callback if it does.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">TTYPE</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_ttype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_ttype</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ttype.wont_ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.wont_ttype">[docs]</a>    <span class="k">def</span> <span class="nf">wont_ttype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Ttype.wont_ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.wont_ttype">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wont_ttype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback if ttype is not supported by client.</span>
 
@@ -171,7 +171,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;TTYPE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Ttype.will_ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.will_ttype">[docs]</a>    <span class="k">def</span> <span class="nf">will_ttype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Ttype.will_ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype.will_ttype">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">will_ttype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles negotiation of the ttype protocol once the client has</span>
 <span class="sd">        confirmed that it will respond with the ttype protocol.</span>

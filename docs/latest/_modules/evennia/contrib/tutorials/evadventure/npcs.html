@@ -95,22 +95,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagProperty</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
 
-<span class="kn">from</span> <span class="nn">.ai</span> <span class="kn">import</span> <span class="n">AIHandler</span>
-<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">LivingMixin</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_bare_hands</span>
-<span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivingMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_bare_hands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">dice</span>
 
 
-<div class="viewcode-block" id="EvAdventureNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureNPC</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureNPC</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for all non-player entities, including monsters. These</span>
 <span class="sd">    generally don&#39;t advance in level but uses a simplified, abstract measure of how</span>
@@ -153,34 +153,34 @@
     <span class="n">group</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dexterity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dexterity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">constitution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">constitution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">intelligence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intelligence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">charisma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">charisma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hp_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hp_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_multiplier</span>
 
-<div class="viewcode-block" id="EvAdventureNPC.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureNPC.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_object_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start with max health.</span>
 
@@ -188,14 +188,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureNPC.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_attacked">[docs]</a>    <span class="k">def</span> <span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureNPC.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_attacked">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when being attacked and combat starts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EvAdventureNPC.ai_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureNPC.ai_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_next_action">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The combat engine should ask this method in order to</span>
 <span class="sd">        get the next action the npc should perform in combat.</span>
@@ -204,7 +204,7 @@
         <span class="k">pass</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventureTalkativeNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureTalkativeNPC</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTalkativeNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureTalkativeNPC</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Talkative NPCs can be addressed by `talk [to] &lt;npc&gt;`. This opens a chat menu with</span>
 <span class="sd">    communication options. The menu is created with the npc and we override the .create</span>
@@ -218,7 +218,7 @@
     <span class="c1"># iterable, a random reply will be chosen by the menu</span>
     <span class="n">hi_text</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;Hi!&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureTalkativeNPC.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.at_damage">[docs]</a>    <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTalkativeNPC.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.at_damage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Talkative NPCs are generally immortal (we don&#39;t deduct HP here by default).&quot;</span>
 
@@ -226,7 +226,7 @@
         <span class="n">attacker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s1"> dodges the damage and shouts &quot;|wHey! What are you doing?|n&quot;&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureTalkativeNPC.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overriding the creation of the NPC, allowing some extra `**kwargs`.</span>
 
@@ -261,7 +261,7 @@
 
         <span class="k">return</span> <span class="n">new_object</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="EvAdventureTalkativeNPC.at_talk"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.at_talk">[docs]</a>    <span class="k">def</span> <span class="nf">at_talk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">talker</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_start&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureTalkativeNPC.at_talk"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.at_talk">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_talk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">talker</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_start&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the `talk` command when another entity addresses us.</span>
 
@@ -283,7 +283,7 @@
         <span class="n">EvMenu</span><span class="p">(</span><span class="n">talker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menudata</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="n">startnode</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">npc</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">menu_kwargs</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="node_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.node_start">[docs]</a><span class="k">def</span> <span class="nf">node_start</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.node_start">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_start</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the intended start menu node for the Talkative NPC interface. It will</span>
 <span class="sd">    use on-npc Attributes to build its message and will also pick its options</span>
@@ -310,14 +310,14 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="EvAdventureQuestGiver"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureQuestGiver">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureQuestGiver</span><span class="p">(</span><span class="n">EvAdventureTalkativeNPC</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureQuestGiver"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureQuestGiver">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureQuestGiver</span><span class="p">(</span><span class="n">EvAdventureTalkativeNPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An NPC that acts as a dispenser of quests.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="EvAdventureShopKeeper"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureShopKeeper</span><span class="p">(</span><span class="n">EvAdventureTalkativeNPC</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureShopKeeper"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureShopKeeper</span><span class="p">(</span><span class="n">EvAdventureTalkativeNPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ShopKeeper NPC.</span>
 
@@ -330,7 +330,7 @@
     <span class="c1"># prototypes of common wares</span>
     <span class="n">common_ware_prototypes</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">([],</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureShopKeeper.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.at_damage">[docs]</a>    <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureShopKeeper.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.at_damage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Immortal - we don&#39;t deduct any damage here.</span>
 
@@ -341,7 +341,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EvAdventureMob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mob (mobile) NPC; this is usually an enemy.</span>
 
@@ -357,17 +357,17 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="EvAdventureMob.ai"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai">[docs]</a>    <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureMob.ai_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_idle">[docs]</a>    <span class="k">def</span> <span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.ai_idle"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_idle">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do nothing.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EvAdventureMob.ai_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat">[docs]</a>    <span class="k">def</span> <span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.ai_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manage the combat/combat state of the mob.</span>
 
@@ -409,7 +409,7 @@
             <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attack </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureMob.ai_roam"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_roam">[docs]</a>    <span class="k">def</span> <span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.ai_roam"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_roam">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        roam, moving randomly to a new room. If a target is found, switch to combat state.</span>
 
@@ -423,7 +423,7 @@
                 <span class="n">exi</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureMob.ai_flee"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_flee">[docs]</a>    <span class="k">def</span> <span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.ai_flee"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_flee">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flee from the current room, avoiding going back to the room from which we came. If no exits</span>
 <span class="sd">        are found, switch to roam state.</span>
@@ -440,7 +440,7 @@
             <span class="c1"># if in a dead end, roam will allow for backing out</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;roam&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureMob.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_defeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.at_defeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mobs die right away when defeated, no death-table rolls.</span>
 

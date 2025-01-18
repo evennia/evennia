@@ -90,16 +90,16 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.web.website.forms</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span><span class="p">,</span> <span class="n">UsernameField</span>
-<span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">ModelForm</span>
-<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">escape</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserCreationForm</span><span class="p">,</span> <span class="n">UsernameField</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.html</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
 
-<div class="viewcode-block" id="EvenniaForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.EvenniaForm">[docs]</a><span class="k">class</span> <span class="nc">EvenniaForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.EvenniaForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a stock Django form, but modified so that all values provided</span>
 <span class="sd">    through it are escaped (sanitized). Validation is performed by the fields</span>
@@ -112,7 +112,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvenniaForm.clean"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.EvenniaForm.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaForm.clean"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.EvenniaForm.clean">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook. Performed on form submission.</span>
 
@@ -128,7 +128,7 @@
         <span class="k">return</span> <span class="n">cleaned</span></div></div>
 
 
-<div class="viewcode-block" id="AccountForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.AccountForm">[docs]</a><span class="k">class</span> <span class="nc">AccountForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.AccountForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AccountForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a generic Django form tailored to the Account model.</span>
 
@@ -137,7 +137,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AccountForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.AccountForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="AccountForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.AccountForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a Django construct that provides additional configuration to</span>
 <span class="sd">        the form.</span>
@@ -162,7 +162,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObjectForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.ObjectForm">[docs]</a><span class="k">class</span> <span class="nc">ObjectForm</span><span class="p">(</span><span class="n">EvenniaForm</span><span class="p">,</span> <span class="n">ModelForm</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.ObjectForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectForm</span><span class="p">(</span><span class="n">EvenniaForm</span><span class="p">,</span> <span class="n">ModelForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Django form for generic Evennia Objects that allows modification</span>
 <span class="sd">    of attributes when called from a descendent of ObjectUpdate or ObjectCreate</span>
@@ -174,7 +174,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ObjectForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.ObjectForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.ObjectForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a Django construct that provides additional configuration to</span>
 <span class="sd">        the form.</span>
@@ -193,7 +193,7 @@
         <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;Name&quot;</span><span class="p">}</span></div></div>
 
 
-<div class="viewcode-block" id="CharacterForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterForm">[docs]</a><span class="k">class</span> <span class="nc">CharacterForm</span><span class="p">(</span><span class="n">ObjectForm</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CharacterForm</span><span class="p">(</span><span class="n">ObjectForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Django form for Evennia Character objects.</span>
 
@@ -229,7 +229,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CharacterForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<div class="viewcode-block" id="CharacterForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterForm.Meta">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a Django construct that provides additional configuration to</span>
 <span class="sd">        the form.</span>
@@ -257,7 +257,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CharacterUpdateForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterUpdateForm">[docs]</a><span class="k">class</span> <span class="nc">CharacterUpdateForm</span><span class="p">(</span><span class="n">CharacterForm</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterUpdateForm"><a class="viewcode-back" href="../../../../api/evennia.web.website.forms.html#evennia.web.website.forms.CharacterUpdateForm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CharacterUpdateForm</span><span class="p">(</span><span class="n">CharacterForm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Django form for updating Evennia Character objects.</span>
 

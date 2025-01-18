@@ -144,10 +144,10 @@
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">In code, using TagProperty or TagCategoryProperty</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span>
 
-<span class="k">class</span> <span class="nc">Sword</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">Sword</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
     <span class="c1"># name of property is the tagkey, category as argument</span>
     <span class="n">can_be_wielded</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;combat&#39;</span><span class="p">)</span>
     <span class="n">has_sharp_edge</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;combat&#39;</span><span class="p">)</span>
@@ -182,7 +182,7 @@ Another example would be a weather script affecting all rooms tagged as <code cl
 </pre></div>
 </div>
 <p>As shown above, you can also have tags without a category (category of <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
      
      <span class="c1"># all methods return Querysets</span>
 
@@ -207,7 +207,7 @@ Another example would be a weather script affecting all rooms tagged as <code cl
 </div></blockquote>
 <p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/models/querysets/">Django Querysets</a>, including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.</p>
 <p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em> mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span> 
 
 <span class="n">myobj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>  <span class="c1"># implies category=None</span>
 <span class="n">myobj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
@@ -247,10 +247,10 @@ Another example would be a weather script affecting all rooms tagged as <code cl
 <section id="tagproperty">
 <h3>TagProperty<a class="headerlink" href="#tagproperty" title="Permalink to this headline">¶</a></h3>
 <p>This is used as a property when you create a new class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagProperty</span> 
-<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">Object</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagProperty</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span> 
 
-<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
     <span class="n">mytag</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">tagcategory</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -260,10 +260,10 @@ Another example would be a weather script affecting all rooms tagged as <code cl
 <section id="tagcategoryproperty">
 <h3>TagCategoryProperty<a class="headerlink" href="#tagcategoryproperty" title="Permalink to this headline">¶</a></h3>
 <p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagCategoryProperty</span> 
-<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">Object</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TagCategoryProperty</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span> 
 
-<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
     <span class="n">tagcategory</span> <span class="o">=</span> <span class="n">TagCategroyProperty</span><span class="p">(</span><span class="n">tagkey1</span><span class="p">,</span> <span class="n">tagkey2</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -96,16 +96,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Server Session</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">:</span>
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a player&#39;s session and is a template for</span>
 <span class="sd">    both portal- and server-side sessions.</span>
@@ -128,7 +128,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Session.init_session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.init_session">[docs]</a>    <span class="k">def</span> <span class="nf">init_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_key</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.init_session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.init_session">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_key</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Session. This should be called by the protocol when</span>
 <span class="sd">        a new session is established.</span>
@@ -186,7 +186,7 @@
         <span class="c1"># session is stored in.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">sessionhandler</span></div>
 
-<div class="viewcode-block" id="Session.get_sync_data"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.get_sync_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_sync_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.get_sync_data"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.get_sync_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_sync_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all data relevant to sync the session.</span>
 
@@ -199,7 +199,7 @@
             <span class="n">attr</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">SESSION_SYNC_ATTRS</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="Session.load_sync_data"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.load_sync_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_sync_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessdata</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.load_sync_data"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.load_sync_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_sync_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessdata</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a session dictionary, as created by get_sync_data, and</span>
 <span class="sd">        loads it into the correct properties of the session.</span>
@@ -220,7 +220,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Session.at_sync"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.at_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.at_sync"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.at_sync">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after a session has been fully synced (including</span>
 <span class="sd">        secondary operations such as setting self.account based</span>
@@ -234,7 +234,7 @@
 
     <span class="c1"># access hooks</span>
 
-<div class="viewcode-block" id="Session.disconnect"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.disconnect"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.disconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        generic hook called from the outside to disconnect this session</span>
 <span class="sd">        should be connected to the protocols actual disconnect mechanism.</span>
@@ -245,7 +245,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Session.data_out"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.data_out"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.data_out">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for sending data out through the protocol. Server</span>
 <span class="sd">        protocols can use this right away. Portal sessions</span>
@@ -257,7 +257,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Session.data_in"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Session.data_in"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.data_in">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for protocols to send incoming data to the engine.</span>
 

@@ -105,15 +105,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exc</span>
 
-<span class="kn">from</span> <span class="nn">twisted</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">twisted_logger</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="kn">import</span> <span class="n">deferToThread</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">logfile</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">twisted_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.threads</span><span class="w"> </span><span class="kn">import</span> <span class="n">deferToThread</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">logfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">Logger</span><span class="p">()</span>
 
@@ -125,7 +125,7 @@
 <span class="n">_TIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfunc</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfunc</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -143,7 +143,7 @@
 <span class="c1"># log call functions (each has legacy aliases)</span>
 
 
-<div class="viewcode-block" id="log_info"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_info">[docs]</a><span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_info"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Logs any generic debugging/informative info that should appear in the log.</span>
 
@@ -161,7 +161,7 @@
 <span class="n">log_msg</span> <span class="o">=</span> <span class="n">log_info</span>
 
 
-<div class="viewcode-block" id="log_warn"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_warn">[docs]</a><span class="k">def</span> <span class="nf">log_warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_warn"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_warn">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Logs warnings that aren&#39;t critical but should be noted.</span>
 
@@ -179,7 +179,7 @@
 <span class="n">log_warnmsg</span> <span class="o">=</span> <span class="n">log_warn</span>
 
 
-<div class="viewcode-block" id="log_err"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_err">[docs]</a><span class="k">def</span> <span class="nf">log_err</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_err"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_err">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_err</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Logs an error message to the server log.</span>
 
@@ -197,7 +197,7 @@
 <span class="n">log_errmsg</span> <span class="o">=</span> <span class="n">log_err</span>
 
 
-<div class="viewcode-block" id="log_trace"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_trace">[docs]</a><span class="k">def</span> <span class="nf">log_trace</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_trace"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_trace">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_trace</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log a traceback to the log. This should be called from within an</span>
 <span class="sd">    exception.</span>
@@ -222,7 +222,7 @@
 <span class="n">trace</span> <span class="o">=</span> <span class="n">log_trace</span>
 
 
-<div class="viewcode-block" id="log_dep"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_dep">[docs]</a><span class="k">def</span> <span class="nf">log_dep</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_dep"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_dep">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_dep</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints a deprecation message.</span>
 
@@ -240,7 +240,7 @@
 <span class="n">log_depmsg</span> <span class="o">=</span> <span class="n">log_dep</span>
 
 
-<div class="viewcode-block" id="log_sec"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_sec">[docs]</a><span class="k">def</span> <span class="nf">log_sec</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_sec"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_sec">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_sec</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints a security-related message.</span>
 
@@ -258,7 +258,7 @@
 <span class="n">log_secmsg</span> <span class="o">=</span> <span class="n">log_sec</span>
 
 
-<div class="viewcode-block" id="log_server"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_server">[docs]</a><span class="k">def</span> <span class="nf">log_server</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="log_server"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_server">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_server</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is for the Portal to log captured Server stdout messages (it&#39;s</span>
 <span class="sd">    usually only used during startup, before Server log is open)</span>
@@ -271,7 +271,7 @@
     <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GetLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetLogObserver</span><span class="p">:</span>
+<div class="viewcode-block" id="GetLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GetLogObserver</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up how the system logs are formatted.</span>
 
@@ -286,7 +286,7 @@
         <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">critical</span><span class="p">:</span> <span class="s2">&quot;!!&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="GetLogObserver.format_log_event"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver.format_log_event">[docs]</a>    <span class="k">def</span> <span class="nf">format_log_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="GetLogObserver.format_log_event"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver.format_log_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">format_log_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        By assigning log_system here, we skip the spammy display of namespace/level</span>
 <span class="sd">        in the default log output.</span>
@@ -308,25 +308,25 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">component_prefix</span><span class="si">}{</span><span class="n">log_msg</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">FileLogObserver</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_log_event</span><span class="p">)</span></div>
 
 
 <span class="c1"># Called by server/portal on startup</span>
 
 
-<div class="viewcode-block" id="GetPortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetPortalLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetPortalLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetPortalLogObserver">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GetPortalLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
     <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;|Portal| &quot;</span></div>
 
 
-<div class="viewcode-block" id="GetServerLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetServerLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetServerLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
+<div class="viewcode-block" id="GetServerLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetServerLogObserver">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GetServerLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
     <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
 
 
 <span class="c1"># logging overrides</span>
 
 
-<div class="viewcode-block" id="timeformat"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.timeformat">[docs]</a><span class="k">def</span> <span class="nf">timeformat</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="timeformat"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.timeformat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">timeformat</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function will format the current time in the same</span>
 <span class="sd">    way as the twisted logger does, including time zone info. Only</span>
@@ -369,13 +369,13 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WeeklyLogFile"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile">[docs]</a><span class="k">class</span> <span class="nc">WeeklyLogFile</span><span class="p">(</span><span class="n">logfile</span><span class="o">.</span><span class="n">DailyLogFile</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">WeeklyLogFile</span><span class="p">(</span><span class="n">logfile</span><span class="o">.</span><span class="n">DailyLogFile</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log file that rotates once per week by default. Overrides key methods to change format.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="WeeklyLogFile.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">defaultMode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_rotation</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">defaultMode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_rotation</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): Name of log file.</span>
@@ -392,11 +392,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">logfile</span><span class="o">.</span><span class="n">DailyLogFile</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">defaultMode</span><span class="o">=</span><span class="n">defaultMode</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logfile</span><span class="o">.</span><span class="n">DailyLogFile</span><span class="o">.</span><span class="n">_openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
 
-<div class="viewcode-block" id="WeeklyLogFile.shouldRotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.shouldRotate">[docs]</a>    <span class="k">def</span> <span class="nf">shouldRotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.shouldRotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.shouldRotate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shouldRotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rotate when the date has changed since last write&quot;&quot;&quot;</span>
         <span class="c1"># all dates here are tuples (year, month, day)</span>
         <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toDate</span><span class="p">()</span>
@@ -408,7 +408,7 @@
             <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="WeeklyLogFile.suffix"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.suffix">[docs]</a>    <span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tupledate</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.suffix"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.suffix">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tupledate</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the suffix given a (year, month, day) tuple or unixtime.</span>
 <span class="sd">        Format changed to have 03 for march instead of 3 etc (retaining unix</span>
 <span class="sd">        file order)</span>
@@ -440,13 +440,13 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">suffix</span></div>
 
-<div class="viewcode-block" id="WeeklyLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.rotate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not rotate the log file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WeeklyLogFile.write"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.write"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write data to log file</span>
 
@@ -459,7 +459,7 @@
 <span class="c1"># Arbitrary file logger</span>
 
 
-<div class="viewcode-block" id="EvenniaLogFile"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile">[docs]</a><span class="k">class</span> <span class="nc">EvenniaLogFile</span><span class="p">(</span><span class="n">logfile</span><span class="o">.</span><span class="n">LogFile</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaLogFile"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaLogFile</span><span class="p">(</span><span class="n">logfile</span><span class="o">.</span><span class="n">LogFile</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A rotating logfile based off Twisted&#39;s LogFile. It overrides</span>
 <span class="sd">    the LogFile&#39;s rotate method in order to append some of the last</span>
@@ -472,12 +472,12 @@
     <span class="c1"># from django as possible.</span>
     <span class="k">global</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span>
     <span class="k">if</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span>
     <span class="n">num_lines_to_append</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvenniaLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.rotate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotates our log file and appends some number of lines from</span>
 <span class="sd">        the previous log to the start of the new one.</span>
@@ -494,7 +494,7 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaLogFile.seek"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.seek">[docs]</a>    <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaLogFile.seek"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.seek">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience method for accessing our _file attribute&#39;s seek method,</span>
 <span class="sd">        which is used in tail_log_function.</span>
@@ -506,7 +506,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaLogFile.readlines"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.readlines">[docs]</a>    <span class="k">def</span> <span class="nf">readlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaLogFile.readlines"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.readlines">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">readlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience method for accessing our _file attribute&#39;s readlines method,</span>
 <span class="sd">        which is used in tail_log_function.</span>
@@ -536,7 +536,7 @@
 <span class="n">_LOG_FILE_HANDLE_RESET</span> <span class="o">=</span> <span class="mi">500</span>
 
 
-<span class="k">def</span> <span class="nf">_open_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_open_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper to open the log file (always in the log dir) and cache its</span>
 <span class="sd">    handle.  Will create a new file in the log dir if one didn&#39;t</span>
@@ -551,7 +551,7 @@
     <span class="c1"># from django as possible.</span>
     <span class="k">global</span> <span class="n">_LOG_FILE_HANDLES</span><span class="p">,</span> <span class="n">_LOG_FILE_HANDLE_COUNTS</span><span class="p">,</span> <span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">_LOG_ROTATE_SIZE</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
         <span class="n">_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_ROTATE_SIZE</span><span class="p">)</span>
@@ -577,7 +577,7 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_file">[docs]</a><span class="k">def</span> <span class="nf">log_file</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_file</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arbitrary file logger using threads.</span>
 
@@ -589,7 +589,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writing to file and flushing result&quot;&quot;&quot;</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> [-] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">timeformat</span><span class="p">(),</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="n">filehandle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -598,7 +598,7 @@
         <span class="c1"># write buffer is full.</span>
         <span class="n">filehandle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="n">failure</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">errback</span><span class="p">(</span><span class="n">failure</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Catching errors to normal log&quot;&quot;&quot;</span>
         <span class="n">log_trace</span><span class="p">()</span>
 
@@ -608,7 +608,7 @@
         <span class="n">deferToThread</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">filehandle</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">errback</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="log_file_exists"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_file_exists">[docs]</a><span class="k">def</span> <span class="nf">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="log_file_exists"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_file_exists">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if a log-file already exists.</span>
 
@@ -621,7 +621,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_LOGDIR</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
 
@@ -629,7 +629,7 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rotate_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.rotate_log_file">[docs]</a><span class="k">def</span> <span class="nf">rotate_log_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="rotate_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.rotate_log_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">rotate_log_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Force-rotate a log-file, without</span>
 
@@ -646,7 +646,7 @@
             <span class="n">file_handle</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">num_lines_to_append</span><span class="o">=</span><span class="n">num_lines_to_append</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="delete_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.delete_log_file">[docs]</a><span class="k">def</span> <span class="nf">delete_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="delete_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.delete_log_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">delete_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete a log file</span>
 
@@ -656,7 +656,7 @@
     <span class="k">if</span> <span class="n">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">_LOGDIR</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
             <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
 
@@ -664,7 +664,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tail_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.tail_log_file">[docs]</a><span class="k">def</span> <span class="nf">tail_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="tail_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.tail_log_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tail_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the tail of the log file.</span>
 
@@ -686,7 +686,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">seek_file</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seek_file</span><span class="p">(</span><span class="n">filehandle</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;step backwards in chunks and stop only when we have enough lines&quot;&quot;&quot;</span>
         <span class="n">lines_found</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">4098</span>
@@ -710,7 +710,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lines_found</span>
 
-    <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="n">failure</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">errback</span><span class="p">(</span><span class="n">failure</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Catching errors to normal log&quot;&quot;&quot;</span>
         <span class="n">log_trace</span><span class="p">()</span>
 

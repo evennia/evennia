@@ -224,25 +224,25 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span>
     <span class="n">init_spawn_value</span><span class="p">,</span>
     <span class="n">search_prototype</span><span class="p">,</span>
     <span class="n">value_to_obj</span><span class="p">,</span>
     <span class="n">value_to_obj_or_any</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
 
 <span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span>
 <span class="n">_PROTOTYPE_META_NAMES</span> <span class="o">=</span> <span class="p">(</span>
@@ -267,23 +267,23 @@
 <span class="n">_NON_CREATE_KWARGS</span> <span class="o">=</span> <span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">+</span> <span class="n">_PROTOTYPE_META_NAMES</span>
 
 
-<div class="viewcode-block" id="Unset"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.Unset">[docs]</a><span class="k">class</span> <span class="nc">Unset</span><span class="p">:</span>
+<div class="viewcode-block" id="Unset"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.Unset">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Unset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper class representing a non-set diff element.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Unset&gt;&quot;</span></div>
 
 
 <span class="c1"># Helper</span>
 
 
-<span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursively traverse a prototype dictionary, including multiple</span>
 <span class="sd">    inheritance. Use validate_prototype before this, we don&#39;t check</span>
@@ -303,13 +303,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_inherit_tags</span><span class="p">(</span><span class="n">old_tags</span><span class="p">,</span> <span class="n">new_tags</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inherit_tags</span><span class="p">(</span><span class="n">old_tags</span><span class="p">,</span> <span class="n">new_tags</span><span class="p">):</span>
         <span class="n">old</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">old_tags</span><span class="p">}</span>
         <span class="n">new</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">new_tags</span><span class="p">}</span>
         <span class="n">old</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_inherit_attrs</span><span class="p">(</span><span class="n">old_attrs</span><span class="p">,</span> <span class="n">new_attrs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inherit_attrs</span><span class="p">(</span><span class="n">old_attrs</span><span class="p">,</span> <span class="n">new_attrs</span><span class="p">):</span>
         <span class="n">old</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">old_attrs</span><span class="p">}</span>
         <span class="n">new</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">new_attrs</span><span class="p">}</span>
         <span class="n">old</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
@@ -360,7 +360,7 @@
     <span class="k">return</span> <span class="n">_workprot</span>
 
 
-<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produce a &#39;flattened&#39; prototype, where all prototype parents in the inheritance tree have been</span>
 <span class="sd">    merged into a final prototype.</span>
@@ -388,7 +388,7 @@
 <span class="c1"># obj-related prototype functions</span>
 
 
-<div class="viewcode-block" id="prototype_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_from_object">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Guess a minimal prototype from an existing object.</span>
 
@@ -457,7 +457,7 @@
     <span class="k">return</span> <span class="n">prot</span></div>
 
 
-<div class="viewcode-block" id="prototype_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff</span><span class="p">(</span><span class="n">prototype1</span><span class="p">,</span> <span class="n">prototype2</span><span class="p">,</span> <span class="n">maxdepth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">homogenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">prototype_diff</span><span class="p">(</span><span class="n">prototype1</span><span class="p">,</span> <span class="n">prototype2</span><span class="p">,</span> <span class="n">maxdepth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">homogenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A &#39;detailed&#39; diff specifies differences down to individual sub-sections</span>
 <span class="sd">    of the prototype, like individual attributes, permissions etc. It is used</span>
@@ -487,7 +487,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_unset</span> <span class="o">=</span> <span class="n">Unset</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_recursive_diff</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_recursive_diff</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">old_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
         <span class="n">new_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
 
@@ -544,7 +544,7 @@
     <span class="k">return</span> <span class="n">diff</span></div>
 
 
-<div class="viewcode-block" id="flatten_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_diff">[docs]</a><span class="k">def</span> <span class="nf">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_diff">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For spawning, a &#39;detailed&#39; diff is not necessary, rather we just want instructions on how to</span>
 <span class="sd">    handle each root key.</span>
@@ -574,7 +574,7 @@
 
     <span class="n">valid_instructions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KEEP&quot;</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">diffpart</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">diffpart</span><span class="p">):</span>
         <span class="s2">&quot;Started for each root key, returns all instructions nested under it&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
@@ -614,7 +614,7 @@
     <span class="k">return</span> <span class="n">flat_diff</span></div>
 
 
-<div class="viewcode-block" id="prototype_diff_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_diff_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff_from_object">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a simple diff for a prototype compared to an object which may or may not already have a</span>
 <span class="sd">    prototype (or has one but changed locally). For more complex migratations a manual diff may be</span>
@@ -651,7 +651,7 @@
     <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">obj_prototype</span></div>
 
 
-<div class="viewcode-block" id="format_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.format_diff">[docs]</a><span class="k">def</span> <span class="nf">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="format_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.format_diff">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformat a diff for presentation. This is a shortened version</span>
 <span class="sd">    of the olc _format_diff_text_and_options without the options.</span>
@@ -667,7 +667,7 @@
 
     <span class="n">valid_instructions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KEEP&quot;</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_visualize</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">rootname</span><span class="p">,</span> <span class="n">get_name</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_visualize</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">rootname</span><span class="p">,</span> <span class="n">get_name</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -679,7 +679,7 @@
                 <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> |w(category:|n </span><span class="si">{}</span><span class="s2">|w)|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_parse_diffpart</span><span class="p">(</span><span class="n">diffpart</span><span class="p">,</span> <span class="n">rootname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_diffpart</span><span class="p">(</span><span class="n">diffpart</span><span class="p">,</span> <span class="n">rootname</span><span class="p">):</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
         <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">diffpart</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_instructions</span><span class="p">:</span>
@@ -726,7 +726,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">texts</span> <span class="k">if</span> <span class="n">line</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span>
+<div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span>
     <span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -798,7 +798,7 @@
                     <span class="n">val</span> <span class="o">=</span> <span class="n">new_prototype</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                     <span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
 
-                    <span class="k">def</span> <span class="nf">_init</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
                         <span class="k">return</span> <span class="n">init_spawn_value</span><span class="p">(</span>
                             <span class="n">val</span><span class="p">,</span>
                             <span class="n">typ</span><span class="p">,</span>
@@ -901,7 +901,7 @@
     <span class="k">return</span> <span class="n">changed</span></div>
 
 
-<div class="viewcode-block" id="batch_create_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_create_object">[docs]</a><span class="k">def</span> <span class="nf">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objparams</span><span class="p">):</span>
+<div class="viewcode-block" id="batch_create_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_create_object">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objparams</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a cut-down version of the create_object() function,</span>
 <span class="sd">    optimized for speed. It does NOT check and convert various input</span>
@@ -973,7 +973,7 @@
 <span class="c1"># Spawner mechanism</span>
 
 
-<div class="viewcode-block" id="spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn">[docs]</a><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="o">*</span><span class="n">prototypes</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">spawn</span><span class="p">(</span><span class="o">*</span><span class="n">prototypes</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spawn a number of prototyped objects.</span>
 

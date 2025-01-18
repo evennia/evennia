@@ -143,11 +143,11 @@ object, or just put it on your <code class="docutils literal notranslate"><span 
 <p>By default the CooldownHandler will use the <code class="docutils literal notranslate"><span class="pre">cooldowns</span></code> property, but you can
 customize this if desired by passing a different value for the <code class="docutils literal notranslate"><span class="pre">db_attribute</span></code>
 parameter.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.cooldowns</span> <span class="kn">import</span> <span class="n">CooldownHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.game_systems.cooldowns</span><span class="w"> </span><span class="kn">import</span> <span class="n">CooldownHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
 
 <span class="nd">@lazy_property</span>
-<span class="k">def</span> <span class="nf">cooldowns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cooldowns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">CooldownHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_attribute</span><span class="o">=</span><span class="s2">&quot;cooldowns&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -158,8 +158,8 @@ parameter.</p>
 cooldown to limit how often you can perform a command. The following code
 snippet will limit the use of a Power Attack command to once every 10 seconds
 per character.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PowerAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">PowerAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cooldowns</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="s2">&quot;power attack&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_power_attack</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cooldowns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;power attack&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>

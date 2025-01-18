@@ -161,10 +161,10 @@
 </div>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">In-code, using <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> at class level</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
 
-<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
     <span class="n">myattr</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
 </pre></div>
@@ -177,7 +177,7 @@
 <section id="using-db">
 <h3>Using .db<a class="headerlink" href="#using-db" title="Permalink to this headline">¶</a></h3>
 <p>The simplest way to get/set Attributes is to use the <code class="docutils literal notranslate"><span class="pre">.db</span></code> shortcut. This allows for setting and getting Attributes that lack a <em>category</em> (having category <code class="docutils literal notranslate"><span class="pre">None</span></code>)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 
 <span class="n">obj</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Foo&quot;</span><span class="p">)</span>
 
@@ -265,10 +265,10 @@
 <p>The third way to set up an Attribute is to use an <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code>. This is done on the <em>class level</em> of your typeclass and allows you to treat Attributes a bit like Django database Fields. Unlike using <code class="docutils literal notranslate"><span class="pre">.db</span></code> and <code class="docutils literal notranslate"><span class="pre">.attributes</span></code>, an <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> can’t be created on the fly, you must assign it in the class code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 
     <span class="n">strength</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;stat&#39;</span><span class="p">)</span>
     <span class="n">constitution</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;stat&#39;</span><span class="p">)</span>
@@ -278,7 +278,7 @@
     <span class="n">sleepy</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">poisoned</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
       <span class="c1"># ...</span>
 </pre></div>
 </div>
@@ -449,8 +449,8 @@ set mypobj/mystring = [1, 2, foo]   # foo is invalid Python (no quotes)
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Invalid, ‘hidden’ dbobject</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example of storing an invalid, &quot;hidden&quot; dbobject in Attribute</span>
-<span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mydbobj</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Container</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mydbobj</span><span class="p">):</span>
         <span class="c1"># no way for Evennia to know this is a database object!</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span> <span class="o">=</span> <span class="n">mydbobj</span>
 
@@ -463,19 +463,19 @@ set mypobj/mystring = [1, 2, foo]   # foo is invalid Python (no quotes)
 <p>By adding two methods <code class="docutils literal notranslate"><span class="pre">__serialize_dbobjs__</span></code> and <code class="docutils literal notranslate"><span class="pre">__deserialize_dbobjs__</span></code> to the object you want to save, you can pre-serialize and post-deserialize all ‘hidden’ objects before Evennia’s main serializer gets to work. Inside these methods, use Evennia’s <a class="reference internal" href="../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.dbserialize" title="evennia.utils.dbserialize.dbserialize"><span class="xref myst py py-func">evennia.utils.dbserialize.dbserialize</span></a> and <a class="reference internal" href="../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.dbunserialize" title="evennia.utils.dbserialize.dbunserialize"><span class="xref myst py py-func">dbunserialize</span></a> functions to safely serialize the db-objects you want to store.</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Fixing an invalid ‘hidden’ dbobj for storing in Attribute</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>  <span class="c1"># important</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dbserialize</span>  <span class="c1"># important</span>
 
-<span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mydbobj</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Container</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mydbobj</span><span class="p">):</span>
         <span class="c1"># A &#39;hidden&#39; db-object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span> <span class="o">=</span> <span class="n">mydbobj</span>
 
-    <span class="k">def</span> <span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called before serialization and allows</span>
 <span class="sd">        us to custom-handle those &#39;hidden&#39; dbobjs&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span>
 
-    <span class="k">def</span> <span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called after deserialization and allows you to</span>
 <span class="sd">        restore the &#39;hidden&#39; dbobjs you serialized before&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>

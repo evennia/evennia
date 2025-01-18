@@ -193,7 +193,7 @@ you are in a hurry. Time to modify <code class="docutils literal notranslate"><s
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1">#...</span>
 
-<span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hit a target.</span>
 
@@ -203,7 +203,7 @@ you are in a hurry. Time to modify <code class="docutils literal notranslate"><s
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 </span><span class="hll">        <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; with &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </span><span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
@@ -214,7 +214,7 @@ you are in a hurry. Time to modify <code class="docutils literal notranslate"><s
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -346,10 +346,10 @@ Who do you want to hit?
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="c1"># ... </span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 
         <span class="c1"># self.add(MyCmdSet)    # &lt;---------</span>
 
@@ -418,46 +418,46 @@ Command &#39;hit&#39; is not available. ..
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
         <span class="c1"># any commands you add below will overload the default ones</span>
         <span class="c1">#</span>
 
-<span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultAccount&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
         <span class="c1"># any commands you add below will overload the default ones</span>
         <span class="c1">#</span>
 
-<span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">UnloggedinCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">UnloggedinCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultUnloggedin&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
         <span class="c1"># any commands you add below will overload the default ones</span>
         <span class="c1">#</span>
 
-<span class="k">class</span> <span class="nc">SessionCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">SessionCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SessionCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">SessionCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultSession&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
@@ -481,13 +481,13 @@ Command &#39;hit&#39; is not available. ..
 <p>For now, let’s add our own <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">echo</span></code> commands to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
@@ -504,13 +504,13 @@ Who do you want to hit?
 </pre></div>
 </div>
 <p>Your new commands are now available for all player characters in the game. There is another way to add a bunch of commands at once, and that is to add your own <em>CmdSet</em> to the other cmdset.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
@@ -529,13 +529,13 @@ this is practical. A Command can be a part of any number of different CmdSets.</
 do the same in <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. For example, let’s remove the default <code class="docutils literal notranslate"><span class="pre">get</span></code> Command
 from Evennia. If you investigate the <code class="docutils literal notranslate"><span class="pre">default_cmds.CharacterCmdSet</span></code> parent, you’ll find that its class is <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code> (the ‘real’ location is <code class="docutils literal notranslate"><span class="pre">evennia.commands.default.general.CmdGet</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>
@@ -567,12 +567,12 @@ command with the same <code class="docutils literal notranslate"><span class="pr
 <span class="normal">7</span>
 <span class="normal">8</span>
 <span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># up top, by the other imports</span>
-<span class="hll"><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="hll"><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 </span>
 <span class="c1"># somewhere below</span>
-<span class="k">class</span> <span class="nc">MyCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
 
-<span class="hll">    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
 </span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">))</span>
 </span></pre></div></td></tr></table></div>
@@ -595,13 +595,13 @@ has a special function <code class="docutils literal notranslate"><span class="p
 <p>We now just have to add this so it replaces the default <code class="docutils literal notranslate"><span class="pre">get</span></code> command. Open
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> again:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1">#</span>

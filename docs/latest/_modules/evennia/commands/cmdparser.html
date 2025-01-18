@@ -98,17 +98,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
 
 <span class="n">_MULTIMATCH_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_REGEX</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
 <span class="n">_CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
 
 
-<div class="viewcode-block" id="create_match"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.create_match">[docs]</a><span class="k">def</span> <span class="nf">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">):</span>
+<div class="viewcode-block" id="create_match"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.create_match">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds a command match by splitting the incoming string and</span>
 <span class="sd">    evaluating the quality of the match.</span>
@@ -137,7 +137,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">,</span> <span class="n">cmdlen</span><span class="p">,</span> <span class="n">mratio</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="build_matches"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.build_matches">[docs]</a><span class="k">def</span> <span class="nf">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="build_matches"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.build_matches">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build match tuples by matching raw_string against available commands.</span>
 
@@ -167,7 +167,7 @@
     <span class="k">return</span> <span class="n">matches</span></div>
 
 
-<div class="viewcode-block" id="try_num_differentiators"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.try_num_differentiators">[docs]</a><span class="k">def</span> <span class="nf">try_num_differentiators</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
+<div class="viewcode-block" id="try_num_differentiators"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.try_num_differentiators">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">try_num_differentiators</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test if user tried to separate multi-matches with a number separator</span>
 <span class="sd">    (default 1-name, 2-name etc). This is usually called last, if no other</span>
@@ -203,7 +203,7 @@
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="cmdparser"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.cmdparser">[docs]</a><span class="k">def</span> <span class="nf">cmdparser</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">match_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="cmdparser"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.cmdparser">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">cmdparser</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">match_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is called by the cmdhandler once it has</span>
 <span class="sd">    gathered and merged all valid cmdsets valid for this particular parsing.</span>

@@ -159,11 +159,11 @@
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">())</span>  <span class="c1"># &lt;---</span>
 
@@ -173,27 +173,27 @@
 the typeclasses in this module:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPObject</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPRoom</span>
 
-<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 </pre></div>
@@ -261,7 +261,7 @@ The tavern is full of nice people
 </section>
 <section id="id2">
 <h3>Usage:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">rplanguage</span>
 
 <span class="c1"># need to be done once, here we create the &quot;default&quot; lang</span>
 <span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">()</span>

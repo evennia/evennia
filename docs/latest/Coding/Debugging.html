@@ -143,7 +143,7 @@ available out-of-the-box.</p></li>
 <ol>
 <li><p>Find the point in the code where you want to have more insight. Add the following line at that
 point.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span><span class="n">set_trace</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span><span class="n">set_trace</span><span class="p">()</span>
 </pre></div>
 </div>
 </li>
@@ -164,7 +164,7 @@ default cmdset. Then restart Evennia in interactive mode with <code class="docut
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In file commands/command.py</span>
 
 
-<span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A test command just to test pdb.</span>
@@ -176,8 +176,8 @@ default cmdset. Then restart Evennia in interactive mode with <code class="docut
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;ve found </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()))</span>
 
@@ -199,8 +199,8 @@ default cmdset. Then restart Evennia in interactive mode with <code class="docut
  <span class="mi">43</span>
  <span class="mi">44</span>         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
  <span class="mi">45</span>
- <span class="mi">46</span>         <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
- <span class="mi">47</span>             <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
+ <span class="mi">46</span>         <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+ <span class="mi">47</span>             <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
  <span class="mi">48</span>  <span class="o">-&gt;</span>         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
  <span class="mi">49</span>             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;ve found </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()))</span>
  <span class="mi">50</span>

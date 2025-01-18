@@ -99,13 +99,13 @@
 <span class="sd">Just start this global script manually or at server creation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
 
-<span class="kn">from</span> <span class="nn">.room</span> <span class="kn">import</span> <span class="n">EvscapeRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.room</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvscapeRoom</span>
 
 
-<div class="viewcode-block" id="CleanupScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript">[docs]</a><span class="k">class</span> <span class="nc">CleanupScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
-<div class="viewcode-block" id="CleanupScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CleanupScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CleanupScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="CleanupScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evscaperoom_cleanup&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Cleans up empty evscaperooms&quot;</span>
 
@@ -113,7 +113,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="CleanupScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CleanupScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.scripts.html#evennia.contrib.full_systems.evscaperoom.scripts.CleanupScript.at_repeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">EvscapeRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">room</span><span class="o">.</span><span class="n">get_all_characters</span><span class="p">():</span>
                 <span class="c1"># this room is empty</span>

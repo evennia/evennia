@@ -127,7 +127,7 @@
 <p>This implements a full menu system for Evennia.</p>
 <p>To start the menu, just import the EvMenu class from this module.
 Example usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
 
 <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_module_path</span><span class="p">,</span>
      <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node1&quot;</span><span class="p">,</span>
@@ -149,16 +149,16 @@ dynamically or as part of another function. In non-persistent mode
 no such restrictions exist.</p>
 <p>The menu is defined in a module (this can be the same module as the
 command definition too) with function definitions:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">node1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="c1"># (this is the start node if called like above)</span>
     <span class="c1"># code</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
-<span class="k">def</span> <span class="nf">node_with_other_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">input_string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_with_other_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">input_string</span><span class="p">):</span>
     <span class="c1"># code</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
-<span class="k">def</span> <span class="nf">another_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">input_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">another_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">input_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># code</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
@@ -215,7 +215,7 @@ its number 1..N.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in menu_module.py</span>
 
-<span class="k">def</span> <span class="nf">node1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is a node text&quot;</span><span class="p">,</span>
             <span class="s2">&quot;This is help text for this node&quot;</span><span class="p">)</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span>
@@ -225,14 +225,14 @@ its number 1..N.</p>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node3&quot;</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
-<span class="k">def</span> <span class="nf">callback1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">callback1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="c1"># this is called when choosing the &quot;testing&quot; option in node1</span>
     <span class="c1"># (before going to node2). If it returned a string, say &#39;node3&#39;,</span>
     <span class="c1"># then the next node would be node3 instead of node2 as specified</span>
     <span class="c1"># by the normal &#39;goto&#39; option key above.</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Callback called!&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">node2</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node2</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        This is node 2. It only allows you to go back</span>
 <span class="s1">        to the original node1. This extra indent will</span>
@@ -242,7 +242,7 @@ its number 1..N.</p>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node1&quot;</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
-<span class="k">def</span> <span class="nf">node3</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node3</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This ends the menu since there are no options.&quot;</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
@@ -770,7 +770,7 @@ given, the decorated node must itself provide a way to continue from the node!</
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">available_choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">available_choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This will be called by all auto-generated options except any &#39;extra_options&#39;</span>
 <span class="sd">    you return from the node (those you need to handle normally).</span>
@@ -791,7 +791,7 @@ given, the decorated node must itself provide a way to continue from the node!</
     <span class="k">return</span> <span class="s2">&quot;nextnode&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 
 <span class="nd">@list_node</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">],</span> <span class="n">select</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;describing the list&quot;</span>
 
     <span class="c1"># optional extra options in addition to the list-options</span>
@@ -955,7 +955,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['a', 'no', 'y', '__nomatch_command', 'yes', 'abort', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['a', 'n', 'abort', 'y', '__nomatch_command', 'yes', 'no']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -981,7 +981,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'a no y __nomatch_command yes abort n', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' a no y __nomatch_command yes abort n', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'a n abort y __nomatch_command yes no', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' a n abort y __nomatch_command yes no', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

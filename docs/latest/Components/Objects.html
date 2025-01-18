@@ -170,10 +170,10 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
 <span class="c1"># ... </span>
 
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span> 
 
-<span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectParent</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
        <span class="c1"># make all entities by default un-pickable</span>
       <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
@@ -186,13 +186,13 @@
 <p>You can put your new typeclass directly in the relevant module, or you could organize your code in some other way. Here we assume we make a new module <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/flowers.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
 
-    <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
 
-    <span class="k">class</span> <span class="nc">Rose</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Rose</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This creates a simple rose object        </span>
 <span class="sd">        &quot;&quot;&quot;</span>    
-        <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;this is called only once, when object is first created&quot;</span>
             <span class="c1"># add a persistent attribute &#39;desc&#39; </span>
             <span class="c1"># to object (silly example).</span>
@@ -204,7 +204,7 @@
 </pre></div>
 </div>
 <p>What the <code class="docutils literal notranslate"><span class="pre">create</span></code> command actually <em>does</em> is to use the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_object" title="evennia.utils.create.create_object"><span class="xref myst py py-func">evennia.create_object</span></a>  function. You can do the same thing yourself in code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
     <span class="n">new_rose</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.flowers.Rose&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyRose&quot;</span><span class="p">)</span>
 </pre></div>
 </div>

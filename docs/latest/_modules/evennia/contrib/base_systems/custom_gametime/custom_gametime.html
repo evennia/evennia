@@ -126,11 +126,11 @@
 
 <span class="c1"># change these to fit your game world</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gametime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.create</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_script</span>
 
 <span class="c1"># The game time speedup  / slowdown relative real time</span>
 <span class="n">TIMEFACTOR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TIME_FACTOR</span>
@@ -155,7 +155,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="time_to_tuple"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.time_to_tuple">[docs]</a><span class="k">def</span> <span class="nf">time_to_tuple</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="o">*</span><span class="n">divisors</span><span class="p">):</span>
+<div class="viewcode-block" id="time_to_tuple"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.time_to_tuple">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">time_to_tuple</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="o">*</span><span class="n">divisors</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function. Creates a tuple of even dividends given a range</span>
 <span class="sd">    of divisors.</span>
@@ -181,7 +181,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="gametime_to_realtime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.gametime_to_realtime">[docs]</a><span class="k">def</span> <span class="nf">gametime_to_realtime</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="gametime_to_realtime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.gametime_to_realtime">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">gametime_to_realtime</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method helps to figure out the real-world time it will take until an</span>
 <span class="sd">    in-game time has passed. E.g. if an event should take place a month later</span>
@@ -218,7 +218,7 @@
     <span class="k">return</span> <span class="n">rtime</span></div>
 
 
-<div class="viewcode-block" id="realtime_to_gametime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.realtime_to_gametime">[docs]</a><span class="k">def</span> <span class="nf">realtime_to_gametime</span><span class="p">(</span><span class="n">secs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="realtime_to_gametime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.realtime_to_gametime">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">realtime_to_gametime</span><span class="p">(</span><span class="n">secs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method calculates how much in-game time a real-world time</span>
 <span class="sd">    interval would correspond to. This is usually a lot less</span>
@@ -269,7 +269,7 @@
     <span class="k">return</span> <span class="n">gtime</span></div>
 
 
-<div class="viewcode-block" id="custom_gametime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.custom_gametime">[docs]</a><span class="k">def</span> <span class="nf">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="custom_gametime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.custom_gametime">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the custom game time as a tuple of units, as defined in settings.</span>
 
@@ -289,7 +289,7 @@
     <span class="k">return</span> <span class="n">time_to_tuple</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="o">*</span><span class="n">units</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.real_seconds_until">[docs]</a><span class="k">def</span> <span class="nf">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.real_seconds_until">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the real seconds until game time.</span>
 
@@ -357,7 +357,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">projected</span> <span class="o">-</span> <span class="n">current</span><span class="p">)</span> <span class="o">/</span> <span class="n">TIMEFACTOR</span></div>
 
 
-<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.schedule">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">schedule</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call the callback when the game time is up.</span>
 
@@ -400,20 +400,20 @@
 <span class="c1"># Scripts dealing in gametime (use `schedule`  to create it)</span>
 
 
-<div class="viewcode-block" id="GametimeScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript">[docs]</a><span class="k">class</span> <span class="nc">GametimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GametimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gametime-sensitive script.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GametimeScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript.at_script_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;unknown scr&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GametimeScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.custom_gametime.custom_gametime.html#evennia.contrib.base_systems.custom_gametime.custom_gametime.GametimeScript.at_repeat">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the callback and reset interval.&quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">calledby</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">calledby</span>
 
         <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callback</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>

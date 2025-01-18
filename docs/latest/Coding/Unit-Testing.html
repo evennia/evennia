@@ -188,31 +188,31 @@ are two special, optional methods <code class="docutils literal notranslate"><sp
 <p>Here’s an example of the principle. Let’s assume you put this in <code class="docutils literal notranslate"><span class="pre">mygame/world/tests.py</span></code>
 and want to test a function in <code class="docutils literal notranslate"><span class="pre">mygame/world/myfunctions.py</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># in a module tests.py somewhere i your game dir</span>
-    <span class="kn">import</span> <span class="nn">unittest</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
 
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
     <span class="c1"># the function we want to test</span>
-    <span class="kn">from</span> <span class="nn">.myfunctions</span> <span class="kn">import</span> <span class="n">myfunc</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.myfunctions</span><span class="w"> </span><span class="kn">import</span> <span class="n">myfunc</span>
 
 
-    <span class="k">class</span> <span class="nc">TestObj</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">TestObj</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
        <span class="s2">&quot;This tests a function myfunc.&quot;</span>
 
-       <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;done before every of the test_ * methods below&quot;&quot;&quot;</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;mytestobject&quot;</span><span class="p">)</span>
 
-       <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;done after every test_* method below &quot;&quot;&quot;</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
-       <span class="k">def</span> <span class="nf">test_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">test_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;test method. Makes sure return value is as expected.&quot;&quot;&quot;</span>
            <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is the good object &#39;mytestobject&#39;.&quot;</span>
            <span class="c1"># test</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>
-       <span class="k">def</span> <span class="nf">test_alternative_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">def</span><span class="w"> </span><span class="nf">test_alternative_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;test method. Calls with a keyword argument.&quot;&quot;&quot;</span>
            <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">bad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is the baaad object &#39;mytestobject&#39;.&quot;</span>
@@ -278,32 +278,32 @@ just there for naming symmetry with <code class="docutils literal notranslate"><
 <p>Here’s an example of using <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a test module</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>
 
-<span class="k">class</span> <span class="nc">TestObject</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestObject</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remember that the testing class creates char1 and char2 inside room1 ...&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">test_object_search_character</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_object_search_character</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that char1 can search for char2 by name&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">test_location_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_location_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check so that char1 can find the current location by name&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="c1"># ...</span>
 </pre></div>
 </div>
 <p>This example tests a custom command.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">command</span> <span class="k">as</span> <span class="n">mycommand</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">command</span> <span class="k">as</span> <span class="n">mycommand</span>
 
 
-<span class="k">class</span> <span class="nc">TestSet</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestSet</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
     <span class="s2">&quot;tests the look command by simple call, using Char2 as a target&quot;</span>
 
-    <span class="k">def</span> <span class="nf">test_mycmd_char</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_mycmd_char</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">mycommand</span><span class="o">.</span><span class="n">CmdMyLook</span><span class="p">(),</span> <span class="s2">&quot;Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;Char2(#7)&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">test_mycmd_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_mycmd_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;tests the look command by simple call, with target as room&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">mycommand</span><span class="o">.</span><span class="n">CmdMyLook</span><span class="p">(),</span> <span class="s2">&quot;Room&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;Room(#1)</span><span class="se">\n</span><span class="s2">room_desc</span><span class="se">\n</span><span class="s2">Exits: out(#3)</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -353,9 +353,9 @@ of the Evennia distribution and its unit tests should be run with all other Even
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a file contrib/mycontrib/tests.py</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">import</span> <span class="nn">django</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">django</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="n">OLD_DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INSTALLED_APPS</span>
 <span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -371,29 +371,29 @@ of the Evennia distribution and its unit tests should be run with all other Even
 <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">TestMyModel</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestMyModel</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">configured</span><span class="p">:</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
         <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
-        <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_command</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">loading</span>
         <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">OLD_DEFAULT_SETTINGS</span><span class="p">)</span>
         <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
-        <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_command</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">loading</span>
         <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># test cases below ...</span>
 
-    <span class="k">def</span> <span class="nf">test_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="c1"># test case here</span>
 </pre></div>
 </div>

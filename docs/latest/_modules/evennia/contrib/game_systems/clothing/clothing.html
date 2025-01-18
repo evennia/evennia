@@ -165,13 +165,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">default_cmds</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">at_search_result</span><span class="p">,</span>
     <span class="n">crop</span><span class="p">,</span>
     <span class="n">evtable</span><span class="p">,</span>
@@ -180,7 +180,7 @@
     <span class="n">int2str</span><span class="p">,</span>
     <span class="n">iter_to_str</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">raw_ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">raw_ansi</span>
 
 <span class="c1"># Options start here.</span>
 <span class="c1"># Maximum character length of &#39;wear style&#39; strings, or None for unlimited.</span>
@@ -235,7 +235,7 @@
 
 
 <span class="c1"># HELPER FUNCTIONS START HERE</span>
-<div class="viewcode-block" id="order_clothes_list"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.order_clothes_list">[docs]</a><span class="k">def</span> <span class="nf">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+<div class="viewcode-block" id="order_clothes_list"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.order_clothes_list">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.</span>
 
@@ -263,7 +263,7 @@
     <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
 
 
-<div class="viewcode-block" id="get_worn_clothes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.get_worn_clothes">[docs]</a><span class="k">def</span> <span class="nf">get_worn_clothes</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_worn_clothes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.get_worn_clothes">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_worn_clothes</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a list of clothes worn by a given character.</span>
 
@@ -292,7 +292,7 @@
     <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
 
 
-<div class="viewcode-block" id="clothing_type_count"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.clothing_type_count">[docs]</a><span class="k">def</span> <span class="nf">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+<div class="viewcode-block" id="clothing_type_count"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.clothing_type_count">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dictionary of the number of each clothing type</span>
 <span class="sd">    in a given list of clothing objects.</span>
@@ -318,7 +318,7 @@
     <span class="k">return</span> <span class="n">types_count</span></div>
 
 
-<div class="viewcode-block" id="single_type_count"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.single_type_count">[docs]</a><span class="k">def</span> <span class="nf">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+<div class="viewcode-block" id="single_type_count"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.single_type_count">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an integer value of the number of a given type of clothing in a list.</span>
 
@@ -338,8 +338,8 @@
     <span class="k">return</span> <span class="n">type_count</span></div>
 
 
-<div class="viewcode-block" id="ContribClothing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing">[docs]</a><span class="k">class</span> <span class="nc">ContribClothing</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
-<div class="viewcode-block" id="ContribClothing.wear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.wear">[docs]</a>    <span class="k">def</span> <span class="nf">wear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribClothing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ContribClothing</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribClothing.wear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.wear">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets clothes to &#39;worn&#39; and optionally echoes to the room.</span>
 
@@ -382,7 +382,7 @@
                 <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, covering </span><span class="si">{</span><span class="n">iter_to_str</span><span class="p">(</span><span class="n">to_cover</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribClothing.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribClothing.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.remove">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes worn clothes and optionally echoes to the room.</span>
 
@@ -407,7 +407,7 @@
                 <span class="n">remove_message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, revealing </span><span class="si">{</span><span class="n">iter_to_str</span><span class="p">(</span><span class="n">uncovered_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">remove_message</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribClothing.at_get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribClothing.at_get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.at_get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes absolutely sure clothes aren&#39;t already set as &#39;worn&#39;</span>
 <span class="sd">        when they&#39;re picked up, in case they&#39;ve somehow had their</span>
@@ -415,7 +415,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="ContribClothing.at_pre_move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.at_pre_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribClothing.at_pre_move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ContribClothing.at_pre_move">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination. Return False to abort move.</span>
@@ -430,14 +430,14 @@
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="ClothedCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ClothedCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Character that displays worn clothing when looked at. You can also</span>
 <span class="sd">    just copy the return_appearance hook defined below to your own game&#39;s</span>
 <span class="sd">    character typeclass.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ClothedCharacter.get_display_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter.get_display_desc">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacter.get_display_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter.get_display_desc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the &#39;desc&#39; component of the object description. Called by `return_appearance`.</span>
 
@@ -474,7 +474,7 @@
 
         <span class="k">return</span> <span class="n">desc</span></div>
 
-<div class="viewcode-block" id="ClothedCharacter.get_display_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter.get_display_things">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_things</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacter.get_display_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacter.get_display_things">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_things</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the &#39;things&#39; component of the object&#39;s contents. Called by `return_appearance`.</span>
 
@@ -485,7 +485,7 @@
 <span class="sd">            str: A string describing the things in object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">obj</span>
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span>
@@ -516,7 +516,7 @@
 <span class="c1"># COMMANDS START HERE</span>
 
 
-<div class="viewcode-block" id="CmdWear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdWear">[docs]</a><span class="k">class</span> <span class="nc">CmdWear</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdWear">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdWear</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Puts on an item of clothing you are holding.</span>
 
@@ -536,7 +536,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wear&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdWear.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdWear.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWear.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdWear.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: wear &lt;obj&gt; [=] [wear style]&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -603,7 +603,7 @@
         <span class="n">clothing</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdRemove">[docs]</a><span class="k">class</span> <span class="nc">CmdRemove</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdRemove">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdRemove</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes off an item of clothing.</span>
 
@@ -618,7 +618,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;remove&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: remove &lt;worn clothing object&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -635,7 +635,7 @@
         <span class="n">clothing</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCover"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdCover">[docs]</a><span class="k">class</span> <span class="nc">CmdCover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCover"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdCover">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdCover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Covers a worn item of clothing with another you&#39;re holding or wearing.</span>
 
@@ -651,7 +651,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
     <span class="n">rhs_split</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot; with &quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CmdCover.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdCover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCover.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdCover.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: cover &lt;worn clothing&gt; with &lt;clothing object&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -689,7 +689,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUncover"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdUncover">[docs]</a><span class="k">class</span> <span class="nc">CmdUncover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUncover"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdUncover">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdUncover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reveals a worn item of clothing that&#39;s currently covered up.</span>
 
@@ -705,7 +705,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;uncover&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdUncover.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdUncover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUncover.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdUncover.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -731,7 +731,7 @@
             <span class="k">return</span></div></div>
 
 
-<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdInventory">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view inventory</span>
 
@@ -750,7 +750,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
 
-<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdInventory.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.CmdInventory.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;check inventory&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not carrying or wearing anything.&quot;</span><span class="p">)</span>
@@ -791,7 +791,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">message_list</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;inventory&quot;</span><span class="p">}))</span></div></div>
 
 
-<div class="viewcode-block" id="ClothedCharacterCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacterCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacterCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacterCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ClothedCharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Command set for clothing, including new versions of &#39;give&#39; and &#39;drop&#39;</span>
 <span class="sd">    that take worn and covered clothing into account, as well as a new</span>
@@ -801,7 +801,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-<div class="viewcode-block" id="ClothedCharacterCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacterCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacterCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.clothing.html#evennia.contrib.game_systems.clothing.clothing.ClothedCharacterCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>

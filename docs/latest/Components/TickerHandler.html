@@ -134,7 +134,7 @@ triggered at the same interval, unsubscribing when the updating is no longer des
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>Here is an example of importing <code class="docutils literal notranslate"><span class="pre">TICKER_HANDLER</span></code> and using it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># we assume that obj has a hook &quot;at_tick&quot; defined on itself</span>
-    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>    
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>    
 
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_tick</span><span class="p">)</span>
 </pre></div>
@@ -145,8 +145,8 @@ triggered at the same interval, unsubscribing when the updating is no longer des
 <p>Everything you supply to <code class="docutils literal notranslate"><span class="pre">TickerHandler.add</span></code> will need to be pickled at some point to be saved into the database - also if you use <code class="docutils literal notranslate"><span class="pre">persistent=False</span></code>. Most of the time the handler will correctly store things like database objects, but the same restrictions as for <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> apply to what the TickerHandler may store.</p>
 </div>
 <p>You can also import a function and tick that:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>
-    <span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">myfunc</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mymodule</span><span class="w"> </span><span class="kn">import</span> <span class="n">myfunc</span>
 
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">myfunc</span><span class="p">)</span>
 </pre></div>

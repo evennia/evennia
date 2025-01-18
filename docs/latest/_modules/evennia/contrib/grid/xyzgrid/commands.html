@@ -99,16 +99,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span><span class="p">,</span> <span class="n">default_cmds</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">building</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> <span class="n">XYZRoom</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">list_to_string</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default</span><span class="w"> </span><span class="kn">import</span> <span class="n">building</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_xyzgrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">list_to_string</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -117,7 +117,7 @@
 <span class="n">PathData</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;PathData&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;xymap&quot;</span><span class="p">,</span> <span class="s2">&quot;directions&quot;</span><span class="p">,</span> <span class="s2">&quot;step_sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="CmdXYZTeleport"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport">[docs]</a><span class="k">class</span> <span class="nc">CmdXYZTeleport</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdXYZTeleport"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdXYZTeleport</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    teleport object to another location</span>
 
@@ -152,7 +152,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_search_by_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_search_by_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">*</span><span class="n">Z</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">Z</span><span class="p">:</span>
@@ -178,7 +178,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found no target XYZRoom at (</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">Y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InterruptCommand</span>
 
-<div class="viewcode-block" id="CmdXYZTeleport.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdXYZTeleport.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="kc">None</span>
@@ -202,7 +202,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdXYZOpen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdXYZOpen</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdOpen</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdXYZOpen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdXYZOpen</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdOpen</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    open a new exit from the current room</span>
 
@@ -225,7 +225,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CmdXYZOpen.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdXYZOpen.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">building</span><span class="o">.</span><span class="n">ObjManipCommand</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
@@ -266,7 +266,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">exit_typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;option&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="CmdGoto"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto">[docs]</a><span class="k">class</span> <span class="nc">CmdGoto</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGoto"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdGoto</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Go to a named location in this area via the shortest path.</span>
 
@@ -293,7 +293,7 @@
     <span class="n">auto_step_delay</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">default_xyz_path_interrupt_msg</span> <span class="o">=</span> <span class="s2">&quot;Pathfinding interrupted here.&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_search_by_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">xyz_start</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_search_by_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">xyz_start</span><span class="p">):</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">xyz_start</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -305,12 +305,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find a room at (</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">Y</span><span class="si">}</span><span class="s2">) (Z=</span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_search_by_key_and_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">xyz_start</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_search_by_key_and_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">xyz_start</span><span class="p">):</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">xyz_start</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">Z</span><span class="p">)))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_auto_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auto_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">caller</span><span class="p">,</span>
         <span class="n">session</span><span class="p">,</span>
@@ -451,7 +451,7 @@
                 <span class="n">task</span><span class="o">=</span><span class="n">delay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_step_delay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_step</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">),</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="CmdGoto.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGoto.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement command</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -534,7 +534,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap">[docs]</a><span class="k">class</span> <span class="nc">CmdMap</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdMap</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show a map of an area</span>
 
@@ -549,7 +549,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;map&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Builders)&quot;</span>
 
-<div class="viewcode-block" id="CmdMap.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMap.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
 
         <span class="n">xyzgrid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
@@ -584,7 +584,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">mapstring</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="XYZGridCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet">[docs]</a><span class="k">class</span> <span class="nc">XYZGridCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGridCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">XYZGridCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cmdset for easily adding the above cmds to the character cmdset.</span>
 
@@ -592,7 +592,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;xyzgrid_cmdset&quot;</span>
 
-<div class="viewcode-block" id="XYZGridCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGridCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdXYZTeleport</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdXYZOpen</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGoto</span><span class="p">())</span>
@@ -603,7 +603,7 @@
 <span class="c1"># full 3D-grid movements)</span>
 
 
-<div class="viewcode-block" id="CmdFlyAndDive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive">[docs]</a><span class="k">class</span> <span class="nc">CmdFlyAndDive</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdFlyAndDive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdFlyAndDive</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fly or Dive up and down.</span>
 
@@ -619,7 +619,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;fly or dive&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="s2">&quot;dive&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CmdFlyAndDive.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdFlyAndDive.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span>
@@ -666,7 +666,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="XYZGridFlyDiveCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet">[docs]</a><span class="k">class</span> <span class="nc">XYZGridFlyDiveCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGridFlyDiveCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">XYZGridFlyDiveCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Optional cmdset if you want the fly/dive commands to move in a 3D environment.</span>
 
@@ -674,7 +674,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;xyzgrid_flydive_cmdset&quot;</span>
 
-<div class="viewcode-block" id="XYZGridFlyDiveCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGridFlyDiveCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFlyAndDive</span><span class="p">())</span></div></div>
 </pre></div>
 

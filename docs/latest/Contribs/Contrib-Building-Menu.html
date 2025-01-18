@@ -154,16 +154,16 @@ that will edit any default object, offering to change its key and description.</
 <ol>
 <li><p>Import the <code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd</span></code> class from this contrib in your
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdset.py</span></code> file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.building_menu</span> <span class="kn">import</span> <span class="n">GenericBuildingCmd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.building_menu</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericBuildingCmd</span>
 </pre></div>
 </div>
 </li>
 <li><p>Below, add the command in the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... These lines should exist in the file</span>
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="c1"># ... add the line below</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GenericBuildingCmd</span><span class="p">())</span>
@@ -197,9 +197,9 @@ change the room title by simply entering text, and go back to the
 main menu entering &#64; (all this is customizable).  Press q to quit this menu.</p>
 <p>The first thing to do is to create a new module and place a class
 inheriting from <code class="docutils literal notranslate"><span class="pre">BuildingMenu</span></code> in it.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.building_menu</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuildingMenu</span>
 
-<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 </pre></div>
@@ -207,8 +207,8 @@ inheriting from <code class="docutils literal notranslate"><span class="pre">Bui
 <p>Next, override the <code class="docutils literal notranslate"><span class="pre">init</span></code> method (not <code class="docutils literal notranslate"><span class="pre">__init__</span></code>!).  You can add
 choices (like the title, description, and exits choices as seen above) by using
 the <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
 
 </pre></div>
@@ -226,8 +226,8 @@ called when the menu element is triggered.</p>
 <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>, but <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>.  This is a convenient shortcut
 which is available to quickly open an <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> when entering this choice
 and going back to the menu when the editor closes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;db.desc&quot;</span><span class="p">)</span>
 
@@ -236,13 +236,13 @@ and going back to the menu when the editor closes.</p>
 <p>When you wish to create a building menu, you just need to import your
 class, create it specifying your intended caller and object to edit,
 then call <code class="docutils literal notranslate"><span class="pre">open</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="o">&lt;</span><span class="n">wherever</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">RoomBuildingMenu</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="o">&lt;</span><span class="n">wherever</span><span class="o">&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">RoomBuildingMenu</span>
 
-<span class="k">class</span> <span class="nc">CmdEdit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEdit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;redit&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="n">RoomBuildingMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 
@@ -269,10 +269,10 @@ demonstration, but we will override it in this example, using the same code with
 <p>Let’s begin by adding a new command.  You could add or edit the following file (there’s no trick
 here, feel free to organize the code differently):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: commands/building.py</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
-<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.building_menu</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuildingMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
 
-<span class="k">class</span> <span class="nc">EditCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EditCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Editing command.</span>
@@ -294,7 +294,7 @@ here, feel free to organize the code differently):</p>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:id(1) or perm(Builders)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rYou should provide an argument to this function: the object to edit.|n&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -343,14 +343,14 @@ at the top of the file:</p>
 <span class="sd">...</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
 <span class="c1"># The following line is to be added</span>
-<span class="kn">from</span> <span class="nn">commands.building</span> <span class="kn">import</span> <span class="n">EditCmd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">commands.building</span><span class="w"> </span><span class="kn">import</span> <span class="n">EditCmd</span>
 </pre></div>
 </div>
 <p>And in the class below (<code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>), add the last line of this code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -358,7 +358,7 @@ at the top of the file:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -377,7 +377,7 @@ the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMen
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... at the end of commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
-<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -386,7 +386,7 @@ the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMen
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -469,7 +469,7 @@ class, with a method and a single line of code within, we’ve added a menu with
 <section id="code-explanation">
 <h3>Code explanation<a class="headerlink" href="#code-explanation" title="Permalink to this headline">¶</a></h3>
 <p>Let’s examine our code again:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -478,7 +478,7 @@ class, with a method and a single line of code within, we’ve added a menu with
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -536,13 +536,13 @@ can specify the title and key of this menu.  You can also call a function when t
 </ul>
 <p>So here’s a more complete example (you can replace your <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
 <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> to see it):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_quit</span><span class="p">(</span><span class="s2">&quot;quit this editor&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">)</span>
@@ -639,7 +639,7 @@ choice.  This can be useful for cleanup as well.</p></li>
 <p>These are a lot of possibilities, and most of the time you won’t need them all.  Here is a short
 example using some of these arguments (again, replace the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
 <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> with the following code to see it working):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -648,7 +648,7 @@ example using some of these arguments (again, replace the <code class="docutils 
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                -------------------------------------------------------------------------------</span>
 <span class="s2">                Editing the title of {{obj.key}}(#{{obj.id}})</span>
@@ -733,14 +733,14 @@ can we show that?</p>
 great.  Perhaps even add new exits?</p>
 <p>First of all, let’s write a function to display the <code class="docutils literal notranslate"><span class="pre">glance</span></code> on existing exits.  Here’s the code,
 it’s explained below:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                -------------------------------------------------------------------------------</span>
 <span class="s2">                Editing the title of {{obj.key}}(#{{obj.id}})</span>
@@ -755,7 +755,7 @@ it’s explained below:</p>
 
 
 <span class="c1"># Menu functions</span>
-<span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -810,7 +810,7 @@ building menu.</p></li>
 <li><p>Anything else: any other argument will contain the object being edited by the building menu.</p></li>
 </ul>
 <p>So in our case:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>The only argument we need is <code class="docutils literal notranslate"><span class="pre">room</span></code>.  It’s not present in the list of possible arguments, so the
@@ -826,14 +826,14 @@ see how to edit them in the next section but this is a good opportunity to show 
 callback.  To see it in action, as usual, replace the class and functions in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Our building menu</span>
 
-<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                -------------------------------------------------------------------------------</span>
 <span class="s2">                Editing the title of {{obj.key}}(#{{obj.id}})</span>
@@ -848,7 +848,7 @@ callback.  To see it in action, as usual, replace the class and functions in <co
 
 
 <span class="c1"># Menu functions</span>
-<span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -859,7 +859,7 @@ callback.  To see it in action, as usual, replace the class and functions in <co
 
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |gNo exit yet|n&quot;</span>
 
-<span class="k">def</span> <span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits in the choice itself.&quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">79</span>
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Room exits:&quot;</span>
@@ -1027,7 +1027,7 @@ explanations next!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
-<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -1036,7 +1036,7 @@ explanations next!</p>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                -------------------------------------------------------------------------------</span>
 <span class="s2">                Editing the title of {{obj.key}}(#{{obj.id}})</span>
@@ -1054,7 +1054,7 @@ explanations next!</p>
 
 
 <span class="c1"># Menu functions</span>
-<span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -1065,7 +1065,7 @@ explanations next!</p>
 
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |gNo exit yet|n&quot;</span>
 
-<span class="k">def</span> <span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits in the choice itself.&quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">79</span>
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Room exits:&quot;</span>
@@ -1085,7 +1085,7 @@ explanations next!</p>
 
     <span class="k">return</span> <span class="n">text</span>
 
-<span class="k">def</span> <span class="nf">nomatch_exits</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nomatch_exits</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The user typed something in the list of exits.  Maybe an exit name?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1100,7 +1100,7 @@ explanations next!</p>
     <span class="k">return</span> <span class="kc">False</span>
 
 <span class="c1"># Exit sub-menu</span>
-<span class="k">def</span> <span class="nf">text_single_exit</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_single_exit</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the text to edit single exits.&quot;&quot;&quot;</span>
     <span class="n">exit</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">exit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1114,7 +1114,7 @@ explanations next!</p>
 <span class="s2">        New exit key:</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-<span class="k">def</span> <span class="nf">nomatch_single_exit</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nomatch_single_exit</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The user entered something in the exit sub-menu.  Replace the exit key.&quot;&quot;&quot;</span>
     <span class="c1"># exit is the second key element: keys should contain [&#39;e&#39;, &lt;Exit object&gt;]</span>
     <span class="n">exit</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -1176,13 +1176,13 @@ depending on what you want to achieve.  So let’s build two menus:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
 <span class="c1"># Our building menus</span>
 
-<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                -------------------------------------------------------------------------------</span>
 <span class="s2">                Editing the title of {{obj.key}}(#{{obj.id}})</span>
@@ -1198,7 +1198,7 @@ depending on what you want to achieve.  So let’s build two menus:</p>
 
 
 <span class="c1"># Menu functions</span>
-<span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -1209,7 +1209,7 @@ depending on what you want to achieve.  So let’s build two menus:</p>
 
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |gNo exit yet|n&quot;</span>
 
-<span class="k">def</span> <span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_exits</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the room exits in the choice itself.&quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">79</span>
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Room exits:&quot;</span>
@@ -1229,7 +1229,7 @@ depending on what you want to achieve.  So let’s build two menus:</p>
 
     <span class="k">return</span> <span class="n">text</span>
 
-<span class="k">def</span> <span class="nf">nomatch_exits</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nomatch_exits</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The user typed something in the list of exits.  Maybe an exit name?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1243,14 +1243,14 @@ depending on what you want to achieve.  So let’s build two menus:</p>
     <span class="n">menu</span><span class="o">.</span><span class="n">open_submenu</span><span class="p">(</span><span class="s2">&quot;commands.building.ExitBuildingMenu&quot;</span><span class="p">,</span> <span class="n">exit</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">])</span>
     <span class="k">return</span> <span class="kc">False</span>
 
-<span class="k">class</span> <span class="nc">ExitBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExitBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit an exit.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{obj.key}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
 </pre></div>
@@ -1403,7 +1403,7 @@ without giving it a key.  If so, the menu system will try to “guess” the key
 change the minimum length of any key for security reasons.</p></li>
 </ul>
 <p>To set one of them just do so in your menu class(es):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
     <span class="n">keys_go_back</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">]</span>
     <span class="n">min_shortcut</span> <span class="o">=</span> <span class="mi">2</span>
 </pre></div>

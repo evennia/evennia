@@ -185,30 +185,30 @@
 <span class="sd">----</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">mkdir</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">isfile</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">mkdir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">isfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span>
-    <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
-    <span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">csr_matrix</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.csgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">dijkstra</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="s2">The XYZgrid contrib requires &quot;</span>
         <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
     <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">flatten_prototype</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes.spawner</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatten_prototype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span> <span class="n">MapParserError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">xymap_legend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIGVAL</span><span class="p">,</span> <span class="n">MapError</span><span class="p">,</span> <span class="n">MapParserError</span>
 
 <span class="n">_NO_DB_PROTOTYPES</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;XYZGRID_USE_DB_PROTOTYPES&quot;</span><span class="p">):</span>
@@ -226,7 +226,7 @@
 <span class="c1"># Map parser implementation</span>
 
 
-<div class="viewcode-block" id="XYMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap">[docs]</a><span class="k">class</span> <span class="nc">XYMap</span><span class="p">:</span>
+<div class="viewcode-block" id="XYMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">XYMap</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents a single map of interconnected nodes/rooms, parsed from a ASCII map</span>
 <span class="sd">    representation.</span>
@@ -273,7 +273,7 @@
     <span class="c1"># we normally only accept one single character for the legend key</span>
     <span class="n">legend_key_exceptions</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
 
-<div class="viewcode-block" id="XYMap.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the map parser by feeding it the map.</span>
 
@@ -348,7 +348,7 @@
         <span class="c1"># load data and parse it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the string representation of the map.</span>
 <span class="sd">        Since the y-axes origo is at the bottom, we must flip the</span>
@@ -357,19 +357,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_map</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">nnodes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">:</span>
             <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;XYMap(Z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> nodes&gt;&quot;</span>
 
-<div class="viewcode-block" id="XYMap.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYMap.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.reload">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        (Re)Load a map.</span>
 
@@ -466,7 +466,7 @@
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">node_or_link_class</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">proto</span></div>
 
-<div class="viewcode-block" id="XYMap.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses the numerical grid from the string. The first pass means parsing out</span>
 <span class="sd">        all nodes. The linking-together of nodes is not happening until the second pass</span>
@@ -634,7 +634,7 @@
         <span class="c1"># store</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_map</span> <span class="o">=</span> <span class="n">display_map</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_topology_around_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_topology_around_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all links and nodes up to a certain distance from an XY coordinate.</span>
 
@@ -654,7 +654,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_scan_neighbors</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_scan_neighbors</span><span class="p">(</span>
             <span class="n">start_node</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">):</span>
             <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">start_node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">start_node</span><span class="o">.</span><span class="n">y</span>
@@ -689,7 +689,7 @@
         <span class="n">points</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">_scan_neighbors</span><span class="p">(</span><span class="n">center_node</span><span class="p">,</span> <span class="p">[],</span> <span class="n">dist</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">points</span><span class="p">)),</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span>
 
-<div class="viewcode-block" id="XYMap.calculate_path_matrix"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_path_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.calculate_path_matrix"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_path_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve the pathfinding problem using Dijkstra&#39;s algorithm. This will try to</span>
 <span class="sd">        load the solution from disk if possible.</span>
@@ -742,7 +742,7 @@
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinding_routes</span><span class="p">),</span> <span class="n">fil</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="mi">4</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYMap.spawn_nodes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)):</span>
+<div class="viewcode-block" id="XYMap.spawn_nodes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the nodes of this XYMap into actual in-world rooms by spawning their</span>
 <span class="sd">        related prototypes in the correct coordinate positions. This must be done *first*</span>
@@ -763,7 +763,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_XYZROOMCLASS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_XYZROOMCLASS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
         <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
         <span class="n">spawned</span> <span class="o">=</span> <span class="p">[]</span>
@@ -786,7 +786,7 @@
                 <span class="n">spawned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">spawned</span></div>
 
-<div class="viewcode-block" id="XYMap.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert links of this XYMap into actual in-game exits by spawning their related</span>
 <span class="sd">        prototypes. It&#39;s possible to only spawn a specic exit by specifying the node and</span>
@@ -814,7 +814,7 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)):</span>
                 <span class="n">node</span><span class="o">.</span><span class="n">spawn_links</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="n">directions</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYMap.get_node_from_coord"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_from_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.get_node_from_coord"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_node_from_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a MapNode from a coordinate.</span>
 
@@ -844,7 +844,7 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="XYMap.get_components_with_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol">[docs]</a>    <span class="k">def</span> <span class="nf">get_components_with_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.get_components_with_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_components_with_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find all map components (nodes, links) with a given symbol in this map.</span>
 
@@ -857,7 +857,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="p">[])</span></div>
 
-<div class="viewcode-block" id="XYMap.get_shortest_path"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_shortest_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_xy</span><span class="p">,</span> <span class="n">end_xy</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.get_shortest_path"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_shortest_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_xy</span><span class="p">,</span> <span class="n">end_xy</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the shortest route between two points on the grid.</span>
 
@@ -915,7 +915,7 @@
 
         <span class="k">return</span> <span class="n">directions</span><span class="p">,</span> <span class="n">path</span></div>
 
-<div class="viewcode-block" id="XYMap.get_visual_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_visual_range</span><span class="p">(</span>
+<div class="viewcode-block" id="XYMap.get_visual_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_visual_range</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">xy</span><span class="p">,</span>
         <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -1045,7 +1045,7 @@
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
             <span class="c1"># stylize path to target</span>
 
-            <span class="k">def</span> <span class="nf">_default_callable</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_default_callable</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">target_path_style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">display_symbol</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_display_symbol</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">target_path_style</span><span class="p">):</span>

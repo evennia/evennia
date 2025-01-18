@@ -245,7 +245,7 @@ easier later.</p></li>
 <p>At spawn time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc is a <a class="reference internal" href="FuncParser.html"><span class="doc std std-doc">FuncParser function</span></a> run every time the prototype is used to spawn a new object. See the FuncParse for a lot more information.</p>
 <p>Here is how a protfunc is defined (same as other funcparser functions).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is a silly example, you can just color the text red with |r directly!</span>
-<span class="k">def</span> <span class="nf">red</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">red</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Usage: $red(&lt;text&gt;)</span>
 <span class="sd">   Returns the same text you entered, but red.</span>

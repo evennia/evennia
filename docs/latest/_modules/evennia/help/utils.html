@@ -98,10 +98,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">lunr.stemmer</span> <span class="kn">import</span> <span class="n">stemmer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lunr.stemmer</span><span class="w"> </span><span class="kn">import</span> <span class="n">stemmer</span>
 
 
 <span class="n">_RE_HELP_SUBTOPICS_START</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*?#\s*?subtopics\s*?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
@@ -111,7 +111,7 @@
 <span class="n">MAX_SUBTOPIC_NESTING</span> <span class="o">=</span> <span class="mi">5</span>
 
 
-<div class="viewcode-block" id="wildcard_stemmer"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.wildcard_stemmer">[docs]</a><span class="k">def</span> <span class="nf">wildcard_stemmer</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+<div class="viewcode-block" id="wildcard_stemmer"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.wildcard_stemmer">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">wildcard_stemmer</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom LUNR stemmer that returns both the original and stemmed token</span>
 <span class="sd">    if the token contains a leading wildcard (*).</span>
@@ -135,7 +135,7 @@
     <span class="k">return</span> <span class="n">stemmed_token</span></div>
 
 
-<div class="viewcode-block" id="LunrSearch"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch">[docs]</a><span class="k">class</span> <span class="nc">LunrSearch</span><span class="p">:</span>
+<div class="viewcode-block" id="LunrSearch"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LunrSearch</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Singleton class for managing Lunr search index configuration and initialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -155,7 +155,7 @@
 
     <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure only one instance of the class is created (Singleton)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -164,7 +164,7 @@
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
 
-    <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lazy load Lunr libraries and set up custom configuration</span>
 
@@ -172,12 +172,12 @@
 <span class="sd">        before twisted&#39;s logging has been set up</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Lunr-related imports</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">get_default_builder</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">lunr</span>
-        <span class="kn">from</span> <span class="nn">lunr</span> <span class="kn">import</span> <span class="n">stop_word_filter</span>
-        <span class="kn">from</span> <span class="nn">lunr.exceptions</span> <span class="kn">import</span> <span class="n">QueryParseError</span>
-        <span class="kn">from</span> <span class="nn">lunr.stemmer</span> <span class="kn">import</span> <span class="n">stemmer</span>
-        <span class="kn">from</span> <span class="nn">lunr.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_builder</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr</span><span class="w"> </span><span class="kn">import</span> <span class="n">lunr</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr</span><span class="w"> </span><span class="kn">import</span> <span class="n">stop_word_filter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParseError</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr.stemmer</span><span class="w"> </span><span class="kn">import</span> <span class="n">stemmer</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lunr.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
 
         <span class="c1"># Store imported modules as instance attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_default_builder</span> <span class="o">=</span> <span class="n">get_default_builder</span>
@@ -192,7 +192,7 @@
         <span class="c1"># Register custom stemmer if we want to serialize.</span>
         <span class="n">Pipeline</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">wildcard_stemmer</span><span class="p">,</span> <span class="s2">&quot;wildcard_stemmer&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_stop_words_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_stop_words_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a custom stop words filter, removing specified exceptions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -206,7 +206,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_stop_words_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_word_filter</span><span class="o">.</span><span class="n">generate_stop_word_filter</span><span class="p">(</span><span class="n">stop_words</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LunrSearch.index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="p">):</span>
+<div class="viewcode-block" id="LunrSearch.index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.LunrSearch.index">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Lunr searchable index.</span>
 
@@ -228,7 +228,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lunr</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">documents</span><span class="p">,</span> <span class="n">builder</span><span class="o">=</span><span class="n">builder</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="help_search_with_index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.help_search_with_index">[docs]</a><span class="k">def</span> <span class="nf">help_search_with_index</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">candidate_entries</span><span class="p">,</span> <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="help_search_with_index"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.help_search_with_index">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">help_search_with_index</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">candidate_entries</span><span class="p">,</span> <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Lunr-powered fast index search and suggestion wrapper. See https://lunrjs.com/.</span>
 
@@ -248,7 +248,7 @@
 <span class="sd">            how many suggestions are included.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">lunr.exceptions</span> <span class="kn">import</span> <span class="n">QueryParseError</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lunr.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParseError</span>
 
     <span class="n">indx</span> <span class="o">=</span> <span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">search_index_entry</span> <span class="k">for</span> <span class="n">cnd</span> <span class="ow">in</span> <span class="n">candidate_entries</span><span class="p">]</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">indx</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">cand</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">cand</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate_entries</span><span class="p">)}</span>
@@ -278,7 +278,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="parse_entry_for_subcategories"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.parse_entry_for_subcategories">[docs]</a><span class="k">def</span> <span class="nf">parse_entry_for_subcategories</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_entry_for_subcategories"><a class="viewcode-back" href="../../../api/evennia.help.utils.html#evennia.help.utils.parse_entry_for_subcategories">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_entry_for_subcategories</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a command docstring for special sub-category blocks:</span>
 

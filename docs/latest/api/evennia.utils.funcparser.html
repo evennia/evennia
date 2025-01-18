@@ -127,10 +127,10 @@ function for the parser to accept it. This is usually done in a module with
 regular Python functions on the form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a module whose path is passed to the parser</span>
 
-<span class="k">def</span> <span class="nf">_helper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_helper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># use underscore to NOT make the function available as a callable</span>
 
-<span class="k">def</span> <span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># this can be accessed as $funcname(*args, **kwargs)</span>
     <span class="c1"># it must always accept *args and **kwargs.</span>
     <span class="o">...</span>
@@ -138,7 +138,7 @@ regular Python functions on the form:</p>
 </pre></div>
 </div>
 <p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.funcparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="s2">&quot;path.to.module_with_callables&quot;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;String with $funcname() in it&quot;</span><span class="p">)</span>
@@ -338,11 +338,11 @@ callable (like the current Session object for inlinefuncs).</p></li>
 <p>This is a convenience wrapper for <strong>self.parse(…, return_str=False)</strong> which
 accomplishes the same thing.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.funcparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncParser</span>
 
 
-<span class="k">def</span> <span class="nf">ret1</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ret1</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">({</span><span class="s2">&quot;lit&quot;</span><span class="p">:</span> <span class="n">lit</span><span class="p">})</span>

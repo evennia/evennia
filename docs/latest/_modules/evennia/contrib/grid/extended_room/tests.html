@@ -95,19 +95,19 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">parameterized</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterized</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">EvenniaTestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">EvenniaTestCase</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">extended_room</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">extended_room</span>
 
 
-<span class="k">def</span> <span class="nf">_get_timestamp</span><span class="p">(</span><span class="n">season</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_timestamp</span><span class="p">(</span><span class="n">season</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility to get a timestamp for a given season and time of day.</span>
 
@@ -119,7 +119,7 @@
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2064</span><span class="p">,</span> <span class="n">seasons</span><span class="p">[</span><span class="n">season</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">times_of_day</span><span class="p">[</span><span class="n">time_of_day</span><span class="p">])</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="TestExtendedRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom">[docs]</a><span class="k">class</span> <span class="nc">TestExtendedRoom</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestExtendedRoom</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test Extended Room typeclass.</span>
 
@@ -127,16 +127,16 @@
 
     <span class="n">base_room_desc</span> <span class="o">=</span> <span class="s2">&quot;Base room description.&quot;</span>
 
-<div class="viewcode-block" id="TestExtendedRoom.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Test Room&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_room_desc</span></div>
 
-<div class="viewcode-block" id="TestExtendedRoom.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.tearDown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestExtendedRoom.test_room_description"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_description">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.test_room_description"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_description">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_room_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that the vanilla room description is returned as expected.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -152,7 +152,7 @@
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_seasonal_room_descriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_seasonal_room_descriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that the room description changes with the season.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -171,7 +171,7 @@
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_get_time_of_day_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_time_of_day_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test room with $</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -190,7 +190,7 @@
         <span class="n">room_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">room_desc</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2"> What a great day!&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestExtendedRoom.test_room_states"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_states">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.test_room_states"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_states">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_room_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test rooms with custom game states.</span>
 
@@ -217,12 +217,12 @@
             <span class="s2">&quot; This room is under repair.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExtendedRoom.test_alternative_descs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_alternative_descs">[docs]</a>    <span class="k">def</span> <span class="nf">test_alternative_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.test_alternative_descs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_alternative_descs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_alternative_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test rooms with alternate descriptions.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
 
         <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># TODO - fixes an issue with home FK missing</span>
 
@@ -240,7 +240,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">clear_room_state</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_room_desc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExtendedRoom.test_details"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_details">[docs]</a>    <span class="k">def</span> <span class="nf">test_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoom.test_details"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_details">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test room details.</span>
 
@@ -263,7 +263,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_detail</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># all test* gone</span></div></div>
 
 
-<div class="viewcode-block" id="TestExtendedRoomCommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands">[docs]</a><span class="k">class</span> <span class="nc">TestExtendedRoomCommands</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoomCommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestExtendedRoomCommands</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the ExtendedRoom commands.</span>
 
@@ -271,13 +271,13 @@
 
     <span class="n">base_room_desc</span> <span class="o">=</span> <span class="s2">&quot;Base room description.&quot;</span>
 
-<div class="viewcode-block" id="TestExtendedRoomCommands.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoomCommands.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.setUp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.grid.extended_room.ExtendedRoom&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_room_desc</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_desc">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_cmd_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test new desc command&quot;&quot;&quot;</span>
 
         <span class="n">mock_gametime</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">_get_timestamp</span><span class="p">(</span><span class="s2">&quot;autumn&quot;</span><span class="p">,</span> <span class="s2">&quot;afternoon&quot;</span><span class="p">)</span>
@@ -352,7 +352,7 @@
 <span class="s2">                  &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_detail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_detail">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmd_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_detail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_detail">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test adding details&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
@@ -385,7 +385,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_roomstate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomstate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_cmd_roomstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_roomstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the roomstate command</span>
 
@@ -443,7 +443,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">get_stateful_desc</span><span class="p">(),</span> <span class="s2">&quot;Spring description.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_roomtime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomtime">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_cmd_roomtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_roomtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the time command</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -455,7 +455,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoomCommands.test_cmd_look"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_look">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_cmd_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_cmd_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_gametime</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the look command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -108,18 +108,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choices</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choices</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.account</span> <span class="kn">import</span> <span class="n">CmdIC</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxAccountCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultAccount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.account</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdIC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxAccountCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
 
 <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span>
 
@@ -129,8 +129,8 @@
     <span class="n">_CHARGEN_MENU</span> <span class="o">=</span> <span class="s2">&quot;evennia.contrib.rpg.character_creator.example_menu&quot;</span>
 
 
-<div class="viewcode-block" id="ContribCmdIC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdIC">[docs]</a><span class="k">class</span> <span class="nc">ContribCmdIC</span><span class="p">(</span><span class="n">CmdIC</span><span class="p">):</span>
-<div class="viewcode-block" id="ContribCmdIC.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdIC.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribCmdIC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdIC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ContribCmdIC</span><span class="p">(</span><span class="n">CmdIC</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribCmdIC.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdIC.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="c1"># check if the args match an in-progress character</span>
             <span class="n">wips</span> <span class="o">=</span> <span class="p">[</span><span class="n">chara</span> <span class="k">for</span> <span class="n">chara</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span> <span class="k">if</span> <span class="n">chara</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">]</span>
@@ -140,7 +140,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ContribCmdCharCreate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdCharCreate">[docs]</a><span class="k">class</span> <span class="nc">ContribCmdCharCreate</span><span class="p">(</span><span class="n">MuxAccountCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribCmdCharCreate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdCharCreate">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ContribCmdCharCreate</span><span class="p">(</span><span class="n">MuxAccountCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a new character</span>
 
@@ -155,7 +155,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(Player) and is_ooc()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-<div class="viewcode-block" id="ContribCmdCharCreate.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdCharCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribCmdCharCreate.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribCmdCharCreate.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;create the new character&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
@@ -188,7 +188,7 @@
         <span class="n">session</span><span class="o">.</span><span class="n">new_char</span> <span class="o">=</span> <span class="n">new_character</span>
 
         <span class="c1"># this gets called every time the player exits the chargen menu</span>
-        <span class="k">def</span> <span class="nf">finish_char_callback</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">finish_char_callback</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
             <span class="n">char</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">new_char</span>
             <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">:</span>
                 <span class="c1"># this means the character creation process was exited in the middle</span>
@@ -201,16 +201,16 @@
         <span class="n">EvMenu</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">_CHARGEN_MENU</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="n">startnode</span><span class="p">,</span> <span class="n">cmd_on_exit</span><span class="o">=</span><span class="n">finish_char_callback</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ContribChargenCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ContribChargenCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribChargenCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ContribChargenCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Contrib Chargen CmdSet&quot;</span>
 
-<div class="viewcode-block" id="ContribChargenCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribChargenCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribCmdIC</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribCmdCharCreate</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ContribChargenAccount"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount">[docs]</a><span class="k">class</span> <span class="nc">ContribChargenAccount</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribChargenAccount"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ContribChargenAccount</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A modified Account class that changes the OOC look output to better match the contrib and</span>
 <span class="sd">    incorporate in-progress characters.</span>
@@ -233,7 +233,7 @@
 <span class="s2">--------------------------------------------------------------------</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ContribChargenAccount.at_look"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount.at_look">[docs]</a>    <span class="k">def</span> <span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribChargenAccount.at_look"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.character_creator.html#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount.at_look">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this object executes a look. It allows to customize</span>
 <span class="sd">        just what this means.</span>

@@ -100,12 +100,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">list_node</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.evmenu</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_node</span>
 
-<span class="kn">from</span> <span class="nn">.room</span> <span class="kn">import</span> <span class="n">EvscapeRoom</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_fantasy_word</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.room</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvscapeRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_fantasy_word</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Main menu</span>
@@ -143,7 +143,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_move_to_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_move_to_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper to move a user to a room</span>
 
@@ -158,7 +158,7 @@
     <span class="k">return</span> <span class="s2">&quot;node_quit&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;quiet&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_create_new_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_new_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># create a random name, retrying until we find</span>
     <span class="c1"># a unique one</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">create_fantasy_word</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -178,7 +178,7 @@
     <span class="k">return</span> <span class="s2">&quot;node_quit&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;quiet&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_all_rooms</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_rooms</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a list of all available rooms and store the mapping</span>
 <span class="sd">    between option and room so we get to it later.</span>
@@ -202,7 +202,7 @@
     <span class="k">return</span> <span class="n">room_option_descs</span>
 
 
-<span class="k">def</span> <span class="nf">_select_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_select_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a room from the selection using the mapping we created earlier.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -211,7 +211,7 @@
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_get_all_rooms</span><span class="p">,</span> <span class="n">_select_room</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">node_start</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_start</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">_START_TEXT</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
 
@@ -238,14 +238,14 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="node_set_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_set_desc">[docs]</a><span class="k">def</span> <span class="nf">node_set_desc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_set_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_set_desc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_set_desc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">current_desc</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Your current description is</span><span class="se">\n\n</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s1">&#39;   &quot;</span><span class="si">{</span><span class="n">current_desc</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Enter your new description!&quot;</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_temp_description</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_temp_description</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="mi">5</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
@@ -253,7 +253,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rYour description must be 5-40 characters long.|n&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_set_description</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_description</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your description!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;node_start&quot;</span>
@@ -266,7 +266,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_create_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_create_room">[docs]</a><span class="k">def</span> <span class="nf">node_create_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_create_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_create_room">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_create_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">_CREATE_ROOM_TEXT</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
@@ -277,7 +277,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_join_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_join_room">[docs]</a><span class="k">def</span> <span class="nf">node_join_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_join_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_join_room">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_join_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;room&quot;</span><span class="p">]</span>
     <span class="n">stats</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span> <span class="ow">or</span> <span class="p">{</span><span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
@@ -298,7 +298,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_quit">[docs]</a><span class="k">def</span> <span class="nf">node_quit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_quit">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_quit</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">quiet</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
@@ -306,8 +306,8 @@
         <span class="c1"># we check an Attribute on the caller to see if we should</span>
         <span class="c1"># leave the game entirely when leaving</span>
         <span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">evscaperoom_standalone</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-            <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmdhandler</span>
 
             <span class="n">cmdhandler</span><span class="o">.</span><span class="n">cmdhandler</span><span class="p">(</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">cmdobj</span><span class="o">=</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdQuit</span><span class="p">(),</span> <span class="n">cmdobj_key</span><span class="o">=</span><span class="s2">&quot;@quit&quot;</span>
@@ -316,7 +316,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># empty options exit the menu</span></div>
 
 
-<div class="viewcode-block" id="EvscaperoomMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu">[docs]</a><span class="k">class</span> <span class="nc">EvscaperoomMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
+<div class="viewcode-block" id="EvscaperoomMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvscaperoomMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom menu with a different formatting of options.</span>
 
@@ -324,10 +324,10 @@
 
     <span class="n">node_border_char</span> <span class="o">=</span> <span class="s2">&quot;~&quot;</span>
 
-<div class="viewcode-block" id="EvscaperoomMenu.nodetext_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="EvscaperoomMenu.nodetext_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">justify</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvscaperoomMenu.options_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
+<div class="viewcode-block" id="EvscaperoomMenu.options_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu.options_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
         <span class="n">main_options</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">room_choices</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">optionlist</span><span class="p">:</span>
@@ -341,7 +341,7 @@
 
 
 <span class="c1"># access function</span>
-<div class="viewcode-block" id="run_evscaperoom_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_evscaperoom_menu">[docs]</a><span class="k">def</span> <span class="nf">run_evscaperoom_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="run_evscaperoom_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_evscaperoom_menu">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_evscaperoom_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run room selection menu</span>
 
@@ -362,7 +362,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">_set_thing_style</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_thing_style</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
     <span class="n">options</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">room</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
     <span class="n">options</span><span class="p">[</span><span class="s2">&quot;things_style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -370,7 +370,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>  <span class="c1"># rerun node</span>
 
 
-<span class="k">def</span> <span class="nf">_toggle_screen_reader</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_toggle_screen_reader</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
     <span class="c1"># flip old setting</span>
     <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -379,7 +379,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>  <span class="c1"># rerun node</span>
 
 
-<div class="viewcode-block" id="node_options"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_options">[docs]</a><span class="k">def</span> <span class="nf">node_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_options"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_options">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">node_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;|cOption menu|n</span><span class="se">\n</span><span class="s2">(&#39;|wq|nuit&#39; to return)&quot;</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
 
@@ -416,17 +416,17 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="OptionsMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.OptionsMenu">[docs]</a><span class="k">class</span> <span class="nc">OptionsMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionsMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.OptionsMenu">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OptionsMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom display of Option menu</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OptionsMenu.node_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.OptionsMenu.node_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionsMenu.node_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.OptionsMenu.node_formatter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nodetext</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">optionstext</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 
 
 <span class="c1"># access function</span>
-<div class="viewcode-block" id="run_option_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_option_menu">[docs]</a><span class="k">def</span> <span class="nf">run_option_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="run_option_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_option_menu">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_option_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run option menu in-game</span>
 <span class="sd">    &quot;&quot;&quot;</span>

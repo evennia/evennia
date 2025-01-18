@@ -138,10 +138,10 @@ To enter the shop, you’ll just need to stand in the same room and use the <cod
 <p>The merchant will respond to you giving the <code class="docutils literal notranslate"><span class="pre">shop</span></code> or <code class="docutils literal notranslate"><span class="pre">buy</span></code> command in their presence.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in for example mygame/typeclasses/merchants.py </span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span>
 
-<span class="k">class</span> <span class="nc">CmdOpenShop</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdOpenShop</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Open the shop! </span>
 
@@ -152,23 +152,23 @@ To enter the shop, you’ll just need to stand in the same room and use the <cod
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shop&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;buy&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this will sit on the Merchant, which is self.obj. </span>
         <span class="c1"># the self.caller is the player wanting to buy stuff.    </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         
 
-<span class="k">class</span> <span class="nc">MerchantCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MerchantCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOpenShop</span><span class="p">())</span>
 
 
-<span class="k">class</span> <span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
-     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">MerchantCmdSet</span><span class="p">)</span>
 
-     <span class="k">def</span> <span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
          <span class="n">menunodes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># TODO! </span>
          <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">shopname</span> <span class="ow">or</span> <span class="s2">&quot;The shop&quot;</span>
          <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shopfront&quot;</span><span class="p">,</span> 
@@ -198,7 +198,7 @@ _________________________________________________________
 
 <span class="c1"># top of module, above NPCMerchant class.</span>
 
-<span class="k">def</span> <span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;This is the top-menu screen.&quot;</span>
 
     <span class="c1"># made available since we passed them to EvMenu on start </span>
@@ -251,7 +251,7 @@ _________________________________________________________
 
 <span class="c1"># right after the other node</span>
 
-<span class="k">def</span> <span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Called if buyer chooses to buy&quot;</span>
     <span class="n">selected_ware</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;selected_ware&quot;</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">selected_ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
@@ -267,7 +267,7 @@ _________________________________________________________
     <span class="c1"># no matter what, we return to the top level of the shop</span>
     <span class="k">return</span> <span class="s2">&quot;shopfront&quot;</span>
 
-<span class="k">def</span> <span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Sets up the buy menu screen.&quot;</span>
 
     <span class="c1"># passed from the option we chose </span>
@@ -291,20 +291,20 @@ _________________________________________________________
 <p>We have been referring to two nodes here: <code class="docutils literal notranslate"><span class="pre">&quot;shopfront&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;inspect_and_buy&quot;</span></code> , we should map them to the code in the menu. Scroll down to the <code class="docutils literal notranslate"><span class="pre">NPCMerchant</span></code> class in the same module and find that unfinished <code class="docutils literal notranslate"><span class="pre">open_shop</span></code> method again:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in /mygame/typeclasses/merchants.py</span>
 
-<span class="k">def</span> <span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># ... </span>
 
-<span class="k">def</span> <span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
-<span class="k">def</span> <span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
      <span class="c1"># ...</span>
 
-     <span class="k">def</span> <span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
          <span class="n">menunodes</span> <span class="o">=</span> <span class="p">{</span>
              <span class="s2">&quot;shopfront&quot;</span><span class="p">:</span> <span class="n">node_shopfront</span><span class="p">,</span>
              <span class="s2">&quot;inspect_and_buy&quot;</span><span class="p">:</span> <span class="n">node_inspect_and_buy</span>

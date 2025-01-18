@@ -206,13 +206,13 @@
 <span class="normal">65</span>
 <span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/npcs.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">AttributeProperty</span>
 
-<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">LivingMixin</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivingMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
 
 
-<span class="hll"><span class="k">class</span> <span class="nc">EvAdventureNPC</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="hll"><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureNPC</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
 </span><span class="w">	</span><span class="sd">&quot;&quot;&quot;Base class for NPCs&quot;&quot;&quot;</span> 
 
 <span class="hll">    <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">False</span>
@@ -229,34 +229,34 @@
 <span class="hll">    <span class="n">is_idle</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span>    
 <span class="hll">    <span class="nd">@property</span>
-</span>    <span class="k">def</span> <span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
         
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dexterity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dexterity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">constitution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">constitution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">intelligence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intelligence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">charisma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">charisma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hp_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hp_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_multiplier</span>
     
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Start with max health.</span>
 <span class="sd">  </span>
@@ -265,7 +265,7 @@
 <span class="hll">         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
 </span>
 <span class="hll">
-</span><span class="k">class</span> <span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mob(ile) NPC to be used for enemies.</span>
 <span class="sd">     </span>
@@ -290,15 +290,15 @@
 <p>Not so much to test yet, but we will be using the same module to test other aspects of NPCs in the future, so let’s create it now.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/tests/test_npcs.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>                                           
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>                        
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>                                           
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>                        
                                                                             
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">npcs</span>                                                         
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">npcs</span>                                                         
                                                                             
-<span class="k">class</span> <span class="nc">TestNPCBase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>                                             
+<span class="k">class</span><span class="w"> </span><span class="nc">TestNPCBase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>                                             
 <span class="w">	</span><span class="sd">&quot;&quot;&quot;Test the NPC base class&quot;&quot;&quot;</span> 
 	
-    <span class="k">def</span> <span class="nf">test_npc_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_npc_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
             <span class="n">npcs</span><span class="o">.</span><span class="n">EvAdventureNPC</span><span class="p">,</span>
             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;TestNPC&quot;</span><span class="p">,</span>

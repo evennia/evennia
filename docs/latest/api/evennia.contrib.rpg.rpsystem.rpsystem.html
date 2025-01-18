@@ -181,11 +181,11 @@ in a room as sdesc + pose.</p>
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">())</span>  <span class="c1"># &lt;---</span>
 </pre></div>
@@ -194,25 +194,25 @@ in a room as sdesc + pose.</p>
 the typeclasses in this module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPCharacter</span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPObject</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="c1"># ...</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContribRPRoom</span>
 
-<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
     <span class="c1"># ...</span>
 </pre></div>
 </div>
@@ -736,7 +736,7 @@ commands the caller can use.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -767,7 +767,7 @@ commands the caller can use.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'no_prefix': ' &quot; \'', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'no_prefix': ' \' &quot;', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

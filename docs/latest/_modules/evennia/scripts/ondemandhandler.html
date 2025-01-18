@@ -154,9 +154,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iter</span>
 
 <span class="n">_RUNTIME</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -164,7 +164,7 @@
 <span class="n">ONDEMAND_HANDLER_SAVE_NAME</span> <span class="o">=</span> <span class="s2">&quot;on_demand_timers&quot;</span>
 
 
-<div class="viewcode-block" id="OnDemandTask"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask">[docs]</a><span class="k">class</span> <span class="nc">OnDemandTask</span><span class="p">:</span>
+<div class="viewcode-block" id="OnDemandTask"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OnDemandTask</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores information about an on-demand task.</span>
 
@@ -179,7 +179,7 @@
     <span class="c1"># useful stage-functions. Use with OnDemandTask.endfunc_stop etc</span>
 
 <div class="viewcode-block" id="OnDemandTask.runtime"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.runtime">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">runtime</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runtime</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wraps the gametime.runtime() function.</span>
 
@@ -189,11 +189,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_RUNTIME</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_RUNTIME</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils.gametime</span> <span class="kn">import</span> <span class="n">runtime</span> <span class="k">as</span> <span class="n">_RUNTIME</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.gametime</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime</span> <span class="k">as</span> <span class="n">_RUNTIME</span>
         <span class="k">return</span> <span class="n">_RUNTIME</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="OnDemandTask.stagefunc_loop"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_loop">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">stagefunc_loop</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stagefunc_loop</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attach this to the last stage to have the task start over from</span>
 <span class="sd">        the beginning</span>
@@ -224,7 +224,7 @@
         <span class="n">task</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">current_loop_time</span></div>
 
 <div class="viewcode-block" id="OnDemandTask.stagefunc_bounce"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.stagefunc_bounce">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">stagefunc_bounce</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stagefunc_bounce</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This endfunc will have the task reverse direction and go through the stages in</span>
 <span class="sd">        reverse order. This stage-function must be placed at both &#39;ends&#39; of the stage sequence</span>
@@ -258,7 +258,7 @@
     <span class="c1"># dict.</span>
     <span class="n">default_stage_function</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="OnDemandTask.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): A unique identifier for the task.</span>
@@ -322,18 +322,18 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Note that we don&#39;t check the state here&quot;&quot;&quot;</span>
         <span class="c1"># we visualize stages with ascending key order</span>
         <span class="n">dt</span><span class="p">,</span> <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;OnDemandTask(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="si">}</span><span class="s2">] (dt=</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">s), stage=</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">category</span><span class="p">)</span>
 
-<div class="viewcode-block" id="OnDemandTask.check"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.check"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.check">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the current stage of the task and return the time-delta to the next stage.</span>
 
@@ -350,7 +350,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">_find_stage</span><span class="p">(</span><span class="n">delta_dt</span><span class="p">,</span> <span class="n">_rerun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_find_stage</span><span class="p">(</span><span class="n">delta_dt</span><span class="p">,</span> <span class="n">_rerun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stages</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
@@ -375,7 +375,7 @@
                             <span class="k">return</span> <span class="n">_find_stage</span><span class="p">(</span><span class="n">delta_dt</span><span class="p">,</span> <span class="n">_rerun</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">stage</span>
 
-        <span class="k">def</span> <span class="nf">_find_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_find_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">autostart</span><span class="p">:</span>
                     <span class="c1"># start timer</span>
@@ -397,7 +397,7 @@
 
         <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">stage</span></div>
 
-<div class="viewcode-block" id="OnDemandTask.get_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.get_dt">[docs]</a>    <span class="k">def</span> <span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.get_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.get_dt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the time-delta since last check.</span>
 
@@ -409,7 +409,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="OnDemandTask.set_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.set_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.set_dt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the time-delta since the task started manually. This allows you to &#39;cheat&#39; the system</span>
 <span class="sd">        and set the time manually. This is useful for testing or when a system manipulates the state</span>
@@ -426,7 +426,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">runtime</span><span class="p">()</span> <span class="o">-</span> <span class="n">dt</span></div>
 
-<div class="viewcode-block" id="OnDemandTask.get_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.get_stage">[docs]</a>    <span class="k">def</span> <span class="nf">get_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.get_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.get_stage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current stage of the task. If no stage was given, this will return `None` but</span>
 <span class="sd">        still update the last_checked time.</span>
@@ -438,7 +438,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="OnDemandTask.set_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.set_stage">[docs]</a>    <span class="k">def</span> <span class="nf">set_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandTask.set_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask.set_stage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the stage of the task manually. This allows you to &#39;cheat&#39; the system and set the stage</span>
 <span class="sd">        manually. This is useful for testing or when a system manipulates the state somehow (like</span>
@@ -463,7 +463,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">runtime</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">stages_by_name</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="OnDemandHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler">[docs]</a><span class="k">class</span> <span class="nc">OnDemandHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="OnDemandHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OnDemandHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A singleton handler for managing on-demand state changes. Its main function is to persistently</span>
 <span class="sd">    track the time (in seconds) between a state change and the next. How you make use of this</span>
@@ -473,10 +473,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OnDemandHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.load">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the on-demand timers from ServerConfig storage.</span>
 
@@ -485,14 +485,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">ONDEMAND_HANDLER_SAVE_NAME</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.save">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the on-demand timers to ServerConfig storage. Should be called when Evennia shuts down.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">ONDEMAND_HANDLER_SAVE_NAME</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_build_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a unique key for the task.</span>
 
@@ -516,7 +516,7 @@
             <span class="n">category</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="OnDemandHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new on-demand task.</span>
 
@@ -546,7 +546,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)]</span> <span class="o">=</span> <span class="n">task</span>
         <span class="k">return</span> <span class="n">task</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.batch_add"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tasks</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.batch_add"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.batch_add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tasks</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add multiple on-demand tasks at once.</span>
 
@@ -557,7 +557,7 @@
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">category</span><span class="p">)]</span> <span class="o">=</span> <span class="n">task</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.remove">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove an on-demand task.</span>
 
@@ -574,7 +574,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.batch_remove"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.batch_remove">[docs]</a>    <span class="k">def</span> <span class="nf">batch_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.batch_remove"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.batch_remove">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">batch_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove multiple on-demand tasks at once, potentially within a given category.</span>
 
@@ -589,7 +589,7 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">all_on_none</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">all_on_none</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all on-demand tasks.</span>
 
@@ -612,7 +612,7 @@
         <span class="c1"># filter by category (treat no-category as its own category)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">keytuple</span><span class="p">:</span> <span class="n">task</span> <span class="k">for</span> <span class="n">keytuple</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">keytuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">all_on_none</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.clear">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">all_on_none</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all on-demand tasks.</span>
 
@@ -632,7 +632,7 @@
             <span class="n">keytuple</span><span class="p">:</span> <span class="n">task</span> <span class="k">for</span> <span class="n">keytuple</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">keytuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">category</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.get"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.get"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an on-demand task. This will _not_ check it.</span>
 
@@ -651,7 +651,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.get_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get_dt">[docs]</a>    <span class="k">def</span> <span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.get_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get_dt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the time-delta since the task started.</span>
 
@@ -669,7 +669,7 @@
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">task</span><span class="o">.</span><span class="n">get_dt</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.set_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.set_dt"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.set_dt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the time-delta since the task started manually. This allows you to &#39;cheat&#39; the system</span>
 <span class="sd">        and set the time manually. This is useful for testing or when a system manipulates the state</span>
@@ -693,7 +693,7 @@
         <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.get_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get_stage">[docs]</a>    <span class="k">def</span> <span class="nf">get_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.get_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.get_stage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current stage of an on-demand task.</span>
 
@@ -712,7 +712,7 @@
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">task</span><span class="o">.</span><span class="n">get_stage</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="OnDemandHandler.set_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.set_stage">[docs]</a>    <span class="k">def</span> <span class="nf">set_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OnDemandHandler.set_stage"><a class="viewcode-back" href="../../../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler.set_stage">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the stage of an on-demand task manually. This allows you to &#39;cheat&#39; the system and set</span>
 <span class="sd">        the stage manually. This is useful for testing or when a system manipulates the state</span>

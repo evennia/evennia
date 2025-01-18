@@ -114,18 +114,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
-<span class="kn">from</span> <span class="nn">twisted.web.client</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">_HTTP11ClientFactory</span>
-<span class="kn">from</span> <span class="nn">twisted.web.http_headers</span> <span class="kn">import</span> <span class="n">Headers</span>
-<span class="kn">from</span> <span class="nn">twisted.web.iweb</span> <span class="kn">import</span> <span class="n">IBodyProducer</span>
-<span class="kn">from</span> <span class="nn">zope.interface</span> <span class="kn">import</span> <span class="n">implementer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">inlineCallbacks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">_HTTP11ClientFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.http_headers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.iweb</span><span class="w"> </span><span class="kn">import</span> <span class="n">IBodyProducer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">implementer</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_iter</span>
 
 <span class="n">DEFAULT_LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:5000&quot;</span>
 <span class="n">DEFAULT_LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/generate&quot;</span>
@@ -139,44 +139,44 @@
 
 
 <div class="viewcode-block" id="StringProducer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer">[docs]</a><span class="nd">@implementer</span><span class="p">(</span><span class="n">IBodyProducer</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">StringProducer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StringProducer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for feeding a request body to the HTTP client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StringProducer.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+<div class="viewcode-block" id="StringProducer.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StringProducer.startProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.startProducing">[docs]</a>    <span class="k">def</span> <span class="nf">startProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumer</span><span class="p">):</span>
+<div class="viewcode-block" id="StringProducer.startProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.startProducing">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">startProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumer</span><span class="p">):</span>
         <span class="n">consumer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StringProducer.pauseProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.pauseProducing">[docs]</a>    <span class="k">def</span> <span class="nf">pauseProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StringProducer.pauseProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.pauseProducing">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pauseProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="StringProducer.stopProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.stopProducing">[docs]</a>    <span class="k">def</span> <span class="nf">stopProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StringProducer.stopProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.stopProducing">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stopProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div></div>
 
 
-<div class="viewcode-block" id="SimpleResponseReceiver"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver">[docs]</a><span class="k">class</span> <span class="nc">SimpleResponseReceiver</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleResponseReceiver"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleResponseReceiver</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for pulling the response body out of an HTTP response.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimpleResponseReceiver.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleResponseReceiver.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span></div>
 
-<div class="viewcode-block" id="SimpleResponseReceiver.dataReceived"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleResponseReceiver.dataReceived"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.dataReceived">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buf</span> <span class="o">+=</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="SimpleResponseReceiver.connectionLost"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">protocol</span><span class="o">.</span><span class="n">connectionDone</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleResponseReceiver.connectionLost"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.connectionLost">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">protocol</span><span class="o">.</span><span class="n">connectionDone</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buf</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="QuietHTTP11ClientFactory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory">[docs]</a><span class="k">class</span> <span class="nc">QuietHTTP11ClientFactory</span><span class="p">(</span><span class="n">_HTTP11ClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="QuietHTTP11ClientFactory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">QuietHTTP11ClientFactory</span><span class="p">(</span><span class="n">_HTTP11ClientFactory</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Silences the obnoxious factory start/stop messages in the default client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -184,13 +184,13 @@
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="LLMClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient">[docs]</a><span class="k">class</span> <span class="nc">LLMClient</span><span class="p">:</span>
+<div class="viewcode-block" id="LLMClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LLMClient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A client for communicating with an LLM server.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LLMClient.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_bad_request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LLMClient.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_bad_request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span> <span class="o">=</span> <span class="n">HTTPConnectionPool</span><span class="p">(</span><span class="n">reactor</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">QuietHTTP11ClientFactory</span>
 
@@ -204,7 +204,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_format_request_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_request_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Structure the request body for the LLM server&quot;&quot;&quot;</span>
         <span class="n">request_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -214,18 +214,18 @@
 
         <span class="k">return</span> <span class="n">request_body</span>
 
-    <span class="k">def</span> <span class="nf">_handle_llm_response_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_llm_response_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the response body from the response&quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">()</span>
         <span class="n">response</span><span class="o">.</span><span class="n">deliverBody</span><span class="p">(</span><span class="n">SimpleResponseReceiver</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">d</span>
 
-    <span class="k">def</span> <span class="nf">_handle_llm_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failure</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_llm_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failure</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Correctly handle server connection errors&quot;&quot;&quot;</span>
         <span class="n">failure</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">failure</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_get_response_from_llm_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_response_from_llm_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the LLM server and handle the response/failure&quot;&quot;&quot;</span>
         <span class="n">request_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_request_body</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
 
@@ -243,7 +243,7 @@
         <span class="k">return</span> <span class="n">d</span>
 
 <div class="viewcode-block" id="LLMClient.get_response"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient.get_response">[docs]</a>    <span class="nd">@inlineCallbacks</span>
-    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a response from the LLM server for the given npc.</span>
 

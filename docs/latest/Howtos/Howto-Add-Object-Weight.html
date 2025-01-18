@@ -138,19 +138,19 @@
 <span class="normal">15</span>
 <span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># inside your mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span> 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span> 
 
-<span class="hll"><span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span> 
+<span class="hll"><span class="k">class</span><span class="w"> </span><span class="nc">ObjectParent</span><span class="p">:</span> 
 </span>
 <span class="hll">    <span class="n">weight</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span>
 <span class="hll">    <span class="nd">@property</span> 
-</span>    <span class="k">def</span> <span class="nf">total_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">total_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="hll">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">total_weight</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span> 
 </span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
     <span class="c1"># ...</span>
 </pre></div></td></tr></table></div>
 </div>
@@ -186,16 +186,16 @@
 <p>To limit how much you can carry, you first need to know your own strength</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py </span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+<span class="k">class</span><span class="w"> </span><span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
 
     <span class="n">carrying_capacity</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">carried_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">carried_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_weight</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
 
 </pre></div>
@@ -209,13 +209,13 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py </span>
 
 <span class="c1"># ... </span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span> 
 
 <span class="c1"># ... </span>
 
-<span class="k">class</span> <span class="nc">WeightAwareCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeightAwareCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span> 
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Get what?&quot;</span><span class="p">)</span>

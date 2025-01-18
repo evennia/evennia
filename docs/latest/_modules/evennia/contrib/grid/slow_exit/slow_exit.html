@@ -147,20 +147,20 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultExit</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultExit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">MOVE_DELAY</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stroll&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;walk&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;sprint&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="SlowExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExit">[docs]</a><span class="k">class</span> <span class="nc">SlowExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<div class="viewcode-block" id="SlowExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExit">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlowExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This overloads the way moving happens.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SlowExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="SlowExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.at_traverse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the actual traversal, using utils.delay to delay the move_to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -170,7 +170,7 @@
         <span class="n">move_speed</span> <span class="o">=</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">move_speed</span> <span class="ow">or</span> <span class="s2">&quot;walk&quot;</span>
         <span class="n">move_delay</span> <span class="o">=</span> <span class="n">MOVE_DELAY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">move_speed</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">move_callback</span><span class="p">():</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">move_callback</span><span class="p">():</span>
             <span class="s2">&quot;This callback will be called by utils.delay after move_delay seconds.&quot;</span>
             <span class="n">source_location</span> <span class="o">=</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span>
             <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
@@ -199,7 +199,7 @@
 <span class="n">SPEED_DESCS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stroll&quot;</span><span class="p">:</span> <span class="s2">&quot;strolling&quot;</span><span class="p">,</span> <span class="s2">&quot;walk&quot;</span><span class="p">:</span> <span class="s2">&quot;walking&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="s2">&quot;running&quot;</span><span class="p">,</span> <span class="s2">&quot;sprint&quot;</span><span class="p">:</span> <span class="s2">&quot;sprinting&quot;</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="CmdSetSpeed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed">[docs]</a><span class="k">class</span> <span class="nc">CmdSetSpeed</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetSpeed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdSetSpeed</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set your movement speed</span>
 
@@ -213,7 +213,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;setspeed&quot;</span>
 
-<div class="viewcode-block" id="CmdSetSpeed.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetSpeed.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply sets an Attribute used by the SlowExit above.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -232,7 +232,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="CmdStop"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdStop">[docs]</a><span class="k">class</span> <span class="nc">CmdStop</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStop"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdStop">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdStop</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    stop moving</span>
 
@@ -244,7 +244,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span>
 
-<div class="viewcode-block" id="CmdStop.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStop.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.func">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a very simple command, using the</span>
 <span class="sd">        stored deferred from the exit traversal above.</span>
@@ -259,8 +259,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not moving.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SlowExitCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet">[docs]</a><span class="k">class</span> <span class="nc">SlowExitCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-<div class="viewcode-block" id="SlowExitCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SlowExitCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlowExitCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="SlowExitCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.slow_exit.html#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetSpeed</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStop</span><span class="p">())</span></div></div>
 </pre></div>

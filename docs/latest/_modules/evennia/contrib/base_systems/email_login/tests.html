@@ -95,13 +95,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">email_login</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">email_login</span>
 
 
-<div class="viewcode-block" id="TestEmailLogin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin">[docs]</a><span class="k">class</span> <span class="nc">TestEmailLogin</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestEmailLogin.test_connect"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_connect">[docs]</a>    <span class="k">def</span> <span class="nf">test_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEmailLogin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestEmailLogin</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEmailLogin.test_connect"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_connect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedConnect</span><span class="p">(),</span>
             <span class="s2">&quot;mytest@test.com test&quot;</span><span class="p">,</span>
@@ -122,13 +122,13 @@
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestEmailLogin.test_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_quit">[docs]</a>    <span class="k">def</span> <span class="nf">test_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEmailLogin.test_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_quit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedQuit</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="TestEmailLogin.test_unconnectedlook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_unconnectedlook">[docs]</a>    <span class="k">def</span> <span class="nf">test_unconnectedlook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEmailLogin.test_unconnectedlook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_unconnectedlook">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_unconnectedlook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedLook</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;==========&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestEmailLogin.test_unconnectedhelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_unconnectedhelp">[docs]</a>    <span class="k">def</span> <span class="nf">test_unconnectedhelp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEmailLogin.test_unconnectedhelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_unconnectedhelp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_unconnectedhelp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedHelp</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You are not yet logged into the game.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 

@@ -97,20 +97,20 @@
 <span class="sd">    Pull Request #2429</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseBadRequest</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">ListView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseBadRequest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">ListView</span>
 
-<span class="kn">from</span> <span class="nn">evennia.help.filehelp</span> <span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
-<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.help.filehelp</span><span class="w"> </span><span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.help.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.ansi</span><span class="w"> </span><span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span>
 
 <span class="n">DEFAULT_HELP_CATEGORY</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HELP_CATEGORY</span>
 
 
-<div class="viewcode-block" id="get_help_category"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.get_help_category">[docs]</a><span class="k">def</span> <span class="nf">get_help_category</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="n">slugify_cat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="get_help_category"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.get_help_category">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_help_category</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="n">slugify_cat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns help category.</span>
 
 <span class="sd">    Args:</span>
@@ -137,7 +137,7 @@
     <span class="k">return</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_category</span><span class="p">)</span> <span class="k">if</span> <span class="n">slugify_cat</span> <span class="k">else</span> <span class="n">help_category</span></div>
 
 
-<div class="viewcode-block" id="get_help_topic"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.get_help_topic">[docs]</a><span class="k">def</span> <span class="nf">get_help_topic</span><span class="p">(</span><span class="n">help_entry</span><span class="p">):</span>
+<div class="viewcode-block" id="get_help_topic"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.get_help_topic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_help_topic</span><span class="p">(</span><span class="n">help_entry</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the topic of the help entry.</span>
 
 <span class="sd">    Args:</span>
@@ -156,7 +156,7 @@
     <span class="k">return</span> <span class="n">help_topic</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="can_read_topic"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.can_read_topic">[docs]</a><span class="k">def</span> <span class="nf">can_read_topic</span><span class="p">(</span><span class="n">cmd_or_topic</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="can_read_topic"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.can_read_topic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">can_read_topic</span><span class="p">(</span><span class="n">cmd_or_topic</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if an account or puppet has read access to a help entry.</span>
 
 <span class="sd">    Args:</span>
@@ -178,7 +178,7 @@
         <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="collect_topics"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.collect_topics">[docs]</a><span class="k">def</span> <span class="nf">collect_topics</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="collect_topics"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.collect_topics">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">collect_topics</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect help topics from all sources (cmd/db/file).</span>
 
 <span class="sd">    Args:</span>
@@ -250,7 +250,7 @@
     <span class="k">return</span> <span class="n">cmd_help_topics</span><span class="p">,</span> <span class="n">db_help_topics</span><span class="p">,</span> <span class="n">file_help_topics</span></div>
 
 
-<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin">[docs]</a><span class="k">class</span> <span class="nc">HelpMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -262,7 +262,7 @@
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Help&quot;</span>
 
-<div class="viewcode-block" id="HelpMixin.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpMixin.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin.get_queryset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; here we want to return a list of only those HelpEntries</span>
 <span class="sd">        and other documentation that the current user is allowed to see.</span>
@@ -288,7 +288,7 @@
         <span class="k">return</span> <span class="n">all_entries</span></div></div>
 
 
-<div class="viewcode-block" id="HelpListView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpListView">[docs]</a><span class="k">class</span> <span class="nc">HelpListView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpListView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpListView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpListView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of help entries that can be viewed by a user, authenticated</span>
 <span class="sd">    or not.</span>
@@ -303,7 +303,7 @@
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Help Index&quot;</span></div>
 
 
-<div class="viewcode-block" id="HelpDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView">[docs]</a><span class="k">class</span> <span class="nc">HelpDetailView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HelpDetailView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the detail page for a given help entry.</span>
 
@@ -314,13 +314,13 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/help_detail.html&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">page_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">page_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Makes sure the page has a sensible title.</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
         <span class="n">topic</span> <span class="o">=</span> <span class="n">get_help_topic</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2"> detail&quot;</span>
 
-<div class="viewcode-block" id="HelpDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView.get_context_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds navigational data to the template to let browsers go to the next</span>
 <span class="sd">        or previous entry in the help list.</span>
@@ -378,7 +378,7 @@
 
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="HelpDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView.get_object">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that retrieves an object by category and topic</span>
 <span class="sd">        instead of pk and slug.</span>

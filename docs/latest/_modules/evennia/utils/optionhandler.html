@@ -90,33 +90,33 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.utils.optionhandler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.containers</span> <span class="kn">import</span> <span class="n">OPTION_CLASSES</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_partial_matching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.containers</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPTION_CLASSES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">string_partial_matching</span>
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
 
-<div class="viewcode-block" id="InMemorySaveHandler"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler">[docs]</a><span class="k">class</span> <span class="nc">InMemorySaveHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="InMemorySaveHandler"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InMemorySaveHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fallback SaveHandler, implementing a minimum of the required save mechanism</span>
 <span class="sd">    and storing data in memory.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="InMemorySaveHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="InMemorySaveHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="InMemorySaveHandler.add"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InMemorySaveHandler.add"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.add">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="InMemorySaveHandler.get"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InMemorySaveHandler.get"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.InMemorySaveHandler.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="OptionHandler"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler">[docs]</a><span class="k">class</span> <span class="nc">OptionHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="OptionHandler"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OptionHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a generic Option handler.  Retrieve options either as properties on</span>
 <span class="sd">    this handler or by using the .get method.</span>
@@ -126,7 +126,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OptionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="OptionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">,</span>
         <span class="n">options_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -173,14 +173,14 @@
         <span class="c1"># quick lookup.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allow for obj.options.key</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allow for obj.options.key = value</span>
 
@@ -194,7 +194,7 @@
             <span class="k">pass</span>
         <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_load_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads option on-demand if it has not been loaded yet.</span>
 
@@ -210,7 +210,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_option</span>
         <span class="k">return</span> <span class="n">loaded_option</span>
 
-<div class="viewcode-block" id="OptionHandler.get"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionHandler.get"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves an Option stored in the handler. Will load it if it doesn&#39;t exist.</span>
 
@@ -234,7 +234,7 @@
         <span class="n">op_found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_option</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">op_found</span> <span class="k">if</span> <span class="n">return_obj</span> <span class="k">else</span> <span class="n">op_found</span><span class="o">.</span><span class="n">value</span></div>
 
-<div class="viewcode-block" id="OptionHandler.set"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseOption&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="OptionHandler.set"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.set">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseOption&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change an individual option.</span>
 
@@ -263,7 +263,7 @@
         <span class="n">op</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">op</span></div>
 
-<div class="viewcode-block" id="OptionHandler.all"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionHandler.all"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all options defined on this handler.</span>
 

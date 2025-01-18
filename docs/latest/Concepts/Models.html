@@ -190,9 +190,9 @@ to version control.</p>
 <h2>Defining your models<a class="headerlink" href="#defining-your-models" title="Permalink to this headline">¶</a></h2>
 <p>A Django <em>model</em> is the Python representation of a database table. It can be handled like any other Python class. It defines <em>fields</em> on itself, objects of a special type. These become the “columns” of the database table. Finally, you create new instances of the model to add new rows to the database.</p>
 <p>We won’t describe all aspects of Django models here, for that we refer to the vast <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/models/">Django documentation</a> on the subject. Here is a (very) brief example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
-<span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyDataStore</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="s2">&quot;A simple model for storing some data&quot;</span>
     <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -227,9 +227,9 @@ point for your models.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;help.HelpEntry&quot;</span></code> for <a class="reference internal" href="../Components/Help-System.html"><span class="doc std std-doc">Help Entries</span></a>.</p></li>
 </ul>
 <p>Here’s an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
-<span class="k">class</span> <span class="nc">MySpecial</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MySpecial</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">db_character</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">)</span>
     <span class="n">db_items</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">)</span>
     <span class="n">db_account</span> <span class="o">=</span> <span class="n">modeles</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">)</span>
@@ -247,7 +247,7 @@ my_character = myspecial.db_character  # still a Character
 <section id="creating-a-new-model-instance">
 <h2>Creating a new model instance<a class="headerlink" href="#creating-a-new-model-instance" title="Permalink to this headline">¶</a></h2>
 <p>To create a new row in your table, you instantiate the model and then call its <code class="docutils literal notranslate"><span class="pre">save()</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.myapp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyDataStore</span>
 
      <span class="n">new_datastore</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;LargeSword&quot;</span><span class="p">,</span>
                                  <span class="n">db_category</span><span class="o">=</span><span class="s2">&quot;weapons&quot;</span><span class="p">,</span>
@@ -292,9 +292,9 @@ my_character = myspecial.db_character  # still a Character
 <p>Using the idmapper is both more intuitive and more efficient <em>per object</em>; it leads to a lot less
 reading from disk. The drawback is that this system tends to be more memory hungry <em>overall</em>. So if you know that you’ll <em>never</em> need to add new properties to running instances or know that you will create new objects all the time yet rarely access them again (like for a log system), you are probably better off making “plain” Django models rather than using <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> and its idmapper.</p>
 <p>To use the idmapper and the field-wrapper functionality you just have to have your model classes inherit from <code class="docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code> instead of from the default <code class="docutils literal notranslate"><span class="pre">django.db.models.Model</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.idmapper.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SharedMemoryModel</span>
 
-<span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyDataStore</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="c1"># the rest is the same as before, but db_* is important; these will</span>
     <span class="c1"># later be settable as .key, .category, .text ...</span>
     <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -308,7 +308,7 @@ reading from disk. The drawback is that this system tends to be more memory hung
 <section id="searching-for-your-models">
 <h2>Searching for your models<a class="headerlink" href="#searching-for-your-models" title="Permalink to this headline">¶</a></h2>
 <p>To search your new custom database table you need to use its database <em>manager</em> to build a <em>query</em>. Note that even if you use <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> as described in the previous section, you have to use the actual <em>field names</em> in the query, not the wrapper name (so <code class="docutils literal notranslate"><span class="pre">db_key</span></code> and not just <code class="docutils literal notranslate"><span class="pre">key</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">world.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span><span class="w"> </span><span class="nn">world.myapp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyDataStore</span>
 
      <span class="c1"># get all datastore objects exactly matching a given key</span>
      <span class="n">matches</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;Larger Sword&quot;</span><span class="p">)</span>

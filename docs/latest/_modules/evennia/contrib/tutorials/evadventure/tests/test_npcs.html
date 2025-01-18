@@ -95,14 +95,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">npcs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">npcs</span>
 
 
-<div class="viewcode-block" id="TestNPCBase"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_npcs.html#evennia.contrib.tutorials.evadventure.tests.test_npcs.TestNPCBase">[docs]</a><span class="k">class</span> <span class="nc">TestNPCBase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestNPCBase.test_npc_base"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_npcs.html#evennia.contrib.tutorials.evadventure.tests.test_npcs.TestNPCBase.test_npc_base">[docs]</a>    <span class="k">def</span> <span class="nf">test_npc_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNPCBase"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_npcs.html#evennia.contrib.tutorials.evadventure.tests.test_npcs.TestNPCBase">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TestNPCBase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNPCBase.test_npc_base"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_npcs.html#evennia.contrib.tutorials.evadventure.tests.test_npcs.TestNPCBase.test_npc_base">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_npc_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
             <span class="n">npcs</span><span class="o">.</span><span class="n">EvAdventureNPC</span><span class="p">,</span>
             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;TestNPC&quot;</span><span class="p">,</span>

@@ -96,12 +96,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">OpenSSL</span>
-    <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">ssl</span> <span class="k">as</span> <span class="n">twisted_ssl</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">OpenSSL</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span> <span class="k">as</span> <span class="n">twisted_ssl</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
     <span class="n">errstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    </span><span class="si">{err}</span>
@@ -110,9 +110,9 @@
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">errstr</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">error</span><span class="p">))</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
 
 <span class="n">_GAME_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span>
 
@@ -140,19 +140,19 @@
 <span class="n">_TELNET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PROTOCOL_CLASS</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">_TELNET_PROTOCOL_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">_TELNET_PROTOCOL_CLASS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communication is the same as telnet, except data transfer</span>
 <span class="sd">    is done with encryption.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SSLProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SSLProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">=</span> <span class="s2">&quot;ssl&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="verify_SSL_key_and_cert"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.verify_SSL_key_and_cert">[docs]</a><span class="k">def</span> <span class="nf">verify_SSL_key_and_cert</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">certfile</span><span class="p">):</span>
+<div class="viewcode-block" id="verify_SSL_key_and_cert"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.verify_SSL_key_and_cert">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">verify_SSL_key_and_cert</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">certfile</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function looks for RSA key and certificate in the current</span>
 <span class="sd">    directory. If files ssl.key and ssl.cert does not exist, they</span>
@@ -162,10 +162,10 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">keyfile</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">certfile</span><span class="p">)):</span>
         <span class="c1"># key/cert does not exist. Create.</span>
-        <span class="kn">import</span> <span class="nn">subprocess</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
-        <span class="kn">from</span> <span class="nn">Crypto.PublicKey</span> <span class="kn">import</span> <span class="n">RSA</span>
-        <span class="kn">from</span> <span class="nn">twisted.conch.ssh.keys</span> <span class="kn">import</span> <span class="n">Key</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">Crypto.PublicKey</span><span class="w"> </span><span class="kn">import</span> <span class="n">RSA</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch.ssh.keys</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Creating SSL key and certificate ... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 
@@ -198,7 +198,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="getSSLContext"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.getSSLContext">[docs]</a><span class="k">def</span> <span class="nf">getSSLContext</span><span class="p">():</span>
+<div class="viewcode-block" id="getSSLContext"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.getSSLContext">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getSSLContext</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called by the portal when creating the SSL context</span>
 <span class="sd">    server-side.</span>

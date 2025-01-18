@@ -95,20 +95,20 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Lower</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseBadRequest</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lower</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponseBadRequest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListView</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">tail_log_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">tail_log_file</span>
 
-<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">TypeclassMixin</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectDetailView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeclassMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDetailView</span>
 
 
-<div class="viewcode-block" id="ChannelMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelMixin">[docs]</a><span class="k">class</span> <span class="nc">ChannelMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChannelMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -129,7 +129,7 @@
     <span class="c1"># https://github.com/evennia/evennia/wiki/Locks#valid-access_types</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;listen&quot;</span>
 
-<div class="viewcode-block" id="ChannelMixin.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelMixin.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelMixin.get_queryset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; here we want to return a list of only those Channels</span>
 <span class="sd">        and other documentation that the current user is allowed to see.</span>
@@ -152,7 +152,7 @@
         <span class="k">return</span> <span class="n">filtered</span></div></div>
 
 
-<div class="viewcode-block" id="ChannelListView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelListView">[docs]</a><span class="k">class</span> <span class="nc">ChannelListView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelListView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelListView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChannelListView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of channels that can be viewed by a user, authenticated</span>
 <span class="sd">    or not.</span>
@@ -168,7 +168,7 @@
 
     <span class="n">max_popular</span> <span class="o">=</span> <span class="mi">10</span>
 
-<div class="viewcode-block" id="ChannelListView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelListView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelListView.get_context_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; we override it to calculate the most popular channels.</span>
 
@@ -188,7 +188,7 @@
         <span class="k">return</span> <span class="n">context</span></div></div>
 
 
-<div class="viewcode-block" id="ChannelDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView">[docs]</a><span class="k">class</span> <span class="nc">ChannelDetailView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChannelDetailView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the log entries for a given channel.</span>
 
@@ -206,7 +206,7 @@
     <span class="c1"># How many log entries to read and display.</span>
     <span class="n">max_num_lines</span> <span class="o">=</span> <span class="mi">10000</span>
 
-<div class="viewcode-block" id="ChannelDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView.get_context_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; before we can display the channel logs, we need to recall</span>
 <span class="sd">        the logfile and read its lines.</span>
@@ -244,7 +244,7 @@
 
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="ChannelDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView.get_object"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.channels.html#evennia.web.website.views.channels.ChannelDetailView.get_object">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that retrieves an object by slugified channel</span>
 <span class="sd">        name.</span>

@@ -338,9 +338,9 @@ will still only be able to admin or destroy channels they actually control!</p>
 channels you could override the <code class="docutils literal notranslate"><span class="pre">help</span></code> command and change the lockstring to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="c1"># in for example mygame/commands/commands.py</span>
 
-  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+  <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span>
 
-  <span class="k">class</span> <span class="nc">MyCustomChannelCmd</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdChannel</span><span class="p">):</span>
+  <span class="k">class</span><span class="w"> </span><span class="nc">MyCustomChannelCmd</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdChannel</span><span class="p">):</span>
       <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned);admin:perm(Builder);manage:perm(Builder);changelocks:perm(Admin)&quot;</span>
 
 </pre></div>
@@ -396,8 +396,8 @@ Default channels all use <code class="docutils literal notranslate"><span class=
 <p>To change which channel typeclass Evennia uses for default commands, change <code class="docutils literal notranslate"><span class="pre">settings.BASE_CHANNEL_TYPECLASS</span></code>. The base command class is <a class="reference internal" href="../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">evennia.comms.comms.DefaultChannel</span></code></span></a>. There is an empty child class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code>, same as for other typelass-bases.</p>
 <p>In code you create a new channel with <code class="docutils literal notranslate"><span class="pre">evennia.create_channel</span></code> or
 <code class="docutils literal notranslate"><span class="pre">Channel.create</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span><span class="p">,</span> <span class="n">search_object</span>
-  <span class="kn">from</span> <span class="nn">typeclasses.channels</span> <span class="kn">import</span> <span class="n">Channel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_channel</span><span class="p">,</span> <span class="n">search_object</span>
+  <span class="kn">from</span><span class="w"> </span><span class="nn">typeclasses.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Channel</span>
 
   <span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="s2">&quot;my channel&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mychan&quot;</span><span class="p">],</span> <span class="n">locks</span><span class="o">=...</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=...</span><span class="p">)</span>
   <span class="c1"># alternative</span>

@@ -166,7 +166,7 @@ Commands. It works because Evennia has especially catered for it as a convenient
 <span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A test command just to test waiting.</span>
@@ -178,7 +178,7 @@ Commands. It works because Evennia has especially catered for it as a convenient
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Before ten seconds...&quot;</span><span class="p">)</span>
 <span class="hll">        <span class="k">yield</span> <span class="mi">10</span>
 </span>        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Afterwards.&quot;</span><span class="p">)</span>
@@ -230,9 +230,9 @@ can be made persistent and also works outside of <code class="docutils literal n
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
     
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wait for an echo</span>
 <span class="sd">    </span>
@@ -243,7 +243,7 @@ can be made persistent and also works outside of <code class="docutils literal n
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
     
-<span class="hll">    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span>        <span class="s2">&quot;Called after 10 seconds.&quot;</span>
         <span class="n">shout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -253,7 +253,7 @@ can be made persistent and also works outside of <code class="docutils literal n
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         This is called at the initial shout.            </span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -319,9 +319,9 @@ asynchronous systems. You can also link such calls together:</p>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
     
-<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    waits for an echo</span>
 <span class="sd">    </span>
@@ -332,7 +332,7 @@ asynchronous systems. You can also link such calls together:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
     
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This sets off a chain of delayed calls&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You shout &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;, waiting for an echo ...&quot;</span><span class="p">)</span>
 
@@ -340,19 +340,19 @@ asynchronous systems. You can also link such calls together:</p>
 <span class="hll">        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo1</span><span class="p">)</span>
 </span>    
     <span class="c1"># callback chain, started above</span>
-<span class="hll">    <span class="k">def</span> <span class="nf">echo1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">echo1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span>        <span class="s2">&quot;First echo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># wait 2 seconds for the next one</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo2</span><span class="p">)</span>
 
-<span class="hll">    <span class="k">def</span> <span class="nf">echo2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">echo2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span>        <span class="s2">&quot;Second echo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># wait another 2 seconds</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">echo3</span><span class="p">)</span>
 
-<span class="hll">    <span class="k">def</span> <span class="nf">echo3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span><span class="w"> </span><span class="nf">echo3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span>        <span class="s2">&quot;Last echo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
 </pre></div></td></tr></table></div>
@@ -387,9 +387,9 @@ delay.</p>
 - If you are fine with the player making an active input to check their status, compare timestamps as done in the Command-cooldown tutorial. On-demand is by far the most efficent.
 - If you want Evennia to tell the user their status without them taking a further action, you need to use <code class="docutils literal notranslate"><span class="pre">yield</span></code> , <code class="docutils literal notranslate"><span class="pre">delay</span></code> (or some other active time-keeping method).</p>
 <p>Here is an example where we will use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to tell the player when the cooldown has passed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
     
-<span class="k">class</span> <span class="nc">CmdBigSwing</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdBigSwing</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    swing your weapon in a big way</span>
 
@@ -402,7 +402,7 @@ delay.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;bigswing&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Makes the swing&quot;</span> 
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span><span class="p">:</span>
@@ -420,7 +420,7 @@ delay.</p>
         <span class="c1"># we won&#39;t be able to swing again due to the check at the top.        </span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recover</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This will be called after 8 secs&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span>            
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You regain your balance.&quot;</span><span class="p">)</span>
@@ -438,9 +438,9 @@ If you are in the middle of crafting your armor you will probably want to stop d
 monster enters your smithy.</p>
 <p>You can implement this in the same way as you do the “blocking” command above, just in reverse.
 Below is an example of a crafting command that can be aborted by starting a fight:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
     
-<span class="k">class</span> <span class="nc">CmdCraftArmour</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdCraftArmour</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Craft armour</span>
 <span class="sd">    </span>
@@ -455,7 +455,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;craft&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;starts crafting&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span><span class="p">:</span>
@@ -473,27 +473,27 @@ Below is an example of a crafting command that can be aborted by starting a figh
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You start crafting ...&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step1</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">_is_fighting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_fighting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;checks if we are in a fight.&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span><span class="p">:</span>                
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span> 
             <span class="k">return</span> <span class="kc">True</span>
       
-    <span class="k">def</span> <span class="nf">step1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;first step of armour construction&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span> 
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You create the first part of the armour.&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">step2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;second step of armour construction&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span> 
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You create the second part of the armour.&quot;</span><span class="p">)</span>            
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">step3</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">step3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;last step of armour construction&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span>
             <span class="k">return</span>          
@@ -506,7 +506,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
     
 <span class="c1"># example of a command that aborts crafting</span>
     
-<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    attack someone</span>
 <span class="sd">    </span>
@@ -520,7 +520,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hit&quot;</span><span class="p">,</span> <span class="s2">&quot;stab&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implements the command&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span> <span class="o">=</span> <span class="kc">True</span>

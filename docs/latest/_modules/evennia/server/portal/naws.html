@@ -102,10 +102,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">codecs</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
 <span class="n">NAWS</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">31</span><span class="p">])</span>  <span class="c1"># b&quot;\x1f&quot;</span>
 <span class="n">IS</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># b&quot;\x00&quot;</span>
@@ -117,14 +117,14 @@
 <span class="c1"># try to get the customized mssp info, if it exists.</span>
 
 
-<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span> <span class="nc">Naws</span><span class="p">:</span>
+<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Naws</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the NAWS protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize NAWS by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports NAWS.</span>
@@ -142,7 +142,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">negotiationMap</span><span class="p">[</span><span class="n">NAWS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiate_sizes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">NAWS</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_naws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_naws</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Naws.no_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.no_naws">[docs]</a>    <span class="k">def</span> <span class="nf">no_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.no_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.no_naws">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">no_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when client is not reporting NAWS. This is the normal</span>
 <span class="sd">        operation.</span>
@@ -154,7 +154,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Naws.do_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.do_naws">[docs]</a>    <span class="k">def</span> <span class="nf">do_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.do_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.do_naws">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Client wants to negotiate all the NAWS information.</span>
 
@@ -165,7 +165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;AUTORESIZE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Naws.negotiate_sizes"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.negotiate_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">negotiate_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.negotiate_sizes"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.negotiate_sizes">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">negotiate_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step through the NAWS handshake.</span>
 

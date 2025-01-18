@@ -90,20 +90,20 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.server.portal.service</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
-<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="kn">import</span> <span class="n">MultiService</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">connection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.application.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoopingCall</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">class_from_module</span><span class="p">,</span>
     <span class="n">get_evennia_version</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
@@ -111,8 +111,8 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="EvenniaPortalService"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService">[docs]</a><span class="k">class</span> <span class="nc">EvenniaPortalService</span><span class="p">(</span><span class="n">MultiService</span><span class="p">):</span>
-<div class="viewcode-block" id="EvenniaPortalService.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EvenniaPortalService</span><span class="p">(</span><span class="n">MultiService</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_protocol</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_process_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -143,7 +143,7 @@
         <span class="c1"># cmdline sent by the evennia launcher</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_twistd_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_backup_server_twistd_cmd</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.portal_maintenance"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.portal_maintenance">[docs]</a>    <span class="k">def</span> <span class="nf">portal_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.portal_maintenance"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.portal_maintenance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">portal_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Repeated maintenance tasks for the portal.</span>
 
@@ -156,7 +156,7 @@
             <span class="c1"># (see https://github.com/evennia/evennia/issues/1376)</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.privilegedStartService"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.privilegedStartService">[docs]</a>    <span class="k">def</span> <span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.privilegedStartService"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.privilegedStartService">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">portal_maintenance</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># call every minute</span>
@@ -188,7 +188,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">privilegedStartService</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_plugins"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">register_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_plugins"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_plugins">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="n">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="p">)</span>
         <span class="p">)</span>
@@ -197,15 +197,15 @@
             <span class="k">if</span> <span class="n">plugin_module</span><span class="p">:</span>
                 <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.check_lockdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.check_lockdown">[docs]</a>    <span class="k">def</span> <span class="nf">check_lockdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="EvenniaPortalService.check_lockdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.check_lockdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_lockdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOCKDOWN_MODE</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">interfaces</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_ssl"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_ssl">[docs]</a>    <span class="k">def</span> <span class="nf">register_ssl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_ssl"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_ssl">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_ssl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Start Telnet+SSL game connection (requires PyOpenSSL).</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet_ssl</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">telnet_ssl</span>
 
         <span class="n">_ssl_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SSL_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -236,11 +236,11 @@
                         <span class="s2">&quot;telnet+ssl</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (deactivated - keys/cert unset)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_ssh"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_ssh">[docs]</a>    <span class="k">def</span> <span class="nf">register_ssh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_ssh"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_ssh">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_ssh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Start SSH game connections. Will create a keypair in</span>
         <span class="c1"># evennia/game if necessary.</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ssh</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssh</span>
 
         <span class="n">_ssh_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SSH_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -266,8 +266,8 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;ssh&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ssh</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_webserver"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_webserver">[docs]</a>    <span class="k">def</span> <span class="nf">register_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span><span class="p">,</span> <span class="n">Website</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_webserver"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_webserver">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.webserver</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span><span class="p">,</span> <span class="n">Website</span>
 
         <span class="c1"># Start a reverse proxy to relay data to the Server-side webserver</span>
         <span class="n">interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_lockdown</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_INTERFACES</span><span class="p">)</span>
@@ -296,9 +296,9 @@
                     <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">websocket_started</span><span class="p">:</span>
                         <span class="c1"># start websocket client port for the webclient</span>
                         <span class="c1"># we only support one websocket client</span>
-                        <span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketServerFactory</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.twisted.websocket</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocketServerFactory</span>
 
-                        <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient</span>  <span class="c1"># noqa</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">webclient</span>  <span class="c1"># noqa</span>
 
                         <span class="n">w_interface</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="s2">&quot;127.0.0.1&quot;</span>
@@ -313,7 +313,7 @@
                             <span class="n">w_ifacestr</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">w_interface</span>
                         <span class="n">port</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_PORT</span>
 
-                        <span class="k">class</span> <span class="nc">Websocket</span><span class="p">(</span><span class="n">WebSocketServerFactory</span><span class="p">):</span>
+                        <span class="k">class</span><span class="w"> </span><span class="nc">Websocket</span><span class="p">(</span><span class="n">WebSocketServerFactory</span><span class="p">):</span>
                             <span class="s2">&quot;Only here for better naming in logs&quot;</span>
                             <span class="k">pass</span>
 
@@ -359,10 +359,10 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;webserver_internal&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;webserver: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">serverport</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_telnet"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_telnet">[docs]</a>    <span class="k">def</span> <span class="nf">register_telnet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_telnet"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_telnet">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_telnet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Start telnet game connections</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">telnet</span>
 
         <span class="n">_telnet_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -384,12 +384,12 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;telnet&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;telnet</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.register_amp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_amp">[docs]</a>    <span class="k">def</span> <span class="nf">register_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.register_amp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_amp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># The AMP protocol handles the communication between</span>
         <span class="c1"># the portal and the mud server. Only reason to ever deactivate</span>
         <span class="c1"># it would be during testing and debugging.</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp_server</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal</span><span class="w"> </span><span class="kn">import</span> <span class="n">amp_server</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;amp: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">AMP_PORT</span>
 
@@ -400,7 +400,7 @@
         <span class="n">amp_service</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s2">&quot;PortalAMPServer&quot;</span><span class="p">)</span>
         <span class="n">amp_service</span><span class="o">.</span><span class="n">setServiceParent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_backup_server_twistd_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_backup_server_twistd_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For interactive Portal mode there is no way to get the server cmdline from the launcher, so</span>
 <span class="sd">        we need to guess it here (it&#39;s very likely to not change)</span>
@@ -420,14 +420,14 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">server_twistd_cmd</span>
 
-<div class="viewcode-block" id="EvenniaPortalService.get_info_dict"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.get_info_dict"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.get_info_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the Portal info, for display.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span></div>
 
-<div class="viewcode-block" id="EvenniaPortalService.shutdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_stop_server</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaPortalService.shutdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.shutdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_stop_server</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shuts down the server from inside it.</span>
 

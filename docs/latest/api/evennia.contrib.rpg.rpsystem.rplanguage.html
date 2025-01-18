@@ -151,7 +151,7 @@ meaning can be determined).</p>
 </ul>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rplanguage</span>
 
 <span class="c1"># need to be done once, here we create the &quot;default&quot; lang</span>
 <span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">()</span>
@@ -191,7 +191,7 @@ rebuild the language on a db reset:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># a stand-alone module somewhere under mygame. Just import this</span>
 <span class="c1"># once to automatically add the language!</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.rpg.rpsystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">rplanguage</span>
 <span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">vowels</span> <span class="o">=</span> <span class="s2">&quot;eaouy&quot;</span>
 <span class="c1"># etc</span>
