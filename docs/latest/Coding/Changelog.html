@@ -221,7 +221,12 @@ unless current location and/or caller is in valid search candidates respectively
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3707">Fix</a>: Correct links in <code class="docutils literal notranslate"><span class="pre">about</span></code> command (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3710">Fix</a>: Clean reduntant session clearin in <code class="docutils literal notranslate"><span class="pre">at_server_cold_start</span></code> (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3711">Fix</a>: Usability improvements in the Discord integration (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3688">Fix</a>: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)</p></li>
+<li><p>[Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">\\</span></code> properly preserve one backlash in funcparser (Griatch)</p></li>
+<li><p>Fix: When an object was used as an On-Demand Task’s category, and that object was then deleted,
+it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
+used as the task’s category (Griatch)</p></li>
 <li><p>[Docs]: Fixes from InspectorCaracal, Griatch</p></li>
 </ul>
 </section>

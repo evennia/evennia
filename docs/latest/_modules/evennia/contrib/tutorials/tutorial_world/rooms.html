@@ -372,7 +372,11 @@
 <span class="sd">            source_location (Object): the previous location of new_arrival.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">new_arrival</span><span class="o">.</span><span class="n">has_account</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new_arrival</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">new_arrival</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># currently running batchcommand</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">new_arrival</span><span class="o">.</span><span class="n">has_account</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new_arrival</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
             <span class="c1"># this is a character</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">new_arrival</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;at_new_arrival&quot;</span><span class="p">):</span>
@@ -557,6 +561,10 @@
 <span class="sd">        Assign properties on characters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># currently running batchcommand</span>
+            <span class="k">return</span>
+
         <span class="c1"># setup character for the tutorial</span>
         <span class="n">health</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">char_health</span> <span class="ow">or</span> <span class="mi">20</span>
 
@@ -568,8 +576,8 @@
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">78</span> <span class="o">+</span> <span class="n">SUPERUSER_WARNING</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">78</span>
             <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">quell</span><span class="o">=</span><span class="s2">&quot;|wquell|r&quot;</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># quell user</span>
-            <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="c1"># quell user if they have account and is not currently running the batch processor</span>
+            <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Auto-quelling while in tutorial-world)&quot;</span><span class="p">)</span></div></div>
 
@@ -876,6 +884,10 @@
 <span class="sd">        This hook is called by the engine whenever the player is moved</span>
 <span class="sd">        into this room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># currently running batchcommand</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
             <span class="c1"># we only run this if the entered object is indeed a player object.</span>
             <span class="c1"># check so our east/west exits are correctly defined.</span>
@@ -1099,6 +1111,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">is_superuser</span>
+            <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span>
             <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_giving_light</span>
             <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_giving_light</span><span class="p">)</span>
         <span class="p">)</span>
@@ -1143,6 +1156,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an object enters the room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># currently running batchcommand</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_light_state</span><span class="p">()</span>  <span class="c1"># this should remove the DarkCmdSet</span>
+
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
             <span class="c1"># a puppeted object, that is, a Character</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_heal</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -1209,9 +1226,10 @@
 <span class="sd">        This hook is called by the engine whenever the player is moved into</span>
 <span class="sd">        this room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
-            <span class="c1"># only act on player characters.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">has_account</span> <span class="ow">or</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># only act on player characters or when not building.</span>
             <span class="k">return</span>
+
         <span class="c1"># determine if the puzzle is a success or not</span>
         <span class="n">is_success</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">puzzle_clue</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">puzzle_value</span><span class="p">)</span>
         <span class="n">teleport_to</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">success_teleport_to</span> <span class="k">if</span> <span class="n">is_success</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">failure_teleport_to</span>
@@ -1272,6 +1290,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do cleanup.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_batchmode</span><span class="p">:</span>
+            <span class="c1"># currently running batchcommand</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health_max</span>
             <span class="k">del</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span>
