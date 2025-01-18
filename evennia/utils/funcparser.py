@@ -334,7 +334,7 @@ class FuncParser:
         infuncstr = ""  # string parts inside the current level of $funcdef (including $)
         literal_infuncstr = False
 
-        for char in string:
+        for ichar, char in enumerate(string):
             if escaped:
                 # always store escaped characters verbatim
                 if curr_func:
@@ -345,8 +345,9 @@ class FuncParser:
                 escaped = False
                 continue
 
-            if char == escape_char:
-                # don't store the escape-char itself
+            if char == escape_char and string[ichar + 1 : ichar + 2] != escape_char:
+                # don't store the escape-char itself, but keep one escape-char,
+                # if it's followed by another escape-char
                 escaped = True
                 continue
 

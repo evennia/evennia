@@ -14,6 +14,8 @@
   finds `big sword` even if another type of sword is around (InspectorCaracal)
 - [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
   unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
+- [Fix][pull3694]: Funcparser swallowing rest of line after a `\`-escape (count-infinity)
+- Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch
 
 
