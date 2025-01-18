@@ -75,7 +75,7 @@ If `localhost` doesn't work when trying to connect to your local game, try `127.
 ## Mac Troubleshooting
 
 - Some Mac users have reported not being able to connect to `localhost` (i.e. your own computer). If  so, try to connect to `127.0.0.1` instead, which is the same thing. Use port 4000 from mud clients  and port 4001 from the web browser as usual.
-- If you get a `MemoryError` when starting Evennia, or when looking at the log, this may be due to an sqlite versioning issue. [A user in our forums](https://github.com/evennia/evennia/discussions/2637) found a working solution for this. [Here](https://github.com/evennia/evennia/issues/2854) is another variation to solve it. 
+- If you get a `MemoryError` when starting Evennia, or when looking at the log, this may be due to an sqlite versioning issue. [A user in our forums](https://github.com/evennia/evennia/discussions/2637) found a working solution for this. [Here](https://github.com/evennia/evennia/issues/2854) is another variation to solve it. [Another user](https://github.com/evennia/evennia/issues/3704) also wrote an extensive summary of the issue, along with troubleshooting instructions.
 
 ## Windows Troubleshooting
 
