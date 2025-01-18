@@ -2030,7 +2030,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all connections
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",
@@ -2076,7 +2076,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all discord channels linked to self.lhs
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",
