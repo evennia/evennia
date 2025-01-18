@@ -15,6 +15,10 @@
 - [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
   unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
 - [Fix][pull3694]: Funcparser swallowing rest of line after a `\`-escape (count-infinity)
+- [Fix][pull3705]: Properly serialize `IntFlag` enum types (0xDEADFED5)
+- [Fix][pull3707]: Correct links in `about` command (0xDEADFED5)
+- [Fix][pull3710]: Clean reduntant session clearin in `at_server_cold_start` (InspectorCaracal)
+- [Fix][pull3711]: Usability improvements in the Discord integration (InspectorCaracal)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch
 
@@ -25,6 +29,11 @@
 [pull3684]: https://github.com/evennia/evennia/pull/3684
 [pull3689]: https://github.com/evennia/evennia/pull/3689
 [pull3690]: https://github.com/evennia/evennia/pull/3690
+[pull3705]: https://github.com/evennia/evennia/pull/3705
+[pull3707]: https://github.com/evennia/evennia/pull/3707
+[pull3710]: https://github.com/evennia/evennia/pull/3710
+[pull3711]: https://github.com/evennia/evennia/pull/3711
+
 
 ## Evennia 4.5.0
 
