@@ -705,7 +705,7 @@ class CmdCreate(ObjManipCommand):
             )
             if errors:
                 self.msg(errors)
-                
+
             if not obj:
                 continue
 

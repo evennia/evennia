@@ -19,7 +19,11 @@
 - [Fix][pull3707]: Correct links in `about` command (0xDEADFED5)
 - [Fix][pull3710]: Clean reduntant session clearin in `at_server_cold_start` (InspectorCaracal)
 - [Fix][pull3711]: Usability improvements in the Discord integration (InspectorCaracal)
+- [Fix][issue3688]: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
+- Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
+  it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
+  used as the task's category (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch
 
 
@@ -33,6 +37,7 @@
 [pull3707]: https://github.com/evennia/evennia/pull/3707
 [pull3710]: https://github.com/evennia/evennia/pull/3710
 [pull3711]: https://github.com/evennia/evennia/pull/3711
+[issue3688]: https://github.com/evennia/evennia/issues/3688
 
 
 ## Evennia 4.5.0

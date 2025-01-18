@@ -398,6 +398,10 @@ class OnDemandHandler:
         Save the on-demand timers to ServerConfig storage. Should be called when Evennia shuts down.
 
         """
+        for key, category in list(self.tasks.keys()):
+            # in case an object was used for categories, and were since deleted, drop the task
+            if hasattr(category, "id") and category.id is None:
+                self.tasks.pop((key, category))
         ServerConfig.objects.conf(ONDEMAND_HANDLER_SAVE_NAME, self.tasks)
 
     def _build_key(self, key, category):
