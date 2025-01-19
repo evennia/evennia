@@ -99,7 +99,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
     # separator between subtopics:
     subtopic_separator_char = r"/"
 
-    # should topics disply their help entry when clicked
+    # should topics display their help entry when clicked
     clickable_topics = HELP_CLICKABLE_TOPICS
 
     def msg_help(self, text, **kwargs):
@@ -156,7 +156,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             click_topics (bool, optional): Should help topics be clickable. Default is True.
 
         Returns:
-            help_message (str): Help entry formated for console.
+            help_message (str): Help entry formatted for console.
 
         """
         separator = "|C" + "-" * self.client_width() + "|n"

@@ -542,7 +542,7 @@ def inside(accessing_obj, accessed_obj, *args, **kwargs):
     Usage:
        inside()
 
-    True if accessing_obj is 'inside' accessing_obj. Note that this only checks
+    True if accessing_obj is 'inside' accessed_obj. Note that this only checks
     one level down. So if if the lock is on a room, you will pass but not your
     inventory (since their location is you, not the locked object).  If you
     want also nested objects to pass the lock, use the `insiderecursive`

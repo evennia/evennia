@@ -132,7 +132,7 @@ class ObjectSessionHandler:
 
         Notes:
             We will only add a session/sessid if this actually also exists
-            in the the core sessionhandler.
+            in the core sessionhandler.
 
         """
         try:
@@ -446,7 +446,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     @property
     def has_account(self):
-        """True is this object has an associated account."""
+        """True if this object has an associated account."""
         return self.sessions.count()
 
     def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
@@ -478,7 +478,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
-        This should be publically available.
+        This should be publicly available.
 
         Args:
             exclude (DefaultObject): Object to exclude from returned
@@ -1548,7 +1548,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if not self.pk or not self.at_object_delete():
             # This object has already been deleted,
-            # or the pre-delete check return False
+            # or the pre-delete check returns False
             return False
 
         # See if we need to kick the account off.
@@ -1653,7 +1653,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def get_extra_display_name_info(self, looker=None, **kwargs):
         """
-        Adds any extra display information to the object's name. By default this is is the
+        Adds any extra display information to the object's name. By default this is the
         object's dbref in parentheses, if the looker has permission to see it.
 
         Args:
@@ -1715,7 +1715,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             plural = key
         singular = _INFLECT.an(key)
         if not self.aliases.get(plural, category=self.plural_category):
-            # we need to wipe any old plurals/an/a in case key changed in the interrim
+            # we need to wipe any old plurals/an/a in case key changed in the interim
             self.aliases.clear(category=self.plural_category)
             self.aliases.add(plural, category=self.plural_category)
             # save the singular form as an alias here too so we can display "an egg" and also
@@ -2074,7 +2074,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     def at_init(self):
         """
         This is always called whenever this object is initiated --
-        that is, whenever it its typeclass is cached from memory. This
+        that is, whenever its typeclass is cached from memory. This
         happens on-demand first time the object is used or activated
         in some way after being created but also after each server
         restart or reload.
@@ -2240,7 +2240,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_pre_object_leave(self, leaving_object, destination, **kwargs):
         """
-        Called just before this object is about lose an object that was
+        Called just before this object is about to lose an object that was
         previously 'inside' it. Return False to abort move.
 
         Args:
@@ -2261,19 +2261,19 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_pre_object_receive(self, arriving_object, source_location, **kwargs):
         """
-        Called just before this object received another object. If this
+        Called just before this object receives another object. If this
         method returns `False`, the move is aborted and the moved entity
         remains where it was.
 
         Args:
             arriving_object (DefaultObject): The object moved into this one
-            source_location (DefaultObject): Where `moved_object` came from.
+            source_location (DefaultObject): Where `arriving_object` came from.
                 Note that this could be `None`.
             **kwargs: Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
         Returns:
-            bool: If False, abort move and `moved_obj` remains where it was.
+            bool: If False, abort move and `arriving_object` remains where it was.
 
         Notes:
 
@@ -2746,7 +2746,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
 
         Returns:
-            shouldgive (bool): If the object should be given or not.
+            bool: If the object should be given or not.
 
         Notes:
             If this method returns `False` or `None`, the giving is cancelled
