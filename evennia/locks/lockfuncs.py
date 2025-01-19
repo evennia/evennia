@@ -481,12 +481,14 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
         objtag(tagkey)
-        objtag(tagkey, category):
+        objtag(tagkey, category)
 
-    Only true if `accessed_obj` has the given tag and optional category.
-
+    Only true if accessed_obj has the specified tag and optional
+    category.
     """
-    return tag(accessed_obj, None, *args, **kwargs)
+    tagkey = args[0] if args else None
+    category = args[1] if len(args) > 1 else None
+    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def objloctag(accessing_obj, accessed_obj, *args, **kwargs):
@@ -533,20 +535,6 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
         return not account.get_puppet(session)
     except TypeError:
         return not session.get_puppet()
-
-
-def objtag(accessing_obj, accessed_obj, *args, **kwargs):
-    """
-    Usage:
-        objtag(tagkey)
-        objtag(tagkey, category)
-
-    Only true if accessed_obj has the specified tag and optional
-    category.
-    """
-    tagkey = args[0] if args else None
-    category = args[1] if len(args) > 1 else None
-    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
