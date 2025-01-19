@@ -295,6 +295,15 @@ class TestComponents(EvenniaTest):
         self.char1.components.add_default("replacement_inherited_test_a")
         self.assertEqual(self.char1.ic_a.replacement_field, 6)
 
+    def test_replacing_dynamic_component(self):
+        component_name = "replacement_inherited_test_a"
+        self.assertEqual(self.char1.attributes.get("component_names").count(component_name), 0)
+        self.assertTrue(self.char1.cmp.has(self.char1.ic_a.slot))
+        self.char1.components.add_default(component_name)
+        self.char1.components.add_default(component_name)
+        # Dynamically added components do not accumulate extra entries.
+        self.assertEqual(self.char1.attributes.get("component_names").count(component_name), 1)
+
 
 class CharWithSignal(ComponentHolderMixin, DefaultCharacter):
     @signals.as_listener

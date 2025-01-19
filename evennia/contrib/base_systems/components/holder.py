@@ -74,6 +74,9 @@ class ComponentHandler:
 
         """
         component_name = component.name
+        component_slot = component.get_component_slot()
+        if self.has(component_slot):
+            self.remove_by_name(component_slot)
         self.db_names.append(component_name)
         self.host.tags.add(component_name, category="components")
         self._set_component(component)

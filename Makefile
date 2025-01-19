@@ -11,7 +11,7 @@ default:
 	@echo "  make fmt/format - run the black autoformatter on the source code"
 	@echo "  make lint - run black in --check mode"
 	@echo "  make test - run evennia test suite with all default values."
-	@echo "  make tests=evennia.path test - run only specific test or tests."
+	@echo "  make TESTS=evennia.path test - run only specific test or tests."
 	@echo "  make testp - run test suite using multiple cores."
 	@echo "  make release - publish evennia to pypi (requires pypi credentials)
 
