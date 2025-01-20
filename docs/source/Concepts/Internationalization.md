@@ -35,7 +35,7 @@ updated after Sept 2022 will be missing some translations.
 +---------------+----------------------+--------------+
 | sv            | Swedish              | Sep 2022     |
 +---------------+----------------------+--------------+
-| zh            | Chinese (simplified) | May 2019     |
+| zh            | Chinese (simplified) | Oct 2024     |
 +---------------+----------------------+--------------+
 ```
 

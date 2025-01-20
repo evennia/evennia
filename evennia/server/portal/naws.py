@@ -11,6 +11,7 @@ client and update it when the size changes
 """
 
 from codecs import encode as codecs_encode
+import weakref
 
 from django.conf import settings
 
@@ -41,13 +42,13 @@ class Naws:
 
         """
         self.naws_step = 0
-        self.protocol = protocol
-        self.protocol.protocol_flags["SCREENWIDTH"] = {
+        self.protocol = weakref.ref(protocol)
+        self.protocol().protocol_flags["SCREENWIDTH"] = {
             0: DEFAULT_WIDTH
         }  # windowID (0 is root):width
-        self.protocol.protocol_flags["SCREENHEIGHT"] = {0: DEFAULT_HEIGHT}  # windowID:width
-        self.protocol.negotiationMap[NAWS] = self.negotiate_sizes
-        self.protocol.do(NAWS).addCallbacks(self.do_naws, self.no_naws)
+        self.protocol().protocol_flags["SCREENHEIGHT"] = {0: DEFAULT_HEIGHT}  # windowID:width
+        self.protocol().negotiationMap[NAWS] = self.negotiate_sizes
+        self.protocol().do(NAWS).addCallbacks(self.do_naws, self.no_naws)
 
     def no_naws(self, option):
         """
@@ -58,8 +59,8 @@ class Naws:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["AUTORESIZE"] = False
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["AUTORESIZE"] = False
+        self.protocol().handshake_done()
 
     def do_naws(self, option):
         """
@@ -69,8 +70,8 @@ class Naws:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["AUTORESIZE"] = True
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["AUTORESIZE"] = True
+        self.protocol().handshake_done()
 
     def negotiate_sizes(self, options):
         """
@@ -83,6 +84,6 @@ class Naws:
         if len(options) == 4:
             # NAWS is negotiated with 16bit words
             width = options[0] + options[1]
-            self.protocol.protocol_flags["SCREENWIDTH"][0] = int(codecs_encode(width, "hex"), 16)
+            self.protocol().protocol_flags["SCREENWIDTH"][0] = int(codecs_encode(width, "hex"), 16)
             height = options[2] + options[3]
-            self.protocol.protocol_flags["SCREENHEIGHT"][0] = int(codecs_encode(height, "hex"), 16)
+            self.protocol().protocol_flags["SCREENHEIGHT"][0] = int(codecs_encode(height, "hex"), 16)

@@ -12,13 +12,13 @@ import re
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+_RE_CMD_LOCKFUNC_IN_LOCKSTRING = re.compile(r"(^|;|\s)cmd\:\w+", re.DOTALL)
 
 
 class InterruptCommand(Exception):
@@ -74,7 +74,7 @@ def _init_command(cls, **kwargs):
     if not hasattr(cls, "locks"):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
-    if "cmd:" not in cls.locks:
+    if not _RE_CMD_LOCKFUNC_IN_LOCKSTRING.search(cls.locks):
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(";"):
         if lockstring and ":" not in lockstring:
@@ -575,7 +575,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
 
         ex.
         ::
-            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+            url(r'characters/(?P<slug>[\\w\\d\\-]+)/(?P<pk>[0-9]+)/$',
                 CharDetailView.as_view(), name='character-detail')
 
         If no View has been created and defined in urls.py, returns an

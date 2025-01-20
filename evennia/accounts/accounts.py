@@ -778,6 +778,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         In this case we're simply piggybacking on this feature to apply
         additional normalization per Evennia's standards.
         """
+        if not isinstance(username, str):
+            username = str(username)
+
         username = super(DefaultAccount, cls).normalize_username(username)
 
         # strip excessive spaces in accountname
@@ -939,7 +942,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # parse inputs
         character_key = kwargs.pop("key", self.key)
         character_ip = kwargs.pop("ip", self.db.creator_ip)
-        character_permissions = kwargs.pop("permissions", self.permissions)
+        character_permissions = kwargs.pop("permissions", self.permissions.all())
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", self.default_character_typeclass)
@@ -1010,8 +1013,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         account = None
         errors = []
 
-        username = kwargs.get("username")
-        password = kwargs.get("password")
+        username = kwargs.get("username", "")
+        password = kwargs.get("password", "")
         email = kwargs.get("email", "").strip()
         guest = kwargs.get("guest", False)
 

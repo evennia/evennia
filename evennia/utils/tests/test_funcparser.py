@@ -231,6 +231,9 @@ class TestFuncParser(TestCase):
             ("Test literal3 $typ($lit(1)aaa)", "Test literal3 <class 'str'>"),
             ("Test literal4 $typ(aaa$lit(1))", "Test literal4 <class 'str'>"),
             ("Test spider's thread", "Test spider's thread"),
+            ("Test escape syntax $a=$b", "Test escape syntax $a=$b"),
+            (r"Test escape syntax $a\= b", "Test escape syntax $a= b"),
+            (r"Test escape syntax $a\\= $b", r"Test escape syntax $a\= $b"),
         ]
     )
     def test_parse(self, string, expected):

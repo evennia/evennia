@@ -13,6 +13,7 @@ import traceback
 
 import django
 import evennia
+import subprocess
 import twisted
 from django.conf import settings
 from evennia.accounts.models import AccountDB
@@ -696,8 +697,7 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
 
          |wHomepage|n https://evennia.com
          |wCode|n https://github.com/evennia/evennia
-         |wDemo|n https://demo.evennia.com
-         |wGame listing|n https://games.evennia.com
+         |wGame listing|n http://games.evennia.com
          |wChat|n https://discord.gg/AJJpcRUhtF
          |wForum|n https://github.com/evennia/evennia/discussions
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
@@ -862,16 +862,26 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
             if not _RESOURCE:
                 import resource as _RESOURCE
 
+            env = os.environ.copy()
+            env["LC_NUMERIC"] = "C"  # use default locale instead of system locale
             loadavg = os.getloadavg()[0]
-            rmem = (
-                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "rss")).read()) / 1000.0
-            )  # resident memory
-            vmem = (
-                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "vsz")).read()) / 1000.0
-            )  # virtual memory
-            pmem = float(
-                os.popen("ps -p %d -o %s | tail -1" % (pid, "%mem")).read()
-            )  # % of resident memory to total
+
+            # Helper function to run the ps command with a modified environment
+            def run_ps_command(command):
+                result = subprocess.run(
+                    command, shell=True, env=env, stdout=subprocess.PIPE, text=True
+                )
+                return result.stdout.strip()
+
+            # Resident memory
+            rmem = float(run_ps_command(f"ps -p {pid} -o rss | tail -1")) / 1000.0
+
+            # Virtual memory
+            vmem = float(run_ps_command(f"ps -p {pid} -o vsz | tail -1")) / 1000.0
+
+            # Percentage of resident memory to total
+            pmem = float(run_ps_command(f"ps -p {pid} -o %mem | tail -1"))
+
             rusage = _RESOURCE.getrusage(_RESOURCE.RUSAGE_SELF)
 
             if "mem" in self.switches:

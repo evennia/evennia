@@ -280,7 +280,11 @@ class TutorialRoom(DefaultRoom):
             source_location (Object): the previous location of new_arrival.
 
         """
-        if new_arrival.has_account and not new_arrival.is_superuser:
+        if new_arrival.ndb.batch_batchmode:
+            # currently running batchcommand
+            return
+
+        if new_arrival.has_account and not new_arrival.ndb.batch_batchmode:
             # this is a character
             for obj in self.contents_get(exclude=new_arrival):
                 if hasattr(obj, "at_new_arrival"):
@@ -465,6 +469,10 @@ class IntroRoom(TutorialRoom):
         Assign properties on characters
         """
 
+        if character.ndb.batch_batchmode:
+            # currently running batchcommand
+            return
+
         # setup character for the tutorial
         health = self.db.char_health or 20
 
@@ -476,8 +484,8 @@ class IntroRoom(TutorialRoom):
             string = "-" * 78 + SUPERUSER_WARNING + "-" * 78
             character.msg("|r%s|n" % string.format(name=character.key, quell="|wquell|r"))
         else:
-            # quell user
-            if character.account:
+            # quell user if they have account and is not currently running the batch processor
+            if character.account and not character.ndb.batch_batchmode:
                 character.account.execute_cmd("quell")
                 character.msg("(Auto-quelling while in tutorial-world)")
 
@@ -784,6 +792,10 @@ class BridgeRoom(WeatherRoom):
         This hook is called by the engine whenever the player is moved
         into this room.
         """
+        if character.ndb.batch_batchmode:
+            # currently running batchcommand
+            return
+
         if character.has_account:
             # we only run this if the entered object is indeed a player object.
             # check so our east/west exits are correctly defined.
@@ -1007,6 +1019,7 @@ class DarkRoom(TutorialRoom):
         """
         return (
             obj.is_superuser
+            or obj.ndb.batch_batchmode
             or obj.db.is_giving_light
             or any(o for o in obj.contents if o.db.is_giving_light)
         )
@@ -1051,6 +1064,10 @@ class DarkRoom(TutorialRoom):
         """
         Called when an object enters the room.
         """
+        if obj.ndb.batch_batchmode:
+            # currently running batchcommand
+            self.check_light_state()  # this should remove the DarkCmdSet
+
         if obj.has_account:
             # a puppeted object, that is, a Character
             self._heal(obj)
@@ -1117,9 +1134,10 @@ class TeleportRoom(TutorialRoom):
         This hook is called by the engine whenever the player is moved into
         this room.
         """
-        if not character.has_account:
-            # only act on player characters.
+        if not character.has_account or character.ndb.batch_batchmode:
+            # only act on player characters or when not building.
             return
+
         # determine if the puzzle is a success or not
         is_success = str(character.db.puzzle_clue) == str(self.db.puzzle_value)
         teleport_to = self.db.success_teleport_to if is_success else self.db.failure_teleport_to
@@ -1180,6 +1198,10 @@ class OutroRoom(TutorialRoom):
         """
         Do cleanup.
         """
+        if character.ndb.batch_batchmode:
+            # currently running batchcommand
+            return
+
         if character.has_account:
             del character.db.health_max
             del character.db.health

@@ -23,7 +23,7 @@ To install, just add the provided cmdset to your default AccountCmdSet:
 
 The contrib provides three commands by default and their associated report types: `CmdBug`, `CmdIdea`,
 and `CmdReport` (which is for reporting other players).
-            
+
 The `ReportCmdBase` class holds most of the functionality for creating new reports, providing a
 convenient parent class for adding your own categories of reports.
 
@@ -32,12 +32,11 @@ The contrib can be further configured through two settings, `INGAME_REPORT_TYPES
 """
 
 from django.conf import settings
-
 from evennia import CmdSet
-from evennia.utils import create, evmenu, logger, search
-from evennia.utils.utils import class_from_module, datetime_format, is_iter, iter_to_str
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.comms.models import Msg
+from evennia.utils import create, evmenu, logger, search
+from evennia.utils.utils import class_from_module, datetime_format, is_iter, iter_to_str
 
 from . import menu
 
@@ -68,6 +67,7 @@ def _get_report_hub(report_type):
     """
     hub_key = f"{report_type}_reports"
     from evennia import GLOBAL_SCRIPTS
+
     if not (hub := GLOBAL_SCRIPTS.get(hub_key)):
         hub = create.create_script(key=hub_key)
     return hub or None
@@ -92,7 +92,7 @@ class CmdManageReports(_DEFAULT_COMMAND_CLASS):
     aliases = tuple(f"manage {report_type}" for report_type in _REPORT_TYPES)
     locks = "cmd:pperm(Admin)"
 
-    def get_help(self):
+    def get_help(self, caller, cmdset):
         """Returns a help string containing the configured available report types"""
 
         report_types = iter_to_str("\n    ".join(_REPORT_TYPES))
@@ -102,7 +102,7 @@ manage the various reports
 
 Usage:
     manage [report type]
-        
+
 Available report types:
     {report_types}
 
@@ -157,7 +157,7 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
     def parse(self):
         """
         Parse the target and message out of the arguments.
-        
+
         Override if you want different syntax, but make sure to assign `report_message` and `target_str`.
         """
         # do the base MuxCommand parsing first
@@ -212,7 +212,11 @@ class ReportCmdBase(_DEFAULT_COMMAND_CLASS):
             receivers.append(target)
 
         if self.create_report(
-            self.account, self.report_message, receivers=receivers, locks=self.report_locks, tags=["report"]
+            self.account,
+            self.report_message,
+            receivers=receivers,
+            locks=self.report_locks,
+            tags=["report"],
         ):
             # the report Msg was successfully created
             self.msg(self.success_msg)

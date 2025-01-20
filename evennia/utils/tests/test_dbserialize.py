@@ -9,6 +9,7 @@ from parameterized import parameterized
 
 from evennia.objects.objects import DefaultObject
 from evennia.utils import dbserialize
+from enum import IntFlag, auto
 
 
 class TestDbSerialize(TestCase):
@@ -18,6 +19,13 @@ class TestDbSerialize(TestCase):
 
     def setUp(self):
         self.obj = DefaultObject(db_key="Tester")
+        self.obj.save()
+
+    def test_intflag(self):
+        class TestFlag(IntFlag):
+            foo = auto()
+        self.obj.db.test = TestFlag.foo
+        self.assertEqual(self.obj.db.test, TestFlag.foo)
         self.obj.save()
 
     def test_constants(self):

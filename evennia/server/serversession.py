@@ -161,9 +161,6 @@ class ServerSession(_BASE_SESSION_CLASS):
             account = self.account
             if self.puppet:
                 account.unpuppet_object(self)
-            uaccount = account
-            uaccount.last_login = timezone.now()
-            uaccount.save()
             # calling account hook
             account.at_disconnect(reason)
             self.logged_in = False

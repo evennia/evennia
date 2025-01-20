@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **51** contribs currently included
+This page is auto-generated and summarizes all **52** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -37,9 +37,9 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [ingame_reports](#ingame_reports) | [llm](#llm) |
 | [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) |
 | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) |
-| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) |
-| [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) |
-| [xyzgrid](#xyzgrid) |
+| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [storage](#storage) | [talking_npc](#talking_npc) |
+| [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) |
+| [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -288,6 +288,7 @@ Contrib-Gendersub.md
 Contrib-Mail.md
 Contrib-Multidescer.md
 Contrib-Puzzles.md
+Contrib-Storage.md
 Contrib-Turnbattle.md
 ```
 
@@ -417,6 +418,16 @@ puzzle is built from unique objects rather than using tags and a builder can cre
 the puzzle entirely from in-game.
 
 [Read the documentation](./Contrib-Puzzles.md) - [Browse the Code](evennia.contrib.game_systems.puzzles)
+
+
+
+### `storage`
+
+_Contribution by helpme (2024)_
+
+This module allows certain rooms to be marked as storage locations.
+
+[Read the documentation](./Contrib-Storage.md) - [Browse the Code](evennia.contrib.game_systems.storage)
 
 
 
