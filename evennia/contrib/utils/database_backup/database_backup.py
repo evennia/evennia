@@ -10,6 +10,7 @@ import datetime
 import os
 import shutil
 import subprocess
+import sqlite3
 
 _MUDINFO_CHANNEL = None
 BACKUP_FOLDER = "server/backups"
@@ -62,6 +63,16 @@ class DatabaseBackupScript(DefaultScript):
         output_file_path += ".db3"
         os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
         shutil.copy(db_name, output_file_path)
+
+        # Check the integrity of the copied db
+        con = sqlite3.connect(output_file_path)
+        cur = con.cursor()
+        try:
+            cur.execute("PRAGMA integrity_check")
+        except sqlite3.DatabaseError:
+            self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed: integrity check failed|n")
+            con.close()
+            return
         self.log(f"|wsqlite3 db backed up in: {BACKUP_FOLDER}|n")
 
     def at_repeat(self):
