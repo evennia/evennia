@@ -334,18 +334,20 @@ class FuncParser:
         infuncstr = ""  # string parts inside the current level of $funcdef (including $)
         literal_infuncstr = False
 
-        for char in string:
+        for ichar, char in enumerate(string):
             if escaped:
                 # always store escaped characters verbatim
                 if curr_func:
                     infuncstr += char
+                    curr_func.rawstr += char
                 else:
                     fullstr += char
                 escaped = False
                 continue
 
-            if char == escape_char:
-                # don't store the escape-char itself
+            if char == escape_char and string[ichar + 1 : ichar + 2] != escape_char:
+                # don't store the escape-char itself, but keep one escape-char,
+                # if it's followed by another escape-char
                 escaped = True
                 continue
 
@@ -372,7 +374,8 @@ class FuncParser:
                         curr_func.open_lsquare = open_lsquare
                         curr_func.open_lcurly = open_lcurly
                         # we must strip the remaining funcstr so it's not counted twice
-                        curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
+                        if len(infuncstr) > 0:
+                            curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
                         current_kwarg = ""
                         infuncstr = ""
                         double_quoted = -1

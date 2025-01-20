@@ -404,3 +404,48 @@ class TestEvTable(EvenniaTestCase):
 
         self.assertEqual(table1b, table1a)
         self.assertEqual(table2b, table2a)
+
+    @skip("Needs to be further invstigated")
+    def test_formatting_with_carriage_return_marker_3693_a(self):
+        """
+        Testing of issue https://github.com/evennia/evennia/issues/3693
+
+        Adding a |/ marker causes a misalignment of the side border.
+
+        """
+        data = "This is a test |/on a separate line"
+        table = evtable.EvTable("", table=[[data]], width=20, border="cols")
+
+        expected = """
+|                  |
++~~~~~~~~~~~~~~~~~~+
+| This is a test   |
+| on a separate    |
+| line             |
+"""
+        self._validate(expected, str(table))
+
+    @skip("Needs to be further invstigated")
+    def test_formatting_with_carriage_return_marker_3693_b(self):
+        """
+        Testing of issue https://github.com/evennia/evennia/issues/3693
+
+        Adding a |/ marker causes a misalignment of the side border.
+
+        """
+        data = "This is a test |/on a separate line"
+        data = "Welcome to your new Evennia-based game! Visit https://www.evennia.com if you need help, want to contribute, report issues or just join the community. |/|/As a privileged user, write batchcommand tutorial_world.build to build tutorial content. Once built, try intro for starting help and tutorial to play the demo game."  # noqa
+
+        table = evtable.EvTable("", table=[[data]], width=80, border="cols")
+
+        expected = """
+|                                                                              |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+| Welcome to your new Evennia-based game! Visit https://www.evennia.com if     |
+| you need help, want to contribute, report issues or just join the community. |
+|                                                                              |
+| As a privileged user, write batchcommand tutorial_world.build to build       |
+| tutorial content. Once built, try intro for starting help and tutorial to    |
+| play the demo game.                                                          |
+"""
+        self._validate(expected, str(table))
