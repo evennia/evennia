@@ -258,14 +258,6 @@ ERROR_DATABASE = """
     to initialize/update the database according to your settings.
     """
 
-ERROR_WINDOWS_WIN32API = """
-    ERROR: Unable to import win32api, which Twisted requires to run.
-    You may download it with pip in your Python environment:
-
-    pip install --upgrade pywin32
-
-    """
-
 CMDLINE_HELP = """Starts, initializes, manages and operates the Evennia MU* server.
 Most standard django management commands are also accepted."""
 
