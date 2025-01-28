@@ -361,7 +361,12 @@ def get_and_merge_cmdsets(
                     local_objlist = yield (
                         location.contents_get(exclude=obj) + obj.contents_get() + [location]
                     )
-                    local_objlist = [o for o in local_objlist if not o._is_deleted]
+                    local_objlist = [
+                        o
+                        for o in local_objlist
+                        if not o._is_deleted
+                        and o.access(caller, access_type="call", no_superuser_bypass=True)
+                    ]
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
@@ -375,12 +380,7 @@ def get_and_merge_cmdsets(
                         chain.from_iterable(
                             lobj.cmdset.cmdset_stack
                             for lobj in local_objlist
-                            if (
-                                lobj.cmdset.current
-                                and lobj.access(
-                                    caller, access_type="call", no_superuser_bypass=True
-                                )
-                            )
+                            if lobj.cmdset.current
                         )
                     )
                     for cset in local_obj_cmdsets:
