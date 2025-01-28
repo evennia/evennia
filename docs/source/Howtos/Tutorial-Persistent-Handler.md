@@ -22,7 +22,7 @@ class NameChanger:
         self.obj = obj
 
     def add_to_key(self, suffix):
-        self.obj.key = f"self.obj.key_{suffix}"
+        self.obj.key = f"{self.obj.key}_{suffix}"
 
 # make a test object
 class MyObject(DefaultObject):
