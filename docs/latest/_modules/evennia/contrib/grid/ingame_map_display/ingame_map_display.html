@@ -217,16 +217,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            string: The exit name as a compass direction or an empty string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">exit_name</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">exit_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">:</span>
-            <span class="n">compass_aliases</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">direction</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-            <span class="p">]</span>
-            <span class="k">if</span> <span class="n">compass_aliases</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="n">exit_name</span> <span class="o">=</span> <span class="n">compass_aliases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">exit_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">exit_name</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">ex</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span>
+            <span class="k">else</span> <span class="nb">next</span><span class="p">((</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Map.update_pos"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.update_pos">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
