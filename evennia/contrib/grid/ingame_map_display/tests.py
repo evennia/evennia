@@ -32,7 +32,7 @@ class TestIngameMap(BaseEvenniaCommandTest):
         )
         create_object(
             exits.Exit,
-            key="west",
+            key="shopfront",
             aliases=["w"],
             location=self.east_room,
             destination=self.west_room,
