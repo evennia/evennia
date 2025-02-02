@@ -125,16 +125,11 @@ class Map(object):
         Returns:
             string: The exit name as a compass direction or an empty string.
         """
-        exit_name = ex.name
-        if exit_name not in _COMPASS_DIRECTIONS:
-            compass_aliases = [
-                direction in ex.aliases.all() for direction in _COMPASS_DIRECTIONS.keys()
-            ]
-            if compass_aliases[0]:
-                exit_name = compass_aliases[0]
-            if exit_name not in _COMPASS_DIRECTIONS:
-                return ""
-        return exit_name
+        return (
+            ex.name
+            if ex.name in _COMPASS_DIRECTIONS
+            else next((alias for alias in ex.aliases.all() if alias in _COMPASS_DIRECTIONS), "")
+        )
 
     def update_pos(self, room, exit_name):
         """
