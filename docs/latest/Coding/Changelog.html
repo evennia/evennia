@@ -203,9 +203,13 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<p>Updated dependencies: Twisted &gt;24 (&lt;25). Python 3.10, 3.11, 3.12, 3.13. Will
+drop 3.10 support as part of next major release.</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3719">Feat</a>: Support Python 3.13. (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3633">Feat</a>: Default object’s default descs are now taken from a <code class="docutils literal notranslate"><span class="pre">default_description</span></code>
 class variable instead of the <code class="docutils literal notranslate"><span class="pre">desc</span></code> Attribute always being set (count-infinity)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3718">Feat</a>: Remove twistd.bat creation for Windows, should not be needed anymore (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3677">Fix</a>: Make sure that <code class="docutils literal notranslate"><span class="pre">DefaultAccount.create</span></code> normalizes to empty
 strings instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if no name is provided, also enforce string type (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3682">Fix</a>: Allow in-game help searching for commands natively starting
@@ -221,8 +225,11 @@ unless current location and/or caller is in valid search candidates respectively
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3707">Fix</a>: Correct links in <code class="docutils literal notranslate"><span class="pre">about</span></code> command (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3710">Fix</a>: Clean reduntant session clearin in <code class="docutils literal notranslate"><span class="pre">at_server_cold_start</span></code> (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3711">Fix</a>: Usability improvements in the Discord integration (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3721">Fix</a>: Avoid loading cmdsets that don’t need to be checked, avoiding
+a performance hit for loading cmdsets in rooms with a lot of objects (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3688">Fix</a>: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)</p></li>
 <li><p>[Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)</p></li>
+<li><p>[Fix][issue3723]: Bug in <code class="docutils literal notranslate"><span class="pre">ingame-map-display</span></code> contrib when using ordinal alises (aMiss-aWry)</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">\\</span></code> properly preserve one backlash in funcparser (Griatch)</p></li>
 <li><p>Fix: When an object was used as an On-Demand Task’s category, and that object was then deleted,
 it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
