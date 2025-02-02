@@ -350,29 +350,6 @@
 <span class="s2">    to initialize/update the database according to your settings.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-<span class="n">ERROR_WINDOWS_WIN32API</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    ERROR: Unable to import win32api, which Twisted requires to run.</span>
-<span class="s2">    You may download it with pip in your Python environment:</span>
-
-<span class="s2">    pip install --upgrade pywin32</span>
-
-<span class="s2">    &quot;&quot;&quot;</span>
-
-<span class="n">INFO_WINDOWS_BATFILE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    INFO: Since you are running Windows, a file &#39;twistd.bat&#39; was</span>
-<span class="s2">    created for you. This is a simple batch file that tries to call</span>
-<span class="s2">    the twisted executable. Evennia determined this to be:</span>
-
-<span class="s2">       </span><span class="si">{twistd_path}</span>
-
-<span class="s2">    If you run into errors at startup you might need to edit</span>
-<span class="s2">    twistd.bat to point to the actual location of the Twisted</span>
-<span class="s2">    executable (usually called twistd.py) on your machine.</span>
-
-<span class="s2">    This procedure is only done once. Run `evennia` again when you</span>
-<span class="s2">    are ready to start the server.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-
 <span class="n">CMDLINE_HELP</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Starts, initializes, manages and operates the Evennia MU* server.</span>
 <span class="s2">Most standard django management commands are also accepted.&quot;&quot;&quot;</span>
 
@@ -1962,50 +1939,10 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">_is_windows</span><span class="p">():</span>
-        <span class="c1"># We need to handle Windows twisted separately. We create a</span>
-        <span class="c1"># batchfile in game/server, linking to the actual binary</span>
-
         <span class="k">global</span> <span class="n">TWISTED_BINARY</span>
-        <span class="c1"># Windows requires us to use the absolute path for the bat file.</span>
-        <span class="n">server_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
-        <span class="n">TWISTED_BINARY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">server_path</span><span class="p">,</span> <span class="s2">&quot;twistd.bat&quot;</span><span class="p">)</span>
-
-        <span class="c1"># add path so system can find the batfile</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAMEDIR</span><span class="p">,</span> <span class="n">SERVERDIR</span><span class="p">))</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;win32api&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_WINDOWS_WIN32API</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-
-        <span class="n">batpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_SERVER</span><span class="p">,</span> <span class="n">TWISTED_BINARY</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">batpath</span><span class="p">):</span>
-            <span class="c1"># Test for executable twisted batch file. This calls the</span>
-            <span class="c1"># twistd.py executable that is usually not found on the</span>
-            <span class="c1"># path in Windows.  It&#39;s not enough to locate</span>
-            <span class="c1"># scripts.twistd, what we want is the executable script</span>
-            <span class="c1"># C:\PythonXX/Scripts/twistd.py. Alas we cannot hardcode</span>
-            <span class="c1"># this location since we don&#39;t know if user has Python in</span>
-            <span class="c1"># a non-standard location. So we try to figure it out.</span>
-            <span class="n">twistd</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;twisted.scripts.twistd&quot;</span><span class="p">)</span>
-            <span class="n">twistd_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">twistd</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
-
-            <span class="c1"># note that we hope the twistd package won&#39;t change here, since we</span>
-            <span class="c1"># try to get to the executable by relative path.</span>
-            <span class="c1"># Update: In 2016, it seems Twisted 16 has changed the name of</span>
-            <span class="c1"># of its executable from &#39;twistd.py&#39; to &#39;twistd.exe&#39;.</span>
-            <span class="n">twistd_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">twistd_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;twistd.exe&quot;</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">batpath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">bat_file</span><span class="p">:</span>
-                <span class="c1"># build a custom bat file for windows</span>
-                <span class="n">bat_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;@&quot;</span><span class="si">%s</span><span class="s1">&quot; </span><span class="si">%%</span><span class="s1">*&#39;</span> <span class="o">%</span> <span class="n">twistd_path</span><span class="p">)</span>
-
-            <span class="nb">print</span><span class="p">(</span><span class="n">INFO_WINDOWS_BATFILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">twistd_path</span><span class="o">=</span><span class="n">twistd_path</span><span class="p">))</span></div>
+        <span class="n">TWISTED_BINARY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="s2">&quot;twistd.exe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TWISTED_BINARY</span><span class="p">):</span>  <span class="c1"># venv isn&#39;t being used</span>
+            <span class="n">TWISTED_BINARY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="s2">&quot;Scripts</span><span class="se">\\</span><span class="s2">twistd.exe&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="run_dummyrunner"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_dummyrunner">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">run_dummyrunner</span><span class="p">(</span><span class="n">number_of_dummies</span><span class="p">):</span>
