@@ -2,8 +2,13 @@
 
 ## Main branch
 
+Updated dependencies: Twisted >24 (<25). Python 3.10, 3.11, 3.12, 3.13. Will
+drop 3.10 support as part of next major release.
+
+- [Feat][pull3719]: Support Python 3.13. (0xDEADFED5)
 - [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
     class variable instead of the `desc` Attribute always being set (count-infinity)
+- [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (0xDEADFED5)
 - [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
   strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
 - [Fix][pull3682]: Allow in-game help searching for commands natively starting
@@ -19,8 +24,11 @@
 - [Fix][pull3707]: Correct links in `about` command (0xDEADFED5)
 - [Fix][pull3710]: Clean reduntant session clearin in `at_server_cold_start` (InspectorCaracal)
 - [Fix][pull3711]: Usability improvements in the Discord integration (InspectorCaracal)
+- [Fix][pull3721]: Avoid loading cmdsets that don't need to be checked, avoiding
+  a performance hit for loading cmdsets in rooms with a lot of objects (InspectorCaracal)
 - [Fix][issue3688]: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)
 - [Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)
+- [Fix][issue3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
@@ -38,6 +46,10 @@
 [pull3707]: https://github.com/evennia/evennia/pull/3707
 [pull3710]: https://github.com/evennia/evennia/pull/3710
 [pull3711]: https://github.com/evennia/evennia/pull/3711
+[pull3718]: https://github.com/evennia/evennia/pull/3718
+[pull3719]: https://github.com/evennia/evennia/pull/3719
+[pull3721]: https://github.com/evennia/evennia/pull/3721
+[pull3723]: https://github.com/evennia/evennia/pull/3723
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3688]: https://github.com/evennia/evennia/issues/3687
 
