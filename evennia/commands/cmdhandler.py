@@ -630,14 +630,12 @@ def cmdhandler(
             if isinstance(ret, types.GeneratorType):
                 # cmd.func() is a generator, execute progressively
                 _progressive_cmd_run(cmd, ret)
-                ret = yield ret
                 # note that the _progressive_cmd_run will itself run
                 # the at_post_cmd etc as it finishes; this is a bit of
                 # code duplication but there seems to be no way to
                 # catch the StopIteration here (it's not in the same
                 # frame since this is in a deferred chain)
             else:
-                ret = yield ret
                 # post-command hook
                 yield cmd.at_post_cmd()
 
