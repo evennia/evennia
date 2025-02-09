@@ -646,9 +646,6 @@ def cmdhandler(
                 else:
                     caller.ndb.last_cmd = None
 
-            # return result to the deferred
-            return ret
-
         except InterruptCommand:
             # Do nothing, clean exit
             pass
@@ -757,10 +754,9 @@ def cmdhandler(
                 cmd = copy(cmd)
 
             # A normal command.
-            ret = yield _run_command(
+            yield _run_command(
                 cmd, cmdname, args, raw_cmdname, cmdset, session, account, cmdset_providers
             )
-            return ret
 
         except ErrorReported as exc:
             # this error was already reported, so we
@@ -774,7 +770,7 @@ def cmdhandler(
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(
+                yield _run_command(
                     syscmd,
                     syscmd.key,
                     sysarg,
@@ -784,7 +780,7 @@ def cmdhandler(
                     account,
                     cmdset_providers,
                 )
-                return ret
+                return
             elif sysarg:
                 # return system arg
                 error_to.msg(err_helper(exc.sysarg, cmdid=cmdid))
