@@ -259,7 +259,7 @@ class TestUtils(EvenniaTest):
             result,
             """
 |ctestobj|n
-Value: ~|y10|n coins[not carried]
+Value: ~|y10|n coins[Not carried]
 
 A test object
 
