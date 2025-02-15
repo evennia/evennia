@@ -705,7 +705,7 @@ class TextToBBCODEparser(TextToHTMLparser):
 
         """
         cmd, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
-        val = f"[mxp=send cmd={cmd}]{text}[/mxp]"
+        val = f"[url=send cmd={cmd}]{text}[/url]"
 
         return val
 
