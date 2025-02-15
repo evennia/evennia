@@ -172,7 +172,7 @@ This will connect when the Scene is ready, poll and print the data when we recei
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extends</span> <span class="n">Node</span>
 
 <span class="c1"># The URL we will connect to.</span>
-<span class="n">var</span> <span class="n">websocket_url</span> <span class="o">=</span> <span class="s2">&quot;ws://localhost:4008&quot;</span>
+<span class="n">var</span> <span class="n">websocket_url</span> <span class="o">=</span> <span class="s2">&quot;ws://127.0.0.1:4008&quot;</span>
 <span class="n">var</span> <span class="n">socket</span> <span class="o">:=</span> <span class="n">WebSocketPeer</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
 
 <span class="n">func</span> <span class="n">_ready</span><span class="p">():</span>
@@ -245,7 +245,7 @@ cast them to dict() or list() before doing so.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>extends Node
 
 # The URL we will connect to.
-var websocket_url = &quot;ws://localhost:4008&quot;
+var websocket_url = &quot;ws://127.0.0.1:4008&quot;
 var socket := WebSocketPeer.new()
 
 @onready var output_label = $&quot;../Panel/VBoxContainer/RichTextLabel&quot;
