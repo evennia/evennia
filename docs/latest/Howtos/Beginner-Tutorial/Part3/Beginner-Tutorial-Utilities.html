@@ -257,20 +257,7 @@ utilities that will be useful later. We will also learn how to write <em>tests</
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.utils.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/utils.py</span></a></p>
 </aside>
 <p>The utility module is used to contain general functions we may need to call repeatedly from various other modules. In this tutorial example, we only crate one utility: a function that produces a pretty display of any object we pass to it.</p>
-<p>Below is an example of the string we want to see:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Chipped</span> <span class="n">Sword</span>
-<span class="n">Value</span><span class="p">:</span> <span class="o">~</span><span class="mi">10</span> <span class="n">coins</span> <span class="p">[</span><span class="n">wielded</span> <span class="ow">in</span> <span class="n">Weapon</span> <span class="n">hand</span><span class="p">]</span>
-
-<span class="n">A</span> <span class="n">simple</span> <span class="n">sword</span> <span class="n">used</span> <span class="n">by</span> <span class="n">mercenaries</span> <span class="nb">all</span> <span class="n">over</span>
-<span class="n">the</span> <span class="n">world</span><span class="o">.</span>
-
-<span class="n">Slots</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Used</span> <span class="n">from</span><span class="p">:</span> <span class="n">weapon</span> <span class="n">hand</span>
-<span class="n">Quality</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Uses</span><span class="p">:</span> <span class="kc">None</span>
-<span class="n">Attacks</span> <span class="n">using</span> <span class="n">strength</span> <span class="n">against</span> <span class="n">armor</span><span class="o">.</span>
-<span class="n">Damage</span> <span class="n">roll</span><span class="p">:</span> <span class="mi">1</span><span class="n">d6</span>
-</pre></div>
-</div>
-<p>And, here’s the start of how the function might look:</p>
+<p>Here’s how it could look:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/utils.py</span>
 
 <span class="n">_OBJ_STATS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -313,9 +300,25 @@ utilities that will be useful later. We will also learn how to write <em>tests</
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>In our new <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> function above, we set up a string template with place holders for where every element of stats information should go. Study this string so that you understand what it does. The <code class="docutils literal notranslate"><span class="pre">|c</span></code>, <code class="docutils literal notranslate"><span class="pre">|y</span></code>, <code class="docutils literal notranslate"><span class="pre">|w</span></code> and <code class="docutils literal notranslate"><span class="pre">|n</span></code> markers are  <a class="reference internal" href="../../../Concepts/Colors.html"><span class="doc std std-doc">Evennia color markup</span></a> for making the text cyan, yellow, white and neutral-color, respectively.</p>
+<p>Previously throughout these tutorial lessons, we have seen the <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span> <span class="pre">...</span> <span class="pre">&quot;&quot;&quot;</span></code> multi-line string used mainly for function help strings, but a triple-quoted string in Python is used for any multi-line string.</p>
+<p>Above, we set up a string template (<code class="docutils literal notranslate"><span class="pre">_OBJ_STATS</span></code>) with place holders (<code class="docutils literal notranslate"><span class="pre">{...}</span></code>) for where every element of stats information should go. In the <code class="docutils literal notranslate"><span class="pre">_OBJ_STATS.format(...)</span></code> call, we then dynamically fill those place holders with data from the object we pass into <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code>.</p>
+<p>Here’s what you’d get back if you were to pass a ‘chipped sword’  to <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> (note that these docs don’t show the text colors):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Chipped</span> <span class="n">Sword</span>
+<span class="n">Value</span><span class="p">:</span> <span class="o">~</span><span class="mi">10</span> <span class="n">coins</span> <span class="p">[</span><span class="n">wielded</span> <span class="ow">in</span> <span class="n">Weapon</span> <span class="n">hand</span><span class="p">]</span>
+
+<span class="n">A</span> <span class="n">simple</span> <span class="n">sword</span> <span class="n">used</span> <span class="n">by</span> <span class="n">mercenaries</span> <span class="nb">all</span> <span class="n">over</span>
+<span class="n">the</span> <span class="n">world</span><span class="o">.</span>
+
+<span class="n">Slots</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Used</span> <span class="n">from</span><span class="p">:</span> <span class="n">weapon</span> <span class="n">hand</span>
+<span class="n">Quality</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Uses</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">Attacks</span> <span class="n">using</span> <span class="n">strength</span> <span class="n">against</span> <span class="n">armor</span><span class="o">.</span>
+<span class="n">Damage</span> <span class="n">roll</span><span class="p">:</span> <span class="mi">1</span><span class="n">d6</span>
+</pre></div>
+</div>
+<p>We will later use this to let the player inspect any object without us having to make a new utility for every object type.</p>
+<p>Study the <code class="docutils literal notranslate"><span class="pre">_OBJ_STATS</span></code> template string so that you understand what it does. The <code class="docutils literal notranslate"><span class="pre">|c</span></code>, <code class="docutils literal notranslate"><span class="pre">|y</span></code>, <code class="docutils literal notranslate"><span class="pre">|w</span></code> and <code class="docutils literal notranslate"><span class="pre">|n</span></code> markers are  <a class="reference internal" href="../../../Concepts/Colors.html"><span class="doc std std-doc">Evennia color markup</span></a> for making the text cyan, yellow, white and neutral-color, respectively.</p>
 <p>Some stats elements are easy to identify in the above code. For instance, <code class="docutils literal notranslate"><span class="pre">obj.key</span></code> is the name of an object and <code class="docutils literal notranslate"><span class="pre">obj.db.desc</span></code> will hold an object’s description — this is also how default Evennia works.</p>
-<p>So far, here in our tutorial, we have not yet established how to get any of the other properties like <code class="docutils literal notranslate"><span class="pre">size</span></code> or <code class="docutils literal notranslate"><span class="pre">attack_type</span></code>. For our current purposes, we will just set them to dummy values and we’ll need to revisit them later when we have more code in place!</p>
+<p>So far, here in our tutorial, we have not yet established how to get any of the other properties like <code class="docutils literal notranslate"><span class="pre">size</span></code>, <code class="docutils literal notranslate"><span class="pre">damage_roll</span></code>  or <code class="docutils literal notranslate"><span class="pre">attack_type_name</span></code>. For our current purposes, we will just set them to fixed dummy values so they work. We’ll need to revisit them later when we have more code in place!</p>
 </section>
 <section id="testing">
 <h2><span class="section-number">1.4. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
@@ -355,7 +358,7 @@ is an example of the testing module. To dive deeper into unit testing in Evennia
             <span class="n">result</span><span class="p">,</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">|ctestobj|n</span>
-<span class="sd">Value: ~|y10|n coins[not carried]</span>
+<span class="sd">Value: ~|y10|n coins[Not carried]</span>
 
 <span class="sd">A test object</span>
 
