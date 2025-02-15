@@ -480,12 +480,11 @@ eightball = evennia.search_object(&quot;#8&quot;)
 <span class="c1"># we assume only one match of each </span>
 <span class="n">dungeons</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;dungeon&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">)</span>
 <span class="n">chests</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;chest&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">dungeons</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="c1"># find if there are any skulls in the chest </span>
+<span class="c1"># find out how much coin are in the chest </span>
 <span class="n">coins</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">chests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by directly querying the database.</p>
-<p>In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.</p>
+<p>This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by <em>directly querying the database</em>. We will get to this in the next lesson. There we will dive into more complex searching using Django database queries and querysets.</p>
 </section>
 </section>
 
