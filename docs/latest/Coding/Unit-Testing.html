@@ -140,33 +140,24 @@
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test evennia
 </pre></div>
 </div>
-<p>This will run all the evennia tests using the default settings. You could also run only a subset of
-all tests by specifying a subpackage of the library:</p>
+<p>This will run all the evennia tests using the default settings. You could also run only a subset of all tests by specifying a subpackage of the library:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test evennia.commands.default
 </pre></div>
 </div>
-<p>A temporary database will be instantiated to manage the tests. If everything works out you will see
-how many tests were run and how long it took. If something went wrong you will get error messages.
-If you contribute to Evennia, this is a useful sanity check to see you haven’t introduced an
-unexpected bug.</p>
+<p>A temporary database will be instantiated to manage the tests. If everything works out you will see how many tests were run and how long it took. If something went wrong you will get error messages. If you contribute to Evennia, this is a useful sanity check to see you haven’t introduced an unexpected bug.</p>
 </section>
 <section id="running-custom-game-dir-unit-tests">
 <h2>Running custom game-dir unit tests<a class="headerlink" href="#running-custom-game-dir-unit-tests" title="Permalink to this headline">¶</a></h2>
-<p>If you have implemented your own tests for your game you can run them from your game dir
-with</p>
+<p>If you have implemented your own tests for your game you can run them from your game dir with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .
 </pre></div>
 </div>
-<p>The period (<code class="docutils literal notranslate"><span class="pre">.</span></code>) means to run all tests found in the current directory and all subdirectories. You
-could also specify, say, <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> or <code class="docutils literal notranslate"><span class="pre">world</span></code> if you wanted to just run tests in those subdirs.</p>
-<p>An important thing to note is that those tests will all be run using the <em>default Evennia settings</em>.
-To run the tests with your own settings file you must use the <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option:</p>
+<p>The period (<code class="docutils literal notranslate"><span class="pre">.</span></code>) means to run all tests found in the current directory and all subdirectories. You could also specify, say, <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> or <code class="docutils literal notranslate"><span class="pre">world</span></code> if you wanted to just run tests in those subdirs.</p>
+<p>An important thing to note is that those tests will all be run using the <em>default Evennia settings</em>. To run the tests with your own settings file you must use the <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option of Evennia takes a file name in the <code class="docutils literal notranslate"><span class="pre">mygame/server/conf</span></code> folder. It is
-normally used to swap settings files for testing and development. In combination with <code class="docutils literal notranslate"><span class="pre">test</span></code>, it
-forces Evennia to use this settings file over the default one.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option of Evennia takes a file name in the <code class="docutils literal notranslate"><span class="pre">mygame/server/conf</span></code> folder. It is normally used to swap settings files for testing and development. In combination with <code class="docutils literal notranslate"><span class="pre">test</span></code>, it forces Evennia to use this settings file over the default one.</p>
 <p>You can also test specific things by giving their path</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py world.tests.YourTest
 </pre></div>
@@ -174,17 +165,10 @@ forces Evennia to use this settings file over the default one.</p>
 </section>
 <section id="writing-new-unit-tests">
 <h2>Writing new unit tests<a class="headerlink" href="#writing-new-unit-tests" title="Permalink to this headline">¶</a></h2>
-<p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s
-<em>unittest</em> module.</p>
-<p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>,
-<code class="docutils literal notranslate"><span class="pre">tests.py</span></code> etc). Such a test module will be found wherever it is in the package. It can be a good
-idea to look at some of Evennia’s <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> modules to see how they look.</p>
-<p>Inside the module you need to put a class inheriting (at any distance) from <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code>. Each
-method on that class that starts with <code class="docutils literal notranslate"><span class="pre">test_</span></code> will be run separately as a unit test. There
-are two special, optional methods <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> that will (if you define them) run before
-<em>every</em> test. This can be useful for setting up and deleting things.</p>
-<p>To actually test things, you use special <code class="docutils literal notranslate"><span class="pre">assert...</span></code> methods on the class. Most common on is
-<code class="docutils literal notranslate"><span class="pre">assertEqual</span></code>, which makes sure a result is what you expect it to be.</p>
+<p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s <em>unittest</em> module.</p>
+<p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> etc). Such a test module will be found wherever it is in the package. It can be a good idea to look at some of Evennia’s <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> modules to see how they look.</p>
+<p>Inside the module you need to put a class inheriting (at any distance) from <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code>. Each method on that class that starts with <code class="docutils literal notranslate"><span class="pre">test_</span></code> will be run separately as a unit test. There are two special, optional methods <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> that will (if you define them) run before and after <em>every</em> test. This can be useful for creating, configuring and cleaning up  things that every test in the class needs.</p>
+<p>To actually test things, you use special <code class="docutils literal notranslate"><span class="pre">assert...</span></code> methods on the class. Most common on is <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code>, which makes sure a result is what you expect it to be.</p>
 <p>Here’s an example of the principle. Let’s assume you put this in <code class="docutils literal notranslate"><span class="pre">mygame/world/tests.py</span></code>
 and want to test a function in <code class="docutils literal notranslate"><span class="pre">mygame/world/myfunctions.py</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># in a module tests.py somewhere i your game dir</span>
@@ -239,10 +223,11 @@ and want to test a function in <code class="docutils literal notranslate"><span 
 <p>You might also want to read the <a class="reference external" href="https://docs.python.org/library/unittest.html">Python documentation for the unittest module</a>.</p>
 <section id="using-the-evennia-testing-classes">
 <h3>Using the Evennia testing classes<a class="headerlink" href="#using-the-evennia-testing-classes" title="Permalink to this headline">¶</a></h3>
-<p>Evennia offers many custom testing classes that helps with testing Evennia features.
-They are all found in <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia-utils-test-resources"><span class="std std-ref">evennia.utils.test_resources</span></a>. Note that
-these classes implement the <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> already, so if you want to add stuff in them
-yourself you should remember to use e.g. <code class="docutils literal notranslate"><span class="pre">super().setUp()</span></code> in your code.</p>
+<p>Evennia offers many custom testing classes that helps with testing Evennia features. They are all found in <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia-utils-test-resources"><span class="std std-ref">evennia.utils.test_resources</span></a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Note that these base classes implement the <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> already, so if you want to add stuff in them yourself you should remember to use e.g. <code class="docutils literal notranslate"><span class="pre">super().setUp()</span></code> in your code.</p>
+</div>
 <section id="classes-for-testing-your-game-dir">
 <h4>Classes for testing your game dir<a class="headerlink" href="#classes-for-testing-your-game-dir" title="Permalink to this headline">¶</a></h4>
 <p>These all use whatever setting you pass to them and works well for testing code in your game dir.</p>
@@ -268,10 +253,7 @@ without a timing component.</p></li>
 connecting to the game. It is used by <code class="docutils literal notranslate"><span class="pre">.account1</span></code> and has a sessid of 1.</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EvenniaCommandTest</span></code> - has the same environment like <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> but also adds a special
-<a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="evennia.utils.test_resources.EvenniaCommandTestMixin.call"><span class="xref myst py py-meth">.call()</span></a> method specifically for
-testing Evennia <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Commands</span></a>. It allows you to compare what the command <em>actually</em>
-returns to the player with what you expect. Read the <code class="docutils literal notranslate"><span class="pre">call</span></code> api doc for more info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EvenniaCommandTest</span></code> - has the same environment like <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> but also adds a special <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="evennia.utils.test_resources.EvenniaCommandTestMixin.call"><span class="xref myst py py-meth">.call()</span></a> method specifically for testing Evennia <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Commands</span></a>. It allows you to compare what the command <em>actually</em> returns to the player with what you expect. Read the <code class="docutils literal notranslate"><span class="pre">call</span></code> api doc for more info.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EvenniaTestCase</span></code> - This is identical to the regular Python <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class, it’s
 just there for naming symmetry with <code class="docutils literal notranslate"><span class="pre">BaseEvenniaTestCase</span></code> below.</p></li>
 </ul>
@@ -310,17 +292,12 @@ just there for naming symmetry with <code class="docutils literal notranslate"><
                   <span class="s2">&quot;You see: Obj(#4), Obj2(#5), Char2(#7)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>When using <code class="docutils literal notranslate"><span class="pre">.call</span></code>, you don’t need to specify the entire string; you can just give the beginning
-of it and if it matches, that’s enough. Use <code class="docutils literal notranslate"><span class="pre">\n</span></code> to denote line breaks and (this is a special for
-the <code class="docutils literal notranslate"><span class="pre">.call</span></code> helper), <code class="docutils literal notranslate"><span class="pre">||</span></code> to indicate multiple uses of <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> in the Command. The <code class="docutils literal notranslate"><span class="pre">.call</span></code> helper
-has a lot of arguments for mimicing different ways of calling a Command, so make sure to
-<a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="evennia.utils.test_resources.EvenniaCommandTestMixin.call"><span class="xref myst py py-meth">read the API docs for .call()</span></a>.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">.call</span></code>, you don’t need to specify the entire string; you can just give the beginning of it and if it matches, that’s enough. Use <code class="docutils literal notranslate"><span class="pre">\n</span></code> to denote line breaks and (this is a special for the <code class="docutils literal notranslate"><span class="pre">.call</span></code> helper), <code class="docutils literal notranslate"><span class="pre">||</span></code> to indicate multiple uses of <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> in the Command. The <code class="docutils literal notranslate"><span class="pre">.call</span></code> helper has a lot of arguments for mimicing different ways of calling a Command, so make sure to <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="evennia.utils.test_resources.EvenniaCommandTestMixin.call"><span class="xref myst py py-meth">read the API docs for .call()</span></a>.</p>
 </section>
 <section id="classes-for-testing-evennia-core">
 <h4>Classes for testing Evennia core<a class="headerlink" href="#classes-for-testing-evennia-core" title="Permalink to this headline">¶</a></h4>
 <p>These are used for testing Evennia itself. They provide the same resources as the classes
-above but enforce Evennias default settings found in <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code>, ignoring
-any settings changes in your game dir.</p>
+above but enforce Evennias default settings found in <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code>, ignoring any settings changes in your game dir.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code> - all the default objects above but with enforced default settings</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">BaseEvenniaCommandTest</span></code> - for testing Commands, but with enforced default settings</p></li>
@@ -333,20 +310,13 @@ be useful if you want to mix your own testing classes:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">EvenniaCommandMixin</span></code> - A class mixin that adds the <code class="docutils literal notranslate"><span class="pre">.call()</span></code> Command-tester helper.</p></li>
 </ul>
 <p>If you want to help out writing unittests for Evennia, take a look at Evennia’s <a class="reference external" href="https://coveralls.io/github/evennia/evennia">coveralls.io
-page</a>. There you see which modules have any form of
-test coverage and which does not. All help is appreciated!</p>
+page</a>. There you see which modules have any form of test coverage and which does not. All help is appreciated!</p>
 </section>
 </section>
 <section id="unit-testing-contribs-with-custom-models">
 <h3>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h3>
-<p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that
-uses its <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
-only recognize models in <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code>. If a user wants to use your contrib, they will
-be required to add your models to their settings file. But since contribs are optional you cannot
-add the model to Evennia’s central <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> file - this would always create your
-optional models regardless of if the user wants them. But at the same time a contribution is a part
-of the Evennia distribution and its unit tests should be run with all other Evennia tests using
-<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code>.</p>
+<p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that uses its <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
+only recognize models in <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code>. If a user wants to use your contrib, they will be required to add your models to their settings file. But since contribs are optional you cannot add the model to Evennia’s central <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> file - this would always create your optional models regardless of if the user wants them. But at the same time a contribution is a part of the Evennia distribution and its unit tests should be run with all other Evennia tests using <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code>.</p>
 <p>The way to do this is to only temporarily add your models to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> directory when the test runs. here is an example of how to do it.</p>
 <blockquote>
 <div><p>Note that this solution, derived from this <a class="reference external" href="http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435">stackexchange answer</a> is currently untested! Please report your findings.</p>
@@ -400,8 +370,7 @@ of the Evennia distribution and its unit tests should be run with all other Even
 </section>
 <section id="a-note-on-making-the-test-runner-faster">
 <h3>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h3>
-<p>If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don’t require migrations to run for your tests, you can disable them with the
-django-test-without-migrations package. To install it, simply:</p>
+<p>If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don’t require migrations to run for your tests, you can disable them with the django-test-without-migrations package. To install it, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install django-test-without-migrations
 </pre></div>
 </div>
