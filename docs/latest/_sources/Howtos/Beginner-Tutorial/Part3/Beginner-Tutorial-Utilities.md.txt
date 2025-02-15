@@ -135,9 +135,9 @@ ABILITY_REVERSE_MAP =  {
 
 Above, the `Ability` class holds some basic properties of a character sheet.
 
-The `ABILITY_REVERSE_MAP` is a convenient map to go the other way &mdash; if in some command we were to enter the string 'cha', we could use this mapping to directly convert your input to the correct `Ability`. For example:
+The `ABILITY_REVERSE_MAP` is a convenient map to convert a string to an Enum. The most common use of this would be in a Command; the Player don't know anything about Enums, they can only send strings. So we'd only get the string "cha". Using this `ABILITY_REVERSE_MAP` we can conveniently convert this input to an `Ability.CHA` Enum you can then pass around in code 
 
-    ability = ABILITY_REVERSE_MAP.get(your_input)
+    ability = ABILITY_REVERSE_MAP.get(user_input)
 
 
 ## Utility Module
