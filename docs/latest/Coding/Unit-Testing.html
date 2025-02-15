@@ -167,7 +167,7 @@
 <h2>Writing new unit tests<a class="headerlink" href="#writing-new-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s <em>unittest</em> module.</p>
 <p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> etc). Such a test module will be found wherever it is in the package. It can be a good idea to look at some of Evennia’s <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> modules to see how they look.</p>
-<p>Inside the module you need to put a class inheriting (at any distance) from <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code>. Each method on that class that starts with <code class="docutils literal notranslate"><span class="pre">test_</span></code> will be run separately as a unit test. There are two special, optional methods <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> that will (if you define them) run before and after <em>every</em> test. This can be useful for creating, configuring and cleaning up  things that every test in the class needs.</p>
+<p>Inside the module you need to put a class inheriting (at any distance) from <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code>. Each method on that class that starts with <code class="docutils literal notranslate"><span class="pre">test_</span></code> will be run separately as a unit test. There are two special, optional methods <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> that will (if you define them) respectively run before and after <em>every</em> test. This can be useful for creating, configuring and cleaning up  things that every test in the class needs.</p>
 <p>To actually test things, you use special <code class="docutils literal notranslate"><span class="pre">assert...</span></code> methods on the class. Most common on is <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code>, which makes sure a result is what you expect it to be.</p>
 <p>Here’s an example of the principle. Let’s assume you put this in <code class="docutils literal notranslate"><span class="pre">mygame/world/tests.py</span></code>
 and want to test a function in <code class="docutils literal notranslate"><span class="pre">mygame/world/myfunctions.py</span></code></p>
@@ -180,7 +180,7 @@ and want to test a function in <code class="docutils literal notranslate"><span 
 
 
     <span class="k">class</span><span class="w"> </span><span class="nc">TestObj</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-       <span class="s2">&quot;This tests a function myfunc.&quot;</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;This tests a function myfunc.&quot;&quot;&quot;</span>
 
        <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">           </span><span class="sd">&quot;&quot;&quot;done before every of the test_ * methods below&quot;&quot;&quot;</span>
@@ -280,13 +280,13 @@ just there for naming symmetry with <code class="docutils literal notranslate"><
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TestSet</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
-    <span class="s2">&quot;tests the look command by simple call, using Char2 as a target&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests the look command by simple call, using Char2 as a target&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">test_mycmd_char</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">mycommand</span><span class="o">.</span><span class="n">CmdMyLook</span><span class="p">(),</span> <span class="s2">&quot;Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;Char2(#7)&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">test_mycmd_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;tests the look command by simple call, with target as room&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the look command by simple call, with target as room&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">mycommand</span><span class="o">.</span><span class="n">CmdMyLook</span><span class="p">(),</span> <span class="s2">&quot;Room&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;Room(#1)</span><span class="se">\n</span><span class="s2">room_desc</span><span class="se">\n</span><span class="s2">Exits: out(#3)</span><span class="se">\n</span><span class="s2">&quot;</span>
                   <span class="s2">&quot;You see: Obj(#4), Obj2(#5), Char2(#7)&quot;</span><span class="p">)</span>

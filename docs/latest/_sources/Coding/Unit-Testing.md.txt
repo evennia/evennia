@@ -41,7 +41,7 @@ Evennia's test suite makes use of Django unit test system, which in turn relies 
 
 To make the test runner find the tests, they must be put in a module named `test*.py` (so `test.py`, `tests.py` etc). Such a test module will be found wherever it is in the package. It can be a good idea to look at some of Evennia's `tests.py` modules to see how they look.
 
-Inside the module you need to put a class inheriting (at any distance) from `unittest.TestCase`. Each method on that class that starts with `test_` will be run separately as a unit test. There are two special, optional methods `setUp` and `tearDown` that will (if you define them) run before and after _every_ test. This can be useful for creating, configuring and cleaning up  things that every test in the class needs.
+Inside the module you need to put a class inheriting (at any distance) from `unittest.TestCase`. Each method on that class that starts with `test_` will be run separately as a unit test. There are two special, optional methods `setUp` and `tearDown` that will (if you define them) respectively run before and after _every_ test. This can be useful for creating, configuring and cleaning up  things that every test in the class needs.
 
 To actually test things, you use special `assert...` methods on the class. Most common on is `assertEqual`, which makes sure a result is what you expect it to be.
 
@@ -58,7 +58,7 @@ and want to test a function in `mygame/world/myfunctions.py`
 
 
     class TestObj(unittest.TestCase):
-       "This tests a function myfunc."
+       """This tests a function myfunc."""
 
        def setUp(self):
            """done before every of the test_ * methods below"""
@@ -160,13 +160,13 @@ from commands import command as mycommand
 
 
 class TestSet(EvenniaCommandTest):
-    "tests the look command by simple call, using Char2 as a target"
+    """Tests the look command by simple call, using Char2 as a target"""
 
     def test_mycmd_char(self):
         self.call(mycommand.CmdMyLook(), "Char2", "Char2(#7)")
 
     def test_mycmd_room(self):
-        "tests the look command by simple call, with target as room"
+        """Tests the look command by simple call, with target as room"""
         self.call(mycommand.CmdMyLook(), "Room",
                   "Room(#1)\nroom_desc\nExits: out(#3)\n"
                   "You see: Obj(#4), Obj2(#5), Char2(#7)")
