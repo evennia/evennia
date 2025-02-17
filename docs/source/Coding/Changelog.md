@@ -29,11 +29,13 @@ drop 3.10 support as part of next major release.
 - [Fix][issue3688]: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)
 - [Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)
 - [Fix][issue3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
+- [Fix][issue3726]: Fix Twisted v25 issue with returnValue()
+- [Fix][issue3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
-- [Docs]: Fixes from InspectorCaracal, Griatch
+- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
 
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
@@ -50,6 +52,8 @@ drop 3.10 support as part of next major release.
 [pull3719]: https://github.com/evennia/evennia/pull/3719
 [pull3721]: https://github.com/evennia/evennia/pull/3721
 [pull3723]: https://github.com/evennia/evennia/pull/3723
+[pull3726]: https://github.com/evennia/evennia/pull/3726
+[pull3729]: https://github.com/evennia/evennia/pull/3729
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3688]: https://github.com/evennia/evennia/issues/3687
 

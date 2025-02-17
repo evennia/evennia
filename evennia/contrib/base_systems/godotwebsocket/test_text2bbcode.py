@@ -58,7 +58,7 @@ class TestText2Bbcode(TestCase):
         mocked_match = mock.Mock()
         mocked_match.groups.return_value = ["cmd", "text"]
 
-        self.assertEqual("[mxp=send cmd=cmd]text[/mxp]", parser.sub_mxp_links(mocked_match))
+        self.assertEqual("[url=send cmd=cmd]text[/url]", parser.sub_mxp_links(mocked_match))
 
     def test_sub_text(self):
         parser = text2bbcode.BBCODE_PARSER

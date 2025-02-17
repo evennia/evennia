@@ -135,9 +135,9 @@ ABILITY_REVERSE_MAP =  {
 
 Above, the `Ability` class holds some basic properties of a character sheet.
 
-The `ABILITY_REVERSE_MAP` is a convenient map to go the other way &mdash; if in some command we were to enter the string 'cha', we could use this mapping to directly convert your input to the correct `Ability`. For example:
+The `ABILITY_REVERSE_MAP` is a convenient map to convert a string to an Enum. The most common use of this would be in a Command; the Player don't know anything about Enums, they can only send strings. So we'd only get the string "cha". Using this `ABILITY_REVERSE_MAP` we can conveniently convert this input to an `Ability.CHA` Enum you can then pass around in code 
 
-    ability = ABILITY_REVERSE_MAP.get(your_input)
+    ability = ABILITY_REVERSE_MAP.get(user_input)
 
 
 ## Utility Module
@@ -151,22 +151,7 @@ An example of the utility module is found in
 
 The utility module is used to contain general functions we may need to call repeatedly from various other modules. In this tutorial example, we only crate one utility: a function that produces a pretty display of any object we pass to it.
 
-Below is an example of the string we want to see:
-
-```
-Chipped Sword
-Value: ~10 coins [wielded in Weapon hand]
-
-A simple sword used by mercenaries all over
-the world.
-
-Slots: 1, Used from: weapon hand
-Quality: 3, Uses: None
-Attacks using strength against armor.
-Damage roll: 1d6
-```
-
-And, here's the start of how the function might look:
+Here's how it could look: 
 
 ```python
 # in mygame/evadventure/utils.py
@@ -210,11 +195,33 @@ def get_obj_stats(obj, owner=None):
         damage_roll="1d6"
     )
 ```
-In our new `get_obj_stats` function above, we set up a string template with place holders for where every element of stats information should go. Study this string so that you understand what it does. The `|c`, `|y`, `|w` and `|n` markers are  [Evennia color markup](../../../Concepts/Colors.md) for making the text cyan, yellow, white and neutral-color, respectively.
+
+Previously throughout these tutorial lessons, we have seen the `""" ... """` multi-line string used mainly for function help strings, but a triple-quoted string in Python is used for any multi-line string. 
+
+Above, we set up a string template (`_OBJ_STATS`) with place holders (`{...}`) for where every element of stats information should go. In the `_OBJ_STATS.format(...)` call, we then dynamically fill those place holders with data from the object we pass into `get_obj_stats`. 
+
+Here's what you'd get back if you were to pass a 'chipped sword'  to `get_obj_stats` (note that these docs don't show the text colors): 
+
+```
+Chipped Sword
+Value: ~10 coins [wielded in Weapon hand]
+
+A simple sword used by mercenaries all over
+the world.
+
+Slots: 1, Used from: weapon hand
+Quality: 3, Uses: None
+Attacks using strength against armor.
+Damage roll: 1d6
+```
+
+We will later use this to let the player inspect any object without us having to make a new utility for every object type. 
+
+Study the `_OBJ_STATS` template string so that you understand what it does. The `|c`, `|y`, `|w` and `|n` markers are  [Evennia color markup](../../../Concepts/Colors.md) for making the text cyan, yellow, white and neutral-color, respectively.
 
 Some stats elements are easy to identify in the above code. For instance, `obj.key` is the name of an object and `obj.db.desc` will hold an object's description &mdash; this is also how default Evennia works.
 
-So far, here in our tutorial, we have not yet established how to get any of the other properties like `size` or `attack_type`. For our current purposes, we will just set them to dummy values and we'll need to revisit them later when we have more code in place!
+So far, here in our tutorial, we have not yet established how to get any of the other properties like `size`, `damage_roll`  or `attack_type_name`. For our current purposes, we will just set them to fixed dummy values so they work. We'll need to revisit them later when we have more code in place!
 
 ## Testing
 
@@ -259,7 +266,7 @@ class TestUtils(EvenniaTest):
             result,
             """
 |ctestobj|n
-Value: ~|y10|n coins[not carried]
+Value: ~|y10|n coins[Not carried]
 
 A test object
 
