@@ -286,8 +286,8 @@ possible.</p>
 <span class="hll">    <span class="n">Character</span><span class="o">.</span><span class="n">objects</span>
 </span>    <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
 <span class="hll">        <span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">,</span>
-</span><span class="hll">        <span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span>
-</span><span class="hll">        <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span>
+</span><span class="hll">        <span class="n">db_attributes__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span>
+</span><span class="hll">        <span class="n">db_attributes__db_value</span><span class="o">=</span><span class="mi">2</span>
 </span>    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div></td></tr></table></div>
@@ -295,6 +295,7 @@ possible.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Attributes vs database fields</p>
 <p>Don’t confuse database fields with <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> you set via <code class="docutils literal notranslate"><span class="pre">obj.db.attr</span> <span class="pre">=</span> <span class="pre">'foo'</span></code> or <code class="docutils literal notranslate"><span class="pre">obj.attributes.add()</span></code>. Attributes are custom database entities <em>linked</em> to an object. They are not separate fields <em>on</em> that object like <code class="docutils literal notranslate"><span class="pre">db_key</span></code> or <code class="docutils literal notranslate"><span class="pre">db_location</span></code> are.</p>
+<p>While an Attribute’s <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is just a normal string, their <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is in fact a serialized piece of data.  This means that cannot query this with additional operators. So if you use e.g. <code class="docutils literal notranslate"><span class="pre">db_attributes__db_value__iexact=2</span></code>, you’ll get an error. While Attributes are very flexible, this is their drawback - their stored value is not possible to directly query with advanced query methods beyond finding the exact match.</p>
 </aside>
 <ul class="simple">
 <li><p><strong>Line 4</strong> We want to find <code class="docutils literal notranslate"><span class="pre">Character</span></code>s, so we access <code class="docutils literal notranslate"><span class="pre">.objects</span></code> on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass.</p></li>
@@ -308,7 +309,7 @@ that we can treat like an object for this purpose; it references all Tags on the
 </ul>
 </li>
 <li><p><strong>Line 7</strong>: … We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycanthropy&quot;</span></code></p></li>
-<li><p><strong>Line 8</strong> :… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is exactly 2.</p></li>
+<li><p><strong>Line 8</strong> :… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is 2.</p></li>
 </ul>
 </li>
 </ul>
@@ -357,7 +358,7 @@ of Daltons and non-prisoners.</p>
         <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
         <span class="o">&amp;</span> <span class="p">(</span>
           <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span>
-            <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">db_attributes__db_value</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
           <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
         <span class="p">))</span>
     <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
@@ -368,7 +369,7 @@ of Daltons and non-prisoners.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
 
 <span class="n">q_moonlit</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
-<span class="n">q_lycanthropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">q_lycanthropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthropy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">q_recently_bitten</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
 
 <span class="n">will_transform</span> <span class="o">=</span> <span class="p">(</span>
