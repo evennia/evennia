@@ -14,7 +14,6 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
-
 from evennia.locks.lockfuncs import perm as perm_lockfunc
 from evennia.utils.utils import make_iter, to_str
 
@@ -79,9 +78,10 @@ class Tag(models.Model):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Tag"
         unique_together = (("db_key", "db_category", "db_tagtype", "db_model"),)
-        index_together = (("db_key", "db_category", "db_tagtype", "db_model"),)
+        indexes = [models.Index(fields=["db_key", "db_category", "db_tagtype", "db_model"])]
 
     def __lt__(self, other):
         return str(self) < str(other)
