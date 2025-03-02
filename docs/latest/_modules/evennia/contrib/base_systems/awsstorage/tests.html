@@ -100,7 +100,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.files.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContentFile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_aware</span><span class="p">,</span> <span class="n">utc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_aware</span>
 
 <span class="n">_SKIP</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
@@ -625,7 +625,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_test_storage_mtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_tz</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">return_value</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">utc</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;file.txt&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>

@@ -187,7 +187,21 @@
 
 
 <div class="viewcode-block" id="LogoutTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LogoutTest">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LogoutTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
-    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;logout&quot;</span></div>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;logout&quot;</span>
+
+<div class="viewcode-block" id="LogoutTest.test_get"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LogoutTest.test_get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Since Django 5.0, logout is no longer supported with GET requests&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="LogoutTest.test_post"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LogoutTest.test_post">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do the logout test with a POST request&quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LogoutTest.test_get_authenticated"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LogoutTest.test_get_authenticated">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_authenticated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do the logout test with a POST instead of GET&quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="PasswordResetTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.PasswordResetTest">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PasswordResetTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>

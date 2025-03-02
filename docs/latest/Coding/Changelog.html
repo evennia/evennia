@@ -203,9 +203,11 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
-<p>Updated dependencies: Twisted &gt;24 (&lt;25). Python 3.10, 3.11, 3.12, 3.13. Will
-drop 3.10 support as part of next major release.</p>
+<p>Updated dependencies: Django &gt;5.1 (&lt;5,2), Twisted &gt;24 (&lt;25).
+Python versions: 3.11, 3.12, 3.13.</p>
 <ul class="simple">
+<li><p>Feat (backwards incompatible): RUN MIGRATIONS (<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>): Now requiring Django 5.1 (Griatch)</p></li>
+<li><p>Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3719">Feat</a>: Support Python 3.13. (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3633">Feat</a>: Default object’s default descs are now taken from a <code class="docutils literal notranslate"><span class="pre">default_description</span></code>
 class variable instead of the <code class="docutils literal notranslate"><span class="pre">desc</span></code> Attribute always being set (count-infinity)</p></li>
@@ -214,8 +216,7 @@ class variable instead of the <code class="docutils literal notranslate"><span c
 strings instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if no name is provided, also enforce string type (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3682">Fix</a>: Allow in-game help searching for commands natively starting
 with <code class="docutils literal notranslate"><span class="pre">*</span></code> (which is the Lunr search wildcard) (count-infinity)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3684">Fix</a>: Web client stopped auto-focusing the input box after opening
-settings (count-infinity)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3684">Fix</a>: Web client stopped auto-focusing the input box after opening settings (count-infinity)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3689">Fix</a>: Partial matching fix in default search, makes sure e.g. <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">sw</span></code> uniquely
 finds <code class="docutils literal notranslate"><span class="pre">big</span> <span class="pre">sword</span></code> even if another type of sword is around (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3690">Fix</a>: In searches, allow special ‘here’ and ‘me’ keywords only be valid queries

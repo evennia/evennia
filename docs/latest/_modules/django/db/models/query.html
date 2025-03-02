@@ -124,7 +124,7 @@
     <span class="n">resolve_callables</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemovedInDjango60Warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">partition</span>
 
 <span class="c1"># The maximum number of results to fetch in a get() query.</span>
@@ -200,9 +200,11 @@
                 <span class="n">related_objs</span><span class="p">,</span>
                 <span class="n">operator</span><span class="o">.</span><span class="n">attrgetter</span><span class="p">(</span>
                     <span class="o">*</span><span class="p">[</span>
-                        <span class="n">field</span><span class="o">.</span><span class="n">attname</span>
-                        <span class="k">if</span> <span class="n">from_field</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span>
-                        <span class="k">else</span> <span class="n">queryset</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">from_field</span><span class="p">)</span><span class="o">.</span><span class="n">attname</span>
+                        <span class="p">(</span>
+                            <span class="n">field</span><span class="o">.</span><span class="n">attname</span>
+                            <span class="k">if</span> <span class="n">from_field</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span>
+                            <span class="k">else</span> <span class="n">queryset</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">from_field</span><span class="p">)</span><span class="o">.</span><span class="n">attname</span>
+                        <span class="p">)</span>
                         <span class="k">for</span> <span class="n">from_field</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">from_fields</span>
                     <span class="p">]</span>
                 <span class="p">),</span>
@@ -620,16 +622,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chunk_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch_related_lookups</span><span class="p">:</span>
-                <span class="c1"># When the deprecation ends, replace with:</span>
-                <span class="c1"># raise ValueError(</span>
-                <span class="c1">#     &#39;chunk_size must be provided when using &#39;</span>
-                <span class="c1">#     &#39;QuerySet.iterator() after prefetch_related().&#39;</span>
-                <span class="c1"># )</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">&quot;Using QuerySet.iterator() after prefetch_related() &quot;</span>
-                    <span class="s2">&quot;without specifying chunk_size is deprecated.&quot;</span><span class="p">,</span>
-                    <span class="n">category</span><span class="o">=</span><span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
-                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;chunk_size must be provided when using QuerySet.iterator() after &quot;</span>
+                    <span class="s2">&quot;prefetch_related().&quot;</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Chunk size must be strictly positive.&quot;</span><span class="p">)</span>
@@ -643,19 +638,36 @@
 <span class="sd">        An asynchronous iterator over the results from applying this QuerySet</span>
 <span class="sd">        to the database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch_related_lookups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span>
-                <span class="s2">&quot;Using QuerySet.aiterator() after prefetch_related() is not supported.&quot;</span>
-            <span class="p">)</span>
         <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Chunk size must be strictly positive.&quot;</span><span class="p">)</span>
         <span class="n">use_chunked_fetch</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span><span class="o">.</span><span class="n">settings_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;DISABLE_SERVER_SIDE_CURSORS&quot;</span>
         <span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterable_class</span><span class="p">(</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterable_class</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">chunked_fetch</span><span class="o">=</span><span class="n">use_chunked_fetch</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span>
-        <span class="p">):</span>
-            <span class="k">yield</span> <span class="n">item</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch_related_lookups</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">chunk_size</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">aprefetch_related_objects</span><span class="p">(</span>
+                        <span class="n">results</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetch_related_lookups</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">result</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">aprefetch_related_objects</span><span class="p">(</span>
+                    <span class="n">results</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetch_related_lookups</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">item</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -744,6 +756,15 @@
 <span class="sd">        Create a new object with the given kwargs, saving it to the database</span>
 <span class="sd">        and returning the created object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reverse_one_to_one_fields</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">_reverse_one_to_one_field_names</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">reverse_one_to_one_fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The following fields do not exist in this model: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reverse_one_to_one_fields</span><span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_for_write</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
@@ -753,10 +774,21 @@
         <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_for_bulk_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.expressions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseDefault</span>
+
+        <span class="n">connection</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Populate new PK values.</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk</span><span class="o">.</span><span class="n">get_pk_value_on_save</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">supports_default_keyword_in_bulk_insert</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">generated</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DatabaseDefault</span><span class="p">):</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">db_default</span><span class="p">)</span>
+
             <span class="n">obj</span><span class="o">.</span><span class="n">_prepare_related_fields_for_save</span><span class="p">(</span><span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;bulk_create&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_bulk_create_options</span><span class="p">(</span>
@@ -847,7 +879,7 @@
         <span class="c1"># model to detect the inheritance pattern ConcreteGrandParent -&gt;</span>
         <span class="c1"># MultiTableParent -&gt; ProxyChild. Simply checking self.model._meta.proxy</span>
         <span class="c1"># would not identify that case as involving multiple tables.</span>
-        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_parent_list</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">all_parents</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t bulk create a multi-table inherited model&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">objs</span><span class="p">:</span>
@@ -868,7 +900,7 @@
             <span class="n">unique_fields</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_for_write</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">concrete_fields</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">concrete_fields</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">generated</span><span class="p">]</span>
         <span class="n">objs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_for_bulk_create</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1025,25 +1057,32 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look up an object with the given kwargs, updating one with defaults</span>
-<span class="sd">        if it exists, otherwise create a new one.</span>
+<span class="sd">        if it exists, otherwise create a new one. Optionally, an object can</span>
+<span class="sd">        be created with different values than defaults by using</span>
+<span class="sd">        create_defaults.</span>
 <span class="sd">        Return a tuple (object, created), where created is a boolean</span>
 <span class="sd">        specifying whether an object was created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">update_defaults</span> <span class="o">=</span> <span class="n">defaults</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">create_defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">create_defaults</span> <span class="o">=</span> <span class="n">update_defaults</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_for_write</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">):</span>
             <span class="c1"># Lock the row so that a concurrent update is blocked until</span>
             <span class="c1"># update_or_create() has performed its save.</span>
-            <span class="n">obj</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                <span class="n">create_defaults</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">created</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resolve_callables</span><span class="p">(</span><span class="n">defaults</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resolve_callables</span><span class="p">(</span><span class="n">update_defaults</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
-            <span class="n">update_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+            <span class="n">update_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">update_defaults</span><span class="p">)</span>
             <span class="n">concrete_field_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">_non_pk_concrete_field_names</span>
             <span class="c1"># update_fields does not support non-concrete fields.</span>
             <span class="k">if</span> <span class="n">concrete_field_names</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">update_fields</span><span class="p">):</span>
@@ -1063,9 +1102,10 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="kc">False</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aupdate_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aupdate_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">)(</span>
             <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
+            <span class="n">create_defaults</span><span class="o">=</span><span class="n">create_defaults</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1199,9 +1239,9 @@
                 <span class="n">qs</span> <span class="o">=</span> <span class="p">()</span>
                 <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_list</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
                     <span class="n">batch</span> <span class="o">=</span> <span class="n">id_list</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
-                    <span class="n">qs</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">filter_key</span><span class="p">:</span> <span class="n">batch</span><span class="p">})</span><span class="o">.</span><span class="n">order_by</span><span class="p">())</span>
+                    <span class="n">qs</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">filter_key</span><span class="p">:</span> <span class="n">batch</span><span class="p">}))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">filter_key</span><span class="p">:</span> <span class="n">id_list</span><span class="p">})</span><span class="o">.</span><span class="n">order_by</span><span class="p">()</span>
+                <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">filter_key</span><span class="p">:</span> <span class="n">id_list</span><span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">qs</span><span class="p">}</span>
@@ -1217,8 +1257,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_not_support_combined_queries</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">is_sliced</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot use &#39;limit&#39; or &#39;offset&#39; with delete().&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">distinct</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">distinct_fields</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot call delete() after .distinct().&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">distinct_fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot call delete() after .distinct(*fields).&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot call delete() after .values() or .values_list()&quot;</span><span class="p">)</span>
 
@@ -1236,11 +1276,11 @@
 
         <span class="n">collector</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="n">del_query</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">collector</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">del_query</span><span class="p">)</span>
-        <span class="n">deleted</span><span class="p">,</span> <span class="n">_rows_count</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">num_deleted</span><span class="p">,</span> <span class="n">num_deleted_per_model</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
         <span class="c1"># Clear the result cache, in case this QuerySet gets reused.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">deleted</span><span class="p">,</span> <span class="n">_rows_count</span>
+        <span class="k">return</span> <span class="n">num_deleted</span><span class="p">,</span> <span class="n">num_deleted_per_model</span>
 
     <span class="n">delete</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">delete</span><span class="o">.</span><span class="n">queryset_only</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1281,11 +1321,18 @@
         <span class="c1"># Inline annotations in order_by(), if possible.</span>
         <span class="n">new_order_by</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">annotation</span> <span class="o">:=</span> <span class="n">query</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="n">col</span>
+            <span class="n">descending</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">alias</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+                <span class="n">alias</span> <span class="o">=</span> <span class="n">alias</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+                <span class="n">descending</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">annotation</span> <span class="o">:=</span> <span class="n">query</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">alias</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;contains_aggregate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FieldError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Cannot update when ordering by an aggregate: </span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
+                <span class="k">if</span> <span class="n">descending</span><span class="p">:</span>
+                    <span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
                 <span class="n">new_order_by</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">new_order_by</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
@@ -1437,9 +1484,7 @@
         <span class="n">clone</span><span class="o">.</span><span class="n">_iterable_class</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">NamedValuesListIterable</span>
             <span class="k">if</span> <span class="n">named</span>
-            <span class="k">else</span> <span class="n">FlatValuesListIterable</span>
-            <span class="k">if</span> <span class="n">flat</span>
-            <span class="k">else</span> <span class="n">ValuesListIterable</span>
+            <span class="k">else</span> <span class="n">FlatValuesListIterable</span> <span class="k">if</span> <span class="n">flat</span> <span class="k">else</span> <span class="n">ValuesListIterable</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">clone</span>
 
@@ -1463,11 +1508,7 @@
             <span class="o">.</span><span class="n">order_by</span><span class="p">((</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;DESC&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;datefield&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="c1"># RemovedInDjango50Warning: when the deprecation ends, remove is_dst</span>
-    <span class="c1"># argument.</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">datetimes</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;ASC&quot;</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_dst</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">NOT_PASSED</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datetimes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;ASC&quot;</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of datetime objects representing all available</span>
 <span class="sd">        datetimes for the given field_name, scoped to &#39;kind&#39;.</span>
@@ -1491,7 +1532,6 @@
                     <span class="n">kind</span><span class="p">,</span>
                     <span class="n">output_field</span><span class="o">=</span><span class="n">DateTimeField</span><span class="p">(),</span>
                     <span class="n">tzinfo</span><span class="o">=</span><span class="n">tzinfo</span><span class="p">,</span>
-                    <span class="n">is_dst</span><span class="o">=</span><span class="n">is_dst</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">plain_field</span><span class="o">=</span><span class="n">F</span><span class="p">(</span><span class="n">field_name</span><span class="p">),</span>
             <span class="p">)</span>
@@ -1710,9 +1750,11 @@
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                 <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;attname&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+                    <span class="p">(</span>
+                        <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;attname&quot;</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+                    <span class="p">)</span>
                     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -1917,12 +1959,17 @@
         <span class="n">inserted_rows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">bulk_return</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">can_return_rows_from_bulk_insert</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="n">objs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)]:</span>
-            <span class="k">if</span> <span class="n">bulk_return</span> <span class="ow">and</span> <span class="n">on_conflict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bulk_return</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">on_conflict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">on_conflict</span> <span class="o">==</span> <span class="n">OnConflict</span><span class="o">.</span><span class="n">UPDATE</span>
+            <span class="p">):</span>
                 <span class="n">inserted_rows</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span>
                         <span class="n">item</span><span class="p">,</span>
                         <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
                         <span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span>
+                        <span class="n">on_conflict</span><span class="o">=</span><span class="n">on_conflict</span><span class="p">,</span>
+                        <span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">,</span>
+                        <span class="n">unique_fields</span><span class="o">=</span><span class="n">unique_fields</span><span class="p">,</span>
                         <span class="n">returning_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_returning_fields</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
@@ -2230,8 +2277,7 @@
         <span class="n">converter</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span><span class="o">.</span><span class="n">introspection</span><span class="o">.</span><span class="n">identifier_converter</span>
         <span class="n">model_fields</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_attname_column</span><span class="p">()</span>
-            <span class="n">model_fields</span><span class="p">[</span><span class="n">converter</span><span class="p">(</span><span class="n">column</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span>
+            <span class="n">model_fields</span><span class="p">[</span><span class="n">converter</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">column</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span>
         <span class="k">return</span> <span class="n">model_fields</span>
 
 
@@ -2283,8 +2329,21 @@
         <span class="k">return</span> <span class="n">to_attr</span><span class="p">,</span> <span class="n">as_attr</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_current_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_prefetch_to</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefetch_to</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Prefetch.get_current_queryset() is deprecated. Use &quot;</span>
+            <span class="s2">&quot;get_current_querysets() instead.&quot;</span><span class="p">,</span>
+            <span class="n">RemovedInDjango60Warning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">querysets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_querysets</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">querysets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">querysets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_querysets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_current_prefetch_to</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefetch_to</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">queryset</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -2462,23 +2521,42 @@
                 <span class="n">obj_list</span> <span class="o">=</span> <span class="n">new_obj_list</span>
 
 
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aprefetch_related_objects</span><span class="p">(</span><span class="n">model_instances</span><span class="p">,</span> <span class="o">*</span><span class="n">related_lookups</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See prefetch_related_objects().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="n">prefetch_related_objects</span><span class="p">)(</span>
+        <span class="n">model_instances</span><span class="p">,</span> <span class="o">*</span><span class="n">related_lookups</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">get_prefetcher</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">through_attr</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For the attribute &#39;through_attr&#39; on the given instance, find</span>
-<span class="sd">    an object that has a get_prefetch_queryset().</span>
+<span class="sd">    an object that has a get_prefetch_querysets().</span>
 <span class="sd">    Return a 4 tuple containing:</span>
-<span class="sd">    (the object with get_prefetch_queryset (or None),</span>
+<span class="sd">    (the object with get_prefetch_querysets (or None),</span>
 <span class="sd">     the descriptor object representing this relationship (or None),</span>
 <span class="sd">     a boolean that is False if the attribute was not found at all,</span>
 <span class="sd">     a function that takes an instance and returns a boolean that is True if</span>
 <span class="sd">     the attribute has already been fetched for that instance)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">has_to_attr_attribute</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_to_attr_fetched</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">):</span>
+        <span class="c1"># Special case cached_property instances because hasattr() triggers</span>
+        <span class="c1"># attribute computation and assignment.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">cached_property</span><span class="p">):</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">has_cached_property</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">to_attr</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span>
+
+            <span class="k">return</span> <span class="n">has_cached_property</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">has_to_attr_attribute</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">has_to_attr_attribute</span>
 
     <span class="n">prefetcher</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">is_fetched</span> <span class="o">=</span> <span class="n">has_to_attr_attribute</span>
+    <span class="n">is_fetched</span> <span class="o">=</span> <span class="n">is_to_attr_fetched</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">)</span>
 
     <span class="c1"># For singly related objects, we have to avoid getting the attribute</span>
     <span class="c1"># from the object, as this will trigger the query. So we first try</span>
@@ -2490,29 +2568,31 @@
         <span class="n">attr_found</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">rel_obj_descriptor</span><span class="p">:</span>
             <span class="c1"># singly related object, descriptor object has the</span>
-            <span class="c1"># get_prefetch_queryset() method.</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj_descriptor</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_queryset&quot;</span><span class="p">):</span>
+            <span class="c1"># get_prefetch_querysets() method.</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj_descriptor</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_querysets&quot;</span><span class="p">)</span>
+                <span class="c1"># RemovedInDjango60Warning.</span>
+                <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj_descriptor</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_queryset&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="n">prefetcher</span> <span class="o">=</span> <span class="n">rel_obj_descriptor</span>
-                <span class="n">is_fetched</span> <span class="o">=</span> <span class="n">rel_obj_descriptor</span><span class="o">.</span><span class="n">is_cached</span>
+                <span class="c1"># If to_attr is set, check if the value has already been set,</span>
+                <span class="c1"># which is done with has_to_attr_attribute(). Do not use the</span>
+                <span class="c1"># method from the descriptor, as the cache_name it defines</span>
+                <span class="c1"># checks the field name, not the to_attr value.</span>
+                <span class="k">if</span> <span class="n">through_attr</span> <span class="o">==</span> <span class="n">to_attr</span><span class="p">:</span>
+                    <span class="n">is_fetched</span> <span class="o">=</span> <span class="n">rel_obj_descriptor</span><span class="o">.</span><span class="n">is_cached</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># descriptor doesn&#39;t support prefetching, so we go ahead and get</span>
                 <span class="c1"># the attribute on the instance rather than the class to</span>
                 <span class="c1"># support many related managers</span>
                 <span class="n">rel_obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">through_attr</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_queryset&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_querysets&quot;</span><span class="p">)</span>
+                    <span class="c1"># RemovedInDjango60Warning.</span>
+                    <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rel_obj</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_queryset&quot;</span><span class="p">)</span>
+                <span class="p">):</span>
                     <span class="n">prefetcher</span> <span class="o">=</span> <span class="n">rel_obj</span>
-                <span class="k">if</span> <span class="n">through_attr</span> <span class="o">!=</span> <span class="n">to_attr</span><span class="p">:</span>
-                    <span class="c1"># Special case cached_property instances because hasattr</span>
-                    <span class="c1"># triggers attribute computation and assignment.</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                        <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">cached_property</span>
-                    <span class="p">):</span>
-
-                        <span class="k">def</span><span class="w"> </span><span class="nf">has_cached_property</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="n">to_attr</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span>
-
-                        <span class="n">is_fetched</span> <span class="o">=</span> <span class="n">has_cached_property</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">through_attr</span> <span class="o">==</span> <span class="n">to_attr</span><span class="p">:</span>
 
                     <span class="k">def</span><span class="w"> </span><span class="nf">in_prefetched_cache</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
                         <span class="k">return</span> <span class="n">through_attr</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">_prefetched_objects_cache</span>
@@ -2531,7 +2611,7 @@
 <span class="sd">    Return the prefetched objects along with any additional prefetches that</span>
 <span class="sd">    must be done due to prefetch_related lookups found from default managers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># prefetcher must have a method get_prefetch_queryset() which takes a list</span>
+    <span class="c1"># prefetcher must have a method get_prefetch_querysets() which takes a list</span>
     <span class="c1"># of instances, and returns a tuple:</span>
 
     <span class="c1"># (queryset of instances of self.model that are related to passed in instances,</span>
@@ -2544,14 +2624,35 @@
     <span class="c1"># The &#39;values to be matched&#39; must be hashable as they will be used</span>
     <span class="c1"># in a dictionary.</span>
 
-    <span class="p">(</span>
-        <span class="n">rel_qs</span><span class="p">,</span>
-        <span class="n">rel_obj_attr</span><span class="p">,</span>
-        <span class="n">instance_attr</span><span class="p">,</span>
-        <span class="n">single</span><span class="p">,</span>
-        <span class="n">cache_name</span><span class="p">,</span>
-        <span class="n">is_descriptor</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">=</span> <span class="n">prefetcher</span><span class="o">.</span><span class="n">get_prefetch_queryset</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_current_queryset</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefetcher</span><span class="p">,</span> <span class="s2">&quot;get_prefetch_querysets&quot;</span><span class="p">):</span>
+        <span class="p">(</span>
+            <span class="n">rel_qs</span><span class="p">,</span>
+            <span class="n">rel_obj_attr</span><span class="p">,</span>
+            <span class="n">instance_attr</span><span class="p">,</span>
+            <span class="n">single</span><span class="p">,</span>
+            <span class="n">cache_name</span><span class="p">,</span>
+            <span class="n">is_descriptor</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">prefetcher</span><span class="o">.</span><span class="n">get_prefetch_querysets</span><span class="p">(</span>
+            <span class="n">instances</span><span class="p">,</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_current_querysets</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The usage of get_prefetch_queryset() in prefetch_related_objects() is &quot;</span>
+            <span class="s2">&quot;deprecated. Implement get_prefetch_querysets() instead.&quot;</span><span class="p">,</span>
+            <span class="n">RemovedInDjango60Warning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">querysets</span> <span class="o">:=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_current_querysets</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">querysets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">(</span>
+            <span class="n">rel_qs</span><span class="p">,</span>
+            <span class="n">rel_obj_attr</span><span class="p">,</span>
+            <span class="n">instance_attr</span><span class="p">,</span>
+            <span class="n">single</span><span class="p">,</span>
+            <span class="n">cache_name</span><span class="p">,</span>
+            <span class="n">is_descriptor</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">prefetcher</span><span class="o">.</span><span class="n">get_prefetch_queryset</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">queryset</span><span class="p">)</span>
     <span class="c1"># We have to handle the possibility that the QuerySet we just got back</span>
     <span class="c1"># contains some prefetch_related lookups. We don&#39;t want to trigger the</span>
     <span class="c1"># prefetch_related functionality by evaluating the query. Rather, we need</span>

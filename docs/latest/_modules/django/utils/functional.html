@@ -92,8 +92,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">total_ordering</span><span class="p">,</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">cached_property</span><span class="p">:</span>
@@ -114,16 +113,7 @@
             <span class="s2">&quot;__set_name__() on it.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span>
-
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The name argument is deprecated as it&#39;s unnecessary as of &quot;</span>
-                <span class="s2">&quot;Python 3.6.&quot;</span><span class="p">,</span>
-                <span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">real_func</span> <span class="o">=</span> <span class="n">func</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__doc__&quot;</span><span class="p">)</span>
 
@@ -183,7 +173,6 @@
 <span class="sd">    function is evaluated on every access.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@total_ordering</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">__proxy__</span><span class="p">(</span><span class="n">Promise</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encapsulate a function call and act as a proxy for methods that are</span>
@@ -191,102 +180,15 @@
 <span class="sd">        until one of the methods on the result is called.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">__prepared</span> <span class="o">=</span> <span class="kc">False</span>
-
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__args</span> <span class="o">=</span> <span class="n">args</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__kw</span> <span class="o">=</span> <span class="n">kw</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepared</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_class__</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__prepared</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_kw</span> <span class="o">=</span> <span class="n">kw</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">_lazy_proxy_unpickle</span><span class="p">,</span>
-                <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">)</span> <span class="o">+</span> <span class="n">resultclasses</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kw</span><span class="p">)</span> <span class="o">+</span> <span class="n">resultclasses</span><span class="p">,</span>
             <span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
-
-        <span class="nd">@classmethod</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">__prepare_class__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">resultclass</span> <span class="ow">in</span> <span class="n">resultclasses</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">type_</span> <span class="ow">in</span> <span class="n">resultclass</span><span class="o">.</span><span class="n">mro</span><span class="p">():</span>
-                    <span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="n">type_</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
-                        <span class="c1"># All __promise__ return the same wrapper method, they</span>
-                        <span class="c1"># look up the correct implementation when called.</span>
-                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-                            <span class="k">continue</span>
-                        <span class="n">meth</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__promise__</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">meth</span><span class="p">)</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span> <span class="o">=</span> <span class="nb">bytes</span> <span class="ow">in</span> <span class="n">resultclasses</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span> <span class="o">=</span> <span class="nb">str</span> <span class="ow">in</span> <span class="n">resultclasses</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Cannot call lazy() with both bytes and text return types.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__text_cast</span>
-            <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span><span class="p">:</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="fm">__bytes__</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__bytes_cast</span>
-
-        <span class="nd">@classmethod</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">__promise__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-            <span class="c1"># Builds a wrapper around some magic method</span>
-            <span class="k">def</span><span class="w"> </span><span class="nf">__wrapper__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-                <span class="c1"># Automatically triggers the evaluation of a lazy value and</span>
-                <span class="c1"># applies the given magic method of the result type.</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">)</span>
-                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">__wrapper__</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">__text_cast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">__bytes_cast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">))</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">__bytes_cast_encoded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">__cast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delegate_bytes</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bytes_cast</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__text_cast</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__kw</span><span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="c1"># object defines __str__(), so __prepare_class__() won&#39;t overload</span>
-            <span class="c1"># a __str__() method from the proxied class.</span>
-            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
-                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
-                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">%</span> <span class="n">rhs</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">%</span> <span class="n">rhs</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">other</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
             <span class="c1"># Instances of this class are effectively immutable. It&#39;s just a</span>
@@ -294,6 +196,89 @@
             <span class="c1"># complicated for copying.</span>
             <span class="n">memo</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span>
             <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">__cast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kw</span><span class="p">)</span>
+
+        <span class="c1"># Explicitly wrap methods which are defined on object and hence would</span>
+        <span class="c1"># not have been overloaded by the loop over resultclasses below.</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">())</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">(),</span> <span class="n">format_spec</span><span class="p">)</span>
+
+        <span class="c1"># Explicitly wrap methods which are required for certain operations on</span>
+        <span class="c1"># int/str objects to function correctly.</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">other</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">%</span> <span class="n">other</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">*</span> <span class="n">other</span>
+
+    <span class="c1"># Add wrappers for all methods from resultclasses which haven&#39;t been</span>
+    <span class="c1"># wrapped explicitly above.</span>
+    <span class="k">for</span> <span class="n">resultclass</span> <span class="ow">in</span> <span class="n">resultclasses</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">type_</span> <span class="ow">in</span> <span class="n">resultclass</span><span class="o">.</span><span class="n">mro</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="n">type_</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+                <span class="c1"># All __promise__ return the same wrapper method, they look up</span>
+                <span class="c1"># the correct implementation when called.</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">__proxy__</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Builds a wrapper around some method. Pass method_name to</span>
+                <span class="c1"># avoid issues due to late binding.</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">__wrapper__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__method_name</span><span class="o">=</span><span class="n">method_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+                    <span class="c1"># Automatically triggers the evaluation of a lazy value and</span>
+                    <span class="c1"># applies the given method of the result type.</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kw</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">__method_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">__proxy__</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">__wrapper__</span><span class="p">)</span>
 
     <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__wrapper__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
