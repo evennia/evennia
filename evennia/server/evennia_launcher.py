@@ -820,7 +820,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
         if response:
             _, _, _, _, pinfo, sinfo = response
             _print_info(pinfo, sinfo)
-        _reactor_stop()
+            _reactor_stop()
 
     def _portal_started(*args):
         print(
@@ -1460,9 +1460,15 @@ def create_game_directory(dirname):
 
 def create_superuser():
     """
-    Create the superuser account
+    Auto-create the superuser account. Returns `True` if superuser was created.
 
     """
+    from evennia.accounts.models import AccountDB
+
+    if AccountDB.objects.filter(is_superuser=True).exists():
+        # if superuser already exists, do nothing here
+        return False
+
     print(
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
@@ -1474,12 +1480,13 @@ def create_superuser():
     password = environ.get("EVENNIA_SUPERUSER_PASSWORD")
 
     if (username is not None) and (password is not None) and len(password) > 0:
-        from evennia.accounts.models import AccountDB
 
         superuser = AccountDB.objects.create_superuser(username, email, password)
         superuser.save()
     else:
         django.core.management.call_command("createsuperuser", interactive=True)
+
+    return True
 
 
 def check_database(always_return=False):
@@ -1547,6 +1554,9 @@ def check_database(always_return=False):
                     f"Database tables missing: {', '.join(missing_tables)}. "
                     "Did you remember to run migrations?"
                 )
+            else:
+                create_superuser()
+
             return True
 
     except Exception as exc:
