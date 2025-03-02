@@ -101,7 +101,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.managers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.typeclasses.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeclassBase</span>
@@ -323,7 +323,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">has_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_sub</span> <span class="ow">and</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_sub</span> <span class="ow">and</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
             <span class="c1"># it&#39;s common to send an Object when we</span>
             <span class="c1"># by default only allow Accounts to subscribe.</span>
             <span class="n">has_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">subscriber</span><span class="o">.</span><span class="n">account</span><span class="p">)</span>

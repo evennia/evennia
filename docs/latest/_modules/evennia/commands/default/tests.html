@@ -110,14 +110,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">anything</span><span class="w"> </span><span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DefaultCharacter</span><span class="p">,</span>
-    <span class="n">DefaultExit</span><span class="p">,</span>
-    <span class="n">DefaultObject</span><span class="p">,</span>
-    <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="n">ObjectDB</span><span class="p">,</span>
-    <span class="n">search_object</span><span class="p">,</span>
-<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.objects.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_object</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.cmdset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
@@ -129,7 +125,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.prototypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">parameterized</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterized</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
 

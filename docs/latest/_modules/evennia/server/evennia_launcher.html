@@ -912,7 +912,7 @@
         <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">response</span>
             <span class="n">_print_info</span><span class="p">(</span><span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
-        <span class="n">_reactor_stop</span><span class="p">()</span>
+            <span class="n">_reactor_stop</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_portal_started</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span>
@@ -1552,9 +1552,15 @@
 
 <div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_superuser</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create the superuser account</span>
+<span class="sd">    Auto-create the superuser account. Returns `True` if superuser was created.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
+
+    <span class="k">if</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_superuser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="c1"># if superuser already exists, do nothing here</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="nb">print</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Create a superuser below. The superuser is Account #1, the &#39;owner&#39; &quot;</span>
         <span class="s2">&quot;account of the server. Email is optional and can be empty.</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -1566,12 +1572,13 @@
     <span class="n">password</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EVENNIA_SUPERUSER_PASSWORD&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">username</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
 
         <span class="n">superuser</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_superuser</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="n">superuser</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1639,6 +1646,9 @@
                     <span class="sa">f</span><span class="s2">&quot;Database tables missing: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_tables</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
                     <span class="s2">&quot;Did you remember to run migrations?&quot;</span>
                 <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">create_superuser</span><span class="p">()</span>
+
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
