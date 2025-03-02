@@ -5,8 +5,7 @@ General Character commands usually available to all characters
 import re
 
 from django.conf import settings
-
-import evennia
+from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -143,7 +142,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     def parse(self):
         """
-        Support escaping of = with \=
+        Support escaping of = with \\=
         """
         super().parse()
         args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
@@ -153,7 +152,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             self.lhs = parts[0].strip()
         else:
             self.lhs, self.rhs = [part.strip() for part in parts]
-        self.lhs = self.lhs.replace("\=", "=")
+        self.lhs = self.lhs.replace("\\=", "=")
 
     def func(self):
         """Create the nickname"""
@@ -799,6 +798,6 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
 
         string += "\n|wYour access|n:"
         string += f"\nCharacter |c{caller.key}|n: {cperms}"
-        if utils.inherits_from(caller, evennia.DefaultObject):
+        if utils.inherits_from(caller, DefaultObject):
             string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

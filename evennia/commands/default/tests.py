@@ -18,14 +18,10 @@ import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from evennia import (
-    DefaultCharacter,
-    DefaultExit,
-    DefaultObject,
-    DefaultRoom,
-    ObjectDB,
-    search_object,
-)
+
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
+from evennia.objects.models import ObjectDB
+from evennia.utils.search import search_object
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
@@ -37,7 +33,6 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
-from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
 from parameterized import parameterized
 from twisted.internet import task
 

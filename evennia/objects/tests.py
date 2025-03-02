@@ -1,6 +1,6 @@
 from unittest import skip
 
-from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.typeclasses.tags import (

@@ -7,7 +7,8 @@ These functions are to be used by developers to customize events and callbacks.
 
 from django.conf import settings
 
-from evennia import ScriptDB, logger
+from evennia.scripts.models import ScriptDB
+from evennia.utils import logger
 from evennia.contrib.base_systems.custom_gametime import UNITS, gametime_to_realtime
 from evennia.contrib.base_systems.custom_gametime import (
     real_seconds_until as custom_rsu,

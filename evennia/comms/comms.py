@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
 
-import evennia
+from evennia.objects.objects import DefaultObject
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase
@@ -231,7 +231,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         has_sub = self.subscriptions.has(subscriber)
-        if not has_sub and inherits_from(subscriber, evennia.DefaultObject):
+        if not has_sub and inherits_from(subscriber, DefaultObject):
             # it's common to send an Object when we
             # by default only allow Accounts to subscribe.
             has_sub = self.subscriptions.has(subscriber.account)
