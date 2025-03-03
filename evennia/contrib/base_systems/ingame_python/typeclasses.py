@@ -7,14 +7,14 @@ default ones in evennia core.
 
 """
 
-from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom, ScriptDB
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
 from evennia.contrib.base_systems.ingame_python.utils import (
     phrase_event,
     register_events,
     time_event,
 )
-from evennia.utils.utils import delay, inherits_from, lazy_property
+from evennia.utils.utils import inherits_from, lazy_property
 
 # Character help
 CHARACTER_CAN_DELETE = """

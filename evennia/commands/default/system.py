@@ -957,7 +957,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(tickers) or perm(Builder)"
 
     def func(self):
-        from evennia import TICKER_HANDLER
+        from evennia.scripts.tickerhandler import TICKER_HANDLER
 
         all_subs = TICKER_HANDLER.all_display()
         if not all_subs:

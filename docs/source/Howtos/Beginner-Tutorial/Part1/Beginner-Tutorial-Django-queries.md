@@ -174,14 +174,16 @@ will_transform = (
     Character.objects
     .filter(
         db_location__db_tags__db_key__iexact="moonlit",
-        db_attributes__db_key="lycanthropy",
-        db_attributes__db_value__eq=2
+        db_attributes__db_key__iexact="lycanthropy",
+        db_attributes__db_value=2
     )
 )
 ```
 
 ```{sidebar} Attributes vs database fields
-Don't confuse database fields with [Attributes](../../../Components/Attributes.md) you set via `obj.db.attr = 'foo'` or `obj.attributes.add()`. Attributes are custom database entities *linked* to an object. They are not separate fields *on* that object like `db_key` or `db_location` are.
+Don't confuse database fields with [Attributes](../../../Components/Attributes.md) you set via `obj.db.attr = 'foo'` or `obj.attributes.add()`. Attributes are custom database entities *linked* to an object. They are not separate fields *on* that object like `db_key` or `db_location` are. 
+
+While an Attribute's `db_key` is just a normal string, theor `db_value` is in fact a serialized piece of data.  This means that cannot query this with additional operators. So if you use e.g. `db_attributes__db_value__iexact=2`, you'll get an error. While Attributes are very flexible, this is their drawback - their stored value is not possible to directly query with advanced query methods beyond finding the exact match. 
 ```
 - **Line 4** We want to find `Character`s, so we access `.objects` on the `Character` typeclass.
 - We start to filter ...
@@ -190,12 +192,12 @@ Don't confuse database fields with [Attributes](../../../Components/Attributes.m
         that we can treat like an object for this purpose; it references all Tags on the location)
 	    - ... and from those `Tags`, we looking for `Tags` whose `db_key` is "monlit" (non-case sensitive).
      - **Line 7**: ... We also want only Characters with `Attributes` whose `db_key` is exactly `"lycanthropy"`
-    - **Line 8** :... at the same time as the `Attribute`'s `db_value` is exactly 2.
+    - **Line 8** :... at the same time as the `Attribute`'s `db_value` is 2.
 
 Running this query makes our newly lycanthropic Character appear in `will_transform` so we know to transform it. Success!
 
 ```{important}
-You can't query for an Attribute `db_value` quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as _strings_ on the database side. So while you can use `__eq=2` in the above example, you will not be able to `__gt=2` or `__lt=2` because these operations don't make sense for strings. See [Attributes](../../../Components/Attributes.md#querying-by-attribute) for more information on dealing with Attributes.
+You can't query for an Attribute `db_value` quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as _strings_ on the database side. So while you can use `db_value=2` in the above example, you will not be able to use `dbvalue__eq=2` or `__lt=2`. See [Attributes](../../../Components/Attributes.md#querying-by-attribute) for more information on dealing with Attributes.
 ```
 
 ## Queries with OR or NOT 
@@ -243,7 +245,7 @@ will_transform = (
         Q(db_location__db_tags__db_key__iexact="moonlit")
         & (
           Q(db_attributes__db_key="lycanthropy",
-            db_attributes__db_value__eq=2)
+            db_attributes__db_value=2)
           | Q(db_tags__db_key__iexact="recently_bitten")
         ))
     .distinct()
@@ -256,7 +258,7 @@ That's quite compact. It may be easier to see what's going on if written this wa
 from django.db.models import Q
 
 q_moonlit = Q(db_location__db_tags__db_key__iexact="moonlit")
-q_lycanthropic = Q(db_attributes__db_key="lycanthropy", db_attributes__db_value__eq=2)
+q_lycanthropic = Q(db_attributes__db_key="lycanthropy", db_attributes__db_value=2)
 q_recently_bitten = Q(db_tags__db_key__iexact="recently_bitten")
 
 will_transform = (

@@ -7,7 +7,7 @@ name = "evennia"
 version = "4.5.0"
 maintainers = [{ name = "Griatch", email = "griatch@gmail.com" }]
 description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*, etc)."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "BSD" }
 keywords = [
@@ -38,8 +38,9 @@ keywords = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: JavaScript",
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: BSD License",
@@ -64,7 +65,7 @@ classifiers = [
 dependencies = [
   # core dependencies
   "legacy-cgi;python_version >= '3.13'",
-  "django >= 4.2, < 4.3",
+  "django >= 5.1, < 5.2",
   "twisted >= 24.11.0, < 25",
   "pytz >= 2022.6",
   "djangorestframework >= 3.14, < 3.15",

@@ -2,9 +2,11 @@
 
 ## Main branch
 
-Updated dependencies: Twisted >24 (<25). Python 3.10, 3.11, 3.12, 3.13. Will
-drop 3.10 support as part of next major release.
+Updated dependencies: Django >5.1 (<5,2), Twisted >24 (<25).
+Python versions: 3.11, 3.12, 3.13.
 
+- Feat (backwards incompatible): RUN MIGRATIONS (`evennia migrate`): Now requiring Django 5.1 (Griatch)
+- Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)
 - [Feat][pull3719]: Support Python 3.13. (0xDEADFED5)
 - [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
     class variable instead of the `desc` Attribute always being set (count-infinity)
@@ -13,8 +15,7 @@ drop 3.10 support as part of next major release.
   strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
 - [Fix][pull3682]: Allow in-game help searching for commands natively starting
   with `*` (which is the Lunr search wildcard) (count-infinity)
-- [Fix][pull3684]: Web client stopped auto-focusing the input box after opening
-  settings (count-infinity)
+- [Fix][pull3684]: Web client stopped auto-focusing the input box after opening settings (count-infinity)
 - [Fix][pull3689]: Partial matching fix in default search, makes sure e.g. `b sw` uniquely
   finds `big sword` even if another type of sword is around (InspectorCaracal)
 - [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
@@ -36,7 +37,6 @@ drop 3.10 support as part of next major release.
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
-
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
 [pull3677]: https://github.com/evennia/evennia/pull/3677
