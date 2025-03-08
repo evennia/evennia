@@ -1787,8 +1787,11 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
             be run in a valid game directory.
 
     """
-    # set the GAMEDIR path
-    if need_gamedir:
+    global GAMEDIR
+    # Set the GAMEDIR path if not set already
+    ## Declaring it global doesn't set the variable
+    ## This check is needed for evennia --gamedir to work
+    if need_gamedir and 'GAMEDIR' not in globals():
         set_gamedir(path)
 
     # Add gamedir to python path
