@@ -655,6 +655,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "ENCODING": validate_encoding,
             "MCCP": validate_bool,
             "NOGOAHEAD": validate_bool,
+            "NOPROMPTGOAHEAD": validate_bool,
             "MXP": validate_bool,
             "NOCOLOR": validate_bool,
             "NOPKEEPALIVE": validate_bool,
