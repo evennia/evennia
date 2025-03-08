@@ -32,6 +32,7 @@ Python versions: 3.11, 3.12, 3.13.
 - [Fix][issue3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
 - [Fix][issue3726]: Fix Twisted v25 issue with returnValue()
 - [Fix][issue3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)
+- Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
