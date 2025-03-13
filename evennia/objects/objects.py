@@ -1481,8 +1481,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating this '{key}' object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
@@ -3148,8 +3148,8 @@ class DefaultCharacter(DefaultObject):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating object '{key} object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
@@ -3434,8 +3434,8 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating this '{key}' object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
