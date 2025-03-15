@@ -471,11 +471,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object."))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_("You don't have permission to puppet '{key}'.".format(key=obj.key)))
             return
         if obj.account:
             # object already puppeted
@@ -484,13 +484,27 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     # we may take over another of our sessions
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
-                        txt1 = f"Sharing |c{obj.name}|n with another of your sessions."
-                        txt2 = f"|c{obj.name}|n|G is now shared from another of your sessions.|n"
+                        txt1 = _(
+                            "Sharing |c{name}|n with another of your sessions.".format(
+                                name=obj.name
+                            )
+                        )
+                        txt2 = "|c{name}|n|G is now shared from another of your sessions.|n".format(
+                            name=obj.name
+                        )
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                     else:
-                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
-                        txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
+                        txt1 = _(
+                            "Taking over |c{name}|n from another of your sessions.".format(
+                                name=obj.name
+                            )
+                        )
+                        txt2 = _(
+                            "|c{name}|n|R is now acted from another of your sessions.|n".format(
+                                name=obj.name
+                            )
+                        )
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
@@ -516,7 +530,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 and len(self.get_all_puppets()) >= _MAX_NR_SIMULTANEOUS_PUPPETS
             ):
                 self.msg(
-                    _("You cannot control any more puppets (max {max_puppets})".format(max_puppets=_MAX_NR_SIMULTANEOUS_PUPPETS))
+                    _(
+                        "You cannot control any more puppets (max {max_puppets})".format(
+                            max_puppets=_MAX_NR_SIMULTANEOUS_PUPPETS
+                        )
+                    )
                 )
                 return
 
