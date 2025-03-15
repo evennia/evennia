@@ -516,7 +516,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 and len(self.get_all_puppets()) >= _MAX_NR_SIMULTANEOUS_PUPPETS
             ):
                 self.msg(
-                    _(f"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})")
+                    _("You cannot control any more puppets (max {max_puppets})".format(max_puppets=_MAX_NR_SIMULTANEOUS_PUPPETS))
                 )
                 return
 
