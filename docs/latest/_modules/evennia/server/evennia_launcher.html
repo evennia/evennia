@@ -1879,8 +1879,11 @@
 <span class="sd">            be run in a valid game directory.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># set the GAMEDIR path</span>
-    <span class="k">if</span> <span class="n">need_gamedir</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">GAMEDIR</span>
+    <span class="c1"># Set the GAMEDIR path if not set already</span>
+    <span class="c1">## Declaring it global doesn&#39;t set the variable</span>
+    <span class="c1">## This check is needed for evennia --gamedir to work</span>
+    <span class="k">if</span> <span class="n">need_gamedir</span> <span class="ow">and</span> <span class="s1">&#39;GAMEDIR&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
         <span class="n">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="c1"># Add gamedir to python path</span>

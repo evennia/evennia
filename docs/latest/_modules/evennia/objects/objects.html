@@ -1573,8 +1573,8 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
@@ -3240,8 +3240,8 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating object &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
@@ -3526,8 +3526,8 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; object: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
