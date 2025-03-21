@@ -567,7 +567,7 @@
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">):</span>
             <span class="c1"># no access</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{key}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{key}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="c1"># object already puppeted</span>
@@ -576,27 +576,21 @@
                     <span class="c1"># we may take over another of our sessions</span>
                     <span class="c1"># output messages to the affected sessions</span>
                     <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-                            <span class="s2">&quot;Sharing |c</span><span class="si">{name}</span><span class="s2">|n with another of your sessions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="n">txt2</span> <span class="o">=</span> <span class="s2">&quot;|c</span><span class="si">{name}</span><span class="s2">|n|G is now shared from another of your sessions.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Sharing |c</span><span class="si">{name}</span><span class="s2">|n with another of your sessions.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span>
                         <span class="p">)</span>
+                        <span class="n">txt2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+                            <span class="s2">&quot;|c</span><span class="si">{name}</span><span class="s2">|n|G is now shared from another of your sessions.|n&quot;</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt2</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-                            <span class="s2">&quot;Taking over |c</span><span class="si">{name}</span><span class="s2">|n from another of your sessions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span>
-                            <span class="p">)</span>
+                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Taking over |c</span><span class="si">{name}</span><span class="s2">|n from another of your sessions.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span>
                         <span class="p">)</span>
                         <span class="n">txt2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-                            <span class="s2">&quot;|c</span><span class="si">{name}</span><span class="s2">|n|R is now acted from another of your sessions.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
+                            <span class="s2">&quot;|c</span><span class="si">{name}</span><span class="s2">|n|R is now acted from another of your sessions.|n&quot;</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt2</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
@@ -622,10 +616,8 @@
                 <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_all_puppets</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="n">_</span><span class="p">(</span>
-                        <span class="s2">&quot;You cannot control any more puppets (max </span><span class="si">{max_puppets}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">max_puppets</span><span class="o">=</span><span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span>
-                        <span class="p">)</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You cannot control any more puppets (max </span><span class="si">{max_puppets}</span><span class="s2">)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">max_puppets</span><span class="o">=</span><span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
