@@ -29,12 +29,14 @@ Python versions: 3.11, 3.12, 3.13.
   a performance hit for loading cmdsets in rooms with a lot of objects (InspectorCaracal)
 - [Fix][issue3688]: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)
 - [Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)
-- [Fix][issue3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
-- [Fix][issue3726]: Fix Twisted v25 issue with returnValue()
-- [Fix][issue3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)
-- [Fix][issue3737]: The `evennia --gamedir` command didn't properly set the alt gamedir (Russel-Jones)
-- [Fix][issue3739]: Fixing f-string in account.py for i18n (JohnFi)
-- [Fix][issue3743]: Log full stack trace on failed object creation (aMiss-aWry)
+- [Fix][pull3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
+- [Fix][pull3726]: Fix Twisted v25 issue with returnValue()
+- [Fix][pull3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)
+- [Fix][pull3737]: The `evennia --gamedir` command didn't properly set the alt gamedir (Russel-Jones)
+- [Fix][pull3739]: Fixing f-string in account.py for i18n (JohnFi)
+- [Fix][pull3744]: Fix for format strings not getting picked up in i18n (JohnFi)
+- [Fix][pull3743]: Log full stack trace on failed object creation (aMiss-aWry)
+- [Fix][pull3747]: TutorialWorld bridge-room didn't correctly randomize weather effects (SpyrosRoum)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
@@ -61,6 +63,8 @@ Python versions: 3.11, 3.12, 3.13.
 [pull3737]: https://github.com/evennia/evennia/pull/3737
 [pull3739]: https://github.com/evennia/evennia/pull/3739
 [pull3743]: https://github.com/evennia/evennia/pull/3743
+[pull3744]: https://github.com/evennia/evennia/pull/3744
+[pull3747]: https://github.com/evennia/evennia/pull/3747
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3688]: https://github.com/evennia/evennia/issues/3687
 
