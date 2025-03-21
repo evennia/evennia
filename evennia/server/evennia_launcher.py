@@ -248,7 +248,7 @@ RECREATED_MISSING = """
 
 ERROR_DATABASE = """
     ERROR: Your database does not exist or is not set up correctly.
-    (error was '{traceback}')
+    Missing tables: {missing_tables}
 
     If you think your database should work, make sure you are running your
     commands from inside your game directory. If this error persists, run
@@ -1539,7 +1539,10 @@ def check_database(always_return=False):
                 )
             else:
                 if not always_return:
-                    raise Exception(f"Unsupported database vendor: {connection.vendor}")
+                    raise Exception(
+                        f"Unsupported database: {connection.vendor}"
+                        "Evennia supports PostgreSQL, MySQL, and SQLite only."
+                    )
                 return False
 
             existing_tables = {row[0].lower() for row in cursor.fetchall()}
@@ -1552,7 +1555,7 @@ def check_database(always_return=False):
                     return False
                 raise Exception(
                     f"Database tables missing: {', '.join(missing_tables)}. "
-                    "Did you remember to run migrations?"
+                    "\nDid you remember to run migrations?"
                 )
             else:
                 create_superuser()
@@ -1791,7 +1794,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     # Set the GAMEDIR path if not set already
     ## Declaring it global doesn't set the variable
     ## This check is needed for evennia --gamedir to work
-    if need_gamedir and 'GAMEDIR' not in globals():
+    if need_gamedir and "GAMEDIR" not in globals():
         set_gamedir(path)
 
     # Add gamedir to python path
@@ -1807,11 +1810,12 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     else:
         os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS_DOTPATH
 
-    # required since django1.7
-    django.setup()
-
     # test existence of the settings module
     try:
+
+        # required since django1.7
+        django.setup()
+
         from django.conf import settings
     except Exception as ex:
         if not str(ex).startswith("No module named"):
@@ -1824,6 +1828,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     # this will both check the database and initialize the evennia dir.
     if check_db:
         check_database()
+        evennia._init()
 
     # if we don't have to check the game directory, return right away
     if not need_gamedir:
