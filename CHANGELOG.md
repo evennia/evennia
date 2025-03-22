@@ -42,6 +42,7 @@ Python versions: 3.11, 3.12, 3.13.
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
+- Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
