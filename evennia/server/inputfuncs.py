@@ -24,7 +24,6 @@ import importlib
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
-
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.utils.logger import log_err
@@ -142,9 +141,9 @@ def echo(session, *args, **kwargs):
     Echo test function
     """
     if _STRIP_INCOMING_MXP:
-        txt = strip_mxp(txt)
+        args = [_maybe_strip_incoming_mxp(str(arg)) for arg in args]
 
-    session.data_out(text="Echo returns: %s" % args)
+    session.data_out(text=f"Echo returns: {args}, {kwargs}")
 
 
 def default(session, cmdname, *args, **kwargs):
