@@ -1484,7 +1484,7 @@ class CmdName(ObjManipCommand):
         obj = None
         if self.lhs_objs:
             objname = self.lhs_objs[0]["name"]
-            if objname.startswith("*"):
+            if objname.startswith("*") and caller.account:
                 # account mode
                 obj = caller.account.search(objname.lstrip("*"))
                 if obj:
