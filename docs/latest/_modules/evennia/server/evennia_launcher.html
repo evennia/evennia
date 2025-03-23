@@ -340,7 +340,7 @@
 
 <span class="n">ERROR_DATABASE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    ERROR: Your database does not exist or is not set up correctly.</span>
-<span class="s2">    (error was &#39;</span><span class="si">{traceback}</span><span class="s2">&#39;)</span>
+<span class="s2">    Missing tables: </span><span class="si">{missing_tables}</span>
 
 <span class="s2">    If you think your database should work, make sure you are running your</span>
 <span class="s2">    commands from inside your game directory. If this error persists, run</span>
@@ -1631,7 +1631,10 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">always_return</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported database vendor: </span><span class="si">{</span><span class="n">connection</span><span class="o">.</span><span class="n">vendor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Unsupported database: </span><span class="si">{</span><span class="n">connection</span><span class="o">.</span><span class="n">vendor</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="s2">&quot;Evennia supports PostgreSQL, MySQL, and SQLite only.&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
             <span class="n">existing_tables</span> <span class="o">=</span> <span class="p">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()}</span>
@@ -1644,7 +1647,7 @@
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Database tables missing: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_tables</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
-                    <span class="s2">&quot;Did you remember to run migrations?&quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Did you remember to run migrations?&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">create_superuser</span><span class="p">()</span>
@@ -1883,7 +1886,7 @@
     <span class="c1"># Set the GAMEDIR path if not set already</span>
     <span class="c1">## Declaring it global doesn&#39;t set the variable</span>
     <span class="c1">## This check is needed for evennia --gamedir to work</span>
-    <span class="k">if</span> <span class="n">need_gamedir</span> <span class="ow">and</span> <span class="s1">&#39;GAMEDIR&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">need_gamedir</span> <span class="ow">and</span> <span class="s2">&quot;GAMEDIR&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
         <span class="n">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="c1"># Add gamedir to python path</span>
@@ -1899,11 +1902,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SETTINGS_DOTPATH</span>
 
-    <span class="c1"># required since django1.7</span>
-    <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-
     <span class="c1"># test existence of the settings module</span>
     <span class="k">try</span><span class="p">:</span>
+
+        <span class="c1"># required since django1.7</span>
+        <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No module named&quot;</span><span class="p">):</span>
@@ -1916,6 +1920,7 @@
     <span class="c1"># this will both check the database and initialize the evennia dir.</span>
     <span class="k">if</span> <span class="n">check_db</span><span class="p">:</span>
         <span class="n">check_database</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
     <span class="c1"># if we don&#39;t have to check the game directory, return right away</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">need_gamedir</span><span class="p">:</span>

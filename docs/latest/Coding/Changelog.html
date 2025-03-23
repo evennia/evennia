@@ -107,8 +107,8 @@
 <li><a class="reference internal" href="#protocols">Protocols</a></li>
 <li><a class="reference internal" href="#server">Server</a></li>
 <li><a class="reference internal" href="#settings">Settings</a></li>
-<li><a class="reference internal" href="#utils">Utils</a></li>
-<li><a class="reference internal" href="#contribs">Contribs</a></li>
+<li><a class="reference internal" href="#utilities">Utilities</a></li>
+<li><a class="reference internal" href="#new-contribs">New Contribs</a></li>
 <li><a class="reference internal" href="#translations">Translations</a></li>
 </ul>
 </li>
@@ -119,9 +119,9 @@
 <li><a class="reference internal" href="#evmenu">EvMenu</a></li>
 <li><a class="reference internal" href="#webclient">Webclient</a></li>
 <li><a class="reference internal" href="#locks">Locks</a></li>
-<li><a class="reference internal" href="#id1">Utils</a></li>
+<li><a class="reference internal" href="#utils">Utils</a></li>
 <li><a class="reference internal" href="#general">General</a></li>
-<li><a class="reference internal" href="#id2">Contribs</a></li>
+<li><a class="reference internal" href="#more-contribs">More Contribs</a></li>
 <li><a class="reference internal" href="#internationalization">Internationalization</a></li>
 </ul>
 </li>
@@ -205,6 +205,8 @@
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
 <p>Updated dependencies: Django &gt;5.1 (&lt;5,2), Twisted &gt;24 (&lt;25).
 Python versions: 3.11, 3.12, 3.13.</p>
+<p>This upgrade requires running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> on your existing database
+(ignore any prompts to run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">makemigrations</span></code>).</p>
 <ul class="simple">
 <li><p>Feat (backwards incompatible): RUN MIGRATIONS (<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>): Now requiring Django 5.1 (Griatch)</p></li>
 <li><p>Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)</p></li>
@@ -229,15 +231,18 @@ unless current location and/or caller is in valid search candidates respectively
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3721">Fix</a>: Avoid loading cmdsets that don’t need to be checked, avoiding
 a performance hit for loading cmdsets in rooms with a lot of objects (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3688">Fix</a>: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)</p></li>
-<li><p>[Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)</p></li>
-<li><p>[Fix][issue3723]: Bug in <code class="docutils literal notranslate"><span class="pre">ingame-map-display</span></code> contrib when using ordinal alises (aMiss-aWry)</p></li>
-<li><p>[Fix][issue3726]: Fix Twisted v25 issue with returnValue()</p></li>
-<li><p>[Fix][issue3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)</p></li>
-<li><p>[Fix][issue3737]: The <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--gamedir</span></code> command didn’t properly set the alt gamedir (Russel-Jones)</p></li>
-<li><p>[Fix][issue3739]: Fixing f-string in <a class="reference external" href="http://account.py">account.py</a> for i18n (JohnFi)</p></li>
-<li><p>[Fix][issue3743]: Log full stack trace on failed object creation (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3687">Fix</a>: Fixed batchcommand/interactive with developer perms (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3723">Fix</a>: Bug in <code class="docutils literal notranslate"><span class="pre">ingame-map-display</span></code> contrib when using ordinal alises (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3726">Fix</a>: Fix Twisted v25 issue with returnValue()</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3729">Fix</a>: Godot client text2bbcode mxp link conversion error (ChrisLR)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3737">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--gamedir</span></code> command didn’t properly set the alt gamedir (Russel-Jones)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3739">Fix</a>: Fixing f-string in <a class="reference external" href="http://account.py">account.py</a> for i18n (JohnFi)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3744">Fix</a>: Fix for format strings not getting picked up in i18n (JohnFi)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3743">Fix</a>: Log full stack trace on failed object creation (aMiss-aWry)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3747">Fix</a>: TutorialWorld bridge-room didn’t correctly randomize weather effects (SpyrosRoum)</p></li>
 <li><p>Fix: <code class="docutils literal notranslate"><span class="pre">options</span></code> setting <code class="docutils literal notranslate"><span class="pre">NOPROMPTGOAHEAD</span></code> was not possible to set (Griatch)</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">\\</span></code> properly preserve one backlash in funcparser (Griatch)</p></li>
+<li><p>Fix: The testing ‘echo’ inputfunc didn’t work correctly; now returns both args/kwargs (Griatch)</p></li>
 <li><p>Fix: When an object was used as an On-Demand Task’s category, and that object was then deleted,
 it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
 used as the task’s category (Griatch)</p></li>
@@ -361,8 +366,6 @@ contrib can find and reference other Traits. (Griatch)</p></li>
 of local search on multimatch (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3585">Fix</a>: <code class="docutils literal notranslate"><span class="pre">TagCmd.switch_options</span></code> was misnamed (erratic-pattern)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3580">Fix</a>: Fix typo that made <code class="docutils literal notranslate"><span class="pre">find/loc</span></code> show the wrong dbref in result (erratic-pattern)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3571">Fix</a>: Issue disambiguating between certain partial multimatches
-(InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3589">Fix</a>: Fix regex escaping in <code class="docutils literal notranslate"><span class="pre">utils.py</span></code> for future Python versions (hhsiao)</p></li>
 <li><p>[Docs]: Add True-color description for Colors documentation (0xDEADFED5)</p></li>
 <li><p>[Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)</p></li>
@@ -1420,8 +1423,8 @@ exist.</p></li>
 is on a specific form.</p></li>
 </ul>
 </section>
-<section id="utils">
-<h3>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h3>
+<section id="utilities">
+<h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">evennia</span></code> launcher now fully handles all django-admin commands, like running tests in parallel.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">evennia.utils.create.account</span></code> now also takes <code class="docutils literal notranslate"><span class="pre">tags</span></code> and <code class="docutils literal notranslate"><span class="pre">attrs</span></code> keywords.</p></li>
@@ -1445,8 +1448,8 @@ Object (rather than all monitors in the entire handler).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">evennia.VALIDATOR_CONTAINER</span></code> and <code class="docutils literal notranslate"><span class="pre">evennia.OPTION_CONTAINER</span></code> added to load these.</p></li>
 </ul>
 </section>
-<section id="contribs">
-<h3>Contribs<a class="headerlink" href="#contribs" title="Permalink to this headline">¶</a></h3>
+<section id="new-contribs">
+<h3>New Contribs<a class="headerlink" href="#new-contribs" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make
 the entry for the MUD-Coder’s Guild’s 2019 Game Jam with the theme “One Room”, where it ranked #1.</p></li>
@@ -1563,8 +1566,8 @@ of a lockstring.</p></li>
 all available lock funcs. This is useful for dynamic listings.</p></li>
 </ul>
 </section>
-<section id="id1">
-<h3>Utils<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<section id="utils">
+<h3>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Added new <code class="docutils literal notranslate"><span class="pre">columnize</span></code> function for easily splitting text into multiple columns. At this point it
 is not working too well with ansi-colored text however.</p></li>
@@ -1591,8 +1594,8 @@ classes to their plain-Python counterparts.</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">evennia.utils.logger.log_sec</span></code> for logging security-related messages (marked SS in log).</p></li>
 </ul>
 </section>
-<section id="id2">
-<h3>Contribs<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<section id="more-contribs">
+<h3>More Contribs<a class="headerlink" href="#more-contribs" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Auditing</span></code> (Johnny): Log and filter server input/output for security purposes</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">Menu</span></code> (vincent-lg): New &#64;edit command to edit object properties in a menu.</p></li>

@@ -1,5 +1,9 @@
 # Game Quests
 
+```{warning}
+This tutorial lesson is not yet complete, and has some serious bugs in its implementation. So use this as a reference, but the code is not yet ready to use directly.
+```
+
 A _quest_ is a common feature of games. From classic fetch-quests like retrieving 10 flowers to complex quest chains involving drama and intrigue, quests need to be properly tracked in our game. 
 
 A quest follows a specific development:
