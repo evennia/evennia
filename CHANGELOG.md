@@ -5,6 +5,9 @@
 Updated dependencies: Django >5.1 (<5,2), Twisted >24 (<25).
 Python versions: 3.11, 3.12, 3.13.
 
+This upgrade requires running `evennia migrate` on your existing database
+(ignore any prompts to run `evennia makemigrations`).
+
 - Feat (backwards incompatible): RUN MIGRATIONS (`evennia migrate`): Now requiring Django 5.1 (Griatch)
 - Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)
 - [Feat][pull3719]: Support Python 3.13. (0xDEADFED5)
@@ -39,10 +42,10 @@ Python versions: 3.11, 3.12, 3.13.
 - [Fix][pull3747]: TutorialWorld bridge-room didn't correctly randomize weather effects (SpyrosRoum)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
+- Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
-- Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
@@ -67,7 +70,7 @@ Python versions: 3.11, 3.12, 3.13.
 [pull3744]: https://github.com/evennia/evennia/pull/3744
 [pull3747]: https://github.com/evennia/evennia/pull/3747
 [issue3688]: https://github.com/evennia/evennia/issues/3688
-[issue3688]: https://github.com/evennia/evennia/issues/3687
+[issue3687]: https://github.com/evennia/evennia/issues/3687
 
 
 
@@ -202,7 +205,6 @@ did not add it to the handler's object (Griatch)
 [issue3620]: https://github.com/evennia/evennia/issues/3620
 [issue3616]: https://github.com/evennia/evennia/issues/3616
 [pull3595]: https://github.com/evennia/evennia/pull/3595
-[pull3595]: https://github.com/evennia/evennia/pull/3595
 [pull3533]: https://github.com/evennia/evennia/pull/3533
 [pull3594]: https://github.com/evennia/evennia/pull/3594
 [pull3592]: https://github.com/evennia/evennia/pull/3592
@@ -235,15 +237,12 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
     of local search on multimatch (InspectorCaracal)
 - [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
 - [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
-- [Fix][pull3571]: Issue disambiguating between certain partial multimatches
-  (InspectorCaracal)
 - [Fix][pull3589]: Fix regex escaping in `utils.py` for future Python versions (hhsiao)
 - [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
 - [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
 
 [pull3585]: https://github.com/evennia/evennia/pull/3585
 [pull3580]: https://github.com/evennia/evennia/pull/3580
-[pull3571]: https://github.com/evennia/evennia/pull/3571
 [pull3586]: https://github.com/evennia/evennia/pull/3586
 [pull3550]: https://github.com/evennia/evennia/pull/3550
 [pull3531]: https://github.com/evennia/evennia/pull/3531
@@ -1340,7 +1339,7 @@ without arguments starts a full interactive Python console.
 - `VALIDATOR_FUNC_MODULES` - (general) text validator functions, for verifying an input
   is on a specific form.
 
-### Utils
+### Utilities
 
 - `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
 - `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
@@ -1363,7 +1362,7 @@ without arguments starts a full interactive Python console.
 - Option Classes added to make storing user-options easier and smoother.
 - `evennia.VALIDATOR_CONTAINER` and `evennia.OPTION_CONTAINER` added to load these.
 
-### Contribs
+### New Contribs
 
 - Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make
   the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1.
@@ -1487,7 +1486,7 @@ without arguments starts a full interactive Python console.
 - Removed the enforcing of `MAX_NR_CHARACTERS=1` for `MULTISESSION_MODE` `0` and `1` by default.
 - Add `evennia.utils.logger.log_sec` for logging security-related messages (marked SS in log).
 
-### Contribs
+### More Contribs
 
 - `Auditing` (Johnny): Log and filter server input/output for security purposes
 - `Build Menu` (vincent-lg): New @edit command to edit object properties in a menu.
