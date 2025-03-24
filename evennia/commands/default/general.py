@@ -189,7 +189,8 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if "clearall" in switches:
             caller.nicks.clear()
-            caller.account.nicks.clear()
+            if caller.account:
+                caller.account.nicks.clear()
             caller.msg("Cleared all nicks.")
             return
 
@@ -789,15 +790,18 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
         hierarchy_full = settings.PERMISSION_HIERARCHY
         string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(hierarchy_full)
 
-        if self.caller.account.is_superuser:
+        if caller.account and caller.account.is_superuser:
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
             cperms = ", ".join(caller.permissions.all())
-            pperms = ", ".join(caller.account.permissions.all())
+            if caller.account:
+                pperms = ", ".join(caller.account.permissions.all())
+            else:
+                pperms = "<No account>"
 
         string += "\n|wYour access|n:"
         string += f"\nCharacter |c{caller.key}|n: {cperms}"
-        if utils.inherits_from(caller, DefaultObject):
+        if utils.inherits_from(caller, DefaultObject) and caller.account:
             string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)
