@@ -347,12 +347,21 @@ class TypedObject(SharedMemoryModel):
         Called by creation methods; makes sure to initialize Attribute/TagProperties
         by fetching them once.
         """
-        for propkey, prop in self.__class__.__dict__.items():
-            if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty)):
-                try:
-                    getattr(self, propkey)
-                except Exception:
-                    log_trace()
+        evennia_properties = set()
+        for base in type(self).__mro__:
+            evennia_properties.update(
+                {
+                    propkey
+                    for propkey, prop in vars(base).items()
+                    if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty))
+                }
+            )
+
+        for propkey in evennia_properties:
+            try:
+                getattr(self, propkey)
+            except Exception:
+                log_trace()
 
     # initialize all handlers in a lazy fashion
     @lazy_property
