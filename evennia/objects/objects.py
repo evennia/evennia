@@ -1793,7 +1793,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
         exit_names = (exi.get_display_name(looker, **kwargs) for exi in exits)
-        exit_names = iter_to_str(_sort_exit_names(exit_names), endsep=_("and"))
+        exit_names = iter_to_str(_sort_exit_names(exit_names), endsep=_(", and"))
         e = _("Exits")
         return f"|w{e}:|n {exit_names}" if exit_names else ""
 
@@ -1812,7 +1812,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             self.contents_get(content_type="character"), looker, **kwargs
         )
         character_names = iter_to_str(
-            (char.get_display_name(looker, **kwargs) for char in characters), endsep=_("and")
+            (char.get_display_name(looker, **kwargs) for char in characters), endsep=_(", and")
         )
         c = _("Characters")
         return f"|w{c}:|n {character_names}" if character_names else ""
@@ -1841,7 +1841,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             thing = thinglist[0]
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
-        thing_names = iter_to_str(thing_names, endsep=_("and"))
+        thing_names = iter_to_str(thing_names, endsep=_(", and"))
         s = _("You see")
         return f"|w{s}:|n {thing_names}" if thing_names else ""
 
