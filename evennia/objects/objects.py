@@ -1382,13 +1382,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             if obj.has_account:
                 if home:
-                    string = "Your current location has ceased to exist,"
-                    string += " moving you to (#{dbid})."
-                    obj.msg(_(string).format(dbid=home.dbid))
+                    string = _(
+                        "Your current location has ceased to exist,"
+                        " moving you to (#{dbid})."
+                    )
+                    obj.msg(string.format(dbid=home.dbid))
                 else:
                     # Famous last words: The account should never see this.
-                    string = "This place should not exist ... contact an admin."
-                    obj.msg(_(string))
+                    obj.msg(_("This place should not exist ... contact an admin."))
             obj.move_to(home, move_type="teleport")
 
     @classmethod
@@ -2141,7 +2142,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             puppeting this Object.
 
         """
-        self.msg(f"You become |w{self.key}|n.")
+        self.msg(_("You become |w{key}|n.").format(key=self.key))
         self.account.db._last_puppet = self
 
     def at_pre_unpuppet(self, **kwargs):
@@ -2798,7 +2799,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # TODO: This if-statment will be removed in Evennia 1.0
             return True
         if not self.access(dropper, "drop", default=False):
-            dropper.msg(f"You cannot drop {self.get_display_name(dropper)}")
+            dropper.msg(_("You cannot drop {obj}").format(obj=self.get_display_name(dropper)))
             return False
         return True
 
