@@ -1383,7 +1383,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if obj.has_account:
                 if home:
                     string = _(
-                        "Your current location has ceased to exist," " moving you to (#{dbid})."
+                        "Your current location has ceased to exist, moving you to (#{dbid})."
                     )
                     obj.msg(string.format(dbid=home.dbid))
                 else:
