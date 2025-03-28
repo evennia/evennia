@@ -36,6 +36,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
 
 import evennia
 from evennia.locks.lockhandler import LockHandler
@@ -883,7 +884,7 @@ class TypedObject(SharedMemoryModel):
         """
 
         if self.location == looker:
-            return " (carried)"
+            return _(" (carried)")
         return ""
 
     def at_rename(self, oldname, newname):
