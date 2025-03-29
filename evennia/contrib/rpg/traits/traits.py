@@ -1595,6 +1595,29 @@ class GaugeTrait(CounterTrait):
             return self.min
         return min((self.mod + self.base) * self.mult, value)
 
+    @staticmethod
+    def validate_input(cls, trait_data):
+        """Add extra validation for descs"""
+        trait_data = Trait.validate_input(cls, trait_data)
+        # validate descs
+        descs = trait_data["descs"]
+        if isinstance(descs, dict):
+            if any(
+                not (isinstance(key, (int, float)) and isinstance(value, str))
+                for key, value in descs.items()
+            ):
+                raise TraitException(
+                    "Trait descs must be defined on the "
+                    f"form {{number:str}} (instead found {descs})."
+                )
+        # set up rate
+        if trait_data["rate"] != 0:
+            trait_data["last_update"] = trait_data.get("last_update", time())
+        else:
+            trait_data["last_update"] = None
+        return trait_data
+    
+
     def __str__(self):
         status = "{value:4} / {base:4}".format(value=self.value, base=self.base)
         return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(
