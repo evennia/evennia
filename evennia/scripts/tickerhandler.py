@@ -364,8 +364,7 @@ class TickerHandler(object):
         Tries to create a store_key for the object.
 
         Args:
-            obj (Object, tuple or None): Subscribing object if any. If a tuple, this is
-                a packed_obj tuple from dbserialize.
+            obj (Object, tuple or None): Subscribing object if any.
             path (str or None): Python-path to callable, if any.
             interval (int): Ticker interval. Floats will be converted to
                 nearest lower integer value.
@@ -378,9 +377,9 @@ class TickerHandler(object):
                 shutdown or not.
 
         Returns:
-            store_key (tuple): A tuple `(packed_obj, methodname, outpath, interval,
+            store_key (tuple): A tuple `(objdesc, methodname, outpath, interval,
                 idstring, persistent)` that uniquely identifies the
-                ticker. Here, `packed_obj` is the unique string representation of the
+                ticker. Here, `objdesc` is the unique string representation of the
                 object or `None`. The `methodname` is the string name of the method on
                 `packed_obj` to call, or `None` if `packed_obj` is unset. `path` is
                 the Python-path to a non-method callable, or `None`. Finally, `interval`
@@ -392,10 +391,13 @@ class TickerHandler(object):
 
         interval = int(interval)
         persistent = bool(persistent)
-        packed_obj = pack_dbobj(obj)
         methodname = callfunc if callfunc and isinstance(callfunc, str) else None
         outpath = path if path and isinstance(path, str) else None
-        return (packed_obj, methodname, outpath, interval, idstring, persistent)
+        try:
+            objdesc = obj.pk
+        except:
+            objdesc = str(obj)
+        return (objdesc, methodname, outpath, interval, idstring, persistent)
 
     def save(self):
         """
