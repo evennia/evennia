@@ -415,7 +415,7 @@ msgstr "Du hast nun {name} in deinem Besitz."
 #: objects/objects.py:2388
 #, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
-msgstr "{object} kommt aus {destination} in {origin} an."
+msgstr "{object} kommt aus {origin} in {destination} an."
 
 #: objects/objects.py:2390
 #, python-brace-format
