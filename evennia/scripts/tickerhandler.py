@@ -364,7 +364,7 @@ class TickerHandler(object):
         Tries to create a store_key for the object.
 
         Args:
-            obj (Object, tuple or None): Subscribing object if any.
+            obj (Object or None): Subscribing object if any.
             path (str or None): Python-path to callable, if any.
             interval (int): Ticker interval. Floats will be converted to
                 nearest lower integer value.
