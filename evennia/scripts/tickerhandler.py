@@ -393,10 +393,12 @@ class TickerHandler(object):
         persistent = bool(persistent)
         methodname = callfunc if callfunc and isinstance(callfunc, str) else None
         outpath = path if path and isinstance(path, str) else None
-        try:
-            objdesc = obj.pk
-        except:
-            objdesc = str(obj)
+        objdesc = None
+        if obj:
+            try:
+                objdesc = obj.pk
+            except:
+                objdesc = str(obj)
         return (objdesc, methodname, outpath, interval, idstring, persistent)
 
     def save(self):
