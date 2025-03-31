@@ -397,7 +397,10 @@ class CmdCopy(ObjManipCommand):
             if not from_obj:
                 return
             to_obj_name = "%s_copy" % from_obj_name
-            to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases.all()]
+            to_obj_aliases = [
+                (f"{alias}_copy", category)
+                for alias, category in from_obj.aliases.all(return_key_and_category=True)
+            ]
             copiedobj = ObjectDB.objects.copy_object(
                 from_obj, new_key=to_obj_name, new_aliases=to_obj_aliases
             )
