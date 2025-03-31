@@ -3464,7 +3464,7 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
 
     """
 
-    obj = None
+    #obj = None
 
     def func(self):
         """
@@ -3504,7 +3504,7 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
         if self.obj.destination:
             return " (exit to %s)" % self.obj.destination.get_display_name(caller, **kwargs)
         else:
-            return " (%s)" % self.obj.get_display_name(caller, **kwargs)
+            return _(" (exit)")
 
 
 #
