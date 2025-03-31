@@ -3484,6 +3484,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
                 # No shorthand error message. Call hook.
                 self.obj.at_failed_traverse(self.caller)
 
+    def get_display_name(self, looker=None, **kwargs):
+        return self.obj.get_display_name(looker, **kwargs)
+
     def get_extra_info(self, caller, **kwargs):
         """
         Shows a bit of information on where the exit leads.
