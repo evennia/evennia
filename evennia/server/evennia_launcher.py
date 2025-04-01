@@ -2482,9 +2482,9 @@ def main():
                 sys.exit(0)
         elif option == "createsuperuser":
             print(
-            "Note: Don't create an additional superuser this way. It will not be set up "
-            "correctly.\n Instead, use the web admin or the in-game `py` command to "
-            "set `is_superuser=True` on a existing Account."
+                "Note: Don't create an additional superuser this way. It will not be set up "
+                "correctly.\n Instead, use the web admin or the in-game `py` command to "
+                "set `is_superuser=True` on a existing Account."
             )
             sys.exit()
         elif option == "createuser":
