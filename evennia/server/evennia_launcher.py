@@ -1480,13 +1480,112 @@ def create_superuser():
     password = environ.get("EVENNIA_SUPERUSER_PASSWORD")
 
     if (username is not None) and (password is not None) and len(password) > 0:
-
         superuser = AccountDB.objects.create_superuser(username, email, password)
         superuser.save()
     else:
         django.core.management.call_command("createsuperuser", interactive=True)
 
     return True
+
+def create_user(account_name):
+    """
+    Create a user account.
+    
+    Args:
+        account_name (str): The name of the account to create.
+        
+    Given this function operates in the command line, we import the necessary
+    validators that come default to Evennia. These include ASCII validation,
+    length validation, and availability validation.
+    
+    The function prompts for an email address, which is optional, and a password.
+    After password validation, the account is created.
+    """
+    from evennia.accounts.models import AccountDB
+    from django.contrib.auth.password_validation import (
+        UserAttributeSimilarityValidator,
+        MinimumLengthValidator,
+        CommonPasswordValidator,
+        NumericPasswordValidator,
+    )
+    from django.core.exceptions import ValidationError
+    from django.contrib.auth.validators import ASCIIUsernameValidator
+    from django.core.validators import MinLengthValidator, MaxLengthValidator
+    from evennia.server.validators import EvenniaUsernameAvailabilityValidator
+    
+    username_validators = [
+        ASCIIUsernameValidator(),
+        MinLengthValidator(3),
+        MaxLengthValidator(30),
+        EvenniaUsernameAvailabilityValidator(),
+    ]
+    password_validators = [
+        UserAttributeSimilarityValidator(),
+        MinimumLengthValidator(8),
+        CommonPasswordValidator(),
+        NumericPasswordValidator()
+    ]
+    
+    username_errors = []
+    for validator in username_validators:
+        try:
+            validator.validate(account_name, user=None)
+        except ValidationError as e:
+            username_errors.extend(e.messages)
+    if username_errors:
+        print("Username validation error:")
+        for error in username_errors:
+            print(f"  - {error}")
+        return False
+    
+    print(f"\nCreating account '{account_name}'")
+    email = input("Email (optional): ")
+    
+    while True:
+        password = input("Password: ")
+        if not password:
+            print("Password cannot be empty.")
+            continue
+            
+        password_errors = []
+        for validator in password_validators:
+            try:
+                validator.validate(password, user=None)
+            except ValidationError as e:
+                password_errors.extend(e.messages)
+        
+        if password_errors:
+            print("Password validation error:")
+            for error in password_errors:
+                print(f"  - {error}")
+            continue
+            
+        password2 = input("Password (again): ")
+        if password != password2:
+            print("Passwords don't match.")
+            continue
+            
+        break
+    
+    account = AccountDB.objects.create_account(key=account_name, email=email, password=password)
+    account.save()
+    print(f"Account '{account_name}' was created successfully.")
+    return True
+
+def run_create_user(account_name):
+    """
+    Run the create_user function from the command line.
+    
+    Args:
+        account_name (str): Name of the account to create.
+    """
+    from django.core.exceptions import ValidationError
+    
+    try:
+        create_user(account_name)
+    except ValidationError as e:
+        print(f"Error creating account: {e}")
+    
 
 
 def check_database(always_return=False):
@@ -2360,7 +2459,9 @@ def main():
                 )
                 sys.exit()
 
-        if option in ("shell", "check", "makemigrations", "createsuperuser", "shell_plus"):
+        if option in (
+            "shell", "check", "makemigrations", "createuser", "createsuperuser", "shell_plus"
+        ):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.
             check_db = True
@@ -2376,14 +2477,21 @@ def main():
             if not check_database(always_return=True):
                 django.core.management.call_command(*([option] + unknown_args))
                 sys.exit(0)
-
-        if option in ("createsuperuser",):
+        elif option == "createsuperuser":
             print(
-                "Note: Don't create an additional superuser this way. It will not be set up "
-                "correctly.\n Instead, use the web admin or the in-game `py` command to "
-                "set `is_superuser=True` on a existing Account."
+            "Note: Don't create an additional superuser this way. It will not be set up "
+            "correctly.\n Instead, use the web admin or the in-game `py` command to "
+            "set `is_superuser=True` on a existing Account."
             )
             sys.exit()
+        elif option == "createuser":
+            if unknown_args:
+                account_name = unknown_args[0]
+                run_create_user(account_name)
+            else:
+                print("Usage: evennia createuser <account_name>")
+                print("Creates a new user account with the specified name.")
+                sys.exit()
 
         if run_custom_commands(option, *unknown_args):
             # run any custom commands
