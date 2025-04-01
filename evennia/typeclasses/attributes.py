@@ -1471,7 +1471,7 @@ class DbHolder:
 # Nick templating
 #
 
-"""
+r"""
 This supports the use of replacement templates in nicks:
 
 This happens in two steps:
