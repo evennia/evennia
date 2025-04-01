@@ -12,7 +12,6 @@ Run the script with the -h flag to see usage information.
 """
 
 import argparse
-import importlib
 import os
 import pickle
 import re
@@ -25,7 +24,6 @@ from subprocess import STDOUT, CalledProcessError, Popen, call, check_output
 
 import django
 from django.core.management import execute_from_command_line
-from django.db.utils import ProgrammingError
 from twisted.internet import endpoints, reactor
 from twisted.protocols import amp
 
@@ -1529,7 +1527,12 @@ def create_user(account_name):
     username_errors = []
     for validator in username_validators:
         try:
-            validator.validate(account_name, user=None)
+            # ASCIIUsernameValidator uses __call__ instead of validate
+            if hasattr(validator, 'validate'):
+                validator.validate(account_name, user=None)
+            else:
+                # For validators that use __call__ like ASCIIUsernameValidator
+                validator(account_name)
         except ValidationError as e:
             username_errors.extend(e.messages)
     if username_errors:
@@ -2491,7 +2494,7 @@ def main():
             else:
                 print("Usage: evennia createuser <account_name>")
                 print("Creates a new user account with the specified name.")
-                sys.exit()
+            sys.exit()
 
         if run_custom_commands(option, *unknown_args):
             # run any custom commands
