@@ -7,7 +7,7 @@ COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 try:
     import debugpy
 except ImportError:
-    print("Error, debugpy not found! Please install debugpy by running: pip install debugpy")
+    print("Error, debugpy not found! Please install debugpy by running: `pip install debugpy`\nAfter that please reboot Evennia with `evennia reboot`")
     sys.exit()
 
 
