@@ -8,6 +8,7 @@ https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy
 
 
 Credit for this goes to Moony on the Evennia Discord getting-help channel, thx Moony!
+
 0xDEADFED5 simply tied a pretty bow around it and stuck it here for everybody else.
 
 
@@ -15,6 +16,7 @@ Credit for this goes to Moony on the Evennia Discord getting-help channel, thx M
 ## Dependencies
 
 This requires VS Code and debugpy, so make sure you're using VS Code.
+
 From the venv where you installed Evennia run:
 
 `pip install debugpy`
@@ -24,6 +26,7 @@ From the venv where you installed Evennia run:
 In your Evennia mygame folder, open up `\commands\default_cmdsets.py`
 
 add `from evennia.contrib.utils.debugpy.cmd import CmdDebugPy` somewhere near the top.
+
 in CharacterCmdSet.at_cmdset_creation add this under `super().at_cmdset_creation()`:
 
 `self.add(CmdDebugPy)`
