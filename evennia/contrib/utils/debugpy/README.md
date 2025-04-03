@@ -23,7 +23,7 @@ From the venv where you installed Evennia run:
 
 ## Enable the command in Evennia
 
-In your Evennia mygame folder, open up `\commands\default_cmdsets.py`
+In your Evennia mygame folder, open up `/commands/default_cmdsets.py`
 
 add `from evennia.contrib.utils.debugpy.cmd import CmdDebugPy` somewhere near the top.
 
@@ -81,7 +81,7 @@ Start VS Code and open your launch.json like this:
 
 Add this to your configuration:
 
-```
+```json
         {
             "name": "Python Debugger: Remote Attach",
             "justMyCode": false,
@@ -100,11 +100,43 @@ Add this to your configuration:
         },
 ```
 
-Use `localhost` for the host if you are running Evennia from the same machine you'll be debugging from.  Otherwise, if you want to debug a remote server, change host as necessary.
+Use `localhost` for the host if you are running Evennia from the same machine you'll be debugging from.  Otherwise, if you want to debug a remote server, change host (and possibly remoteRoot mapping) as necessary.
 
 Afterwards it should look something like this:
 
-![screenshot](./launch.png)
+```json
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Python Debugger: Remote Attach",
+            "justMyCode": false,
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ]
+        },
+    ]
+}
+```
 
 (notice the comma between the curly braces)
 
