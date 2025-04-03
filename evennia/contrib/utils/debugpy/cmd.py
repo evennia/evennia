@@ -4,10 +4,13 @@ from evennia.utils import utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
+ERROR_MSG = """Error, debugpy not found! Please install debugpy by running: `pip install debugpy`
+After that please reboot Evennia with `evennia reboot`"""
+
 try:
     import debugpy
 except ImportError:
-    print("Error, debugpy not found! Please install debugpy by running: `pip install debugpy`\nAfter that please reboot Evennia with `evennia reboot`")
+    print(ERROR_MSG)
     sys.exit()
 
 
