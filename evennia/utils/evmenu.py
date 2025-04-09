@@ -291,7 +291,6 @@ from evennia.utils.utils import (
     m_len,
     make_iter,
     mod_import,
-    pad,
     to_str,
 )
 
@@ -1161,13 +1160,21 @@ class EvMenu:
         Format the node's help text
 
         Args:
-            helptext (str): The unformatted help text for the node.
+            helptext (str or dict): The unformatted help text for the node.
+                If a dictionary, it's a mapping of help topics to help text.
 
         Returns:
-            helptext (str): The formatted help text.
+            helptext (str or dict): The formatted help text. If dictionary input,
+                returns a dictionary with formatted values.
 
         """
-        return dedent(helptext.strip("\n"), baseline_index=0).rstrip()
+        if isinstance(helptext, dict):
+            return {
+                key.strip().lower(): dedent(text.strip(), baseline_index=0).rstrip() 
+                for key, text in helptext.items()
+            }
+
+        return dedent(helptext.strip(), baseline_index=0).rstrip()
 
     def options_formatter(self, optionlist):
         """
