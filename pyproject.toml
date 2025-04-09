@@ -170,3 +170,20 @@ omit = [
   "*.pyc",
   "*.service",
 ]
+
+[tool.ruff]
+exclude = [
+  "/.eggs/",
+  "/.git/",
+  "/.hg/",
+  "/.mypy_cache/",
+  "/.tox/",
+  "/.venv/",
+  "/_build/",
+  "/buck-out/",
+  "/build/",
+  "/dist/",
+  "migrations",
+  "docs",
+]
+line-length = 100
