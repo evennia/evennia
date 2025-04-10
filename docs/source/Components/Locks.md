@@ -182,6 +182,9 @@ Some useful default lockfuncs (see `src/locks/lockfuncs.py` for more):
 - `attr(attrname, value)` - checks so an attribute exists on accessing_object *and* has the given value.
 - `attr_gt(attrname, value)` - checks so accessing_object has a value larger (`>`) than the given value.
 - `attr_ge, attr_lt, attr_le, attr_ne` - corresponding for `>=`, `<`, `<=` and `!=`.
+- `tag(tagkey[, category])` - checks if the accessing_object has the specified tag and optional category.
+- `objtag(tagkey[, category])` - checks if the *accessed_object* has the specified tag and optional category.
+- `objloctag(tagkey[, category])` - checks if the *accessed_obj*'s location has the specified tag and optional category.
 - `holds(objid)` - checks so the accessing objects contains an object of given name or dbref.
 - `inside()` - checks so the accessing object is inside the accessed object (the inverse of `holds()`).
 - `pperm(perm)`, `pid(num)/pdbref(num)` - same as `perm`, `id/dbref` but always looks for permissions and dbrefs of *Accounts*, not on Characters.
