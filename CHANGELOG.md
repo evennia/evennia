@@ -46,6 +46,7 @@ This upgrade requires running `evennia migrate` on your existing database
 - Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
+- Fix: Correct aws contrib's use of legacy django string utils (Griatch)
 - [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
