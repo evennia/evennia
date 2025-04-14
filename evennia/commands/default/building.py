@@ -3249,7 +3249,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             try:
                 # Check that rhs is either a valid dbref or dbref range
                 bounds = tuple(
-                    sorted(dbref(x, False) for x in re.split("[-\s]+", self.rhs.strip()))
+                    sorted(dbref(x, False) for x in re.split(r"[-\s]+", self.rhs.strip()))
                 )
 
                 # dbref() will return either a valid int or None
