@@ -948,7 +948,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 
@@ -988,7 +988,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_puppet_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to puppet a specific
         object.
 
@@ -1026,7 +1026,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_update_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to update this
         object.
 
@@ -1065,7 +1065,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_delete_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to delete this object.
 
         Returns:
