@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-28 21:18+0100\n"
-"PO-Revision-Date: 2024-08-05 18:22+0200\n"
+"POT-Creation-Date: 2025-03-28 08:12+0000\n"
+"PO-Revision-Date: 2025-03-28 10:21+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,27 +18,52 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.4\n"
 
-#: accounts/accounts.py:278
+#: accounts/accounts.py:474
 msgid "You are already puppeting this object."
 msgstr "Du steuerst dieses Objekt bereits."
 
-#: accounts/accounts.py:282
+#: accounts/accounts.py:478
 #, python-brace-format
 msgid "You don't have permission to puppet '{key}'."
 msgstr "Du hast nicht die Berechtigung '{key}' zu steuern."
 
-#: accounts/accounts.py:303
+#: accounts/accounts.py:487
+#, python-brace-format
+msgid "Sharing |c{name}|n with another of your sessions."
+msgstr "Teile |c{name}|n mit einer deiner anderen Sitzungen."
+
+#: accounts/accounts.py:491
+#, python-brace-format
+msgid "|c{name}|n|G is now shared from another of your sessions.|n"
+msgstr "|c{name}|n|G wird nun von einer deiner anderen Sitzungen gesteuert.|n"
+
+#: accounts/accounts.py:496
+#, python-brace-format
+msgid "Taking over |c{name}|n from another of your sessions."
+msgstr "Übernehme |c{name}|n von einer deiner anderen Sitzungen."
+
+#: accounts/accounts.py:500
+#, python-brace-format
+msgid "|c{name}|n|R is now acted from another of your sessions.|n"
+msgstr "|c{name}|n|R wird nun von einer deiner anderen Sitzungen gesteuert.|n"
+
+#: accounts/accounts.py:507
 #, python-brace-format
 msgid "|c{key}|R is already puppeted by another Account."
 msgstr "|c{key}|R  wird schon von einem anderen Account gesteuert."
 
-#: accounts/accounts.py:499
+#: accounts/accounts.py:527
+#, python-brace-format
+msgid "You cannot control any more puppets (max {max_puppets})"
+msgstr "Du kannst nicht noch mehr 'Puppen' steuern (max {max_puppets})"
+
+#: accounts/accounts.py:722
 msgid "Too many login failures; please try again in a few minutes."
 msgstr ""
 "Zu viele fehlgeschlagene Loginversuche. Bitte versuche es in ein paar "
 "Minuten erneut."
 
-#: accounts/accounts.py:512 accounts/accounts.py:772
+#: accounts/accounts.py:735 accounts/accounts.py:1062
 msgid ""
 "|rYou have been banned and cannot continue from here.\n"
 "If you feel this ban is in error, please email an admin.|x"
@@ -47,18 +72,22 @@ msgstr ""
 "Wenn du der Meinung bist, dass diese Sperre zu Unrecht erfolgt ist, sende "
 "bitte eine E-Mail an einen Administrator.|x"
 
-#: accounts/accounts.py:524
+#: accounts/accounts.py:747
 msgid "Username and/or password is incorrect."
 msgstr "Benutzername und/oder Passwort ist falsch."
 
-#: accounts/accounts.py:743
+#: accounts/accounts.py:754
+msgid "Too many authentication failures."
+msgstr "Zu viele fehlgeschlagene Authentifizierungen."
+
+#: accounts/accounts.py:1033
 msgid ""
 "You are creating too many accounts. Please log into an existing account."
 msgstr ""
 "Sie erstellen zu viele Konten. Bitte melden Sie sich bei einem bestehenden "
 "Konto an."
 
-#: accounts/accounts.py:789
+#: accounts/accounts.py:1079
 msgid ""
 "There was an error creating the Account. If this problem persists, contact "
 "an admin."
@@ -66,94 +95,170 @@ msgstr ""
 "Beim Erstellen des Kontos ist ein Fehler aufgetreten. Wenn dieses Problem "
 "weiterhin besteht, wenden Sie sich an einen Administrator."
 
-#: accounts/accounts.py:824 accounts/accounts.py:1639
+#: accounts/accounts.py:1123 accounts/accounts.py:2048
 msgid "An error occurred. Please e-mail an admin if the problem persists."
 msgstr ""
 "Es ist ein Fehler aufgetreten. Bitte senden Sie eine E-Mail an einen "
 "Administrator, wenn das Problem weiterhin besteht."
 
-#: accounts/accounts.py:851
+#: accounts/accounts.py:1156
 msgid "Account being deleted."
 msgstr "Account wird gelöscht."
 
-#: accounts/accounts.py:1307 accounts/accounts.py:1656
+#: accounts/accounts.py:1727 accounts/accounts.py:2066
 #, python-brace-format
 msgid "|G{key} connected|n"
 msgstr "|G{key} verbunden|n"
 
-#: accounts/accounts.py:1314 accounts/accounts.py:1321
+#: accounts/accounts.py:1733
 msgid "The Character does not exist."
 msgstr "Der Charakter existiert nicht."
 
-#: accounts/accounts.py:1360
+#: accounts/accounts.py:1767
 #, python-brace-format
 msgid "|R{key} disconnected{reason}|n"
 msgstr "|R{key} getrennt {reason}|n"
 
-#: accounts/accounts.py:1467
-#, python-brace-format
-msgid "{target} has no in-game appearance."
-msgstr "{target} hat im Spiel keine Präsenz."
-
-#: accounts/accounts.py:1511
-msgid ""
-"\n"
-"\n"
-" You don't have any characters yet. See |whelp @charcreate|n for creating "
-"one."
-msgstr ""
-"\n"
-"\n"
-"Du hast noch keine Charaktere. Siehe |whelp @charcreate|n um einen zu "
-"erstellen."
-
-#: accounts/accounts.py:1592
+#: accounts/accounts.py:2001
 msgid "Guest accounts are not enabled on this server."
 msgstr "Gastkonten sind auf diesem Server nicht aktiviert."
 
-#: accounts/accounts.py:1602
+#: accounts/accounts.py:2011
 msgid "All guest accounts are in use. Please try again later."
 msgstr ""
 "Alle Gastaccounts sind bereits in Benutzung. Bitte versuche es später "
 "nochmal."
 
-#: accounts/bots.py:333
+#: commands/cmdhandler.py:86
+msgid ""
+"\n"
+"An untrapped error occurred.\n"
+msgstr ""
+"\n"
+"Ein nicht abgefangener Fehler ist aufgetreten\n"
+
+#: commands/cmdhandler.py:91
+msgid ""
+"\n"
+"An untrapped error occurred. Please file a bug report detailing the steps to "
+"reproduce.\n"
+msgstr ""
+"\n"
+"Ein nicht abgefangener Fehler ist aufgetreten. Bitte reiche einen "
+"Fehlerbericht mit detaillierten Schritten zur Reproduktion ein.\n"
+
+#: commands/cmdhandler.py:99
+msgid ""
+"\n"
+"A cmdset merger-error occurred. This is often due to a syntax\n"
+"error in one of the cmdsets to merge.\n"
+msgstr ""
+"\n"
+"Ein 'cmdset merger-error' ist aufgetreten. \n"
+"Dies liegt häufig an einem Syntaxfehler in einem der zusammenzuführenden "
+"Cmdsets.\n"
+
+#: commands/cmdhandler.py:105
+msgid ""
+"\n"
+"A cmdset merger-error occurred. Please file a bug report detailing the\n"
+"steps to reproduce.\n"
+msgstr ""
+"\n"
+"Ein 'cmdset merger-error' ist aufgetreten. \n"
+"Bitte reiche einen Fehlerbericht mit den erforderlichen Schritten zur "
+"Reproduktion ein.\n"
+
+#: commands/cmdhandler.py:114
+msgid ""
+"\n"
+"No command sets found! This is a critical bug that can have\n"
+"multiple causes.\n"
+msgstr ""
+"\n"
+"Keine 'command sets' gefunden! \n"
+"Dies ist ein kritischer Fehler, der mehrere Ursachen haben kann.\n"
+
+#: commands/cmdhandler.py:120
+msgid ""
+"\n"
+"No command sets found! This is a sign of a critical bug.  If\n"
+"disconnecting/reconnecting doesn't\" solve the problem, try to contact\n"
+"the server admin through\" some other means for assistance.\n"
+msgstr ""
+"\n"
+"Keine 'command sets' gefunden! Dies deutet auf einen kritischen Fehler "
+"hin. \n"
+"Falls das Trennen und erneute Verbinden das Problem nicht löst, \n"
+"versuche den Serveradministrator auf anderem Wege zu kontaktieren.\n"
+
+#: commands/cmdhandler.py:130
+msgid ""
+"\n"
+"A command handler bug occurred. If this is not due to a local change,\n"
+"please file a bug report with the Evennia project, including the\n"
+"traceback and steps to reproduce.\n"
+msgstr ""
+"\n"
+"Ein Fehler im 'command handler' ist aufgetreten. Falls dies nicht auf eine "
+"lokale Änderung zurückzuführen ist, sende bitte einen Fehlerbericht an das "
+"Evennia-Projekt. Gib dabei den Traceback und die Schritte zur Reproduktion "
+"an.\n"
+
+#: commands/cmdhandler.py:137
+msgid ""
+"\n"
+"A command handler bug occurred. Please notify staff - they should\n"
+"likely file a bug report with the Evennia project.\n"
+msgstr ""
+"\n"
+"Ein Fehler im 'command handler' ist aufgetreten. Bitte benachrichtigen Sie "
+"die Mitarbeiter – sie sollten wahrscheinlich einen Fehlerbericht an das "
+"Evennia-Projekt senden.\n"
+
+#: commands/cmdhandler.py:145
 #, python-brace-format
 msgid ""
-"Nicks at {chstr}:\n"
-" {nicklist}"
+"Command recursion limit ({recursion_limit}) reached for '{raw_cmdname}' "
+"({cmdclass})."
 msgstr ""
-"Nicks: {chstr}:\n"
-" {nicklist}"
+"Befehlsrekursionslimit ({recursion_limit}) für '{raw_cmdname}' ({cmdclass}) "
+"erreicht."
 
-#: accounts/bots.py:344
+#: commands/cmdhandler.py:171
 #, python-brace-format
-msgid "IRC ping return from {chstr} took {time}s."
-msgstr "Der IRC Ping von {chstr} benötigte {time}s."
+msgid ""
+"{traceback}\n"
+"{errmsg}\n"
+"(Traceback was logged {timestamp})."
+msgstr ""
+"{traceback}\n"
+"{errmsg}\n"
+"(Traceback wurde protokolliert {timestamp})"
 
-#: commands/cmdhandler.py:738
+#: commands/cmdhandler.py:708
 msgid "There were multiple matches."
 msgstr "Es gab mehrere Treffer."
 
-#: commands/cmdhandler.py:763
+#: commands/cmdhandler.py:733
 #, python-brace-format
 msgid "Command '{command}' is not available."
 msgstr "Der Befehl '{command}' ist nicht verfügbar."
 
-#: commands/cmdhandler.py:773
+#: commands/cmdhandler.py:743
 #, python-brace-format
 msgid " Maybe you meant {command}?"
-msgstr " Meinten du vielleicht {command}?"
+msgstr " Meintest du vielleicht {command}?"
 
-#: commands/cmdhandler.py:774
+#: commands/cmdhandler.py:745
 msgid "or"
 msgstr "oder"
 
-#: commands/cmdhandler.py:777
+#: commands/cmdhandler.py:749
 msgid " Type \"help\" for help."
-msgstr " Geben Sie \"help\" für Hilfe ein."
+msgstr " Gib \"help\" für Hilfe ein."
 
-#: commands/cmdsethandler.py:88
+#: commands/cmdsethandler.py:91
 #, python-brace-format
 msgid ""
 "{traceback}\n"
@@ -164,7 +269,7 @@ msgstr ""
 "Fehler beim Laden von cmdset '{path}'\n"
 "(Traceback wurde protokolliert {timestamp})"
 
-#: commands/cmdsethandler.py:94
+#: commands/cmdsethandler.py:97
 #, python-brace-format
 msgid ""
 "Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
@@ -174,7 +279,7 @@ msgstr ""
 "'{path}'.\n"
 "(Traceback wurde protokolliert {timestamp})"
 
-#: commands/cmdsethandler.py:99
+#: commands/cmdsethandler.py:102
 #, python-brace-format
 msgid ""
 "{traceback}\n"
@@ -185,18 +290,18 @@ msgstr ""
 "Syntaxfehler beim laden von cmdset '{path}'.\n"
 "(Traceback wurde protokolliert {timestamp})"
 
-#: commands/cmdsethandler.py:105
+#: commands/cmdsethandler.py:108
 #, python-brace-format
 msgid ""
 "{traceback}\n"
-"Compile/Run error when loading cmdset '{path}'.\",\n"
+"Compile/Run error when loading cmdset '{path}'.\n"
 "(Traceback was logged {timestamp})"
 msgstr ""
 "{traceback}\n"
-"Kompilierungs-/Laufzeitfehler beim laden von cmdset '{path}'.“,\n"
+"Kompilierungs-/Laufzeitfehler beim laden von cmdset '{path}'.\n"
 "(Traceback wurde protokolliert {timestamp})"
 
-#: commands/cmdsethandler.py:111
+#: commands/cmdsethandler.py:114
 #, python-brace-format
 msgid ""
 "\n"
@@ -207,12 +312,12 @@ msgstr ""
 "Fehler im cmdset bei Pfad '{path}'.\n"
 "Ersetze mit Ersatzpfad '{fallback_path}'.\n"
 
-#: commands/cmdsethandler.py:117
+#: commands/cmdsethandler.py:120
 #, python-brace-format
 msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
 msgstr "Ersatzpfad '{fallback_path}' konnte kein cmdset generieren."
 
-#: commands/cmdsethandler.py:187 commands/cmdsethandler.py:199
+#: commands/cmdsethandler.py:189 commands/cmdsethandler.py:201
 #, python-brace-format
 msgid ""
 "\n"
@@ -221,215 +326,352 @@ msgstr ""
 "\n"
 "(Pfad '{path}' nicht gefunden.)"
 
-#: commands/cmdsethandler.py:329
+#: commands/cmdsethandler.py:332
 #, python-brace-format
 msgid "custom {mergetype} on cmdset '{cmdset}'"
 msgstr "Selbsterstellter {mergetype} in cmdset '{cmdset}'"
 
-#: commands/cmdsethandler.py:451
+#: commands/cmdsethandler.py:458
 msgid "Only CmdSets can be added to the cmdsethandler!"
 msgstr "Es können nur CmdSets zum cmdsethandler hinzugefügt werden!"
 
-#: comms/channelhandler.py:103
-msgid "Say what?"
-msgstr "Wie bitte?"
-
-#: comms/channelhandler.py:108
-#, python-format
-msgid "Channel '%s' not found."
-msgstr "Kanal '%s' nicht gefunden."
-
-#: comms/channelhandler.py:111
-#, python-format
-msgid "You are not connected to channel '%s'."
-msgstr "Du bist nicht mit dem Kanal '%s' verbunden."
-
-#: comms/channelhandler.py:115
-#, python-format
-msgid "You are not permitted to send to channel '%s'."
-msgstr "Du darfst nichts an den Kanal '%s' senden."
-
-#: comms/channelhandler.py:122
-#, python-format
-msgid "You start listening to %s."
-msgstr "Du fängst an %s zuzuhören."
-
-#: comms/channelhandler.py:124
-#, python-format
-msgid "You were already listening to %s."
-msgstr "Du hörst %s bereits zu."
-
-#: comms/channelhandler.py:130
-#, python-format
-msgid "You stop listening to %s."
-msgstr "Du hörst %s nicht mehr zu."
-
-#: comms/channelhandler.py:132
-#, python-format
-msgid "You were already not listening to %s."
-msgstr "Du hörst bereits %s nicht zu."
-
-#: comms/channelhandler.py:147
-#, python-format
-msgid "You currently have %s muted."
-msgstr "Du hast %s stumm geschaltet."
-
-#: comms/channelhandler.py:161
-msgid " (channel)"
-msgstr " (Kanal)"
-
-#: help/manager.py:134
+#: locks/lockhandler.py:242
 #, python-brace-format
-msgid "Help database moved to category {default_category}"
-msgstr "Hilfe-Datenbank in Kategorie {default_category} verschoben"
+msgid "Lock: lock-function '{lockfunc}' is not available."
+msgstr "Sperre: Sperrfunktion '{lockfunc}' ist nicht verfügbar."
 
-#: locks/lockhandler.py:236
-#, python-format
-msgid "Lock: lock-function '%s' is not available."
-msgstr "Sperre: Sperrfunktion '%s' ist nicht verfügbar."
-
-#: locks/lockhandler.py:256
+#: locks/lockhandler.py:265
 #, python-brace-format
 msgid "Lock: definition '{lock_string}' has syntax errors."
 msgstr "Sperre: Definition '{lock_string}' hat Syntaxfehler."
 
-#: locks/lockhandler.py:265
-#, python-format
+#: locks/lockhandler.py:274
+#, python-brace-format
 msgid ""
-"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
-"'%(source)s' to '%(goal)s' "
+"LockHandler on {obj}: access type '{access_type}' changed from '{source}' to "
+"'{goal}' "
 msgstr ""
-"LockHandler in %(obj)s: Zugriffstyp '%(access_type)s' wechselte von "
-"'%(source)s' zu '%(goal)s' "
+"LockHandler in {obj}: Zugriffstyp '{access_type}' wechselte von '{source}' "
+"zu '{goal}' "
 
-#: locks/lockhandler.py:339
+#: locks/lockhandler.py:357
 #, python-brace-format
 msgid "Lock: '{lockdef}' contains no colon (:)."
 msgstr "Sperre: '{lockdef}' enthält keinen Doppelpunkt (:)."
 
-#: locks/lockhandler.py:348
+#: locks/lockhandler.py:366
 #, python-brace-format
 msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
 msgstr ""
 "Sperre: '{lockdef}' hat keinen access_type (die linke Seite vom Doppelpunkt "
 "ist leer)."
 
-#: locks/lockhandler.py:356
+#: locks/lockhandler.py:374
 #, python-brace-format
 msgid "Lock: '{lockdef}' has mismatched parentheses."
 msgstr "Sperre: '{lockdef}' hat nicht übereinstimmende Klammern."
 
-#: locks/lockhandler.py:363
+#: locks/lockhandler.py:381
 #, python-brace-format
 msgid "Lock: '{lockdef}' has no valid lock functions."
 msgstr "Sperre: '{lockdef}' hat keine gültigen Sperrfunktionen."
 
-#: objects/objects.py:804
-#, python-format
-msgid "Couldn't perform move ('%s'). Contact an admin."
+#: objects/objects.py:403
+msgid "You see nothing special."
+msgstr "Du siehst nichts Besonderes."
+
+#: objects/objects.py:1239
+#, python-brace-format
+msgid "Couldn't perform move ({err}). Contact an admin."
 msgstr ""
-"Bewegung konnte nicht ausgeführt werden ('%s'). Kontaktiere einen "
+"Bewegung konnte nicht ausgeführt werden ({err}). Kontaktiere einen "
 "Administrator."
 
-#: objects/objects.py:814
+#: objects/objects.py:1249
 msgid "The destination doesn't exist."
 msgstr "Das Ziel existiert nicht."
 
-#: objects/objects.py:905
-#, python-format
-msgid "Could not find default home '(#%d)'."
-msgstr "Standard-Zuhause konnte nicht gefunden werden '(#%d)'."
+#: objects/objects.py:1361
+#, python-brace-format
+msgid "Could not find default home '(#{dbid})'."
+msgstr "Standard-Zuhause konnte nicht gefunden werden '(#{dbid})'."
 
-#: objects/objects.py:921
+#: objects/objects.py:1375
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr ""
 "Etwas ist schief gelaufen! Du bist im Nirgendwo gelandet. Wende dich an "
 "einen Administrator."
 
-#: objects/objects.py:1070
+#: objects/objects.py:1557
 #, python-brace-format
 msgid "Your character {key} has been destroyed."
 msgstr "Dein Charakter {key} wurde entfernt."
 
-#: scripts/scripthandler.py:52
-#, python-format
+#: objects/objects.py:2378
+#, python-brace-format
+msgid "You now have {name} in your possession."
+msgstr "Du hast nun {name} in deinem Besitz."
+
+#: objects/objects.py:2388
+#, python-brace-format
+msgid "{object} arrives to {destination} from {origin}."
+msgstr "{object} kommt aus {origin} in {destination} an."
+
+#: objects/objects.py:2390
+#, python-brace-format
+msgid "{object} arrives to {destination}."
+msgstr "{object} kommt in {destination} an."
+
+#: objects/objects.py:3031
+msgid "This is a character."
+msgstr "Dies ist ein Charakter."
+
+#: objects/objects.py:3255
+#, python-brace-format
+msgid "|r{obj} has no location and no home is set.|n"
+msgstr "|r{obj} hat keinen Standort und es ist kein Zuhause gesetzt.|n"
+
+#: objects/objects.py:3274
+#, python-brace-format
 msgid ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+"You become |c{name}|n.\n"
 msgstr ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s Wiederholungen): "
-"%(desc)s"
+"Du wirst zu |c{name}|n.\n"
 
-#: scripts/scripts.py:198
-#, python-format
-msgid ""
-"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+#: objects/objects.py:3279
+#, python-brace-format
+msgid "{name} has entered the game."
+msgstr "{name} hat das Spiel betreten."
+
+#: objects/objects.py:3309
+#, python-brace-format
+msgid "{name} has left the game{reason}."
+msgstr "{name} hat das Spiel verlassen{reason}."
+
+#: objects/objects.py:3360
+msgid "This is a room."
+msgstr "Dies ist ein Raum."
+
+#: objects/objects.py:3528
+msgid "This is an exit."
+msgstr "Dies ist ein Ausgang."
+
+#: objects/objects.py:3748
+msgid "You cannot go there."
+msgstr "Du kannst da nicht hingehen."
+
+#: prototypes/prototypes.py:55
+msgid "Error"
+msgstr "Fehler"
+
+#: prototypes/prototypes.py:56
+msgid "Warning"
+msgstr "Warnung"
+
+#: prototypes/prototypes.py:422
+msgid "Prototype requires a prototype_key"
+msgstr "Prototype erfordert einen prototype_key"
+
+#: prototypes/prototypes.py:430 prototypes/prototypes.py:500
+#: prototypes/prototypes.py:1162
+#, python-brace-format
+msgid "{protkey} is a read-only prototype (defined as code in {module})."
 msgstr ""
-"Skript %(key)s(#%(dbid)s) vom Typen '%(cname)s': at_repeat() Fehler "
-"'%(err)s'."
+"{protkey} ist ein schreibgeschützter Prototyp (definiert als Code in "
+"{module})."
 
-#: server/initial_setup.py:29
+#: prototypes/prototypes.py:432 prototypes/prototypes.py:502
+#: prototypes/prototypes.py:1164
+#, python-brace-format
+msgid "{protkey} is a read-only prototype (passed directly as a dict)."
+msgstr ""
+"{protkey} ist ein schreibgeschützter Prototyp (direkt als dict übergeben)"
+
+#: prototypes/prototypes.py:509
+#, python-brace-format
+msgid "Prototype {prototype_key} was not found."
+msgstr "Prototyp {prototype_key} wurde nicht gefunden."
+
+#: prototypes/prototypes.py:517
+#, python-brace-format
+msgid ""
+"{caller} needs explicit 'edit' permissions to delete prototype "
+"{prototype_key}."
+msgstr ""
+"{caller} benötigt explizite 'edit'-Berechtigungen, um den Prototyp "
+"{prototype_key} zu löschen."
+
+#: prototypes/prototypes.py:670
+#, python-brace-format
+msgid "Found {num} matching prototypes."
+msgstr "{num} passende Prototypen gefunden."
+
+#: prototypes/prototypes.py:827
+msgid "No prototypes found."
+msgstr "Keine Prototypen gefunden."
+
+#: prototypes/prototypes.py:874
+msgid "Prototype lacks a 'prototype_key'."
+msgstr "Dem Prototyp fehlt ein 'prototype_key'."
+
+#: prototypes/prototypes.py:883
+#, python-brace-format
+msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
+msgstr ""
+"Prototyp {protkey} erfordert eine `typeclass` oder ein 'prototype_parent'."
+
+#: prototypes/prototypes.py:890
+#, python-brace-format
+msgid ""
+"Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
+"or 'prototype_parent' keys."
+msgstr ""
+"Prototyp {protkey} kann nur als Mixin verwendet werden, da er keine "
+"'typeclass' oder 'prototype_parent' hat."
+
+#: prototypes/prototypes.py:901
+#, python-brace-format
+msgid ""
+"{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
+"not be imported!"
+msgstr ""
+"{err}: Prototyp {protkey} basiert auf typeclass {typeclass}, die nicht "
+"importiert werden konnte!"
+
+#: prototypes/prototypes.py:920
+#, python-brace-format
+msgid "Prototype {protkey} tries to parent itself."
+msgstr "Prototyp {protkey} versucht von sich selbst zu erben."
+
+#: prototypes/prototypes.py:932
+#, python-brace-format
+msgid ""
+"Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
+msgstr ""
+"Der `prototype_parent` (namens '{parent}') des Prototyps {protkey} wurde "
+"nicht gefunden."
+
+#: prototypes/prototypes.py:940
+#, python-brace-format
+msgid "{protkey} has infinite nesting of prototypes."
+msgstr "{protkey} hat unendlich Verschachtelte Prototypen."
+
+#: prototypes/prototypes.py:969
+#, python-brace-format
+msgid ""
+"Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
+" chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype "
+"with a typeclass."
+msgstr ""
+"Für den Prototyp {protkey} ist in seinen übergeordneten Elementen keine "
+"`typeclass` definiert. \n"
+"Füge eine `typeclass` oder einen `prototype_parent` hinzu, der auf einen "
+"Prototyp mit einer Typklasse verweist."
+
+#: prototypes/spawner.py:498
+#, python-brace-format
+msgid ""
+"Diff contains non-dicts that are not on the form (old, new, action_to_take): "
+"{diffpart}"
+msgstr ""
+"Diff enthält non-dicts, die nicht in der Form (old, new, action_to_take) "
+"sind: {diffpart}"
+
+#: scripts/scripthandler.py:50
+#, python-brace-format
 msgid ""
 "\n"
-"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+" '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}"
+msgstr ""
+"\n"
+" '{key}' ({next_repeat}/{interval}, {repeats} Wiederholungen): {desc}"
+
+#: scripts/scripts.py:348
+#, python-brace-format
+msgid "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'."
+msgstr "Script {key}(#{dbid}) vom Typ '{name}': at_repeat() Fehler '{err}'."
+
+#: server/initial_setup.py:30
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if "
 "you need\n"
 "help, want to contribute, report issues or just join the community.\n"
-"As Account #1 you can create a demo/tutorial area with '|wbatchcommand "
-"tutorial_world.build|n'.\n"
-"    "
+"\n"
+"As a privileged user, write |wbatchcommand tutorial_world.build|n to build\n"
+"tutorial content. Once built, try |wintro|n for starting help and |wtutorial|"
+"n to\n"
+"play the demo game.\n"
 msgstr ""
 "\n"
 "Willkommen bei deinem neuen Spiel auf |wEvennia|n-Basis! Besuche http://www."
-"evennia.com, wenn du\n"
-"Hilfe brauchst, etwas beitragen, Probleme melden oder einfach der Community "
-"beitreten willst.\n"
-"Als Benutzer #1 kannst du einen Demo/Tutorial-Bereich mit '|wbatchcommand "
-"tutorial_world.build|n' erstellen.\n"
-"    "
+"evennia.com, wenn \n"
+"du Hilfe brauchst, etwas beitragen, Probleme melden oder einfach der "
+"Community beitreten willst.\n"
+"\n"
+"Als privilegierter Benutzer kannst du '|wbatchcommand tutorial_world.build|"
+"n'eingeben, um \n"
+"Tutorial-Inhalte zu erstellen. Sobald erstellt, probiere |wintro|n \n"
 
-#: server/initial_setup.py:94
+#: server/initial_setup.py:104
 msgid "This is User #1."
 msgstr "Dies ist Benutzer #1."
 
-#: server/initial_setup.py:110
+#: server/initial_setup.py:123
 msgid "Limbo"
 msgstr "Limbus"
 
-#: server/server.py:159
+#: server/portal/portalsessionhandler.py:43
+#, python-brace-format
+msgid ""
+"{servername} DoS protection is active.You are queued to connect in {num} "
+"seconds ..."
+msgstr ""
+"{servername}-DoS-Schutz ist aktiv. Du stehst in der Warteschlange, um in "
+"{num} Sekunden eine Verbindung herzustellen ..."
+
+#: server/service.py:121
+msgid " (connection lost)"
+msgstr " (Verbindung verloren)"
+
+#: server/service.py:131
 msgid "idle timeout exceeded"
 msgstr "Idle-Timeout überschritten"
 
-#: server/sessionhandler.py:402
+#: server/sessionhandler.py:50
+msgid "Your client sent an incorrect UTF-8 sequence."
+msgstr "Ihr Client hat eine falsche UTF-8-Sequenz gesendet."
+
+#: server/sessionhandler.py:418
 msgid " ... Server restarted."
 msgstr " … Server wurde neu gestartet."
 
-#: server/sessionhandler.py:627
+#: server/sessionhandler.py:648
 msgid "Logged in from elsewhere. Disconnecting."
 msgstr "Von woanders eingeloggt. Verbindung getrennt."
 
-#: server/sessionhandler.py:655
+#: server/sessionhandler.py:676
 msgid "Idle timeout exceeded, disconnecting."
 msgstr "Idle-Timeout überschritten, Verbindung wird getrennt."
 
-#: server/validators.py:31
+#: server/throttle.py:23
+msgid ""
+"Too many failed attempts; you must wait a few minutes before trying again."
+msgstr ""
+"Zu viele Fehlversuche. Du musst einige Minuten warten, bevor du es erneut "
+"versuchen kannst."
+
+#: server/validators.py:32
 msgid "Sorry, that username is reserved."
 msgstr "Dieser Benutzername ist reserviert."
 
-#: server/validators.py:38
+#: server/validators.py:39
 msgid "Sorry, that username is already taken."
 msgstr "Dieser Benutzername ist bereits vergeben."
 
-#: server/validators.py:88
-#, python-format
-msgid ""
-"%s From a terminal client, you can also use a phrase of multiple words if "
-"you enclose the password in double quotes."
-msgstr ""
-"%s Von einem Terminal-Client aus kannst du eine Phrase aus mehreren Wörtern "
-"verwenden, wenn du das Passwort in doppelte Anführungszeichen setzen."
-
-#: utils/evmenu.py:292
+#: utils/evmenu.py:310
 #, python-brace-format
 msgid ""
 "Menu node '{nodename}' is either not implemented or caused an error. Make "
@@ -439,51 +681,200 @@ msgstr ""
 "Fehler verursacht. \n"
 "Triff eine andere Wahl oder wähle 'q', um abzubrechen."
 
-#: utils/evmenu.py:295
+#: utils/evmenu.py:313
 #, python-brace-format
 msgid "Error in menu node '{nodename}'."
 msgstr "Fehler im Menüknoten '{nodename}'."
 
-#: utils/evmenu.py:296
+#: utils/evmenu.py:314
 msgid "No description."
 msgstr "Keine Beschreibung."
 
-#: utils/evmenu.py:297
+#: utils/evmenu.py:315
 msgid "Commands: <menu option>, help, quit"
 msgstr "Befehle: <menu option>, help, quit"
 
-#: utils/evmenu.py:298
+#: utils/evmenu.py:316
 msgid "Commands: <menu option>, help"
 msgstr "Befehle: <menu option>, help"
 
-#: utils/evmenu.py:299
+#: utils/evmenu.py:317
 msgid "Commands: help, quit"
 msgstr "Befehle: help, quit"
 
-#: utils/evmenu.py:300
+#: utils/evmenu.py:318
 msgid "Commands: help"
 msgstr "Befehle: help"
 
-#: utils/evmenu.py:301 utils/evmenu.py:1665
+#: utils/evmenu.py:319 utils/evmenu.py:1828
 msgid "Choose an option or try 'help'."
-msgstr "Wähle eine Option oder versuche ‚help‘."
+msgstr "Wähle eine Option oder versuche 'help‘."
 
-#: utils/utils.py:1923
-#, python-format
-msgid "Could not find '%s'."
-msgstr "Kann ‚%s‘ nicht finden."
+#: utils/evmenu.py:1352
+msgid "|rInvalid choice.|n"
+msgstr "|rUngültige Wahl.|n"
 
-#: utils/utils.py:1930
+#: utils/evmenu.py:1415
+msgid "|Wcurrent|n"
+msgstr "|Waktuell|n"
+
+#: utils/evmenu.py:1423
+msgid "|wp|Wrevious page|n"
+msgstr "|wp|Wrevious (vorherige) Seite|n"
+
+#: utils/evmenu.py:1430
+msgid "|wn|Wext page|n"
+msgstr "|wn|Wächste Seite|n"
+
+#: utils/evmenu.py:1667
+msgid "Aborted."
+msgstr "Abgebrochen."
+
+#: utils/evmenu.py:1690
+msgid "|rError in ask_yes_no. Choice not confirmed (report to admin)|n"
+msgstr ""
+"|rFehler in ask_yes_no. Auswahl nicht bestätigt (bitte an Administrator "
+"melden)|n"
+
+#: utils/evmore.py:244
+msgid "|xExited pager.|n"
+msgstr "|xPager verlassen.|n"
+
+#: utils/optionhandler.py:139 utils/optionhandler.py:164
+msgid "Option not found!"
+msgstr "Option nicht gefunden!"
+
+#: utils/optionhandler.py:161
+msgid "Option field blank!"
+msgstr "Option-Feld leer!"
+
+#: utils/optionhandler.py:167
+msgid "Multiple matches:"
+msgstr "Es gab mehrere Treffer:"
+
+#: utils/optionhandler.py:167
+msgid "Please be more specific."
+msgstr "Bitte sei spezifischer."
+
+#: utils/utils.py:2227
+#, python-brace-format
+msgid ""
+"{obj}.{handlername} is a handler and can't be set directly. To add values, "
+"use `{obj}.{handlername}.add()` instead."
+msgstr ""
+"{obj}.{handlername} ist ein 'handler' und kann nicht direkt gesetzt werden. "
+"Um Werte hinzuzufügen, verwende stattdessen `{obj}.{handlername}.add()`."
+
+#: utils/utils.py:2237
+#, python-brace-format
+msgid ""
+"{obj}.{handlername} is a handler and can't be deleted directly. To remove "
+"values, use `{obj}.{handlername}.remove()` instead."
+msgstr ""
+"{obj}.{handlername} ist ein 'handler' und kann nicht direkt gelöscht werden. "
+"Um Werte zu entfernen, verwenden Sie stattdessen `{obj}.{handlername}."
+"remove()`."
+
+#: utils/utils.py:2389
+#, python-brace-format
+msgid "Could not find '{query}'."
+msgstr "Kann '{query}' nicht finden."
+
+#: utils/utils.py:2396
 #, python-brace-format
 msgid "More than one match for '{query}' (please narrow target):\n"
 msgstr "Mehr als ein Treffer für ‚{query}‘ (Bitte das Ziel präzisieren):\n"
 
-#: utils/validatorfuncs.py:62
-#, python-brace-format
-msgid "No {option_key} entered!"
-msgstr "Kein {option_key} eingegeben!"
+#: web/templates/admin/app_list.html:19
+msgid "Add"
+msgstr "Hinzufügen"
 
-#: utils/validatorfuncs.py:71
+#: web/templates/admin/app_list.html:26
+msgid "View"
+msgstr "Anschauen"
+
+#: web/templates/admin/app_list.html:28
+msgid "Change"
+msgstr "Ändern"
+
+#: web/templates/admin/app_list.html:39
+msgid "You don’t have permission to view or edit anything."
+msgstr "Du hast nicht die Berechtigung etwas anzuschauen oder zu ändern."
+
 #, python-brace-format
-msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
-msgstr "Zeitzone string ‚{acct_tz}‘ ist keine gültige Zeitzone ({err})"
+#~ msgid "{target} has no in-game appearance."
+#~ msgstr "{target} hat im Spiel keine Präsenz."
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ " You don't have any characters yet. See |whelp @charcreate|n for creating "
+#~ "one."
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "Du hast noch keine Charaktere. Siehe |whelp @charcreate|n um einen zu "
+#~ "erstellen."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Nicks at {chstr}:\n"
+#~ " {nicklist}"
+#~ msgstr ""
+#~ "Nicks: {chstr}:\n"
+#~ " {nicklist}"
+
+#, python-brace-format
+#~ msgid "IRC ping return from {chstr} took {time}s."
+#~ msgstr "Der IRC Ping von {chstr} benötigte {time}s."
+
+#~ msgid "Say what?"
+#~ msgstr "Wie bitte?"
+
+#, python-format
+#~ msgid "Channel '%s' not found."
+#~ msgstr "Kanal '%s' nicht gefunden."
+
+#, python-format
+#~ msgid "You are not connected to channel '%s'."
+#~ msgstr "Du bist nicht mit dem Kanal '%s' verbunden."
+
+#, python-format
+#~ msgid "You are not permitted to send to channel '%s'."
+#~ msgstr "Du darfst nichts an den Kanal '%s' senden."
+
+#, python-format
+#~ msgid "You start listening to %s."
+#~ msgstr "Du fängst an %s zuzuhören."
+
+#, python-format
+#~ msgid "You were already listening to %s."
+#~ msgstr "Du hörst %s bereits zu."
+
+#, python-format
+#~ msgid "You stop listening to %s."
+#~ msgstr "Du hörst %s nicht mehr zu."
+
+#, python-format
+#~ msgid "You were already not listening to %s."
+#~ msgstr "Du hörst bereits %s nicht zu."
+
+#, python-format
+#~ msgid "You currently have %s muted."
+#~ msgstr "Du hast %s stumm geschaltet."
+
+#~ msgid " (channel)"
+#~ msgstr " (Kanal)"
+
+#, python-brace-format
+#~ msgid "Help database moved to category {default_category}"
+#~ msgstr "Hilfe-Datenbank in Kategorie {default_category} verschoben"
+
+#, python-format
+#~ msgid ""
+#~ "%s From a terminal client, you can also use a phrase of multiple words if "
+#~ "you enclose the password in double quotes."
+#~ msgstr ""
+#~ "%s Von einem Terminal-Client aus kannst du eine Phrase aus mehreren "
+#~ "Wörtern verwenden, wenn du das Passwort in doppelte Anführungszeichen "
+#~ "setzen."
