@@ -16,6 +16,7 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (0xDEADFED5)
 - [Feat][pull3756]: Updated German translation (JohnFi)
 - [Feat][pull3757]: Add more i18n strings to `DefaultObject` for easier translation (JohnFi)
+- [Feat][pull3783]: Support users of `ruff` linter by adding compatible config in `pyproject.toml` (jaborsh)
 - [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
   strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
 - [Fix][pull3682]: Allow in-game help searching for commands natively starting
@@ -46,6 +47,8 @@ This upgrade requires running `evennia migrate` on your existing database
   work correctly (0xDEADFED5)
 - [Fix][pull3753]: Make sure `AttributeProperty`s are initialized with default values also in parent class (JohnFi)
 - [Fix][pull3751]: The `access` and `inventory` commands would traceback if run on a character without an Account (EliasWatson)
+- [Fix][pull3768]: Make sure the `CmdCopy` command copies object categories,
+  since otherwise plurals were lost (jaborsh)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
@@ -53,7 +56,7 @@ This upgrade requires running `evennia migrate` on your existing database
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
 - Fix: Correct aws contrib's use of legacy django string utils (Griatch)
-- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi
+- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi, 0xDEADFED5, jaborsh, Problematic, BlaneWins
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
 [pull3677]: https://github.com/evennia/evennia/pull/3677
@@ -81,6 +84,8 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3751]: https://github.com/evennia/evennia/pull/3751
 [pull3756]: https://github.com/evennia/evennia/pull/3756
 [pull3757]: https://github.com/evennia/evennia/pull/3757
+[pull3768]: https://github.com/evennia/evennia/pull/3768
+[pull3783]: https://github.com/evennia/evennia/pull/3783
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 
