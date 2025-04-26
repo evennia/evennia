@@ -45,6 +45,20 @@ class TestTickerHandler(TestCase):
             th = TickerHandler()
             th.remove(callback=1)
 
+    def test_removing_ticker_using_store_key_in_attribute(self):
+        """
+        Test adding a ticker, storing the store_key in an attribute, and then removing it
+        using that same store_key.
+
+        https://github.com/evennia/evennia/pull/3765
+        """
+        obj = DefaultObject.create("test_object")[0]
+        th = TickerHandler()
+        obj.db.ticker = th.add(60, obj.msg, idstring="ticker_test", persistent=True)
+        self.assertTrue(len(th.all()), 1)
+        th.remove(store_key=obj.db.ticker)
+        self.assertTrue(len(th.all()), 0)
+
 
 class TestScriptDBManager(TestCase):
     """Test the ScriptDBManger class"""

@@ -69,13 +69,12 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 import inspect
 
 from django.core.exceptions import ObjectDoesNotExist
-from twisted.internet.defer import inlineCallbacks
-
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils import inherits_from, variable_from_module
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 from evennia.utils.logger import log_err, log_trace
+from twisted.internet.defer import inlineCallbacks
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -566,8 +565,12 @@ class TickerHandler(object):
             store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         else:
             if isinstance(store_key, tuple) and not isinstance(store_key[0], tuple):
+                # this means the store-key was deserialized, which means we need to
+                # re-build the key anew (since the obj would already be unpacked otherwise)
                 obj, path, callfunc = self._get_callback(getattr(store_key[0], store_key[1]))
-                store_key = self._store_key(obj, path, store_key[3], callfunc, store_key[4], store_key[5])
+                store_key = self._store_key(
+                    obj, path, store_key[3], callfunc, store_key[4], store_key[5]
+                )
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)

@@ -40,6 +40,8 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Fix][pull3744]: Fix for format strings not getting picked up in i18n (JohnFi)
 - [Fix][pull3743]: Log full stack trace on failed object creation (aMiss-aWry)
 - [Fix][pull3747]: TutorialWorld bridge-room didn't correctly randomize weather effects (SpyrosRoum)
+- [Fix][pull3765]: Storing TickerHandler `store_key` in a db attribute would not
+  work correctly (0xDEADFED5)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
@@ -70,6 +72,7 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3743]: https://github.com/evennia/evennia/pull/3743
 [pull3744]: https://github.com/evennia/evennia/pull/3744
 [pull3747]: https://github.com/evennia/evennia/pull/3747
+[pull3765]: https://github.com/evennia/evennia/pull/3765
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 
