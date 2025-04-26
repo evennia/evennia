@@ -173,7 +173,7 @@ string = _("Text to translate")
 
 ### Formatting Considerations
 
-When using formatted strings, ensure that you pass the "raw" string to `gettext` for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the `.po` file.
+When using formatted strings, ensure that you pass the "raw" string to `gettext` for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the `.po` file. It's also recommended to use named placeholders (e.g., `{char}`) instead of positional ones (e.g., `{}`) for better readability and maintainability.
 
 ```python
 # incorrect:
@@ -188,10 +188,4 @@ This is also why f-strings don't work with `gettext`:
 ```python
 # will not work
 string = _(f"Hello {char}!")
-```
-
-However, you can use %-formatting. It’s recommended to use named placeholders because the order of placeholders may vary in different translations.
-
-```python
-_("Today is %(month)s %(day)s.") % {"month": m, "day": d}
 ```
