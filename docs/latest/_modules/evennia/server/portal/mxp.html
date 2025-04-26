@@ -117,7 +117,7 @@
 <span class="c1"># MXP Telnet option</span>
 <span class="n">MXP</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">91</span><span class="p">])</span>  <span class="c1"># b&quot;\x5b&quot;</span>
 
-<span class="n">MXP_TEMPSECURE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1B</span><span class="s2">[4z&quot;</span>
+<span class="n">MXP_TEMPSECURE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[4z&quot;</span>
 <span class="n">MXP_SEND</span> <span class="o">=</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s1">&#39;&lt;SEND HREF=&quot;</span><span class="se">\\</span><span class="s1">1&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">2&quot;</span> <span class="o">+</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s2">&quot;&lt;/SEND&gt;&quot;</span>
 <span class="n">MXP_URL</span> <span class="o">=</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s1">&#39;&lt;A HREF=&quot;</span><span class="se">\\</span><span class="s1">1&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">2&quot;</span> <span class="o">+</span> <span class="n">MXP_TEMPSECURE</span> <span class="o">+</span> <span class="s2">&quot;&lt;/A&gt;&quot;</span>
 

@@ -414,7 +414,7 @@
             <span class="p">)</span>
 
         <span class="c1"># convert search term to partial-match regex</span>
-        <span class="n">search_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">ostring</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;.*&#39;</span>
+        <span class="n">search_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">ostring</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span>
 
         <span class="c1"># do the fuzzy search and return whatever it matches</span>
         <span class="k">return</span> <span class="p">(</span>

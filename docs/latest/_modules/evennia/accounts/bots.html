@@ -647,7 +647,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">factory_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.discord.DiscordWebsocketServerFactory&quot;</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">channel_links</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
@@ -686,7 +686,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> could not connect to Evennia channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> doesn&#39;t have permission to send messages to Evennia channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> doesn&#39;t have permission to send messages to Evennia channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
 
         <span class="c1"># these will be made available as properties on the protocol factory</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">}</span>

@@ -102,8 +102,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">codecs</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">codecs</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
@@ -178,7 +178,9 @@
             <span class="n">width</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
             <span class="n">height</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="n">codecs_encode</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span>
+            <span class="p">)</span></div></div>
 </pre></div>
 
           </div>

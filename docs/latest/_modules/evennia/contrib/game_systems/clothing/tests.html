@@ -177,7 +177,9 @@
         <span class="p">)</span>
 
         <span class="c1"># Test remove command.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: remove &lt;worn clothing object&gt;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: remove &lt;worn clothing object&gt;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span>
             <span class="s2">&quot;hat&quot;</span><span class="p">,</span>

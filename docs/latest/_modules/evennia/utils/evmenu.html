@@ -1513,14 +1513,20 @@
                     <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="p">{</span>
                             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|wp|Wrevious page|n&quot;</span><span class="p">),</span> <span class="s2">&quot;p&quot;</span><span class="p">),</span>
-                            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">caller</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;optionpage_index&quot;</span><span class="p">:</span> <span class="n">page_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}),</span>
+                            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="k">lambda</span> <span class="n">caller</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">kwargs</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;optionpage_index&quot;</span><span class="p">:</span> <span class="n">page_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">},</span>
+                            <span class="p">),</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="n">page_index</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="p">{</span>
                             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|wn|Wext page|n&quot;</span><span class="p">),</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
-                            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">caller</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;optionpage_index&quot;</span><span class="p">:</span> <span class="n">page_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}),</span>
+                            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="k">lambda</span> <span class="n">caller</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">kwargs</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;optionpage_index&quot;</span><span class="p">:</span> <span class="n">page_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">},</span>
+                            <span class="p">),</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
 

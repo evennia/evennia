@@ -90,9 +90,10 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.ingame_reports.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TempMsg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">menu</span><span class="p">,</span> <span class="n">reports</span>

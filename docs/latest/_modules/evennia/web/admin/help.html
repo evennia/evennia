@@ -131,6 +131,7 @@
 <div class="viewcode-block" id="HelpEntryAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.help.html#evennia.web.admin.help.HelpEntryAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HelpEntry</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">HelpEntryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
     <span class="s2">&quot;Sets up the admin manaager for help entries&quot;</span>
+
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">HelpTagInline</span><span class="p">]</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">)</span>
     <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>

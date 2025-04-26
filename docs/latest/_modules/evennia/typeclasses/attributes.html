@@ -109,6 +109,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.encoding</span><span class="w"> </span><span class="kn">import</span> <span class="n">smart_str</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.locks.lockhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.dbserialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pickle</span><span class="p">,</span> <span class="n">to_pickle</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.idmapper.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SharedMemoryModel</span>
@@ -154,7 +155,7 @@
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
-    <span class="n">strvalue</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;db_strvalue&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">strvalue</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;db_strvalue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="n">category</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_category</span><span class="p">)</span>
     <span class="n">model</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_model</span><span class="p">)</span>
     <span class="n">attrtype</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_attrtype</span><span class="p">)</span>
@@ -503,6 +504,7 @@
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
+
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Attribute&quot;</span>
 
     <span class="c1"># Wrapper properties to easily set database fields. These are</span>

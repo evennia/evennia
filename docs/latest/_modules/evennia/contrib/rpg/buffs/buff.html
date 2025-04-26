@@ -93,7 +93,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Buffs - Tegiminis 2022</span>
 
-<span class="sd">A buff is a timed object, attached to a game entity, that modifies values, triggers </span>
+<span class="sd">A buff is a timed object, attached to a game entity, that modifies values, triggers</span>
 <span class="sd">code, or both. It is a common design pattern in RPGs, particularly action games.</span>
 
 <span class="sd">This contrib gives you a buff handler to apply to your objects, a buff class to extend them,</span>
@@ -117,7 +117,7 @@
 
 <span class="sd">### Applying a Buff</span>
 
-<span class="sd">Call the handler `add(BuffClass)` method. This requires a class reference, and also contains a number of </span>
+<span class="sd">Call the handler `add(BuffClass)` method. This requires a class reference, and also contains a number of</span>
 <span class="sd">optional arguments to customize the buff&#39;s duration, stacks, and so on.</span>
 
 <span class="sd">```python</span>
@@ -128,8 +128,8 @@
 
 <span class="sd">### Modify</span>
 
-<span class="sd">Call the handler `check(value, stat)` method wherever you want to see the modified value. </span>
-<span class="sd">This will return the value, modified by and relevant buffs on the handler&#39;s owner (identified by </span>
+<span class="sd">Call the handler `check(value, stat)` method wherever you want to see the modified value.</span>
+<span class="sd">This will return the value, modified by and relevant buffs on the handler&#39;s owner (identified by</span>
 <span class="sd">the `stat` string). For example:</span>
 
 <span class="sd">```python</span>
@@ -141,7 +141,7 @@
 
 <span class="sd">### Trigger</span>
 
-<span class="sd">Call the handler `trigger(triggerstring)` method wherever you want an event call. This </span>
+<span class="sd">Call the handler `trigger(triggerstring)` method wherever you want an event call. This</span>
 <span class="sd">will call the `at_trigger` hook method on all buffs with the relevant trigger.</span>
 
 <span class="sd">```python</span>
