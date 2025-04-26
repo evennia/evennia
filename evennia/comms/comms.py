@@ -9,9 +9,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
 
-from evennia.objects.objects import DefaultObject
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
+from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import create, logger
 from evennia.utils.utils import inherits_from, make_iter

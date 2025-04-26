@@ -123,6 +123,7 @@ class CmdTalk(default_cmds.MuxCommand):
 
 class TalkingCmdSet(CmdSet):
     "Stores the talk command."
+
     key = "talkingcmdset"
 
     def at_cmdset_creation(self):

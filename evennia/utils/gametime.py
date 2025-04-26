@@ -8,12 +8,12 @@ total runtime of the server and the current uptime.
 """
 
 import time
-import evennia
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db.utils import OperationalError
 
+import evennia
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.models import ServerConfig
 from evennia.utils.create import create_script

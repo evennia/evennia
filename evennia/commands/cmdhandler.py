@@ -261,6 +261,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
+
     pass
 
 

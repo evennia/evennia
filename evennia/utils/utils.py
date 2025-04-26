@@ -494,7 +494,7 @@ def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     # this allows the blank-line compression to eliminate them if needed
     text = re_empty.sub("\n\n", text)
     # replace groups of extra spaces with the maximum number of spaces
-    text = re.sub(fr"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
+    text = re.sub(rf"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
     # replace groups of extra newlines with the maximum number of newlines
     text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
     return text
@@ -2401,10 +2401,8 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         grouped_matches = defaultdict(list)
         for item in matches:
             group_key = (
-                    item.get_display_name(caller)
-                    if hasattr(item, "get_display_name")
-                    else query
-                )
+                item.get_display_name(caller) if hasattr(item, "get_display_name") else query
+            )
             grouped_matches[group_key].append(item)
 
         for key, match_list in grouped_matches.items():
@@ -2415,7 +2413,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                     # result is a typeclassed entity where `.aliases` is an AliasHandler.
                     aliases = result.aliases.all(return_objs=True)
                     # remove pluralization aliases
-                    aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
+                    aliases = [
+                        alias.db_key for alias in aliases if alias.db_category != "plural_key"
+                    ]
                 else:
                     # result is likely a Command, where `.aliases` is a list of strings.
                     aliases = result.aliases

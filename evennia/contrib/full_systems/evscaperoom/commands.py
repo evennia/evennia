@@ -29,8 +29,9 @@ Admin/development commands
 
 import re
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia import default_cmds, syscmdkeys
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand

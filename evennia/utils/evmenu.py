@@ -1421,14 +1421,20 @@ def list_node(option_generator, select=None, pagesize=10):
                     options.append(
                         {
                             "key": (_("|wp|Wrevious page|n"), "p"),
-                            "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index - 1}),
+                            "goto": (
+                                lambda caller: None,
+                                kwargs | {"optionpage_index": page_index - 1},
+                            ),
                         }
                     )
                 if page_index < npages - 1:
                     options.append(
                         {
                             "key": (_("|wn|Wext page|n"), "n"),
-                            "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index + 1}),
+                            "goto": (
+                                lambda caller: None,
+                                kwargs | {"optionpage_index": page_index + 1},
+                            ),
                         }
                     )
 

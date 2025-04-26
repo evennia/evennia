@@ -28,6 +28,8 @@ try:
 except ImportError:
     from pickle import dumps, loads
 
+from enum import IntFlag
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
@@ -35,7 +37,6 @@ from django.utils.safestring import SafeString
 import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
-from enum import IntFlag
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 

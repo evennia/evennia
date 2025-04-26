@@ -25,7 +25,7 @@ URL_SUB = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 # MXP Telnet option
 MXP = bytes([91])  # b"\x5b"
 
-MXP_TEMPSECURE = "\x1B[4z"
+MXP_TEMPSECURE = "\x1b[4z"
 MXP_SEND = MXP_TEMPSECURE + '<SEND HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</SEND>"
 MXP_URL = MXP_TEMPSECURE + '<A HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</A>"
 

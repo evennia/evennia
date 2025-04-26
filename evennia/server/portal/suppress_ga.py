@@ -41,9 +41,9 @@ class SuppressGA:
         self.protocol = weakref.ref(protocol)
 
         self.protocol().protocol_flags["NOGOAHEAD"] = True
-        self.protocol().protocol_flags["NOPROMPTGOAHEAD"] = (
-            True  # Used to send a GA after a prompt line only, set in TTYPE (per client)
-        )
+        self.protocol().protocol_flags[
+            "NOPROMPTGOAHEAD"
+        ] = True  # Used to send a GA after a prompt line only, set in TTYPE (per client)
         # tell the client that we prefer to suppress GA ...
         self.protocol().will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
 

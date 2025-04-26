@@ -1,4 +1,4 @@
-"""Tests for batchprocessors """
+"""Tests for batchprocessors"""
 
 import codecs
 import textwrap

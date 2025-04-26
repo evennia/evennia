@@ -12,6 +12,7 @@ active players and so on.
 """
 
 import weakref
+
 from django.conf import settings
 
 from evennia.utils import utils

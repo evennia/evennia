@@ -1,7 +1,7 @@
 from evennia import CmdSet
+from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils import list_to_string
 from evennia.utils.search import search_object_by_tag
-from evennia.commands.default.muxcommand import MuxCommand
 
 SHARED_TAG_PREFIX = "shared"
 

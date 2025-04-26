@@ -1,4 +1,4 @@
-"""Tests for text2bbcode """
+"""Tests for text2bbcode"""
 
 import mock
 from django.test import TestCase

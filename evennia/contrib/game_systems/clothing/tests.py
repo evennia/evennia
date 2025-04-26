@@ -85,7 +85,9 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         )
 
         # Test remove command.
-        self.call(clothing.CmdRemove(), "", "Usage: remove <worn clothing object>", caller=self.wearer)
+        self.call(
+            clothing.CmdRemove(), "", "Usage: remove <worn clothing object>", caller=self.wearer
+        )
         self.call(
             clothing.CmdRemove(),
             "hat",

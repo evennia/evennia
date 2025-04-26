@@ -10,8 +10,8 @@ client and update it when the size changes
 
 """
 
-from codecs import encode as codecs_encode
 import weakref
+from codecs import encode as codecs_encode
 
 from django.conf import settings
 
@@ -86,4 +86,6 @@ class Naws:
             width = options[0] + options[1]
             self.protocol().protocol_flags["SCREENWIDTH"][0] = int(codecs_encode(width, "hex"), 16)
             height = options[2] + options[3]
-            self.protocol().protocol_flags["SCREENHEIGHT"][0] = int(codecs_encode(height, "hex"), 16)
+            self.protocol().protocol_flags["SCREENHEIGHT"][0] = int(
+                codecs_encode(height, "hex"), 16
+            )

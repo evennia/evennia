@@ -3,13 +3,13 @@ Tests for dbserialize module
 """
 
 from collections import defaultdict, deque
+from enum import IntFlag, auto
 
 from django.test import TestCase
 from parameterized import parameterized
 
 from evennia.objects.objects import DefaultObject
 from evennia.utils import dbserialize
-from enum import IntFlag, auto
 
 
 class TestDbSerialize(TestCase):
@@ -24,6 +24,7 @@ class TestDbSerialize(TestCase):
     def test_intflag(self):
         class TestFlag(IntFlag):
             foo = auto()
+
         self.obj.db.test = TestFlag.foo
         self.assertEqual(self.obj.db.test, TestFlag.foo)
         self.obj.save()

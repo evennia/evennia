@@ -32,6 +32,7 @@ The contrib can be further configured through two settings, `INGAME_REPORT_TYPES
 """
 
 from django.conf import settings
+
 from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.comms.models import Msg
