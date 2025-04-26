@@ -39,7 +39,7 @@ In dictionary form, a prototype can look something like this:
 ```
 If you wanted to load it into the spawner in-game you could just put all on one line:
 
-    spawn {"prototype_key="house", "key": "Large house", ...}
+    spawn {"prototype_key"="house", "key": "Large house", ...}
 
 > Note that the prototype dict as given on the command line must be a valid Python structure - so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game cannot have any other advanced Python functionality, such as executable code, `lambda` etc. If builders are supposed to be able to use such features, you need to offer them through [$protfuncs](Spawner-and- Prototypes#protfuncs), embedded runnable functions that you have full control to check and vet before running.
 
