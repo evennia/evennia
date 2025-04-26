@@ -49,6 +49,7 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Fix][pull3751]: The `access` and `inventory` commands would traceback if run on a character without an Account (EliasWatson)
 - [Fix][pull3768]: Make sure the `CmdCopy` command copies object categories,
   since otherwise plurals were lost (jaborsh)
+- [Fix][issue3788]: `GLOBAL_SCRIPTS.all()` raised error (Griatch)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
@@ -88,6 +89,7 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3783]: https://github.com/evennia/evennia/pull/3783
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
+[issue3788]: https://github.com/evennia/evennia/issues/3788
 
 
 

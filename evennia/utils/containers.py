@@ -14,7 +14,6 @@ from pickle import dumps
 
 from django.conf import settings
 from django.db.utils import OperationalError, ProgrammingError
-
 from evennia.scripts.models import ScriptDB
 from evennia.utils import logger
 from evennia.utils.utils import callables_from_module, class_from_module
@@ -250,7 +249,7 @@ class GlobalScriptContainer(Container):
         """
         if not self.loaded:
             self.load_data()
-        managed_scripts = list(self.loaded_data.values())
+        managed_scripts = [self._load_script(key) for key in self.typeclass_storage.keys()]
         unmanaged_scripts = list(
             ScriptDB.objects.filter(db_obj__isnull=True).exclude(
                 id__in=[scr.id for scr in managed_scripts]
