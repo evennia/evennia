@@ -43,7 +43,7 @@ For the `look`-command (and anything else written by the player), the `text` `co
 
 ### Inputfuncs 
 
-On the Evennia server side, a list of [inputfucs](Inputuncs) are registered. You can add your own by extending `settings.INPUT_FUNC_MODULES`.
+On the Evennia server side, a list of [inputfuncs](Inputfuncs) are registered. You can add your own by extending `settings.INPUT_FUNC_MODULES`.
 
 ```python
 inputfunc_commandname(session, *args, **kwargs)
