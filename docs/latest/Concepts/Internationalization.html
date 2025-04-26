@@ -71,6 +71,10 @@
 <li><a class="reference internal" href="#hints-on-translation">Hints on translation</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#marking-strings-in-code-for-translation">Marking Strings in Code for Translation</a><ul>
+<li><a class="reference internal" href="#formatting-considerations">Formatting Considerations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -257,21 +261,21 @@ want.</p>
 find there. You can edit this with a normal text editor but it is easiest if
 you use a special po-file editor from the web (search the web for “po editor”
 for many free alternatives), for example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- [gtranslator](https://wiki.gnome.org/Apps/Gtranslator)
-- [poeditor](https://poeditor.com/)
-</pre></div>
-</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.gnome.org/Apps/Gtranslator">gtranslator</a></p></li>
+<li><p><a class="reference external" href="https://poeditor.com/">poeditor</a></p></li>
+</ul>
 <p>The concept of translating is simple, it’s just a matter of taking the english
-strings you find in the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file and add your language’s translation best
+strings you find in the <code class="docutils literal notranslate"><span class="pre">django.po</span></code> file and add your language’s translation best
 you can. Once you are done, run</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`evennia compilemessages`
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia compilemessages
 </pre></div>
 </div>
 <p>This will compile all languages. Check your language and also check back to your
 <code class="docutils literal notranslate"><span class="pre">.po</span></code> file in case the process updated it - you may need to fill in some missing
 header fields and should usually note who did the translation.</p>
 <p>When you are done, make sure that everyone can benefit from your translation!
-Make a PR against Evennia with the updated <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file. Less ideally (if git is
+Make a PR against Evennia with the updated <code class="docutils literal notranslate"><span class="pre">django.po</span></code> file. Less ideally (if git is
 not your thing) you can also attach it to a new post in our forums.</p>
 <section id="hints-on-translation">
 <h3>Hints on translation<a class="headerlink" href="#hints-on-translation" title="Permalink to this headline">¶</a></h3>
@@ -299,6 +303,34 @@ English anyway.</p>
            \n(Traceback was logged {timestamp})&quot;
 Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{classname}&#39; i {path}.
            \n(Traceback loggades {timestamp})&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="marking-strings-in-code-for-translation">
+<h2>Marking Strings in Code for Translation<a class="headerlink" href="#marking-strings-in-code-for-translation" title="Permalink to this headline">¶</a></h2>
+<p>If you modify the Python module code, you can mark strings for translation by passing them to the <code class="docutils literal notranslate"><span class="pre">gettext()</span></code> method. In Evennia, this is usually imported as <code class="docutils literal notranslate"><span class="pre">_()</span></code> for convenience:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Text to translate&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="formatting-considerations">
+<h3>Formatting Considerations<a class="headerlink" href="#formatting-considerations" title="Permalink to this headline">¶</a></h3>
+<p>When using formatted strings, ensure that you pass the “raw” string to <code class="docutils literal notranslate"><span class="pre">gettext</span></code> for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the <code class="docutils literal notranslate"><span class="pre">.po</span></code> file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># incorrect:</span>
+<span class="n">string2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">{char}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="c1"># correct:</span>
+<span class="n">string2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">{char}</span><span class="s2">!&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is also why f-strings don’t work with <code class="docutils literal notranslate"><span class="pre">gettext</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will not work</span>
+<span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, you can use %-formatting. It’s recommended to use named placeholders because the order of placeholders may vary in different translations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Today is </span><span class="si">%(month)s</span><span class="s2"> </span><span class="si">%(day)s</span><span class="s2">.&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>

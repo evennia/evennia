@@ -128,6 +128,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.encoding</span><span class="w"> </span><span class="kn">import</span> <span class="n">smart_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.locks.lockhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">LockHandler</span>
@@ -439,12 +440,21 @@
 <span class="sd">        Called by creation methods; makes sure to initialize Attribute/TagProperties</span>
 <span class="sd">        by fetching them once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">propkey</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="p">(</span><span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span><span class="p">)):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propkey</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="n">log_trace</span><span class="p">()</span></div>
+        <span class="n">evennia_properties</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">:</span>
+            <span class="n">evennia_properties</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="n">propkey</span>
+                    <span class="k">for</span> <span class="n">propkey</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="p">(</span><span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span><span class="p">))</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">propkey</span> <span class="ow">in</span> <span class="n">evennia_properties</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propkey</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log_trace</span><span class="p">()</span></div>
 
     <span class="c1"># initialize all handlers in a lazy fashion</span>
 <div class="viewcode-block" id="TypedObject.attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.attributes">[docs]</a>    <span class="nd">@lazy_property</span>
@@ -975,7 +985,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">looker</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot; (carried)&quot;</span>
+            <span class="k">return</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; (carried)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.at_rename"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_rename">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">at_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">,</span> <span class="n">newname</span><span class="p">):</span>
@@ -1040,7 +1050,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_detail_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -1080,7 +1090,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_puppet_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_puppet_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">web_get_puppet_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to puppet a specific</span>
 <span class="sd">        object.</span>
 
@@ -1118,7 +1128,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_update_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
 
@@ -1157,7 +1167,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_delete_url">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
 <span class="sd">        Returns:</span>

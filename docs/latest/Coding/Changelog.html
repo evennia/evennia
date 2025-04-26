@@ -240,6 +240,10 @@ a performance hit for loading cmdsets in rooms with a lot of objects (InspectorC
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3744">Fix</a>: Fix for format strings not getting picked up in i18n (JohnFi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3743">Fix</a>: Log full stack trace on failed object creation (aMiss-aWry)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3747">Fix</a>: TutorialWorld bridge-room didn’t correctly randomize weather effects (SpyrosRoum)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3765">Fix</a>: Storing TickerHandler <code class="docutils literal notranslate"><span class="pre">store_key</span></code> in a db attribute would not
+work correctly (0xDEADFED5)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3753">Fix</a>: Make sure <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code>s are initialized with default values also in parent class (JohnFi)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3751">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">access</span></code> and <code class="docutils literal notranslate"><span class="pre">inventory</span></code> commands would traceback if run on a character without an Account (EliasWatson)</p></li>
 <li><p>Fix: <code class="docutils literal notranslate"><span class="pre">options</span></code> setting <code class="docutils literal notranslate"><span class="pre">NOPROMPTGOAHEAD</span></code> was not possible to set (Griatch)</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">\\</span></code> properly preserve one backlash in funcparser (Griatch)</p></li>
 <li><p>Fix: The testing ‘echo’ inputfunc didn’t work correctly; now returns both args/kwargs (Griatch)</p></li>

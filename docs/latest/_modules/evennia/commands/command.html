@@ -715,6 +715,22 @@
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span></div>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_account_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the value of a specified account option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            option (str): The name of the option to retrieve.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The value of the specified account option if the account exists,</span>
+<span class="sd">            otherwise the default value from settings.OPTIONS_ACCOUNT_DEFAULT.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">OPTIONS_ACCOUNT_DEFAULT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Command.styled_table"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_table">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">styled_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an EvTable styled by on user preferences.</span>
@@ -730,8 +746,8 @@
 <span class="sd">                or incomplete and ready for use with `.add_row` or `.add_collumn`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">border_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
-        <span class="n">column_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;column_names_color&quot;</span><span class="p">)</span>
+        <span class="n">border_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
+        <span class="n">column_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;column_names_color&quot;</span><span class="p">)</span>
 
         <span class="n">colornames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column_color</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
 
@@ -791,9 +807,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
-        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headertext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_text_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
-        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headerstar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_star_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headertext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_text_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headerstar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_star_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
 
         <span class="n">width</span> <span class="o">=</span> <span class="n">width</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">edge_character</span><span class="p">:</span>
@@ -814,7 +830,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">center_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">fill_character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_fill&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="n">fill_character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_account_option</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_fill&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
 
         <span class="n">remain_fill</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">center_string</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">remain_fill</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
