@@ -14,6 +14,8 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
     class variable instead of the `desc` Attribute always being set (count-infinity)
 - [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (0xDEADFED5)
+- [Feat][pull3756]: Updated German translation (JohnFi)
+- [Feat][pull3757]: Add more i18n strings to `DefaultObject` for easier translation (JohnFi)
 - [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
   strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
 - [Fix][pull3682]: Allow in-game help searching for commands natively starting
@@ -51,7 +53,7 @@ This upgrade requires running `evennia migrate` on your existing database
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
 - Fix: Correct aws contrib's use of legacy django string utils (Griatch)
-- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR
+- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
 [pull3677]: https://github.com/evennia/evennia/pull/3677
@@ -77,6 +79,8 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3765]: https://github.com/evennia/evennia/pull/3765
 [pull3753]: https://github.com/evennia/evennia/pull/3753
 [pull3751]: https://github.com/evennia/evennia/pull/3751
+[pull3756]: https://github.com/evennia/evennia/pull/3756
+[pull3757]: https://github.com/evennia/evennia/pull/3757
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 

@@ -316,7 +316,7 @@ Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{cla
 </div>
 <section id="formatting-considerations">
 <h3>Formatting Considerations<a class="headerlink" href="#formatting-considerations" title="Permalink to this headline">¶</a></h3>
-<p>When using formatted strings, ensure that you pass the “raw” string to <code class="docutils literal notranslate"><span class="pre">gettext</span></code> for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the <code class="docutils literal notranslate"><span class="pre">.po</span></code> file.</p>
+<p>When using formatted strings, ensure that you pass the “raw” string to <code class="docutils literal notranslate"><span class="pre">gettext</span></code> for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the <code class="docutils literal notranslate"><span class="pre">.po</span></code> file. It’s also recommended to use named placeholders (e.g., <code class="docutils literal notranslate"><span class="pre">{char}</span></code>) instead of positional ones (e.g., <code class="docutils literal notranslate"><span class="pre">{}</span></code>) for better readability and maintainability.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># incorrect:</span>
 <span class="n">string2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">{char}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
@@ -327,10 +327,6 @@ Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{cla
 <p>This is also why f-strings don’t work with <code class="docutils literal notranslate"><span class="pre">gettext</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will not work</span>
 <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>However, you can use %-formatting. It’s recommended to use named placeholders because the order of placeholders may vary in different translations.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Today is </span><span class="si">%(month)s</span><span class="s2"> </span><span class="si">%(day)s</span><span class="s2">.&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
