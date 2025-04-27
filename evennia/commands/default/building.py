@@ -1858,12 +1858,21 @@ class CmdSetAttribute(ObjManipCommand):
         nested = False
         for key, nested_keys in self.split_nested_attr(attr):
             nested = True
-            if obj.attributes.has(key):
-                val = obj.attributes.get(key)
-                val = self.do_nested_lookup(val, *nested_keys)
-                if val is not self.not_found:
-                    return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
-        error = f"\nAttribute {obj.name}/|w{attr} [category:{category}] does not exist."
+            if obj.attributes.has(key, category):
+                if nested_keys:
+                    val = obj.attributes.get(key, category=category)
+                    deep = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if deep is not self.not_found:
+                        try:
+                            val = deep[nested_keys[-1]]
+                        except (IndexError, KeyError, TypeError):
+                            continue
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+                else:
+                    val = obj.attributes.get(key, category=category)
+                    if val:
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+        error = f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] does not exist."
         if nested:
             error += " (Nested lookups attempted)"
         return error
