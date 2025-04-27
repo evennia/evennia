@@ -27,6 +27,8 @@ from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
+from collections.abc import Callable
+from typing import Generic, TypeVar, overload
 
 from django.apps import apps
 from django.conf import settings
@@ -2180,8 +2182,9 @@ def deepsize(obj, max_depth=4):
 # lazy load handler
 _missing = object()
 
+TProp = TypeVar("TProp")
 
-class lazy_property:
+class lazy_property(Generic[TProp]):
     """
     Delays loading of property until first access. Credit goes to the
     Implementation in the werkzeug suite:
@@ -2202,18 +2205,24 @@ class lazy_property:
 
     """
 
-    def __init__(self, func, name=None, doc=None):
+    def __init__(self, func: Callable[..., TProp], name=None, doc=None):
         """Store all properties for now"""
         self.__name__ = name or func.__name__
         self.__module__ = func.__module__
         self.__doc__ = doc or func.__doc__
         self.func = func
 
-    def __get__(self, obj, type=None):
+    @overload
+    def __get__(self, obj: None, type=None) -> 'lazy_property': ...
+
+    @overload
+    def __get__(self, obj, type=None) -> TProp: ...
+
+    def __get__(self, obj, type=None) -> TProp | 'lazy_property':
         """Triggers initialization"""
         if obj is None:
             return self
-        value = obj.__dict__.get(self.__name__, _missing)
+        value: TProp = obj.__dict__.get(self.__name__, _missing)
         if value is _missing:
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
