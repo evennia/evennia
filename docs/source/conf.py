@@ -10,7 +10,7 @@ import sys
 from collections import namedtuple
 
 # from recommonmark.transform import AutoStructify
-from sphinx.util.osutil import cd
+from contextlib import chdir
 
 # -- Project information -----------------------------------------------------
 
@@ -252,7 +252,7 @@ if not _no_autodoc:
 
     sys.path.insert(1, EV_ROOT)
 
-    with cd(EV_ROOT):
+    with chdir(EV_ROOT):
         # set up Evennia so its sources can be parsed
         os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
 
