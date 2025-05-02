@@ -656,6 +656,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "ENCODING": validate_encoding,
             "MCCP": validate_bool,
             "NOGOAHEAD": validate_bool,
+            "NOPROMPTGOAHEAD": validate_bool,
             "MXP": validate_bool,
             "NOCOLOR": validate_bool,
             "NOPKEEPALIVE": validate_bool,
@@ -672,7 +673,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "FORCEDENDLINE": validate_bool,
             "LOCALECHO": validate_bool,
             "TRUECOLOR": validate_bool,
-            "ISTYPING": validate_bool
+            "ISTYPING": validate_bool,
         }
 
         name = self.lhs.upper()
@@ -815,8 +816,8 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     # the slices of the ANSI_PARSER lists to use for retrieving the
     # relevant color tags to display. Replace if using another schema.
     # This command can only show one set of markup.
-    slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
-    slice_dark_fg = slice(15, 23)  # from ANSI_PARSER.ansi_map
+    slice_bright_fg = slice(13, 21)  # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(21, 29)  # from ANSI_PARSER.ansi_map
     slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
     slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
 
@@ -840,10 +841,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             )
         return ftable
 
-    def make_hex_color_from_column(self, column_number):
-        r = 255 - column_number * 255 / 76
-        g = column_number * 510 / 76
-        b = column_number * 255 / 76
+    def make_hex_color_from_column(self, column_number, count):
+        r = 255 - column_number * 255 / count
+        g = column_number * 510 / count
+        b = column_number * 255 / count
 
         if g > 255:
             g = 510 - g
@@ -933,14 +934,25 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
 
         elif self.args.startswith("t"):
             # show abbreviated truecolor sample (16.7 million colors in truecolor)
-            string = ""
-            for i in range(76):
-                string += f"|[{self.make_hex_color_from_column(i)} |n"
+            string = (
+                "\n"
+                "True Colors (if this is not a smooth rainbow transition, your client might not "
+                "report that it can handle truecolor): \n"
+            )
+            display_width = self.client_width()
+            num_colors = display_width * 1
+            color_block = [
+                f"|[{self.make_hex_color_from_column(i, num_colors)} " for i in range(num_colors)
+            ]
+            color_block = [
+                "".join(color_block[iline : iline + display_width])
+                for iline in range(0, num_colors, display_width)
+            ]
+            string += "\n".join(color_block)
 
             string += (
-                "\n"
-                + "some of the truecolor colors (if not all hues show, your client might not report that it can"
-                " handle trucolor.):"
+                "\n|nfg: |#FF0000||#FF0000|n (|#F00||#F00|n) to |#0000FF||#0000FF|n (|#00F||#00F|n)"
+                "\n|nbg: |[#FF0000||[#FF0000|n (|[#F00||[#F00|n) to |n|[#0000FF||[#0000FF |n(|[#00F||[#00F|n)"
             )
 
             self.msg(string)
