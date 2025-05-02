@@ -39,6 +39,7 @@ class HelpEntryForm(forms.ModelForm):
 @admin.register(HelpEntry)
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
+
     inlines = [HelpTagInline]
     list_display = ("id", "db_key", "db_help_category", "db_lock_storage", "db_date_created")
     list_display_links = ("id", "db_key")

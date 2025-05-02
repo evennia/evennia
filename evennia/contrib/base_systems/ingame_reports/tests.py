@@ -1,6 +1,7 @@
-from unittest.mock import Mock, patch, MagicMock
-from evennia.utils import create
+from unittest.mock import MagicMock, Mock, patch
+
 from evennia.comms.models import TempMsg
+from evennia.utils import create
 from evennia.utils.test_resources import EvenniaCommandTest
 
 from . import menu, reports

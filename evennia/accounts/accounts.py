@@ -478,11 +478,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object."))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
             return
         if obj.account:
             # object already puppeted
@@ -491,13 +491,21 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     # we may take over another of our sessions
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
-                        txt1 = f"Sharing |c{obj.name}|n with another of your sessions."
-                        txt2 = f"|c{obj.name}|n|G is now shared from another of your sessions.|n"
+                        txt1 = _("Sharing |c{name}|n with another of your sessions.").format(
+                            name=obj.name
+                        )
+                        txt2 = _(
+                            "|c{name}|n|G is now shared from another of your sessions.|n"
+                        ).format(name=obj.name)
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                     else:
-                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
-                        txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
+                        txt1 = _("Taking over |c{name}|n from another of your sessions.").format(
+                            name=obj.name
+                        )
+                        txt2 = _(
+                            "|c{name}|n|R is now acted from another of your sessions.|n"
+                        ).format(name=obj.name)
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
@@ -523,7 +531,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 and len(self.get_all_puppets()) >= _MAX_NR_SIMULTANEOUS_PUPPETS
             ):
                 self.msg(
-                    _(f"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})")
+                    _("You cannot control any more puppets (max {max_puppets})").format(
+                        max_puppets=_MAX_NR_SIMULTANEOUS_PUPPETS
+                    )
                 )
                 return
 
@@ -778,6 +788,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         In this case we're simply piggybacking on this feature to apply
         additional normalization per Evennia's standards.
         """
+        if not isinstance(username, str):
+            username = str(username)
+
         username = super(DefaultAccount, cls).normalize_username(username)
 
         # strip excessive spaces in accountname
@@ -939,7 +952,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # parse inputs
         character_key = kwargs.pop("key", self.key)
         character_ip = kwargs.pop("ip", self.db.creator_ip)
-        character_permissions = kwargs.pop("permissions", self.permissions)
+        character_permissions = kwargs.pop("permissions", self.permissions.all())
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", self.default_character_typeclass)
@@ -1010,8 +1023,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         account = None
         errors = []
 
-        username = kwargs.get("username")
-        password = kwargs.get("password")
+        username = kwargs.get("username", "")
+        password = kwargs.get("password", "")
         email = kwargs.get("email", "").strip()
         guest = kwargs.get("guest", False)
 

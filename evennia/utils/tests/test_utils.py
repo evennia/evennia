@@ -821,13 +821,13 @@ class TestAtSearchResult(TestCase):
     class MockObject:
         def __init__(self, key):
             self.key = key
-            self.aliases = ''
+            self.aliases = ""
 
         def get_display_name(self, looker, **kwargs):
             return self.key
-        
+
         def get_extra_info(self, looker, **kwargs):
-            return ''
+            return ""
 
         def __repr__(self):
             return f"MockObject({self.key})"
@@ -846,7 +846,7 @@ class TestAtSearchResult(TestCase):
 
     def test_basic_multimatch(self):
         """multiple matches with the same name should return a message with incrementing indices"""
-        matches = [ self.MockObject("obj1") for _ in range(3) ]
+        matches = [self.MockObject("obj1") for _ in range(3)]
         caller = mock.MagicMock()
         self.assertIsNone(utils.at_search_result(matches, caller, "obj1"))
         multimatch_msg = """\
@@ -858,7 +858,9 @@ More than one match for 'obj1' (please narrow target):
 
     def test_partial_multimatch(self):
         """multiple partial matches with different names should increment index by unique name"""
-        matches = [ self.MockObject("obj1") for _ in range(3) ] + [ self.MockObject("obj2") for _ in range(2) ]
+        matches = [self.MockObject("obj1") for _ in range(3)] + [
+            self.MockObject("obj2") for _ in range(2)
+        ]
         caller = mock.MagicMock()
         self.assertIsNone(utils.at_search_result(matches, caller, "obj"))
         multimatch_msg = """\

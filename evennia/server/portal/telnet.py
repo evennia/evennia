@@ -306,6 +306,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
 
         """
         self.sessionhandler.disconnect(self)
+        if self.nop_keep_alive and self.nop_keep_alive.running:
+            self.toggle_nop_keepalive()
         self.transport.loseConnection()
 
     def applicationDataReceived(self, data):

@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evennia"
-version = "4.3.0"
+version = "4.5.0"
 maintainers = [{ name = "Griatch", email = "griatch@gmail.com" }]
 description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*, etc)."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "BSD" }
 keywords = [
@@ -38,8 +38,9 @@ keywords = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: JavaScript",
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: BSD License",
@@ -63,8 +64,9 @@ classifiers = [
 ]
 dependencies = [
   # core dependencies
-  "django >= 4.2, < 4.3",
-  "twisted >= 23.10, < 24",
+  "legacy-cgi;python_version >= '3.13'",
+  "django >= 5.1, < 5.2",
+  "twisted >= 24.11.0, < 25",
   "pytz >= 2022.6",
   "djangorestframework >= 3.14, < 3.15",
   "pyyaml >= 6.0",
@@ -110,7 +112,7 @@ extra = [
   "django-extensions >= 3.1.0",
 
   # xyzroom contrib
-  "scipy == 1.12.0",
+  "scipy == 1.15.1",
 
   # Git contrib
   "gitpython >= 3.1.27",
@@ -168,3 +170,20 @@ omit = [
   "*.pyc",
   "*.service",
 ]
+
+[tool.ruff]
+exclude = [
+  "/.eggs/",
+  "/.git/",
+  "/.hg/",
+  "/.mypy_cache/",
+  "/.tox/",
+  "/.venv/",
+  "/_build/",
+  "/buck-out/",
+  "/build/",
+  "/dist/",
+  "migrations",
+  "docs",
+]
+line-length = 100

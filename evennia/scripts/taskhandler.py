@@ -251,7 +251,12 @@ class TaskHandler:
                     to_save = True
                     continue
 
-                callback = getattr(obj, method)
+                try:
+                    callback = getattr(obj, method)
+                except Exception as e:
+                    log_err(f"TaskHandler: Unable to load task {task_id} (disabling it): {e}")
+                    to_save = True
+                    continue
             self.tasks[task_id] = (date, callback, args, kwargs, True, None)
 
         if self.stale_timeout > 0:  # cleanup stale tasks.

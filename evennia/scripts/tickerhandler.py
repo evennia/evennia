@@ -564,6 +564,14 @@ class TickerHandler(object):
         if not store_key:
             obj, path, callfunc = self._get_callback(callback)
             store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+        else:
+            if isinstance(store_key, tuple) and not isinstance(store_key[0], tuple):
+                # this means the store-key was deserialized, which means we need to
+                # re-build the key anew (since the obj would already be unpacked otherwise)
+                obj, path, callfunc = self._get_callback(getattr(store_key[0], store_key[1]))
+                store_key = self._store_key(
+                    obj, path, store_key[3], callfunc, store_key[4], store_key[5]
+                )
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)

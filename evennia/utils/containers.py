@@ -249,7 +249,7 @@ class GlobalScriptContainer(Container):
         """
         if not self.loaded:
             self.load_data()
-        managed_scripts = list(self.loaded_data.values())
+        managed_scripts = [self._load_script(key) for key in self.typeclass_storage.keys()]
         unmanaged_scripts = list(
             ScriptDB.objects.filter(db_obj__isnull=True).exclude(
                 id__in=[scr.id for scr in managed_scripts]

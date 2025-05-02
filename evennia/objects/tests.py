@@ -1,7 +1,12 @@
 from unittest import skip
 
-from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
+from evennia.objects.objects import (
+    DefaultCharacter,
+    DefaultExit,
+    DefaultObject,
+    DefaultRoom,
+)
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.typeclasses.tags import (
     AliasProperty,
@@ -30,6 +35,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(obj.db.creator_ip, self.ip)
         self.assertEqual(obj.db_home, self.room1)
 
+    def test_object_default_description(self):
+        obj, errors = DefaultObject.create("void")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
+
     def test_character_create(self):
         description = "A furry green monster, reeking of garbage."
         home = self.room1.dbref
@@ -57,6 +69,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(obj.name, "SigurXurXorarinsson")
 
+    def test_character_default_description(self):
+        obj, errors = DefaultCharacter.create("dementor")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
+
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
         obj, errors = DefaultRoom.create("alley", self.account, description=description, ip=self.ip)
@@ -64,6 +83,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+
+    def test_room_default_description(self):
+        obj, errors = DefaultRoom.create("black hole")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_create(self):
         description = (
@@ -77,6 +103,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+
+    def test_exit_default_description(self):
+        obj, errors = DefaultExit.create("the nothing")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_get_return_exit(self):
         ex1, _ = DefaultExit.create("north", self.room1, self.room2, account=self.account)
@@ -244,6 +277,74 @@ class TestObjectManager(BaseEvenniaTest):
         self.assertFalse(query)
         query = ObjectDB.objects.get_objs_with_key_and_typeclass(
             "Char", "evennia.objects.objects.DefaultCharacter", candidates=[self.char1, self.char2]
+        )
+        self.assertEqual(list(query), [self.char1])
+
+    def test_get_objs_with_key_or_alias(self):
+        query = ObjectDB.objects.get_objs_with_key_or_alias("Char")
+        self.assertEqual(list(query), [self.char1])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", typeclasses="evennia.objects.objects.DefaultObject"
+        )
+        self.assertEqual(list(query), [])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", candidates=[self.char1, self.char2]
+        )
+        self.assertEqual(list(query), [self.char1])
+
+        self.char1.aliases.add("test alias")
+        query = ObjectDB.objects.get_objs_with_key_or_alias("test alias")
+        self.assertEqual(list(query), [self.char1])
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias("")
+        self.assertFalse(query)
+        query = ObjectDB.objects.get_objs_with_key_or_alias("", exact=False)
+        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by("id")))
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "", exact=False, typeclasses="evennia.objects.objects.DefaultCharacter"
+        )
+        self.assertEqual(list(query), [self.char1, self.char2])
+
+    def test_key_alias_search_partial_match(self):
+        """
+        verify that get_objs_with_key_or_alias will partial match the first part of
+        any words in the name, when given in the correct order
+        """
+        self.obj1.key = "big sword"
+        self.obj2.key = "shiny sword"
+
+        # beginning of "sword", should match both
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw", exact=False)
+        self.assertEqual(list(query), [self.obj1, self.obj2])
+
+        # middle of "sword", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("wor", exact=False)
+        self.assertEqual(list(query), [])
+
+        # beginning of "big" then "sword", should match obj1
+        query = ObjectDB.objects.get_objs_with_key_or_alias("b sw", exact=False)
+        self.assertEqual(list(query), [self.obj1])
+
+        # beginning of "sword" then "big", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw b", exact=False)
+        self.assertEqual(list(query), [])
+
+    def test_search_object(self):
+        self.char1.tags.add("test tag")
+        self.obj1.tags.add("test tag")
+
+        query = ObjectDB.objects.search_object("", exact=False, tags=[("test tag", None)])
+        self.assertEqual(list(query), [self.obj1, self.char1])
+
+        query = ObjectDB.objects.search_object("Char", tags=[("invalid tag", None)])
+        self.assertFalse(query)
+
+        query = ObjectDB.objects.search_object(
+            "",
+            exact=False,
+            tags=[("test tag", None)],
+            typeclass="evennia.objects.objects.DefaultCharacter",
         )
         self.assertEqual(list(query), [self.char1])
 

@@ -1307,3 +1307,24 @@ class TestIssue3090(BaseEvenniaTest):
         self.assertEqual(result[3], 8)
         self.assertEqual(result[4], 1.0)
         self.assertEqual(result[5], "smile at")
+
+
+class _TestCmd1(Command):
+    key = "testcmd"
+    locks = "usecmd:false()"
+
+    def func():
+        pass
+
+
+class TestIssue3643(BaseEvenniaTest):
+    """
+    Commands with a 'cmd:' anywhere in its string, even `funccmd:` is assumed to
+    be a cmd: type lock, meaning it will not auto-insert `cmd:all()` into the
+    lockstring as intended.
+
+    """
+
+    def test_issue_3643(self):
+        cmd = _TestCmd1()
+        self.assertEqual(cmd.locks, "cmd:all();usecmd:false()")

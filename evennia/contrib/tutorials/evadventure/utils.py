@@ -37,7 +37,7 @@ def get_obj_stats(obj, owner=None):
         carried = f", Worn: [{carried.value}]" if carried else ""
 
     attack_type = getattr(obj, "attack_type", None)
-    defense_type = getattr(obj, "attack_type", None)
+    defense_type = getattr(obj, "defense_type", None)
 
     return _OBJ_STATS.format(
         key=obj.key,

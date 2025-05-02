@@ -1382,18 +1382,18 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 if target and target.isnumeric():
                     # a number to specify a historic page
                     number = int(target)
-                elif target:
+                elif message:
                     target_obj = self.caller.search(target, quiet=True)
                     if target_obj:
                         # a proper target
                         targets = [target_obj[0]]
                         message = message[0].strip()
                     else:
-                        # a message with a space in it - put it back together
-                        message = target + " " + (message[0] if message else "")
+                        # a message with a space in it - use the original args
+                        message = self.args.strip()
                 else:
-                    # a single-word message
-                    message = message[0].strip()
+                    # a single-word message - use the original args
+                    message = self.args.strip()
 
         pages = list(pages_we_sent) + list(pages_we_got)
         pages = sorted(pages, key=lambda page: page.date_created)
@@ -2030,7 +2030,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all connections
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",
@@ -2076,7 +2076,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all discord channels linked to self.lhs
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",

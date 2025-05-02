@@ -37,7 +37,7 @@ from weakref import WeakValueDictionary
 from django.conf import settings
 from django.utils.translation import gettext as _
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import deferLater
 
 from evennia.commands.cmdset import CmdSet
@@ -261,6 +261,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
+
     pass
 
 
@@ -361,7 +362,12 @@ def get_and_merge_cmdsets(
                     local_objlist = yield (
                         location.contents_get(exclude=obj) + obj.contents_get() + [location]
                     )
-                    local_objlist = [o for o in local_objlist if not o._is_deleted]
+                    local_objlist = [
+                        o
+                        for o in local_objlist
+                        if not o._is_deleted
+                        and o.access(caller, access_type="call", no_superuser_bypass=True)
+                    ]
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
@@ -375,12 +381,7 @@ def get_and_merge_cmdsets(
                         chain.from_iterable(
                             lobj.cmdset.cmdset_stack
                             for lobj in local_objlist
-                            if (
-                                lobj.cmdset.current
-                                and lobj.access(
-                                    caller, access_type="call", no_superuser_bypass=True
-                                )
-                            )
+                            if lobj.cmdset.current
                         )
                     )
                     for cset in local_obj_cmdsets:
@@ -390,7 +391,7 @@ def get_and_merge_cmdsets(
                         # explicitly.
                         cset.old_duplicates = cset.duplicates
                         cset.duplicates = True if cset.duplicates is None else cset.duplicates
-                returnValue(local_obj_cmdsets)
+                return local_obj_cmdsets
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
@@ -408,9 +409,9 @@ def get_and_merge_cmdsets(
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
             try:
-                returnValue(obj.get_cmdsets(caller=caller, current=current))
+                return obj.get_cmdsets(caller=caller, current=current)
             except AttributeError:
-                returnValue((CmdSet(), []))
+                return (CmdSet(), [])
 
         local_obj_cmdsets = []
 
@@ -486,7 +487,7 @@ def get_and_merge_cmdsets(
         # if cmdset:
         #     caller.cmdset.current = cmdset
 
-        returnValue(cmdset)
+        return cmdset
     except ErrorReported:
         raise
     except Exception:
@@ -600,7 +601,7 @@ def cmdhandler(
 
             if _testing:
                 # only return the command instance
-                returnValue(cmd)
+                return cmd
 
             # assign custom kwargs to found cmd object
             for key, val in kwargs.items():
@@ -619,7 +620,7 @@ def cmdhandler(
             abort = yield cmd.at_pre_cmd()
             if abort:
                 # abort sequence
-                returnValue(abort)
+                return abort
 
             # Parse and execute
             yield cmd.parse()
@@ -630,14 +631,12 @@ def cmdhandler(
             if isinstance(ret, types.GeneratorType):
                 # cmd.func() is a generator, execute progressively
                 _progressive_cmd_run(cmd, ret)
-                ret = yield ret
                 # note that the _progressive_cmd_run will itself run
                 # the at_post_cmd etc as it finishes; this is a bit of
                 # code duplication but there seems to be no way to
                 # catch the StopIteration here (it's not in the same
                 # frame since this is in a deferred chain)
             else:
-                ret = yield ret
                 # post-command hook
                 yield cmd.at_post_cmd()
 
@@ -647,9 +646,6 @@ def cmdhandler(
                     caller.ndb.last_cmd = yield copy(cmd)
                 else:
                     caller.ndb.last_cmd = None
-
-            # return result to the deferred
-            returnValue(ret)
 
         except InterruptCommand:
             # Do nothing, clean exit
@@ -759,10 +755,9 @@ def cmdhandler(
                 cmd = copy(cmd)
 
             # A normal command.
-            ret = yield _run_command(
+            yield _run_command(
                 cmd, cmdname, args, raw_cmdname, cmdset, session, account, cmdset_providers
             )
-            returnValue(ret)
 
         except ErrorReported as exc:
             # this error was already reported, so we
@@ -776,7 +771,7 @@ def cmdhandler(
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(
+                yield _run_command(
                     syscmd,
                     syscmd.key,
                     sysarg,
@@ -786,7 +781,7 @@ def cmdhandler(
                     account,
                     cmdset_providers,
                 )
-                returnValue(ret)
+                return
             elif sysarg:
                 # return system arg
                 error_to.msg(err_helper(exc.sysarg, cmdid=cmdid))

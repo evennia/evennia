@@ -1,4 +1,4 @@
-"""Tests for text2html """
+"""Tests for text2html"""
 
 import unittest
 

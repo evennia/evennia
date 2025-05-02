@@ -1,0 +1,19 @@
+name: Automatically add issue to project view 
+
+on: 
+  issues:
+    types:
+      - opened 
+      - reopened
+
+jobs: 
+  add-to-project: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add To GitHub projects
+        uses: actions/add-to-project@v1.0.2
+        with:
+          # URL of the project to add issues to
+          project-url: https://github.com/orgs/evennia/projects/1
+          # A GitHub personal access token with write access to the project
+          github-token: ${{ secrets.EVENNIA_TICKET_TO_PROJECT }}

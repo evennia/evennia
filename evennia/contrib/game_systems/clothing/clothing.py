@@ -527,6 +527,9 @@ class CmdRemove(MuxCommand):
     help_category = "clothing"
 
     def func(self):
+        if not self.args:
+            self.caller.msg("Usage: remove <worn clothing object>")
+            return
         clothing = self.caller.search(self.args, candidates=self.caller.contents)
         if not clothing:
             self.caller.msg("You don't have anything like that.")

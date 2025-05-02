@@ -27,6 +27,8 @@ from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
+from collections.abc import Callable
+from typing import Generic, TypeVar, overload
 
 from django.apps import apps
 from django.conf import settings
@@ -494,7 +496,7 @@ def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     # this allows the blank-line compression to eliminate them if needed
     text = re_empty.sub("\n\n", text)
     # replace groups of extra spaces with the maximum number of spaces
-    text = re.sub(fr"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
+    text = re.sub(rf"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
     # replace groups of extra newlines with the maximum number of newlines
     text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
     return text
@@ -2180,8 +2182,9 @@ def deepsize(obj, max_depth=4):
 # lazy load handler
 _missing = object()
 
+TProp = TypeVar("TProp")
 
-class lazy_property:
+class lazy_property(Generic[TProp]):
     """
     Delays loading of property until first access. Credit goes to the
     Implementation in the werkzeug suite:
@@ -2202,18 +2205,24 @@ class lazy_property:
 
     """
 
-    def __init__(self, func, name=None, doc=None):
+    def __init__(self, func: Callable[..., TProp], name=None, doc=None):
         """Store all properties for now"""
         self.__name__ = name or func.__name__
         self.__module__ = func.__module__
         self.__doc__ = doc or func.__doc__
         self.func = func
 
-    def __get__(self, obj, type=None):
+    @overload
+    def __get__(self, obj: None, type=None) -> 'lazy_property': ...
+
+    @overload
+    def __get__(self, obj, type=None) -> TProp: ...
+
+    def __get__(self, obj, type=None) -> TProp | 'lazy_property':
         """Triggers initialization"""
         if obj is None:
             return self
-        value = obj.__dict__.get(self.__name__, _missing)
+        value: TProp = obj.__dict__.get(self.__name__, _missing)
         if value is _missing:
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
@@ -2401,10 +2410,8 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         grouped_matches = defaultdict(list)
         for item in matches:
             group_key = (
-                    item.get_display_name(caller)
-                    if hasattr(item, "get_display_name")
-                    else query
-                )
+                item.get_display_name(caller) if hasattr(item, "get_display_name") else query
+            )
             grouped_matches[group_key].append(item)
 
         for key, match_list in grouped_matches.items():
@@ -2415,7 +2422,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                     # result is a typeclassed entity where `.aliases` is an AliasHandler.
                     aliases = result.aliases.all(return_objs=True)
                     # remove pluralization aliases
-                    aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
+                    aliases = [
+                        alias.db_key for alias in aliases if alias.db_category != "plural_key"
+                    ]
                 else:
                     # result is likely a Command, where `.aliases` is a list of strings.
                     aliases = result.aliases

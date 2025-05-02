@@ -14,32 +14,39 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
-import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from evennia import (
-    DefaultCharacter,
-    DefaultExit,
-    DefaultObject,
-    DefaultRoom,
-    ObjectDB,
-    search_object,
-)
+from parameterized import parameterized
+from twisted.internet import task
+
+import evennia
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import account, admin, batchprocess, building, comms, general
+from evennia.commands.default import (
+    account,
+    admin,
+    batchprocess,
+    building,
+    comms,
+    general,
+)
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.commands.default.muxcommand import MuxCommand
+from evennia.objects.models import ObjectDB
+from evennia.objects.objects import (
+    DefaultCharacter,
+    DefaultExit,
+    DefaultObject,
+    DefaultRoom,
+)
 from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
+from evennia.utils.search import search_object
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
-from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
-from parameterized import parameterized
-from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -543,7 +550,9 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.task_handler.clock.advance(self.timedelay + 1)
         self.assertFalse(self.task.exists())
-        self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
+        # the +1 time delay is to fix a timing issue with the test on Windows
+        # (see https://github.com/evennia/evennia/issues/3596)
+        self.task = self.task_handler.add(self.timedelay + 1, func_test_cmd_tasks)
         self.assertTrue(self.task.get_id(), 1)
         self.char1.msg = Mock()
         self.char1.execute_cmd("y")
@@ -1264,6 +1273,15 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdName(), "Obj3=Obj4;foo;bar", "Object's name changed to 'Obj4' (foo, bar)."
         )
         self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
+
+    def test_name_clears_plural(self):
+        box, _ = DefaultObject.create("Opened Box", location=self.char1)
+
+        # Force update of plural aliases (set in get_numbered_name)
+        self.char1.execute_cmd("inventory")
+        self.assertIn("one opened box", box.aliases.get(category=box.plural_category))
+        self.char1.execute_cmd("@name box=closed box")
+        self.assertIsNone(box.aliases.get(category=box.plural_category))
 
     def test_desc(self):
         oid = self.obj2.id

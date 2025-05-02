@@ -21,7 +21,6 @@ therefore always be limited to superusers only.
 import re
 
 from django.conf import settings
-
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
@@ -394,7 +393,7 @@ class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
 
     key = "abort"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         """Exit back to default."""
@@ -412,7 +411,7 @@ class CmdStateLL(_COMMAND_DEFAULT_CLASS):
 
     key = "ll"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         show_curr(self.caller, showall=True)
@@ -427,7 +426,7 @@ class CmdStatePP(_COMMAND_DEFAULT_CLASS):
 
     key = "pp"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         """
@@ -450,7 +449,7 @@ class CmdStateRR(_COMMAND_DEFAULT_CLASS):
 
     key = "rr"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -473,7 +472,7 @@ class CmdStateRRR(_COMMAND_DEFAULT_CLASS):
 
     key = "rrr"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -495,7 +494,7 @@ class CmdStateNN(_COMMAND_DEFAULT_CLASS):
 
     key = "nn"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -518,7 +517,7 @@ class CmdStateNL(_COMMAND_DEFAULT_CLASS):
 
     key = "nl"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -541,7 +540,7 @@ class CmdStateBB(_COMMAND_DEFAULT_CLASS):
 
     key = "bb"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -564,7 +563,7 @@ class CmdStateBL(_COMMAND_DEFAULT_CLASS):
 
     key = "bl"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -588,7 +587,7 @@ class CmdStateSS(_COMMAND_DEFAULT_CLASS):
 
     key = "ss"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -618,7 +617,7 @@ class CmdStateSL(_COMMAND_DEFAULT_CLASS):
 
     key = "sl"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -647,7 +646,7 @@ class CmdStateCC(_COMMAND_DEFAULT_CLASS):
 
     key = "cc"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -676,7 +675,7 @@ class CmdStateJJ(_COMMAND_DEFAULT_CLASS):
 
     key = "jj"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -701,7 +700,7 @@ class CmdStateJL(_COMMAND_DEFAULT_CLASS):
 
     key = "jl"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         caller = self.caller
@@ -726,7 +725,7 @@ class CmdStateQQ(_COMMAND_DEFAULT_CLASS):
 
     key = "qq"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         purge_processor(self.caller)
@@ -738,7 +737,7 @@ class CmdStateHH(_COMMAND_DEFAULT_CLASS):
 
     key = "hh"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         string = """

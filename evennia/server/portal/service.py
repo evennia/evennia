@@ -223,6 +223,7 @@ class EvenniaPortalService(MultiService):
 
                         class Websocket(WebSocketServerFactory):
                             "Only here for better naming in logs"
+
                             pass
 
                         factory = Websocket()

@@ -477,6 +477,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             tuple: A tuple (match, suggestions).
 
         """
+
         def strip_prefix(query):
             if query and query[0] in settings.CMD_IGNORE_PREFIXES:
                 return query[1:]
@@ -742,7 +743,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                     if not fuzzy_match:
                         # no match found - give up
-                        checked_topic = topic + f"/{subtopic_query}"
+                        checked_topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
                         output = self.format_help_entry(
                             topic=topic,
                             help_text=f"No help entry found for '{checked_topic}'",
@@ -757,7 +758,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 subtopic_map = subtopic_map.pop(subtopic_query)
                 subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
                 # keep stepping down into the tree, append path to show position
-                topic = topic + f"/{subtopic_query}"
+                topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
 
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]

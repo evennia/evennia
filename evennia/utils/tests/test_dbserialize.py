@@ -3,6 +3,7 @@ Tests for dbserialize module
 """
 
 from collections import defaultdict, deque
+from enum import IntFlag, auto
 
 from django.test import TestCase
 from parameterized import parameterized
@@ -18,6 +19,14 @@ class TestDbSerialize(TestCase):
 
     def setUp(self):
         self.obj = DefaultObject(db_key="Tester")
+        self.obj.save()
+
+    def test_intflag(self):
+        class TestFlag(IntFlag):
+            foo = auto()
+
+        self.obj.db.test = TestFlag.foo
+        self.assertEqual(self.obj.db.test, TestFlag.foo)
         self.obj.save()
 
     def test_constants(self):

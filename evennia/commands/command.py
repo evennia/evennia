@@ -19,6 +19,7 @@ from evennia.utils.evtable import EvTable
 from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+_RE_CMD_LOCKFUNC_IN_LOCKSTRING = re.compile(r"(^|;|\s)cmd\:\w+", re.DOTALL)
 
 
 class InterruptCommand(Exception):
@@ -74,7 +75,7 @@ def _init_command(cls, **kwargs):
     if not hasattr(cls, "locks"):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
-    if "cmd:" not in cls.locks:
+    if not _RE_CMD_LOCKFUNC_IN_LOCKSTRING.search(cls.locks):
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(";"):
         if lockstring and ":" not in lockstring:
@@ -575,7 +576,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
 
         ex.
         ::
-            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+            url(r'characters/(?P<slug>[\\w\\d\\-]+)/(?P<pk>[0-9]+)/$',
                 CharDetailView.as_view(), name='character-detail')
 
         If no View has been created and defined in urls.py, returns an
@@ -623,6 +624,22 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
             )[0]
         return settings.CLIENT_DEFAULT_WIDTH
 
+    def _get_account_option(self, option):
+        """
+        Retrieve the value of a specified account option.
+
+        Args:
+            option (str): The name of the option to retrieve.
+
+        Returns:
+            The value of the specified account option if the account exists,
+            otherwise the default value from settings.OPTIONS_ACCOUNT_DEFAULT.
+
+        """
+        if self.account:
+            return self.account.options.get(option)
+        return settings.OPTIONS_ACCOUNT_DEFAULT.get(option)
+
     def styled_table(self, *args, **kwargs):
         """
         Create an EvTable styled by on user preferences.
@@ -638,8 +655,8 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 or incomplete and ready for use with `.add_row` or `.add_collumn`.
 
         """
-        border_color = self.account.options.get("border_color")
-        column_color = self.account.options.get("column_names_color")
+        border_color = self._get_account_option("border_color")
+        column_color = self._get_account_option("column_names_color")
 
         colornames = ["|%s%s|n" % (column_color, col) for col in args]
 
@@ -699,9 +716,9 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
         """
 
         colors = dict()
-        colors["border"] = self.account.options.get("border_color")
-        colors["headertext"] = self.account.options.get("%s_text_color" % mode)
-        colors["headerstar"] = self.account.options.get("%s_star_color" % mode)
+        colors["border"] = self._get_account_option("border_color")
+        colors["headertext"] = self._get_account_option("%s_text_color" % mode)
+        colors["headerstar"] = self._get_account_option("%s_star_color" % mode)
 
         width = width or self.client_width()
         if edge_character:
@@ -722,7 +739,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
         else:
             center_string = ""
 
-        fill_character = self.account.options.get("%s_fill" % mode)
+        fill_character = self._get_account_option("%s_fill" % mode)
 
         remain_fill = width - len(center_string)
         if remain_fill % 2 == 0:

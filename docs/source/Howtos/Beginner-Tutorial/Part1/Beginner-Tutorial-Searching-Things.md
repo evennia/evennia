@@ -382,10 +382,8 @@ from evennia import search_object
 # we assume only one match of each 
 dungeons = search_object("dungeon", typeclass="typeclasses.rooms.Room")
 chests = search_object("chest", location=dungeons[0])
-# find if there are any skulls in the chest 
+# find out how much coin are in the chest 
 coins = search_object("coin", candidates=chests[0].contents)
 ```
 
-This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by directly querying the database.
-
-In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.
+This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by *directly querying the database*. We will get to this in the next lesson. There we will dive into more complex searching using Django database queries and querysets.

@@ -1,7 +1,7 @@
 """
 Buffs - Tegiminis 2022
 
-A buff is a timed object, attached to a game entity, that modifies values, triggers 
+A buff is a timed object, attached to a game entity, that modifies values, triggers
 code, or both. It is a common design pattern in RPGs, particularly action games.
 
 This contrib gives you a buff handler to apply to your objects, a buff class to extend them,
@@ -25,7 +25,7 @@ To make use of the handler, you will need:
 
 ### Applying a Buff
 
-Call the handler `add(BuffClass)` method. This requires a class reference, and also contains a number of 
+Call the handler `add(BuffClass)` method. This requires a class reference, and also contains a number of
 optional arguments to customize the buff's duration, stacks, and so on.
 
 ```python
@@ -36,8 +36,8 @@ self.buffs.add(ReflectBuff, to_cache={'reflect': 0.5})  # A single stack of Refl
 
 ### Modify
 
-Call the handler `check(value, stat)` method wherever you want to see the modified value. 
-This will return the value, modified by and relevant buffs on the handler's owner (identified by 
+Call the handler `check(value, stat)` method wherever you want to see the modified value.
+This will return the value, modified by and relevant buffs on the handler's owner (identified by
 the `stat` string). For example:
 
 ```python
@@ -49,7 +49,7 @@ def take_damage(self, source, damage):
 
 ### Trigger
 
-Call the handler `trigger(triggerstring)` method wherever you want an event call. This 
+Call the handler `trigger(triggerstring)` method wherever you want an event call. This
 will call the `at_trigger` hook method on all buffs with the relevant trigger.
 
 ```python

@@ -82,7 +82,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             )
 
             if errors:
-                self.msg(errors)
+                self.msg("\n".join(errors))
             if not new_character:
                 return
             # initalize the new character to the beginning of the chargen menu

@@ -20,7 +20,7 @@ To escape the inlinefunc (e.g. to explain to someone how it works, use `$$`)
 You say "To get a random value from 1 to 5, use $randint(1,5)."
 ```
 
-While `randint` may look and work just like `random.randint` from the standard Python library, it is _not_. Instead it's a `inlinefunc` named `randint` made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable. 
+While `randint` may look and work just like `random.randint` from the standard Python library, it is _not_. Instead it's an `inlinefunc` named `randint` made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable. 
 
 You can apply the `FuncParser`  manually. The parser is initialized with the inlinefunc(s) it's supposed to recognize in that string. Below is an example of a parser only understanding a single `$pow` inlinefunc: 
 
@@ -84,7 +84,7 @@ parser = FuncParser(["game.myfuncparser_callables", "game.more_funcparser_callab
 
 Here, `callables` points to a collection of normal Python functions (see next section) for you to make
 available to the parser as you parse strings with it. It can either be
-- A `dict` of `{"functionname": callable, ...}`. This allows you do pick and choose exactly which callables
+- A `dict` of `{"functionname": callable, ...}`. This allows you to pick and choose exactly which callables
   to include and how they should be named. Do you want a callable to be available under more than one name?
   Just add it multiple times to the dict, with a different key.
 - A `module` or (more commonly) a `python-path` to a module. This module can define a dict
@@ -235,7 +235,7 @@ everything but the outermost double quotes.
 
 Since you don't know in which order users may use your callables, they should
 always check the types of its inputs and convert to the type the callable needs.
-Note also that when converting from strings, there are limits what inputs you
+Note also that when converting from strings, there are limits on what inputs you
 can support. This is because FunctionParser strings can be used by
 non-developer players/builders and some things (such as complex
 classes/callables etc) are just not safe/possible to convert from string

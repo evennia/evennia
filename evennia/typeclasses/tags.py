@@ -79,9 +79,10 @@ class Tag(models.Model):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Tag"
         unique_together = (("db_key", "db_category", "db_tagtype", "db_model"),)
-        index_together = (("db_key", "db_category", "db_tagtype", "db_model"),)
+        indexes = [models.Index(fields=["db_key", "db_category", "db_tagtype", "db_model"])]
 
     def __lt__(self, other):
         return str(self) < str(other)

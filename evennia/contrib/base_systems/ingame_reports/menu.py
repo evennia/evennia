@@ -24,11 +24,6 @@ if hasattr(settings, "INGAME_REPORT_STATUS_TAGS"):
 def menunode_list_reports(caller, raw_string, **kwargs):
     """Paginates and lists out reports for the provided hub"""
     hub = caller.ndb._evmenu.hub
-
-    page = kwargs.get("page", 0)
-    start = page * _REPORTS_PER_PAGE
-    end = start + _REPORTS_PER_PAGE
-    report_slice = report_list[start:end]
     hub_name = " ".join(hub.key.split("_")).title()
     text = f"Managing {hub_name}"
 
@@ -53,6 +48,11 @@ def menunode_list_reports(caller, raw_string, **kwargs):
     # this will catch both no reports filed and no permissions
     if not report_list:
         return "There is nothing there for you to manage.", {}
+
+    page = kwargs.get("page", 0)
+    start = page * _REPORTS_PER_PAGE
+    end = start + _REPORTS_PER_PAGE
+    report_slice = report_list[start:end]
 
     options = [
         {

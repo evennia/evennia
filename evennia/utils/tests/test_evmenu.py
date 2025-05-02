@@ -29,6 +29,7 @@ from evennia.utils.test_resources import BaseEvenniaTest
 
 class TestEvMenu(TestCase):
     "Run the EvMenu testing."
+
     menutree = {}  # can also be the path to the menu tree
     startnode = "start"
     cmdset_mergetype = "Replace"

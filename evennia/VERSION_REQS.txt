@@ -3,8 +3,8 @@
 # when people upgrade outside regular channels). This file only supports lines of
 # `value = number` and only specific names supported by the handler.
 
-PYTHON_MIN = 3.10
-PYTHON_MAX_TESTED = 3.12.100
-TWISTED_MIN = 23.10
+PYTHON_MIN = 3.11
+PYTHON_MAX_TESTED = 3.13.100
+TWISTED_MIN = 24.11
 DJANGO_MIN = 4.0.2
-DJANGO_MAX_TESTED = 4.2.100
+DJANGO_MAX_TESTED = 5.1.100

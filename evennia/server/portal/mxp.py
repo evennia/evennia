@@ -15,6 +15,7 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 """
 
 import re
+import weakref
 
 from django.conf import settings
 
@@ -24,7 +25,7 @@ URL_SUB = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 # MXP Telnet option
 MXP = bytes([91])  # b"\x5b"
 
-MXP_TEMPSECURE = "\x1B[4z"
+MXP_TEMPSECURE = "\x1b[4z"
 MXP_SEND = MXP_TEMPSECURE + '<SEND HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</SEND>"
 MXP_URL = MXP_TEMPSECURE + '<A HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</A>"
 
@@ -61,10 +62,10 @@ class Mxp:
             protocol (Protocol): The active protocol instance.
 
         """
-        self.protocol = protocol
-        self.protocol.protocol_flags["MXP"] = False
+        self.protocol = weakref.ref(protocol)
+        self.protocol().protocol_flags["MXP"] = False
         if settings.MXP_ENABLED:
-            self.protocol.will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
+            self.protocol().will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
 
     def no_mxp(self, option):
         """
@@ -74,8 +75,8 @@ class Mxp:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["MXP"] = False
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["MXP"] = False
+        self.protocol().handshake_done()
 
     def do_mxp(self, option):
         """
@@ -86,8 +87,8 @@ class Mxp:
 
         """
         if settings.MXP_ENABLED:
-            self.protocol.protocol_flags["MXP"] = True
-            self.protocol.requestNegotiation(MXP, b"")
+            self.protocol().protocol_flags["MXP"] = True
+            self.protocol().requestNegotiation(MXP, b"")
         else:
-            self.protocol.wont(MXP)
-        self.protocol.handshake_done()
+            self.protocol().wont(MXP)
+        self.protocol().handshake_done()
