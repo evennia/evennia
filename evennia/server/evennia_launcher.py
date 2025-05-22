@@ -248,7 +248,7 @@ RECREATED_MISSING = """
 
 ERROR_DATABASE = """
     ERROR: Your database does not exist or is not set up correctly.
-    Missing tables: {missing_tables}
+    (error was '{traceback}')
 
     If you think your database should work, make sure you are running your
     commands from inside your game directory. If this error persists, run
@@ -820,7 +820,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
         if response:
             _, _, _, _, pinfo, sinfo = response
             _print_info(pinfo, sinfo)
-            _reactor_stop()
+        _reactor_stop()
 
     def _portal_started(*args):
         print(
@@ -1460,15 +1460,9 @@ def create_game_directory(dirname):
 
 def create_superuser():
     """
-    Auto-create the superuser account. Returns `True` if superuser was created.
+    Create the superuser account
 
     """
-    from evennia.accounts.models import AccountDB
-
-    if AccountDB.objects.filter(is_superuser=True).exists():
-        # if superuser already exists, do nothing here
-        return False
-
     print(
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
@@ -1480,95 +1474,79 @@ def create_superuser():
     password = environ.get("EVENNIA_SUPERUSER_PASSWORD")
 
     if (username is not None) and (password is not None) and len(password) > 0:
+        from evennia.accounts.models import AccountDB
 
         superuser = AccountDB.objects.create_superuser(username, email, password)
         superuser.save()
     else:
         django.core.management.call_command("createsuperuser", interactive=True)
 
-    return True
-
 
 def check_database(always_return=False):
     """
-    Check if the database exists and has basic tables. This is only run by the launcher.
+    Check so the database exists.
 
     Args:
-        always_return (bool, optional): If True, will not raise exceptions on errors.
-
+        always_return (bool, optional): If set, will always return True/False
+            also on critical errors. No output will be printed.
     Returns:
-        exists (bool): `True` if database exists and seems set up, `False` otherwise.
-            If `always_return` is `False`, this will raise exceptions instead of
-            returning `False`.
+        exists (bool): `True` if the database exists, otherwise `False`.
+
+
     """
-    # Check if database exists
-    from django.conf import settings
+    # Check so a database exists and is accessible
     from django.db import connection
 
-    tables_to_check = [
-        "accounts_accountdb",  # base account table
-        "objects_objectdb",  # base object table
-        "scripts_scriptdb",  # base script table
-        "typeclasses_tag",  # base tag table
-    ]
+    tables = connection.introspection.get_table_list(connection.cursor())
+    if not tables or not isinstance(tables[0], str):  # django 1.8+
+        tables = [tableinfo.name for tableinfo in tables]
+    if tables and "accounts_accountdb" in tables:
+        # database exists and seems set up. Initialize evennia.
+        evennia._init()
+    # Try to get Account#1
+    from evennia.accounts.models import AccountDB
 
     try:
-        with connection.cursor() as cursor:
-            # Get all table names in the database
-            if connection.vendor == "postgresql":
-                cursor.execute(
-                    """
-                    SELECT tablename FROM pg_tables
-                    WHERE schemaname = 'public'
-                """
-                )
-            elif connection.vendor == "mysql":
-                cursor.execute(
-                    """
-                    SELECT table_name FROM information_schema.tables
-                    WHERE table_schema = %s
-                """,
-                    [settings.DATABASES["default"]["NAME"]],
-                )
-            elif connection.vendor == "sqlite":
-                cursor.execute(
-                    """
-                    SELECT name FROM sqlite_master
-                    WHERE type='table' AND name NOT LIKE 'sqlite_%'
-                """
-                )
-            else:
-                if not always_return:
-                    raise Exception(
-                        f"Unsupported database: {connection.vendor}"
-                        "Evennia supports PostgreSQL, MySQL, and SQLite only."
-                    )
-                return False
+        AccountDB.objects.get(id=1)
+    except (django.db.utils.OperationalError, ProgrammingError) as e:
+        if always_return:
+            return False
+        print(ERROR_DATABASE.format(traceback=e))
+        sys.exit()
+    except AccountDB.DoesNotExist:
+        # no superuser yet. We need to create it.
 
-            existing_tables = {row[0].lower() for row in cursor.fetchall()}
+        other_superuser = AccountDB.objects.filter(is_superuser=True)
+        if other_superuser:
+            # Another superuser was found, but not with id=1. This may
+            # happen if using flush (the auto-id starts at a higher
+            # value). Wwe copy this superuser into id=1. To do
+            # this we must deepcopy it, delete it then save the copy
+            # with the new id. This allows us to avoid the UNIQUE
+            # constraint on usernames.
+            other = other_superuser[0]
+            other_id = other.id
+            other_key = other.username
+            print(WARNING_MOVING_SUPERUSER.format(other_key=other_key, other_id=other_id))
+            res = ""
+            while res.upper() != "Y":
+                # ask for permission
+                res = eval(input("Continue [Y]/N: "))
+                if res.upper() == "N":
+                    sys.exit()
+                elif not res:
+                    break
+            # continue with the
+            from copy import deepcopy
 
-            # Check if essential tables exist
-            missing_tables = [table for table in tables_to_check if table not in existing_tables]
-
-            if missing_tables:
-                if always_return:
-                    return False
-                raise Exception(
-                    f"Database tables missing: {', '.join(missing_tables)}. "
-                    "\nDid you remember to run migrations?"
-                )
-            else:
-                create_superuser()
-
-            return True
-
-    except Exception as exc:
-        if not always_return:
-            raise
-        import traceback
-
-        traceback.print_exc()
-        return False
+            new = deepcopy(other)
+            other.delete()
+            new.id = 1
+            new.save()
+        else:
+            create_superuser()
+            check_database(always_return=always_return)
+    return True
 
 
 def getenv():
@@ -1810,12 +1788,11 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     else:
         os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS_DOTPATH
 
+    # required since django1.7
+    django.setup()
+
     # test existence of the settings module
     try:
-
-        # required since django1.7
-        django.setup()
-
         from django.conf import settings
     except Exception as ex:
         if not str(ex).startswith("No module named"):
@@ -1828,7 +1805,6 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     # this will both check the database and initialize the evennia dir.
     if check_db:
         check_database()
-        evennia._init()
 
     # if we don't have to check the game directory, return right away
     if not need_gamedir:
