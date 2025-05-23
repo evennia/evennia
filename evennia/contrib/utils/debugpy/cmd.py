@@ -29,6 +29,6 @@ class CmdDebugPy(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         caller.msg("Waiting for debugger attach...")
         yield 0.1  # make sure msg is sent first
-        debugpy.listen(("localhost", 5678))
+        debugpy.listen(5678)
         debugpy.wait_for_client()
         caller.msg("Debugger attached.")
