@@ -2184,6 +2184,7 @@ _missing = object()
 
 TProp = TypeVar("TProp")
 
+
 class lazy_property(Generic[TProp]):
     """
     Delays loading of property until first access. Credit goes to the
@@ -2213,12 +2214,12 @@ class lazy_property(Generic[TProp]):
         self.func = func
 
     @overload
-    def __get__(self, obj: None, type=None) -> 'lazy_property': ...
+    def __get__(self, obj: None, type=None) -> "lazy_property": ...
 
     @overload
     def __get__(self, obj, type=None) -> TProp: ...
 
-    def __get__(self, obj, type=None) -> TProp | 'lazy_property':
+    def __get__(self, obj, type=None) -> TProp | "lazy_property":
         """Triggers initialization"""
         if obj is None:
             return self
