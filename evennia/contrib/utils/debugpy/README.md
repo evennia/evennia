@@ -1,4 +1,4 @@
-# debugpy
+# DebugPy VSCode debugger integration
 
 Contribution by electroglyph, 2025
 
@@ -24,11 +24,12 @@ From the venv where you installed Evennia run:
 
 In your Evennia mygame folder, open up `/commands/default_cmdsets.py`
 
-add `from evennia.contrib.utils.debugpy.cmd import CmdDebugPy` somewhere near the top.
+add `from evennia.contrib.utils.debugpy import CmdDebugPy` somewhere near the top.
 
-in CharacterCmdSet.at_cmdset_creation add this under `super().at_cmdset_creation()`:
+in `CharacterCmdSet.at_cmdset_creation` add this under `super().at_cmdset_creation()`:
 
 `self.add(CmdDebugPy)`
+
 
 ### Add "remote attach" option to VS Code debugger
 
