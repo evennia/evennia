@@ -437,25 +437,20 @@ template directory from evennia’s root.</p>
 <dl class="py function">
 <dt id="evennia.server.evennia_launcher.create_superuser">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_superuser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_superuser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Auto-create the superuser account. Returns <strong>True</strong> if superuser was created.</p>
+<dd><p>Create the superuser account</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="evennia.server.evennia_launcher.check_database">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">check_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">always_return</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the database exists and has basic tables. This is only run by the launcher.</p>
+<dd><p>Check so the database exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>always_return</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, will not raise exceptions on errors.</p>
+<dd class="field-odd"><p><strong>always_return</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will always return True/False
+also on critical errors. No output will be printed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>exists (bool)</em> –</p>
-<dl class="simple">
-<dt><strong>True</strong> if database exists and seems set up, <strong>False</strong> otherwise.</dt><dd><p>If <strong>always_return</strong> is <strong>False</strong>, this will raise exceptions instead of
-returning <strong>False</strong>.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>exists (bool)</em> – <strong>True</strong> if the database exists, otherwise <strong>False</strong>.</p>
 </dd>
 </dl>
 </dd></dl>

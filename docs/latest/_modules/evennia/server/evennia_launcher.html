@@ -340,7 +340,7 @@
 
 <span class="n">ERROR_DATABASE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    ERROR: Your database does not exist or is not set up correctly.</span>
-<span class="s2">    Missing tables: </span><span class="si">{missing_tables}</span>
+<span class="s2">    (error was &#39;</span><span class="si">{traceback}</span><span class="s2">&#39;)</span>
 
 <span class="s2">    If you think your database should work, make sure you are running your</span>
 <span class="s2">    commands from inside your game directory. If this error persists, run</span>
@@ -912,7 +912,7 @@
         <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">response</span>
             <span class="n">_print_info</span><span class="p">(</span><span class="n">pinfo</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
-            <span class="n">_reactor_stop</span><span class="p">()</span>
+        <span class="n">_reactor_stop</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_portal_started</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span>
@@ -1552,15 +1552,9 @@
 
 <div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_superuser</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Auto-create the superuser account. Returns `True` if superuser was created.</span>
+<span class="sd">    Create the superuser account</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
-
-    <span class="k">if</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_superuser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="c1"># if superuser already exists, do nothing here</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
     <span class="nb">print</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Create a superuser below. The superuser is Account #1, the &#39;owner&#39; &quot;</span>
         <span class="s2">&quot;account of the server. Email is optional and can be empty.</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -1572,95 +1566,79 @@
     <span class="n">password</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EVENNIA_SUPERUSER_PASSWORD&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">username</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
 
         <span class="n">superuser</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_superuser</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="n">superuser</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if the database exists and has basic tables. This is only run by the launcher.</span>
+<span class="sd">    Check so the database exists.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        always_return (bool, optional): If True, will not raise exceptions on errors.</span>
-
+<span class="sd">        always_return (bool, optional): If set, will always return True/False</span>
+<span class="sd">            also on critical errors. No output will be printed.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        exists (bool): `True` if database exists and seems set up, `False` otherwise.</span>
-<span class="sd">            If `always_return` is `False`, this will raise exceptions instead of</span>
-<span class="sd">            returning `False`.</span>
+<span class="sd">        exists (bool): `True` if the database exists, otherwise `False`.</span>
+
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check if database exists</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+    <span class="c1"># Check so a database exists and is accessible</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">connection</span>
 
-    <span class="n">tables_to_check</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;accounts_accountdb&quot;</span><span class="p">,</span>  <span class="c1"># base account table</span>
-        <span class="s2">&quot;objects_objectdb&quot;</span><span class="p">,</span>  <span class="c1"># base object table</span>
-        <span class="s2">&quot;scripts_scriptdb&quot;</span><span class="p">,</span>  <span class="c1"># base script table</span>
-        <span class="s2">&quot;typeclasses_tag&quot;</span><span class="p">,</span>  <span class="c1"># base tag table</span>
-    <span class="p">]</span>
+    <span class="n">tables</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">introspection</span><span class="o">.</span><span class="n">get_table_list</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">())</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tables</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># django 1.8+</span>
+        <span class="n">tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">tableinfo</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tableinfo</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">tables</span> <span class="ow">and</span> <span class="s2">&quot;accounts_accountdb&quot;</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+        <span class="c1"># database exists and seems set up. Initialize evennia.</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+    <span class="c1"># Try to get Account#1</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia.accounts.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountDB</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
-            <span class="c1"># Get all table names in the database</span>
-            <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">vendor</span> <span class="o">==</span> <span class="s2">&quot;postgresql&quot;</span><span class="p">:</span>
-                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    SELECT tablename FROM pg_tables</span>
-<span class="sd">                    WHERE schemaname = &#39;public&#39;</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">connection</span><span class="o">.</span><span class="n">vendor</span> <span class="o">==</span> <span class="s2">&quot;mysql&quot;</span><span class="p">:</span>
-                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    SELECT table_name FROM information_schema.tables</span>
-<span class="sd">                    WHERE table_schema = %s</span>
-<span class="sd">                &quot;&quot;&quot;</span><span class="p">,</span>
-                    <span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">][</span><span class="s2">&quot;NAME&quot;</span><span class="p">]],</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">connection</span><span class="o">.</span><span class="n">vendor</span> <span class="o">==</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">:</span>
-                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    SELECT name FROM sqlite_master</span>
-<span class="sd">                    WHERE type=&#39;table&#39; AND name NOT LIKE &#39;sqlite_%&#39;</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">always_return</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Unsupported database: </span><span class="si">{</span><span class="n">connection</span><span class="o">.</span><span class="n">vendor</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="s2">&quot;Evennia supports PostgreSQL, MySQL, and SQLite only.&quot;</span>
-                    <span class="p">)</span>
-                <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">OperationalError</span><span class="p">,</span> <span class="n">ProgrammingError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">always_return</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_DATABASE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">traceback</span><span class="o">=</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="c1"># no superuser yet. We need to create it.</span>
 
-            <span class="n">existing_tables</span> <span class="o">=</span> <span class="p">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()}</span>
+        <span class="n">other_superuser</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_superuser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other_superuser</span><span class="p">:</span>
+            <span class="c1"># Another superuser was found, but not with id=1. This may</span>
+            <span class="c1"># happen if using flush (the auto-id starts at a higher</span>
+            <span class="c1"># value). Wwe copy this superuser into id=1. To do</span>
+            <span class="c1"># this we must deepcopy it, delete it then save the copy</span>
+            <span class="c1"># with the new id. This allows us to avoid the UNIQUE</span>
+            <span class="c1"># constraint on usernames.</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">other_superuser</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">other_id</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">other_key</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">username</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">WARNING_MOVING_SUPERUSER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">other_key</span><span class="o">=</span><span class="n">other_key</span><span class="p">,</span> <span class="n">other_id</span><span class="o">=</span><span class="n">other_id</span><span class="p">))</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">while</span> <span class="n">res</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span>
+                <span class="c1"># ask for permission</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Continue [Y]/N: &quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="c1"># continue with the</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-            <span class="c1"># Check if essential tables exist</span>
-            <span class="n">missing_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">table</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables_to_check</span> <span class="k">if</span> <span class="n">table</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing_tables</span><span class="p">]</span>
-
-            <span class="k">if</span> <span class="n">missing_tables</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">always_return</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Database tables missing: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_tables</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Did you remember to run migrations?&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">create_superuser</span><span class="p">()</span>
-
-            <span class="k">return</span> <span class="kc">True</span>
-
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">always_return</span><span class="p">:</span>
-            <span class="k">raise</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
-
-        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="n">other</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">create_superuser</span><span class="p">()</span>
+            <span class="n">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="n">always_return</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.getenv">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">getenv</span><span class="p">():</span>
@@ -1902,12 +1880,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SETTINGS_DOTPATH</span>
 
+    <span class="c1"># required since django1.7</span>
+    <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
     <span class="c1"># test existence of the settings module</span>
     <span class="k">try</span><span class="p">:</span>
-
-        <span class="c1"># required since django1.7</span>
-        <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-
         <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No module named&quot;</span><span class="p">):</span>
@@ -1920,7 +1897,6 @@
     <span class="c1"># this will both check the database and initialize the evennia dir.</span>
     <span class="k">if</span> <span class="n">check_db</span><span class="p">:</span>
         <span class="n">check_database</span><span class="p">()</span>
-        <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
     <span class="c1"># if we don&#39;t have to check the game directory, return right away</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">need_gamedir</span><span class="p">:</span>

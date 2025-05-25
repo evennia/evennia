@@ -217,6 +217,7 @@ class variable instead of the <code class="docutils literal notranslate"><span c
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3756">Feat</a>: Updated German translation (JohnFi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3757">Feat</a>: Add more i18n strings to <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> for easier translation (JohnFi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3783">Feat</a>: Support users of <code class="docutils literal notranslate"><span class="pre">ruff</span></code> linter by adding compatible config in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> (jaborsh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3777">Feat</a>: New contrib <code class="docutils literal notranslate"><span class="pre">debugpy</span></code> for debugging Evennia with in VSCode with <code class="docutils literal notranslate"><span class="pre">debugpy</span></code> adapter (electroglyph)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3677">Fix</a>: Make sure that <code class="docutils literal notranslate"><span class="pre">DefaultAccount.create</span></code> normalizes to empty
 strings instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if no name is provided, also enforce string type (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3682">Fix</a>: Allow in-game help searching for commands natively starting
@@ -249,6 +250,8 @@ work correctly (0xDEADFED5)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3751">Fix</a>: The <code class="docutils literal notranslate"><span class="pre">access</span></code> and <code class="docutils literal notranslate"><span class="pre">inventory</span></code> commands would traceback if run on a character without an Account (EliasWatson)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3768">Fix</a>: Make sure the <code class="docutils literal notranslate"><span class="pre">CmdCopy</span></code> command copies object categories,
 since otherwise plurals were lost (jaborsh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3788">Fix</a>: <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS.all()</span></code> raised error (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3790">Fix</a>: Fix migration issue due to new db init-check code in launcher (Griatch)</p></li>
 <li><p>Fix: <code class="docutils literal notranslate"><span class="pre">options</span></code> setting <code class="docutils literal notranslate"><span class="pre">NOPROMPTGOAHEAD</span></code> was not possible to set (Griatch)</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">\\</span></code> properly preserve one backlash in funcparser (Griatch)</p></li>
 <li><p>Fix: The testing ‘echo’ inputfunc didn’t work correctly; now returns both args/kwargs (Griatch)</p></li>
