@@ -25,8 +25,9 @@ from codecs import lookup as codecs_lookup
 
 from django.conf import settings
 
-from evennia.accounts.models import AccountDB
+from evennia import ObjectDB, DefaultCharacter
 from evennia.commands.cmdhandler import cmdhandler
+from evennia.commands.default.general import CmdSay
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str
 
@@ -181,6 +182,7 @@ _CLIENT_OPTIONS = (
     "NOCOLOR",
     "NOGOAHEAD",
     "LOCALECHO",
+    "ISTYPING",
 )
 
 
@@ -207,6 +209,7 @@ def client_options(session, *args, **kwargs):
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
         localecho (bool): Turn on server-side echo (for clients not supporting it)
+        istyping (bool): Toggle notifications for whether relevant players are typing
 
     """
     old_flags = session.protocol_flags
@@ -270,6 +273,8 @@ def client_options(session, *args, **kwargs):
             flags["NOGOAHEAD"] = validate_bool(value)
         elif key == "localecho":
             flags["LOCALECHO"] = validate_bool(value)
+        elif key == "istyping":
+            flags["ISTYPING"] = validate_bool(value)
         elif key in (
             "Char 1",
             "Char.Skills 1",
