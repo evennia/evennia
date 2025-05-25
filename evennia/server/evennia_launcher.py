@@ -1788,11 +1788,9 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     else:
         os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS_DOTPATH
 
-    # required since django1.7
-    django.setup()
-
     # test existence of the settings module
     try:
+        django.setup()
         from django.conf import settings
     except Exception as ex:
         if not str(ex).startswith("No module named"):
