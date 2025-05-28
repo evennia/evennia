@@ -1,7 +1,14 @@
 # Makefile to control Evennia documentation building.
 # Most common commands are `make help`, `make quick` and `make local`.
-SOURCEDIR     = source
-BUILDDIR      = build
+SPHINX_LANGUAGE ?= en
+ifeq ($(SPHINX_LANGUAGE), en)
+  SOURCEDIR = source
+  BUILDDIR  = build
+else
+  SOURCEDIR = source_$(SPHINX_LANGUAGE)
+  BUILDDIR  = build_$(SPHINX_LANGUAGE)
+endif
+
 AUTODOCDIR = $(SOURCEDIR)/api
 #
 # You can set these variables from the command line, and also
@@ -61,14 +68,14 @@ _multiversion-check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh multiversion
 
 _clean_api_index:
-	rm -f source/api/*
+	rm -f $(SOURCEDIR)/api/*
 
 _clean_api_rsts:
-	rm -f source/api/*.rst
+	rm -f $(SOURCEDIR)/api/*.rst
 
 # remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
-	for f in source/api/*.rst; do\
+	for f in $(SOURCEDIR)/api/*.rst; do\
         perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
   done
 

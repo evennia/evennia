@@ -124,6 +124,26 @@ of your alternative game dir. For example:
     ```
     EVGAMEDIR=/my/path/to/mygamedir make local
     ```
+## Building for Different Languages
+
+You can translate the source files located in `evennia/docs/source/` into different languages. 
+Documentation source files for each language should be placed in the corresponding 
+`evennia/docs/source_${SPHINX_LANGUAGE}/` directory. Here, ${SPHINX_LANGUAGE} should adhere to the
+[ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) standard.
+
+For example, the source files for Simplified Chinese documentation should be located under the path 
+`evennia/docs/source_zh_CN/`.
+
+During compilation, you need to define the `SPHINX_LANGUAGE` environment variable to build the 
+documentation for a specific language. For instance:
+   ```  
+   SPHINX_LANGUAGE=zh_CN make local
+   ```  
+
+- The html-based documentation will appear in the new 
+  folder `evennia/docs/build_${SPHINX_LANGUAGE}/html/`. Note any errors from files you have edited.
+
+- Use a web browser to open `evennia/docs/build_${SPHINX_LANGUAGE}/html/index.html` to view the documentation.
 
 ## Building for release
 

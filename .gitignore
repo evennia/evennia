@@ -50,6 +50,8 @@ twistd.bat
 
 # never commit docs/build
 docs/build
+# never commit docs/build_${SPHINX_LANGUAGE}
+docs/build_*
 .doctrees
 
 # For users of Atom
