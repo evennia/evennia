@@ -1,41 +1,28 @@
 # EvAdventure
 
-Contrib by Griatch 2023-
+贡献者：Griatch 2023-
 
+> **注意** - 本教程仍在进行中，尚未完成！您仍然可以从中学习，但不要期待完美。
 
-```{warning}
-NOTE - this tutorial is WIP and NOT complete yet! You will still learn
-things from it, but don't expect perfection.
-```
+这是一个使用 Evennia 创建的完整示例 MUD。这是如果您按照 [入门教程第三部分](Beginner-Tutorial-Part3-Overview) 实施的最终结果。建议您一步步跟随教程并编写自己的代码。如果您愿意，也可以将此作为起始点，拆解或用于自己的游戏。
 
-A complete example MUD using Evennia. This is the final result of what is
-implemented if you follow [Part 3 of the Getting-Started tutorial](Beginner-Tutorial-Part3-Overview).
-It's recommended that you follow the tutorial step by step and write your own
-code. But if you prefer you can also pick apart or use this as a starting point
-for your own game.
+## 特性
 
-## Features
+- 使用 Ben Milton 设计的旧派奇幻规则集 [Knave](https://rpggeek.com/rpg/50827/knave) 的 MUD 版本（无职业并整体兼容早期的 D&D 版本），在知识共享署名许可下发布（允许所有用法，包括商业用途，只要给出署名）。
+- 使用可编辑角色表的角色创建。
+- 武器、效果、治疗和休息机制。
+- 两种替代战斗系统（回合制和即时制）。
+- 魔法（包括三种法术）。
+- 具有简单 AI 的 NPC/怪物。
+- 简单的任务系统。
+- 小型游戏世界。
+- 使用最佳 Evennia 实践编码，并附有单元测试。
 
-- Uses a MUD-version of the [Knave](https://rpggeek.com/rpg/50827/knave) old-school
-  fantasy ruleset by Ben Milton (classless and overall compatible with early
-  edition D&D), released under the Creative Commons Attribution (all uses,
-  including commercial are allowed
-  as long as attribution is given).
-- Character creation using an editable character sheet
-- Weapons, effects, healing and resting
-- Two alternative combat systems (turn-based and twitch based)
-- Magic (three spells)
-- NPC/mobs with simple AI.
-- Simple Quest system.
-- Small game world.
-- Coded using best Evennia practices, with unit tests.
+## 安装
 
-
-## Installation
-
-TODO
+待办事项（TODO）。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/tutorials/evadventure/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/tutorials/evadventure/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,76 +1,66 @@
-# Puzzles System
+# 解谜系统
 
-Contribution by Henddher 2018
+由 Henddher 贡献于 2018 年
 
-Intended for adventure-game style combination puzzles, such as combining fruits
-and a blender to create a smoothie. Provides a typeclass and commands for objects 
-that can be combined (i.e. used together). Unlike the `crafting` contrib, each 
-puzzle is built from unique objects rather than using tags and a builder can create 
-the puzzle entirely from in-game.
+该系统旨在用于冒险游戏风格的组合谜题，例如将水果和搅拌机组合以制作奶昔。它为可以组合（即一起使用）的对象提供了一个类型类和命令。与 `crafting` 贡献不同，每个谜题都是由独特的对象构建的，构建者可以完全在游戏中创建谜题。
 
-A `Puzzle` is a recipe of what objects (aka parts) must be combined by a player so
-a new set of objects (aka results) are automatically created.
+一个 `Puzzle` 是一个配方，玩家必须组合哪些对象（即部分），以便自动创建一组新的对象（即结果）。
 
-## Installation
+## 安装
 
-Add the `PuzzleSystemCmdSet` to all players (e.g. in their Character typeclass).
+将 `PuzzleSystemCmdSet` 添加到所有玩家（例如，在他们的角色类型类中）。
 
-Alternatively (for quick testing):
+或者（用于快速测试）：
 
-    py self.cmdset.add('evennia.contrib.game_systems.puzzles.PuzzleSystemCmdSet')
+```python
+py self.cmdset.add('evennia.contrib.game_systems.puzzles.PuzzleSystemCmdSet')
+```
 
-## Usage
+## 用法
 
-Consider this simple Puzzle:
+考虑这个简单的谜题：
 
-    orange, mango, yogurt, blender = fruit smoothie
+    橙子、芒果、酸奶、搅拌机 = 水果奶昔
 
-As a Builder:
+作为构建者：
 
-    create/drop orange
-    create/drop mango
-    create/drop yogurt
-    create/drop blender
-    create/drop fruit smoothie
+```bash
+create/drop orange
+create/drop mango
+create/drop yogurt
+create/drop blender
+create/drop fruit smoothie
 
-    puzzle smoothie, orange, mango, yogurt, blender = fruit smoothie
-    ...
-    Puzzle smoothie(#1234) created successfuly.
+puzzle smoothie, orange, mango, yogurt, blender = fruit smoothie
+...
+Puzzle smoothie(#1234) created successfully.
 
-    destroy/force orange, mango, yogurt, blender, fruit smoothie
+destroy/force orange, mango, yogurt, blender, fruit smoothie
 
-    armpuzzle #1234
-    Part orange is spawned at ...
-    Part mango is spawned at ...
-    ....
-    Puzzle smoothie(#1234) has been armed successfully
+armpuzzle #1234
+Part orange is spawned at ...
+Part mango is spawned at ...
+....
+Puzzle smoothie(#1234) has been armed successfully
+```
 
-As Player:
+作为玩家：
 
-    use orange, mango, yogurt, blender
-    ...
-    Genius, you blended all fruits to create a fruit smoothie!
+```bash
+use orange, mango, yogurt, blender
+...
+Genius, you blended all fruits to create a fruit smoothie!
+```
 
-## Details
+## 详细信息
 
-Puzzles are created from existing objects. The given
-objects are introspected to create prototypes for the
-puzzle parts and results. These prototypes become the
-puzzle recipe. (See PuzzleRecipe and `puzzle`
-command). Once the recipe is created, all parts and result
-can be disposed (i.e. destroyed).
+谜题是从现有对象创建的。给定的对象被内省以为谜题部分和结果创建原型。这些原型成为谜题配方。（参见 PuzzleRecipe 和 `puzzle` 命令）。一旦配方创建完成，所有部分和结果都可以处理（即销毁）。
 
-At a later time, a Builder or a Script can arm the puzzle
-and spawn all puzzle parts in their respective
-locations (See armpuzzle).
+稍后，构建者或脚本可以武装谜题并在其各自的位置生成所有谜题部分（参见 armpuzzle）。
 
-A regular player can collect the puzzle parts and combine
-them (See use command). If player has specified
-all pieces, the puzzle is considered solved and all
-its puzzle parts are destroyed while the puzzle results
-are spawened on their corresponding location.
+普通玩家可以收集谜题部分并将其组合（参见 use 命令）。如果玩家指定了所有部分，则认为谜题已解决，所有谜题部分将被销毁，而谜题结果将在其对应位置生成。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/puzzles/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/puzzles/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

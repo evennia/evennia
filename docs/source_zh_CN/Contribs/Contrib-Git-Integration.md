@@ -1,35 +1,35 @@
-# In-game Git Integration
+# 游戏内 Git 集成
 
-Contribution by helpme (2022)
+由 helpme 贡献于 2022 年
 
-A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc.
+这是一个模块，用于在游戏中集成精简版的 git，允许开发者查看 git 状态、更改分支，以及拉取本地 mygame 仓库和 Evennia 核心的更新代码。在成功拉取或检出后，git 命令将重载游戏：某些更改可能需要手动重启，以影响持久化脚本等。
 
-Once the contrib is set up, integrating remote changes is as simple as entering the following into your game:
+一旦设置好此模块，集成远程更改只需在游戏中输入以下命令：
 
 ```
 git pull
 ```
 
-The repositories you want to work with, be it only your local mygame repo, only Evennia core, or both, must be git directories for the command to function. If you are only interested in using this to get upstream Evennia changes, only the Evennia repository needs to be a git repository. [Get started with version control here.](https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html)
+要使用的仓库，无论是本地 mygame 仓库、Evennia 核心，还是两者都需要是 git 目录，命令才能生效。如果您只对获取上游 Evennia 更改感兴趣，则只需要 Evennia 仓库是一个 git 仓库。[在这里开始使用版本控制。](https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html)
 
-## Dependencies
+## 依赖
 
-This package requires the dependency "gitpython", a python library used to
-interact with git repositories. To install, it's easiest to install Evennia's
-extra requirements:
+此包需要依赖 "gitpython"，一个用于与 git 仓库交互的 Python 库。安装它最简单的方法是安装 Evennia 的额外需求：
 
-    pip install evennia[extra]
+```
+pip install evennia[extra]
+```
 
-If you installed with `git` you can also do
+如果您使用 `git` 安装，您也可以这样做：
 
-- `cd` to the root of the Evennia repository.
+- `cd` 到 Evennia 仓库的根目录。
 - `pip install --upgrade -e .[extra]`
 
-## Installation
+## 安装
 
-This utility adds a simple assortment of 'git' commands. Import the module into your commands and add it to your command set to make it available.
+此工具添加了一组简单的 'git' 命令。将模块导入到您的命令中，并将其添加到您的命令集以使其可用。
 
-Specifically, in `mygame/commands/default_cmdsets.py`:
+具体来说，在 `mygame/commands/default_cmdsets.py` 中：
 
 ```python
 ...
@@ -43,36 +43,36 @@ class CharacterCmdset(default_cmds.Character_CmdSet):
 
 ```
 
-Then `reload` to make the git command available.
+然后 `reload` 以使 git 命令可用。
 
-## Usage
+## 用法
 
-This utility will only work if the directory you wish to work with is a git directory. If they are not, you will be prompted to initiate your directory as a git repository using the following commands in your terminal:
+此工具仅在您要操作的目录是 git 目录时有效。如果不是，您将被提示使用以下命令在终端中将目录初始化为 git 仓库：
 
 ```
 git init
 git remote add origin 'link to your repository'
 ```
 
-By default, the git commands are only available to those with Developer permissions and higher. You can change this by overriding the command and setting its locks from "cmd:pperm(Developer)" to the lock of your choice.
+默认情况下，git 命令仅对具有开发者权限及以上的用户可用。您可以通过重写命令并将其锁定从 "cmd:pperm(Developer)" 更改为您选择的锁定来更改此设置。
 
-The supported commands are:
-* git status: An overview of your git repository, which files have been changed locally, and the commit you're on.
-* git branch: What branches are available for you to check out.
-* git checkout 'branch': Checkout a branch.
-* git pull: Pull the latest code from your current branch.
+支持的命令有：
+* git status: 查看您的 git 仓库概况、本地更改的文件以及当前提交。
+* git branch: 查看可供检出的分支。
+* git checkout 'branch': 检出一个分支。
+* git pull: 从当前分支拉取最新代码。
 
-* All of these commands are also available with 'evennia', to serve the same functionality related to your Evennia directory. So:
+* 所有这些命令也可以用于 'evennia'，以实现与您的 Evennia 目录相关的相同功能。所以：
 * git evennia status
 * git evennia branch
 * git evennia checkout 'branch'
-* git evennia pull: Pull the latest Evennia code.
+* git evennia pull: 拉取最新的 Evennia 代码。
 
-## Settings Used
+## 使用的设置
 
-The utility uses the existing GAME_DIR and EVENNIA_DIR settings from settings.py. You should not need to alter these if you have a standard directory setup, they ought to exist without any setup required from you.
+该工具使用 settings.py 中现有的 GAME_DIR 和 EVENNIA_DIR 设置。如果您有标准的目录设置，您不需要更改这些设置，它们应该已经存在，无需您进行任何设置。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/git_integration/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/git_integration/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

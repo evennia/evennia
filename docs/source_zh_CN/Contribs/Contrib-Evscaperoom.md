@@ -1,134 +1,83 @@
 # EvscapeRoom
 
-Contribution by Griatch, 2019
+贡献者：Griatch, 2019
 
-A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
-spawn and join puzzle rooms that track their state independently. Any number of players
-can join to solve a room together. This is the engine created for 'EvscapeRoom', which won
-the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has only
-very minimal game content, it contains the utilities and base classes and an empty example room.
+这是一个完整的引擎，用于在 Evennia 中创建多人逃脱室。允许玩家生成和加入独立跟踪状态的解谜房间。任何数量的玩家可以加入，共同解决一个房间。这是为 “EvscapeRoom” 创建的引擎，该游戏在2019年4月至5月期间的 MUD Coders Guild “单房间” 游戏创作竞赛中获胜。此贡献仅包含非常少量的游戏内容，仅包含实用工具和基础类以及一个空的示例房间。
 
-## Introduction
+## 介绍
 
-Evscaperoom is, as it sounds, an [escape room](https://en.wikipedia.org/wiki/Escape_room) in text form. You start locked into
-a room and have to figure out how to get out. This contrib contains everything
-needed to make a fully-featured puzzle game of this type. It also contains a
-'lobby' for creating new rooms, allowing players to join another person's room
-to collaborate solving it!
+EvscapeRoom，顾名思义，是一种文本形式的 [逃脱室](https://en.wikipedia.org/wiki/Escape_room)。你被锁在一个房间里，必须想办法逃出来。此贡献包含制作此类完整解谜游戏所需的一切。它还包含一个“大厅”，用于创建新房间，允许玩家加入其他人的房间进行合作解谜！
 
-This is the game engine for the original _EvscapeRoom_. It
-allows you to recreate the same game experience, but it doesn't contain any of
-the story content created for the game jam. If you want to see the full game
-(where you must escape the cottage of a very tricky jester girl or lose the
-village's pie-eating contest...), you can find it at Griatch's github page [here](https://github.com/Griatch/evscaperoom),
-(but the recommended version is the one that used to run on the Evennia demo server which has
-some more bug fixes, found [here instead](https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom)).
+这是原始 _EvscapeRoom_ 的游戏引擎。它允许您重现相同的游戏体验，但不包含为游戏创作竞赛而创建的任何故事内容。如果您想查看完整的游戏（您必须逃离一个非常狡猾的小丑女孩的 cottage 或失去村庄的吃饼比赛……），可以在 Griatch 的 GitHub 页面找到 [这里](https://github.com/Griatch/evscaperoom)（但推荐使用以前在 Evennia 演示服务器上运行的版本，包含更多错误修复，可以在 [这里](https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom)找到）。
 
-If you want to read more about how _EvscapeRoom_ was created and designed, you can read the
-dev blog, [part 1](https://www.evennia.com/devblog/2019.html#2019-05-18-creating-evscaperoom-part-1) and [part 2](https://www.evennia.com/devblog/2019.html#2019-05-26-creating-evscaperoom-part-2).
+如果您想了解更多关于 _EvscapeRoom_ 的创建和设计的内容，可以阅读开发博客， [第一部分](https://www.evennia.com/devblog/2019.html#2019-05-18-creating-evscaperoom-part-1) 和 [第二部分](https://www.evennia.com/devblog/2019.html#2019-05-26-creating-evscaperoom-part-2)。
 
-## Installation
+## 安装
 
-The Evscaperoom is installed by adding the `evscaperoom` command to your
-character cmdset. When you run that command in-game you're ready to play!
+EvscapeRoom 通过将 `evscaperoom` 命令添加到您的角色 cmdset 中进行安装。当您在游戏中运行该命令时，您就准备好开始游戏了！
 
-In `mygame/commands/default_cmdsets.py`:
+在 `mygame/commands/default_cmdsets.py` 中：
 
 ```python
-
 from evennia.contrib.full_systems.evscaperoom.commands import CmdEvscapeRoomStart
 
 class CharacterCmdSet(...):
 
-  # ...
+    # ...
 
-  self.add(CmdEvscapeRoomStart())
-
+    self.add(CmdEvscapeRoomStart())
 ```
 
-Reload the server and the `evscaperoom` command will be available. The contrib
-comes with a small (very small) escape room as an example.
+重启服务器后，`evscaperoom` 命令将可用。该贡献附带一个小（非常小的）作为示例的逃脱房间。
 
-## Making your own evscaperoom
+## 创建您自己的 EvscapeRoom
 
-To do this, you need to make your own states. First make sure you can play the
-simple example room installed above.
+要做到这一点，您需要创建自己的状态。首先确保您可以玩上面安装的简单示例房间。
 
-Copy `evennia/contrib/full_systems/evscaperoom/states` to somewhere in your game folder (let's
-assume you put it under `mygame/world/`).
+将 `evennia/contrib/full_systems/evscaperoom/states` 复制到您的游戏文件夹中的某个地方（我们假设您将其放在 `mygame/world/` 下）。
 
-Next you need to re-point Evennia to look for states in this new location. Add
-the following to your `mygame/server/conf/settings.py` file:
+接下来，您需要重新指向 Evennia 以查看这个新位置的状态。将以下内容添加到您的 `mygame/server/conf/settings.py` 文件中：
 
 ```python
-  EVSCAPEROOM_STATE_PACKAGE = "world.states"
-
+EVSCAPEROOM_STATE_PACKAGE = "world.states"
 ```
 
-Reload and the example evscaperoom should still work, but you can now modify and
-expand it from your game dir!
+重新加载后，示例 EvscapeRoom 应该仍然可以工作，但您现在可以从您的游戏目录修改和扩展它！
 
-### Other useful settings
+### 其他有用的设置
 
-There are a few other settings that may be useful:
+以下是一些可能有用的其他设置：
 
-- `EVSCAPEROOM_START_STATE` - default is `state_001_start` and is the name of
-  the state-module to start from (without `.py`). You can change this if you
-  want some other naming scheme.
-- `HELP_SUMMARY_TEXT` - this is the help blurb shown when entering `help` in
-  the room without an argument. The original is found at the top of
-  `evennia/contrib/full_systems/evscaperoom/commands.py`.
+- `EVSCAPEROOM_START_STATE` - 默认值是 `state_001_start`，是您希望从（不带 `.py` 的）状态模块开始的名称。如果您想要其他命名方案，可以更改此值。
+- `HELP_SUMMARY_TEXT` - 这是在房间中输入 `help` 时（没有参数）显示的帮助摘要。原始内容位于 `evennia/contrib/full_systems/evscaperoom/commands.py` 的顶部。
 
-## Playing the game
+## 游戏玩法
 
-You should start by `look`ing around and at objects.
+您应该首先四处 `look` 看看和观察物体。
 
-The `examine <object>` command allows you to 'focus' on an object. When you do
-you'll learn actions you could try for the object you are focusing on, such as
-turning it around, read text on it or use it with some other object. Note that
-more than one player can focus on the same object, so you won't block anyone
-when you focus. Focusing on another object or use `examine` again will remove
-focus.
+`examine <object>` 命令允许您“专注”于一个物体。当您这样做时，您将了解到您可以尝试对所专注的物体执行的操作，例如转动它、阅读其中的文本或与其他物体一起使用。请注意，多位玩家可以专注于同一物体，因此当您专注时不会阻碍他人。专注于另一个物体或再次使用 `examine` 将移除专注。
 
-There is also a full hint system.
+游戏中还有完整的提示系统。
 
-## Technical
+## 技术信息
 
-When connecting to the game, the user has the option to join an existing room
-(which may already be in some state of ongoing progress), or may create a fresh
-room for them to start solving on their own (but anyone may still join them later).
+连接到游戏时，用户可以选择加入现有房间（该房间可能已在某种正在进行中的状态中），或者可以创建一个新的房间以便自己开始解决（但任何人仍然可以稍后加入他们）。
 
-The room will go through a series of 'states' as the players progress through
-its challenges. These states are describes as modules in .states/ and the
-room will load and execute the State-object within each module to set up
-and transition between states as the players progress. This allows for isolating
-the states from each other and will hopefully make it easier to track
-the logic and (in principle) inject new puzzles later.
+房间将随着玩家的挑战进度经历一系列“状态”。这些状态在 .states/ 中描述为模块，房间将加载并执行每个模块中的 State 对象，以便在玩家进展时设置和切换状态。这允许将状态相互隔离，并希望使跟踪逻辑变得更容易（从原则上讲，后期可以注入新谜题）。
 
-Once no players remain in the room, the room and its state will be wiped.
+一旦房间内没有玩家，房间及其状态将被清除。
 
-## Design Philosophy
+## 设计理念
 
-Some basic premises inspired the design of this.
+设计的灵感来源于一些基本原则。
 
-- You should be able to resolve the room alone. So no puzzles should require the
-  collaboration of multiple players. This is simply because there is no telling
-  if others will actually be online at a given time (or stay online throughout).
-- You should never be held up by the actions/inactions of other players. This
-  is why you cannot pick up anything (no inventory system) but only
-  focus/operate on items. This avoids the annoying case of a player picking up
-  a critical piece of a puzzle and then logging off.
-- A room's state changes for everyone at once. My first idea was to have a given
-  room have different states depending on who looked (so a chest could be open
-  and closed to two different players at the same time). But not only does this
-  add a lot of extra complexity, it also defeats the purpose of having multiple
-  players. This way people can help each other and collaborate like in a 'real'
-  escape room. For people that want to do it all themselves I instead made it
-  easy to start "fresh" rooms for them to take on.
+- 您应该能够单独解决房间。因此，没有谜题应要求多个玩家的协作。这是因为无法确保其他玩家在特定时间在线（或在整个过程中保持在线）。
+- 您不应因其他玩家的行为/不作为而受到阻碍。因此，您不能捡起任何物品（没有库存系统），只能专注/操作物品。这避免了玩家捡起关键谜题的部分后又在线下线的烦人情况。
+- 房间的状态一次性变化对所有人都是相同的。最初的想法是，让每个房间根据谁在查看而具有不同的状态（因此一个箱子对两个玩家可以同时打开和关闭）。但这不仅增加了额外的复杂性，而且还削弱了多位玩家的目的。通过这种方式，人们可以像在“真实”的逃脱室中一样互相帮助和合作。对于那些想要独自完成的玩家，我还创建了轻松启动“新鲜”房间的功能。
 
-All other design decisions flowed from these.
+所有其他设计决策都源于此。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/full_systems/evscaperoom/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/full_systems/evscaperoom/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

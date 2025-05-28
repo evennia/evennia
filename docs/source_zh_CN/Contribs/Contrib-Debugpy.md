@@ -1,72 +1,73 @@
-# DebugPy VSCode debugger integration
+# DebugPy VSCode 调试器集成
 
-Contribution by electroglyph, 2025
+由 electroglyph 贡献（2025）
 
-This registers an in-game command `debugpy` which starts the debugpy debugger and listens on port 5678.
-For now this is only available for Visual Studio Code (VS Code).
+此模块注册了一个游戏内命令 `debugpy`，该命令启动 debugpy 调试器并监听 5678 端口。现在，它仅适用于 Visual Studio Code (VS Code)。
 
-If you are a JetBrains PyCharm user and would like to use this, make some noise at:
-https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy
+如果您是 JetBrains PyCharm 用户并希望使用此功能，请访问以下链接表达您的需求：
+[JetBrains YouTrack](https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy)
 
+特此感谢 Evennia Discord 的 Moony，感谢你的帮助！
 
-Credit for this goes to Moony on the Evennia Discord getting-help channel, thx Moony!
+## 安装
 
+此功能需要使用 VS Code 和 debugpy，因此请确保您正在使用 VS Code。
 
-## Installation
+在安装 Evennia 的虚拟环境中运行：
 
-This requires VS Code and debugpy, so make sure you're using VS Code.
+```bash
+pip install debugpy
+```
 
-From the venv where you installed Evennia run:
+### 在 Evennia 中启用命令
 
-`pip install debugpy`
+在您的 Evennia mygame 文件夹中，打开 `/commands/default_cmdsets.py` 文件
 
-### Enable the command in Evennia
+在文件顶部附近添加以下内容：
 
-In your Evennia mygame folder, open up `/commands/default_cmdsets.py`
+```python
+from evennia.contrib.utils.debugpy import CmdDebugPy
+```
 
-add `from evennia.contrib.utils.debugpy import CmdDebugPy` somewhere near the top.
+在 `CharacterCmdSet.at_cmdset_creation` 方法中，在 `super().at_cmdset_creation()` 下添加：
 
-in `CharacterCmdSet.at_cmdset_creation` add this under `super().at_cmdset_creation()`:
+```python
+self.add(CmdDebugPy)
+```
 
-`self.add(CmdDebugPy)`
+### 将“远程附加”选项添加到 VS Code 调试器
 
-
-### Add "remote attach" option to VS Code debugger
-
-Start VS Code and open your launch.json like this:
+启动 VS Code 并像下面这样打开您的 `launch.json`：
 
 ![screenshot](./vscode.png)
 
-Add this to your configuration:
-
-```json
-        {
-            "name": "Python Debugger: Remote Attach",
-            "justMyCode": false,
-            "type": "debugpy",
-            "request": "attach",
-            "connect": {
-                "host": "127.0.0.1",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "${workspaceFolder}"
-                }
-            ]
-        },
-```
-
-Use `127.0.0.1` for the host if you are running Evennia from the same machine you'll be debugging from.  Otherwise, if you want to debug a remote server, change host (and possibly remoteRoot mapping) as necessary.
-
-Afterwards it should look something like this:
+将以下内容添加到您的配置中：
 
 ```json
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "name": "Python Debugger: Remote Attach",
+    "justMyCode": false,
+    "type": "debugpy",
+    "request": "attach",
+    "connect": {
+        "host": "127.0.0.1",
+        "port": 5678
+    },
+    "pathMappings": [
+        {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+如果您从与调试相同的机器上运行 Evennia，请将主机设置为 `127.0.0.1`。否则，若要调试远程服务器，请根据需要更改主机（以及可能的 `remoteRoot` 映射）。
+
+添加后，它应类似于以下内容：
+
+```json
+{
     "version": "0.2.0",
     "configurations": [
         {
@@ -74,7 +75,7 @@ Afterwards it should look something like this:
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal",
+            "console": "integratedTerminal"
         },
         {
             "name": "Python Debugger: Remote Attach",
@@ -91,30 +92,30 @@ Afterwards it should look something like this:
                     "remoteRoot": "${workspaceFolder}"
                 }
             ]
-        },
+        }
     ]
 }
 ```
 
-(notice the comma between the curly braces)
+（请注意花括号之间的逗号）
 
-## Usage
+## 用法
 
-Set a breakpoint in VS Code where you want the debugger to stop at.
+在 VS Code 中设置一个断点，作为调试器停下来的位置。
 
-In Evennia run `debugpy` command.
+在 Evennia 中运行 `debugpy` 命令。
 
-You should see "Waiting for debugger attach..."
+您应该看到“正在等待调试器附加...”的提示。
 
-Back in VS Code attach the debugger:
+返回 VS Code 附加调试器：
 
 ![screenshot](./attach.png)
 
-Back in Evennia you should see "Debugger attached."
+回到 Evennia，您应该看到“调试器已附加。”的消息。
 
-Now trigger the breakpoint you set and you'll be using a nice graphical debugger.
+现在触发您设置的断点，您将享受到一个漂亮的图形调试器。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/debugpy/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/debugpy/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

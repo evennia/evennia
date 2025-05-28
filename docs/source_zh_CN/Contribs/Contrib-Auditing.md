@@ -1,76 +1,63 @@
-# Input/Output Auditing
+# 输入/输出审计
 
-Contribution by Johnny, 2017
+由 Johnny 提供的贡献，2017年
 
-Utility that taps and intercepts all data sent to/from clients and the
-server and passes it to a callback of your choosing. This is intended for 
-quality assurance, post-incident investigations and debugging.
+这是一个实用工具，可以拦截与客户端和服务器之间发送的所有数据，并将其传递给你选择的回调。这旨在进行质量保证、事故后的调查和调试。
 
-Note that this should be used with care since it can obviously be abused. All 
-data is recorded in cleartext. Please be ethical, and if you are unwilling to 
-properly deal with the implications of recording user passwords or private 
-communications, please do not enable this module.
+请注意，使用时要谨慎，因为这显然可能被滥用。所有数据都是以明文记录的。请遵循伦理，如果你无法正确处理记录用户密码或私人通信的后果，请不要启用此模块。
 
-Some checks have been implemented to protect the privacy of users.
+一些检查已被实施以保护用户隐私。
 
-Files included in this module:
+模块中包含的文件：
 
-    outputs.py - Example callback methods. This module ships with examples of
-            callbacks that send data as JSON to a file in your game/server/logs
-            dir or to your native Linux syslog daemon. You can of course write
-            your own to do other things like post them to Kafka topics.
+- **outputs.py** - 示例回调方法。此模块提供了将数据作为 JSON 发送到你的游戏/服务器的日志目录或本地 Linux syslog 守护进程的回调示例。你当然可以编写自己的代码以执行其他操作，例如将其发布到 Kafka 主题。
 
-    server.py - Extends the Evennia ServerSession object to pipe data to the
-            callback upon receipt.
+- **server.py** - 扩展了 Evennia 的 ServerSession 对象，以便在接收时将数据通过回调进行传递。
 
-	tests.py - Unit tests that check to make sure commands with sensitive
-	        arguments are having their PII scrubbed.
+- **tests.py** - 单元测试，检查带有敏感参数的命令是否已删除其个人可识别信息（PII）。
 
+## 安装/配置
 
-## Installation/Configuration:
+通过在 server.conf 中配置几个设置来完成部署。以下行是必需的：
 
-Deployment is completed by configuring a few settings in server.conf. This line
-is required:
+```plaintext
+SERVER_SESSION_CLASS = 'evennia.contrib.utils.auditing.server.AuditedServerSession'
+```
 
-    SERVER_SESSION_CLASS = 'evennia.contrib.utils.auditing.server.AuditedServerSession'
+这告诉 Evennia 使用此 ServerSession 而不是它自己的。以下是其他可能的选项及其默认值（如果未设置）：
 
-This tells Evennia to use this ServerSession instead of its own. Below are the
-other possible options along with the default value that will be used if unset.
-
-    # Where to send logs? Define the path to a module containing your callback
-    # function. It should take a single dict argument as input
+- **审计回调**: 定义一个模块的路径，该模块包含你的回调函数。函数应接受一个字典参数作为输入：
+    ```plaintext
     AUDIT_CALLBACK = 'evennia.contrib.utils.auditing.outputs.to_file'
+    ```
 
-    # Log user input? Be ethical about this; it will log all private and
-    # public communications between players and/or admins (default: False).
+- **记录用户输入?** : 对此要保持伦理；它将记录玩家和/或管理员之间的所有私人和公共通信（默认值：`False`）。
+    ```plaintext
     AUDIT_IN = False
+    ```
 
-    # Log server output? This will result in logging of ALL system
-    # messages and ALL broadcasts to connected players, so on a busy game any
-    # broadcast to all users will yield a single event for every connected user!
+- **记录服务器输出?** : 这将导致记录所有系统消息和发送到连接玩家的所有广播，因此在繁忙的游戏中，向所有用户的每次广播都会在每个连接用户上产生一个事件！
+    ```plaintext
     AUDIT_OUT = False
+    ```
 
-    # The default output is a dict. Do you want to allow key:value pairs with
-    # null/blank values? If you're just writing to disk, disabling this saves
-    # some disk space, but whether you *want* sparse values or not is more of a
-    # consideration if you're shipping logs to a NoSQL/schemaless database.
-    # (default: False)
+- **允许稀疏值**: 默认输出是一个字典。你希望允许包含 null/blank 值的键值对吗？如果你只是写入磁盘，则禁用它可以节省一些磁盘空间，但无论你是否想要稀疏值，如果你将日志发送到 NoSQL/无模式数据库时都是考虑。
+    ```plaintext
     AUDIT_ALLOW_SPARSE = False
+    ```
 
-    # If you write custom commands that handle sensitive data like passwords,
-    # you must write a regular expression to remove that before writing to log.
-    # AUDIT_MASKS is a list of dictionaries that define the names of commands
-    # and the regexes needed to scrub them.
-    # The system already has defaults to filter out sensitive login/creation
-    # commands in the default command set. Your list of AUDIT_MASKS will be appended
-    # to those defaults.
-    #
-    # In the regex, the sensitive data itself must be captured in a named group with a
-    # label of 'secret' (see the Python docs on the `re` module for more info). For
-    # example: `{'authentication': r"^@auth\s+(?P<secret>[\w]+)"}`
+- **审计掩码**: 如果你编写处理敏感数据（如密码）的自定义命令，则必须编写一个正则表达式以在写入日志之前将其删除。 `AUDIT_MASKS` 是一个字典的列表，定义了命令的名称和需要擦洗它们的正则表达式。
+
+    > 系统已经有默认的过滤敏感登录/创建命令的选项。你的 `AUDIT_MASKS` 列表将附加到这些默认值上。
+    >
+    > 在正则表达式中，敏感数据本身必须以名为 'secret' 的捕获组进行捕获（有关更多信息，请参见 Python `re` 模块的文档）。
+    > 例如： `{'authentication': r"^@auth\s+(?P<secret>[\w]+)"}`。
+
+    ```plaintext
     AUDIT_MASKS = []
+    ```
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/auditing/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/auditing/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,105 +1,88 @@
-# Clothing
+# 衣物
 
-Contribution by Tim Ashley Jenkins, 2017
+由 Tim Ashley Jenkins 贡献，2017年
 
-Provides a typeclass and commands for wearable clothing. These 
-look of these clothes are appended to the character's description when worn.
+提供了可穿戴衣物的类型类和命令。这些衣物的外观在角色穿戴时会附加到角色描述中。
 
-Clothing items, when worn, are added to the character's description
-in a list. For example, if wearing the following clothing items:
+当穿戴衣物时，这些物品会以列表的形式添加到角色的描述中。例如，如果穿戴以下衣物：
 
-    a thin and delicate necklace
-    a pair of regular ol' shoes
-    one nice hat
-    a very pretty dress
+- 一条纤细而精致的项链
+- 一双普通的鞋子
+- 一顶漂亮的帽子
+- 一条非常好看的裙子
 
-Would result in this added description: 
+将会得到如下附加描述：
 
-    Tim is wearing one nice hat, a thin and delicate necklace,
-    a very pretty dress and a pair of regular ol' shoes.
+```
+Tim is wearing one nice hat, a thin and delicate necklace,
+a very pretty dress and a pair of regular ol' shoes.
+```
 
-## Installation
+## 安装
 
-To install, import this module and have your default character
-inherit from ClothedCharacter in your game's `characters.py` file:
+要安装，请导入此模块，并在游戏的 `characters.py` 文件中让默认角色继承自 `ClothedCharacter`：
 
 ```python
-
 from evennia.contrib.game_systems.clothing import ClothedCharacter
 
 class Character(ClothedCharacter):
-
 ```
 
-And then add `ClothedCharacterCmdSet` in your character set in
-`mygame/commands/default_cmdsets.py`:
+然后在 `mygame/commands/default_cmdsets.py` 中的角色设置中添加 `ClothedCharacterCmdSet`：
 
 ```python
-
 from evennia.contrib.game_systems.clothing import ClothedCharacterCmdSet # <--
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
-     # ...
-     at_cmdset_creation(self):
-
-         super().at_cmdset_creation()
-         # ...
-         self.add(ClothedCharacterCmdSet)    # <--
-
+    # ...
+    def at_cmdset_creation(self):
+        super().at_cmdset_creation()
+        # ...
+        self.add(ClothedCharacterCmdSet)    # <--
 ```
 
-## Usage
+## 使用
 
-Once installed, you can use the default builder commands to create clothes
-with which to test the system:
+安装完成后，你可以使用默认的构建命令创建衣物以测试系统：
 
-    create a pretty shirt : evennia.contrib.game_systems.clothing.ContribClothing
-    set shirt/clothing_type = 'top'
-    wear shirt
+```
+create a pretty shirt : evennia.contrib.game_systems.clothing.ContribClothing
+set shirt/clothing_type = 'top'
+wear shirt
+```
 
-A character's description may look like this:
+角色的描述可能看起来像这样：
 
-    Superuser(#1)
-    This is User #1.
+Superuser(#1)
+This is User #1.
 
-    Superuser is wearing one nice hat, a thin and delicate necklace,
-    a very pretty dress and a pair of regular ol' shoes.
+Superuser is wearing one nice hat, a thin and delicate necklace,
+a very pretty dress and a pair of regular ol' shoes.
 
-Characters can also specify the style of wear for their clothing - I.E.
-to wear a scarf 'tied into a tight knot around the neck' or 'draped
-loosely across the shoulders' - to add an easy avenue of customization.
-For example, after entering:
+角色也可以为他们的衣物指定穿着风格——例如，将围巾“系成紧紧的结在脖子周围”或“松松地披在肩上”——以增加自定义的便捷途径。例如，在输入：
 
-    wear scarf draped loosely across the shoulders
+wear scarf draped loosely across the shoulders
 
-The garment appears like so in the description:
+后，衣物在描述中将显示为：
 
-    Superuser(#1)
-    This is User #1.
+Superuser(#1)
+This is User #1.
 
-    Superuser is wearing a fanciful-looking scarf draped loosely
-    across the shoulders.
+Superuser is wearing a fanciful-looking scarf draped loosely
+across the shoulders.
 
-Items of clothing can be used to cover other items, and many options
-are provided to define your own clothing types and their limits and
-behaviors. For example, to have undergarments automatically covered
-by outerwear, or to put a limit on the number of each type of item
-that can be worn. The system as-is is fairly freeform - you
-can cover any garment with almost any other, for example - but it
-can easily be made more restrictive, and can even be tied into a
-system for armor or other equipment.
+衣物可以用来覆盖其他物品，并提供了多种选项来定义你自己的衣物类型及其限制和行为。例如，可以使内衣自动被外衣覆盖，或限制可以穿着的每种类型物品的数量。系统本身相当自由灵活——你几乎可以用任何其他衣物覆盖任意衣物——但可以轻松地进行更严格的设置，还可以与护甲或其他装备系统结合。
 
-## Configuration
+## 配置
 
-The contrib has several optional configurations which you can define in your `settings.py`
-Here are the settings and their default values.
+该贡献有几个可选配置，可以在 `settings.py` 中定义。以下是设置及其默认值。
 
 ```python
-# Maximum character length of 'wear style' strings, or None for unlimited.
+# 'wear style' 字符串的最大字符数，或 None 表示无限制。
 CLOTHING_WEARSTYLE_MAXLENGTH = 50
 
-# The order in which clothing types appear on the description.
-# Untyped clothing or clothing with a type not in this list goes last.
+# 衣物类型在描述中出现的顺序。
+# 未指定类型的衣物或不在此列表中的衣物会排在最后。
 CLOTHING_TYPE_ORDERED = [
         "hat",
         "jewelry",
@@ -114,16 +97,15 @@ CLOTHING_TYPE_ORDERED = [
         "accessory",
     ]
 
-# The maximum number of clothing items that can be worn, or None for unlimited.
+# 可穿戴的衣物最大数量，或 None 表示无限制。
 CLOTHING_OVERALL_LIMIT = 20
 
-# The maximum number for specific clothing types that can be worn.
-# If the clothing item has no type or is not specified here, the only maximum is the overall limit.
+# 每种特定衣物类型可穿戴的最大数量。
+# 如果衣物项目没有类型或未在此处指定，则唯一的最大限制是总体限制。
 CLOTHING_TYPE_LIMIT = {"hat": 1, "gloves": 1, "socks": 1, "shoes": 1}
 
-# What types of clothes will automatically cover what other types of clothes when worn.
-# Note that clothing only gets auto-covered if it's already being worn. It's perfectly possible
-# to have your underpants showing if you put them on after your pants!
+# 穿戴时将自动覆盖其他类型衣物的衣物类型。
+# 注意，只有在衣物已经穿着的情况下，才能自动覆盖。你完全可以在穿上裤子后让内裤显露出来！
 CLOTHING_TYPE_AUTOCOVER = {
         "top": ["undershirt"],
         "bottom": ["underpants"],
@@ -131,11 +113,11 @@ CLOTHING_TYPE_AUTOCOVER = {
         "shoes": ["socks"],
     }
 
-# Any types of clothes that can't be used to cover other clothes at all.
+# 任何类型的衣物不能用于覆盖其他衣物。
 CLOTHING_TYPE_CANT_COVER_WITH = ["jewelry"]
 ```
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/clothing/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/clothing/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,35 +1,28 @@
-# Easy fillable form
+# Easy Fillable Form
 
-Contribution by Tim Ashley Jenkins, 2018
+贡献者 - Tim Ashley Jenkins, 2018
 
-This module contains a function that generates an `EvMenu` for you - this
-menu presents the player with a form of fields that can be filled
-out in any order (e.g. for character generation or building). Each field's value can 
-be verified, with the function allowing easy checks for text and integer input, 
-minimum and maximum values / character lengths, or can even be verified by a custom 
-function. Once the form is submitted, the form's data is submitted as a dictionary 
-to any callable of your choice.
+此模块包含一个生成 `EvMenu` 的函数，该菜单为玩家提供了一个可以按任意顺序填写的表单（例如用于角色生成或构建）。每个字段的值可以进行验证，函数允许对文本和整数输入进行轻松检查，设定最小值和最大值/字符长度，或者通过自定义函数进行验证。一旦表单提交，表单的数据将作为字典提交给您选择的任何可调用对象。
 
-## Usage
+## 用法
 
-The function that initializes the fillable form menu is fairly simple, and
-includes the caller, the template for the form, and the callback(caller, result)
-to which the form data will be sent to upon submission.
+初始化可填写表单菜单的函数相当简单，包括调用者、表单模板和回调 `callback(caller, result)`，该回调将在提交表单数据时传递给：
 
-    init_fill_field(formtemplate, caller, formcallback)
+```python
+init_fill_field(formtemplate, caller, formcallback)
+```
 
-Form templates are defined as a list of dictionaries - each dictionary
-represents a field in the form, and contains the data for the field's name and
-behavior. For example, this basic form template will allow a player to fill out
-a brief character profile:
+表单模板被定义为字典列表 - 每个字典代表表单中的一个字段，并包含字段名称和行为的数据。例如，以下基本表单模板将允许玩家填写简单的角色简介：
 
-    PROFILE_TEMPLATE = [
-        {"fieldname":"Name", "fieldtype":"text"},
-        {"fieldname":"Age", "fieldtype":"number"},
-        {"fieldname":"History", "fieldtype":"text"},
-    ]
+```python
+PROFILE_TEMPLATE = [
+    {"fieldname": "Name", "fieldtype": "text"},
+    {"fieldname": "Age", "fieldtype": "number"},
+    {"fieldname": "History", "fieldtype": "text"},
+]
+```
 
-This will present the player with an EvMenu showing this basic form:
+这将向玩家展示一个 `EvMenu`，显示此基本表单：
 
 ```
       Name:
@@ -37,15 +30,14 @@ This will present the player with an EvMenu showing this basic form:
    History:
 ```
 
-While in this menu, the player can assign a new value to any field with the
-syntax <field> = <new value>, like so:
+在此菜单中，玩家可以使用 `<field> = <new value>` 的语法为任何字段分配新值，例如：
 
 ```
     > name = Ashley
     Field 'Name' set to: Ashley
 ```
 
-Typing 'look' by itself will show the form and its current values.
+单独输入 'look' 将显示表单及其当前值：
 
 ```
     > look
@@ -55,8 +47,7 @@ Typing 'look' by itself will show the form and its current values.
     History:
 ```
 
-Number fields require an integer input, and will reject any text that can't
-be converted into an integer.
+数字字段要求输入整数，并会拒绝任何无法转换为整数的文本：
 
 ```
     > age = youthful
@@ -65,7 +56,7 @@ be converted into an integer.
     Field 'Age' set to: 31
 ```
 
-Form data is presented as an EvTable, so text of any length will wrap cleanly.
+表单数据以 `EvTable` 的形式呈现，因此任意长度的文本将整齐地换行。
 
 ```
     > history = EVERY MORNING I WAKE UP AND OPEN PALM SLAM[...]
@@ -80,85 +71,63 @@ Form data is presented as an EvTable, so text of any length will wrap cleanly.
             MOVE AND I DO EVERY MOVE HARD.
 ```
 
-When the player types 'submit' (or your specified submit command), the menu
-quits and the form's data is passed to your specified function as a dictionary,
-like so:
+当玩家输入 'submit'（或您指定的提交命令）时，菜单退出，表单的数据将作为字典传递给您指定的函数，如下所示：
 
-    formdata = {"Name":"Ashley", "Age":31, "History":"EVERY MORNING I[...]"}
-
-You can do whatever you like with this data in your function - forms can be used
-to set data on a character, to help builders create objects, or for players to
-craft items or perform other complicated actions with many variables involved.
-
-The data that your form will accept can also be specified in your form template -
-let's say, for example, that you won't accept ages under 18 or over 100. You can
-do this by specifying "min" and "max" values in your field's dictionary:
-
-```
-    PROFILE_TEMPLATE = [
-    {"fieldname":"Name", "fieldtype":"text"},
-    {"fieldname":"Age", "fieldtype":"number", "min":18, "max":100},
-    {"fieldname":"History", "fieldtype":"text"}
-    ]
+```python
+formdata = {"Name": "Ashley", "Age": 31, "History": "EVERY MORNING I[...]}
 ```
 
-Now if the player tries to enter a value out of range, the form will not acept the
-given value.
+您可以在该函数中对这些数据进行任意处理 - 表单可以用于在角色上设置数据，帮助构建器创建对象，或用于玩家制作物品或执行涉及多个变量的其他复杂操作。
+
+您可以在表单模板中也指定表单将接受的数据 - 假设例如您不接受低于 18 岁或高于 100 岁的值。您可以通过在字段字典中指定 "min" 和 "max" 值来实现：
+
+```python
+PROFILE_TEMPLATE = [
+    {"fieldname": "Name", "fieldtype": "text"},
+    {"fieldname": "Age", "fieldtype": "number", "min": 18, "max": 100},
+    {"fieldname": "History", "fieldtype": "text"},
+]
+```
+
+现在，如果玩家试图输入超出范围的值，表单将不接受该值：
 
 ```
     > age = 10
-    Field 'Age' reqiures a minimum value of 18.
+    Field 'Age' requires a minimum value of 18.
     > age = 900
     Field 'Age' has a maximum value of 100.
 ```
 
-Setting 'min' and 'max' for a text field will instead act as a minimum or
-maximum character length for the player's input.
+为文本字段设置 'min' 和 'max' 则将分别作为玩家输入的最小或最大字符长度。
 
-There are lots of ways to present the form to the player - fields can have default
-values or show a custom message in place of a blank value, and player input can be
-verified by a custom function, allowing for a great deal of flexibility. There
-is also an option for 'bool' fields, which accept only a True / False input and
-can be customized to represent the choice to the player however you like (E.G.
-Yes/No, On/Off, Enabled/Disabled, etc.)
+提供表单给玩家有很多种方式 - 字段可以具有默认值或在空值时显示自定义消息，并且玩家输入可以通过自定义函数进行验证，从而提供了极大的灵活性。还有一个 'bool' 字段的选项，仅接受 True / False 输入，并可以自定义表示给玩家的选择（例如：是/否，开/关，启用/禁用等）。
 
-This module contains a simple example form that demonstrates all of the included
-functionality - a command that allows a player to compose a message to another
-online character and have it send after a custom delay. You can test it by
-importing this module in your game's `default_cmdsets.py` module and adding
-CmdTestMenu to your default character's command set.
+此模块包含一个简单的示例表单，演示了所有包含的功能 - 一个允许玩家撰写消息给另一个在线角色并在自定义延迟后发送的命令。您可以通过在游戏的 `default_cmdsets.py` 模块中导入此模块并将 `CmdTestMenu` 添加到您的默认角色的命令集中进行测试。
 
-## FIELD TEMPLATE KEYS:
+## 字段模板键：
 
-### Required:
+### 必需：
 
 ```
-    fieldname (str): Name of the field, as presented to the player.
-    fieldtype (str): Type of value required: 'text', 'number', or 'bool'.
+fieldname (str): 字段名称，呈现给玩家。
+fieldtype (str): 所需值的类型：'text'、'number' 或 'bool'。
 ```
 
-### Optional:
+### 可选：
 
-- max (int): Maximum character length (if text) or value (if number).
-- min (int): Minimum charater length (if text) or value (if number).
-- truestr (str): String for a 'True' value in a bool field.
-  (E.G. 'On', 'Enabled', 'Yes')
-- falsestr (str): String for a 'False' value in a bool field.
-  (E.G. 'Off', 'Disabled', 'No')
-- default (str): Initial value (blank if not given).
-- blankmsg (str): Message to show in place of value when field is blank.
-- cantclear (bool): Field can't be cleared if True.
-- required (bool): If True, form cannot be submitted while field is blank.
-- verifyfunc (callable): Name of a callable used to verify input - takes
-  (caller, value) as arguments. If the function returns True,
-  the player's input is considered valid - if it returns False,
-  the input is rejected. Any other value returned will act as
-  the field's new value, replacing the player's input. This
-  allows for values that aren't strings or integers (such as
-  object dbrefs). For boolean fields, return '0' or '1' to set
-  the field to False or True.
+- max (int): 最大字符长度（如果是文本）或值（如果是数字）。
+- min (int): 最小字符长度（如果是文本）或值（如果是数字）。
+- truestr (str): 在布尔字段中表示 'True' 值的字符串。
+  （例如，'开启'、'启用'、'是'）
+- falsestr (str): 在布尔字段中表示 'False' 值的字符串。
+  （例如，'关闭'、'禁用'、'否'）
+- default (str): 初始值（如果未给出则为空）。
+- blankmsg (str): 字段为空时显示的消息。
+- cantclear (bool): 如果为 True，则字段不能被清除。
+- required (bool): 如果为 True，则表单在字段为空时不能提交。
+- verifyfunc (callable): 用于验证输入的可调用名称 - 以 `(caller, value)` 为参数。如果函数返回 True，则玩家的输入被视为有效 - 如果返回 False，则输入被拒绝。返回的任何其他值将充当字段的新值，替换玩家的输入。这允许使用非字符串或整数的值（例如对象 dbrefs）。对于布尔字段，返回 '0' 或 '1' 将将该字段设置为 False 或 True。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/fieldfill/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/fieldfill/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,48 +1,40 @@
-# In-Game Mail system
+# 游戏内邮件系统
 
-Contribution by grungies1138 2016
+由 grungies1138 贡献，2016
 
-A simple Brandymail style mail system that uses the `Msg` class from Evennia
-Core. It has two Commands for either sending mails between Accounts (out of game)
-or between Characters (in-game). The two types of mails can be used together or
-on their own.
+这是一个简单的 Brandymail 风格邮件系统，使用 Evennia Core 的 `Msg` 类。它提供了两个命令，用于在账户之间（游戏外）或角色之间（游戏内）发送邮件。这两种类型的邮件可以一起使用，也可以单独使用。
 
-   - `CmdMail` - this should sit on the Account cmdset and makes the `mail` command
-    available both IC and OOC. Mails will always go to Accounts (other players).
-   - `CmdMailCharacter` - this should sit on the Character cmdset and makes the `mail`
-    command ONLY available when puppeting a character. Mails will be sent to other
-    Characters only and will not be available when OOC.
-   - If adding *both* commands to their respective cmdsets, you'll get two separate
-    IC and OOC mailing systems, with different lists of mail for IC and OOC modes.
+- `CmdMail` - 应该放在账户命令集上，使 `mail` 命令在 IC 和 OOC 模式下都可用。邮件将始终发送到账户（其他玩家）。
+- `CmdMailCharacter` - 应该放在角色命令集上，使 `mail` 命令仅在控制角色时可用。邮件将仅发送给其他角色，并且在 OOC 模式下不可用。
+- 如果将*两个*命令添加到各自的命令集中，您将获得两个独立的 IC 和 OOC 邮件系统，IC 和 OOC 模式下的邮件列表不同。
 
-## Installation:
+## 安装：
 
-Install one or both of the following (see above):
+安装以下一个或两个（见上文）：
 
-- CmdMail (IC + OOC mail, sent between players)
+- CmdMail（IC + OOC 邮件，玩家之间发送）
 
     ```python
     # mygame/commands/default_cmds.py
 
     from evennia.contrib.game_systems import mail
 
-    # in AccountCmdSet.at_cmdset_creation:
+    # 在 AccountCmdSet.at_cmdset_creation 中：
         self.add(mail.CmdMail())
     ```
-- CmdMailCharacter (optional, IC only mail, sent between characters)
+- CmdMailCharacter（可选，仅 IC 邮件，角色之间发送）
 
     ```python
     # mygame/commands/default_cmds.py
 
     from evennia.contrib.game_systems import mail
 
-    # in CharacterCmdSet.at_cmdset_creation:
+    # 在 CharacterCmdSet.at_cmdset_creation 中：
         self.add(mail.CmdMailCharacter())
     ```
-Once installed, use `help mail` in game for help with the mail command. Use
-ic/ooc to switch in and out of IC/OOC modes.
+安装后，在游戏中使用 `help mail` 获取有关邮件命令的帮助。使用 `ic/ooc` 切换进入和退出 IC/OOC 模式。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/mail/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/mail/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,66 +1,55 @@
 # Slow Exit
 
-Contribution by Griatch 2014
+由 Griatch 于 2014 年贡献
 
-An example of an Exit-type that delays its traversal. This simulates
-slow movement, common in many games. The contrib also
-contains two commands, `setspeed` and `stop` for changing the movement speed
-and abort an ongoing traversal, respectively.
+这是一个延迟穿越的 Exit 类型示例。这模拟了许多游戏中常见的缓慢移动。该 contrib 还包含两个命令，`setspeed` 和 `stop`，分别用于更改移动速度和中止正在进行的穿越。
 
-## Installation:
+## 安装：
 
-To try out an exit of this type, you could connect two existing rooms
-using something like this:
-
-    @open north:contrib.grid.slow_exit.SlowExit = <destination>
-
-To make this your new default exit, modify `mygame/typeclasses/exits.py`
-to import this module and change the default `Exit` class to inherit
-from `SlowExit` instead.
+要尝试这种类型的出口，您可以使用如下命令连接两个现有房间：
 
 ```
-# in mygame/typeclasses/exits.py
+@open north:contrib.grid.slow_exit.SlowExit = <destination>
+```
+
+要将其设为新的默认出口，请修改 `mygame/typeclasses/exits.py` 以导入此模块，并将默认的 `Exit` 类更改为继承自 `SlowExit`。
+
+```python
+# 在 mygame/typeclasses/exits.py 中
 
 from evennia.contrib.grid.slowexit import SlowExit
 
 class Exit(SlowExit):
     # ...
-
 ```
 
-To get the ability to change your speed and abort your movement, import
+要获取更改速度和中止移动的功能，请导入以下内容：
 
 ```python
-# in mygame/commands/default_cmdsets.py
+# 在 mygame/commands/default_cmdsets.py 中
 
-from evennia.contrib.grid import slow_exit  <---
+from evennia.contrib.grid import slow_exit  # <---
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     # ...
     def at_cmdset_creation(self):
         # ...
-        self.add(slow_exit.SlowDoorCmdSet)  <---
-
+        self.add(slow_exit.SlowDoorCmdSet)  # <---
 ```
 
-simply import and add CmdSetSpeed and CmdStop from this module to your
-default cmdset (see tutorials on how to do this if you are unsure).
+只需从此模块导入并添加 CmdSetSpeed 和 CmdStop 到您的默认 cmdset（如果不确定如何操作，请参阅教程）。
 
-To try out an exit of this type, you could connect two existing rooms using
-something like this:
+要尝试这种类型的出口，您可以使用如下命令连接两个现有房间：
 
-    @open north:contrib.grid.slow_exit.SlowExit = <destination>
+```
+@open north:contrib.grid.slow_exit.SlowExit = <destination>
+```
 
+## 注意事项：
 
-## Notes:
-
-This implementation is efficient but not persistent; so incomplete
-movement will be lost in a server reload. This is acceptable for most
-game types - to simulate longer travel times (more than the couple of
-seconds assumed here), a more persistent variant using Scripts or the
-TickerHandler might be better.
+此实现是高效的但不是持久的；因此，在服务器重新加载时，不完整的移动将会丢失。对于大多数游戏类型来说，这是可以接受的——要模拟更长的旅行时间（超过此处假定的几秒钟），使用 Scripts 或 TickerHandler 的更持久的变体可能更好。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/grid/slow_exit/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/grid/slow_exit/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

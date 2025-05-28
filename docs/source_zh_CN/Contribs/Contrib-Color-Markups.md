@@ -1,41 +1,31 @@
-# Additional Color markups
+# 附加颜色标记
 
-Contrib by Griatch, 2017
+由 Griatch 贡献，2017年
 
-Additional color markup styles for Evennia (extending or replacing the default
-`|r`, `|234`). Adds support for MUSH-style (`%cr`, `%c123`) and/or legacy-Evennia
-(`{r`, `{123`).
+为 Evennia 提供额外的颜色标记样式（扩展或替换默认的 `|r`, `|234`）。添加对 MUSH 风格 (`%cr`, `%c123`) 和/或 传统 Evennia (`{r`, `{123`) 的支持。
 
+## 安装
 
-## Installation
+将所需的样式变量从此模块导入到 `mygame/server/conf/settings.py`，并将其添加到以下设置变量中。每个变量都指定为一个列表，可以为每个变量添加多个这样的列表以支持多种格式。请注意，列表顺序会影响应用的正则表达式优先级。您必须重新启动 Portal 和 Server 才能更新颜色标签。
 
-Import the desired style variables from this module into
-mygame/server/conf/settings.py and add them to the settings variables below.
-Each are specified as a list, and multiple such lists can be added to each
-variable to support multiple formats. Note that list order affects which regexes
-are applied first. You must restart both Portal and Server for color tags to
-update.
+将以下设置变量分配（参见下面的示例）：
 
-Assign to the following settings variables (see below for example):
+- `COLOR_ANSI_EXTRA_MAP` - 正则表达式与 ANSI 颜色之间的映射
+- `COLOR_XTERM256_EXTRA_FG` - 定义 XTERM256 前景色的正则表达式
+- `COLOR_XTERM256_EXTRA_BG` - 定义 XTERM256 背景色的正则表达式
+- `COLOR_XTERM256_EXTRA_GFG` - 定义 XTERM256 灰度前景色的正则表达式
+- `COLOR_XTERM256_EXTRA_GBG` - 定义 XTERM256 灰度背景色的正则表达式
+- `COLOR_ANSI_BRIGHT_BG_EXTRA_MAP` - ANSI 不支持明亮背景；我们通过将 ANSI 标记映射到匹配的明亮 XTERM256 背景来“伪造”这种效果
 
-    COLOR_ANSI_EXTRA_MAP - a mapping between regexes and ANSI colors
-    COLOR_XTERM256_EXTRA_FG - regex for defining XTERM256 foreground colors
-    COLOR_XTERM256_EXTRA_BG - regex for defining XTERM256 background colors
-    COLOR_XTERM256_EXTRA_GFG - regex for defining XTERM256 grayscale foreground colors
-    COLOR_XTERM256_EXTRA_GBG - regex for defining XTERM256 grayscale background colors
-    COLOR_ANSI_BRIGHT_BG_EXTRA_MAP = ANSI does not support bright backgrounds; we fake
-    this by mapping ANSI markup to matching bright XTERM256 backgrounds
+- `COLOR_NO_DEFAULT` - 设置为 True/False。如果为 False（默认），则扩展默认标记；否则完全替换它。
 
-    COLOR_NO_DEFAULT - Set True/False. If False (default), extend the default
-    markup, otherwise replace it completely.
+## 示例
 
-## Example
-
-To add the {- "curly-bracket" style, add the following to your settings file,
-then reboot both Server and Portal:
+要添加 `{` - "大括号" 风格，请在设置文件中添加以下内容，然后重启 Server 和 Portal：
 
 ```python
 from evennia.contrib.base_systems import color_markups
+
 COLOR_ANSI_EXTRA_MAP = color_markups.CURLY_COLOR_ANSI_EXTRA_MAP
 COLOR_XTERM256_EXTRA_FG = color_markups.CURLY_COLOR_XTERM256_EXTRA_FG
 COLOR_XTERM256_EXTRA_BG = color_markups.CURLY_COLOR_XTERM256_EXTRA_BG
@@ -44,11 +34,11 @@ COLOR_XTERM256_EXTRA_GBG = color_markups.CURLY_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.CURLY_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 ```
 
-To add the `%c-` "mux/mush" style, add the following to your settings file, then
-reboot both Server and Portal:
+要添加 `%c-` "mux/mush" 风格，请在设置文件中添加以下内容，然后重启 Server 和 Portal：
 
 ```python
 from evennia.contrib.base_systems import color_markups
+
 COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
 COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
 COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
@@ -60,4 +50,4 @@ COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/base_systems/color_markups/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/base_systems/color_markups/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

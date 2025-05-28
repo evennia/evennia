@@ -1,15 +1,14 @@
-# Character Creator
+# 角色创建器
 
-Contribution by InspectorCaracal, 2022
+由 InspectorCaracal 贡献，2022年
 
-Commands for managing and initiating an in-game character-creation menu.
+用于管理和启动游戏内角色创建菜单的命令。
 
-## Installation
+## 安装
 
-In your game folder `commands/default_cmdsets.py`, import and add
-`ContribChargenCmdSet` to your `AccountCmdSet`.
+在游戏文件夹的 `commands/default_cmdsets.py` 中，导入并将 `ContribChargenCmdSet` 添加到 `AccountCmdSet` 中。
 
-Example:
+示例：
 ```python
 from evennia.contrib.rpg.character_creator.character_creator import ContribChargenCmdSet
 
@@ -20,109 +19,90 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(ContribChargenCmdSet)
 ```
 
-In your game folder `typeclasses/accounts.py`, import and inherit from `ContribChargenAccount`
-on your Account class.
+在游戏文件夹的 `typeclasses/accounts.py` 中，导入并从 `ContribChargenAccount` 继承你的账户类。
 
-(Alternatively, you can copy the `at_look` method directly into your own class.)
+（你也可以将 `at_look` 方法直接复制到自己的类中。）
 
-### Example:
+### 示例：
 
 ```python
 from evennia.contrib.rpg.character_creator.character_creator import ContribChargenAccount
 
 class Account(ContribChargenAccount):
-    # your Account class code
+    # 你的账户类代码
 ```
 
-In your settings file `server/conf/settings.py`, add the following settings:
+在设置文件 `server/conf/settings.py` 中，添加以下设置：
 
 ```python
 AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 AUTO_PUPPET_ON_LOGIN = False
 ```
 
-(If you want to allow players to create more than one character, you can
-customize that with the setting `MAX_NR_CHARACTERS`.)
+（如果你想允许玩家创建多个角色，可以使用设置 `MAX_NR_CHARACTERS` 自定义。）
 
-By default, the new `charcreate` command will reference the example menu
-provided by the contrib, so you can test it out before building your own menu.
-You can reference
-[the example menu here](github:develop/evennia/contrib/rpg/character_creator/example_menu.py) for
-ideas on how to build your own.
+默认情况下，新的 `charcreate` 命令将引用由此贡献提供的示例菜单，因此你可以在构建自己的菜单之前对其进行测试。
+你可以在 [此处参考示例菜单](github:develop/evennia/contrib/rpg/character_creator/example_menu.py)，以获取构建自己菜单的思路。
 
-Once you have your own menu, just add it to your settings to use it. e.g. if your menu is in
-`mygame/word/chargen_menu.py`, you'd add the following to your settings file:
+一旦你有了自己的菜单，只需将其添加到设置中以使用。例如，如果你的菜单在 `mygame/word/chargen_menu.py` 中，则在设置文件中添加以下内容：
 
 ```python
 CHARGEN_MENU = "world.chargen_menu"
 ```
 
-## Usage
+## 使用
 
-### The EvMenu
+### EvMenu
 
-In order to use the contrib, you will need to create your own chargen EvMenu.
-The included `example_menu.py` gives a number of useful menu node techniques
-with basic attribute examples for you to reference. It can be run as-is as a
-tutorial for yourself/your devs, or used as base for your own menu.
+为了使用此贡献，你需要创建自己的角色创建 EvMenu。附带的 `example_menu.py` 提供了多种有用的菜单节点技巧，以及基本属性示例供你参考。它可以直接以教学模式运行供你自己/开发者使用，或用作你自己菜单的基础。
 
-The example menu includes code, tips, and instructions for the following types
-of decision nodes:
+示例菜单包含代码、提示和以下类型决策节点的说明：
 
-#### Informational Pages
+#### 信息页
 
-A small set of nodes that let you page through information on different choices before committing to one.
+一小组节点，让你在承诺之前随意浏览不同选择的信息。
 
-#### Option Categories
+#### 选项类别
 
-A pair of nodes which let you divide an arbitrary number of options into separate categories.
+一对节点，允许你将任意数量的选项分为单独的类别。
 
-The base node has a list of categories as the options, and the child node displays the actual character choices.
+基本节点有一个选项列表作为类别，子节点显示实际的角色选择。
 
-#### Multiple Choice
+#### 多项选择
 
-Allows players to select and deselect options from the list in order to choose more than one.
+允许玩家从列表中选择和取消选择选项，以便选择多个选项。
 
-#### Starting Objects
+#### 起始对象
 
-Allows players to choose from a selection of starting objects, which are then created on chargen completion.
+允许玩家从一组选定的起始对象中选择，完成角色创建时将创造这些对象。
 
-#### Choosing a Name
+#### 选择姓名
 
-The contrib assumes the player will choose their name during character creation,
-so the necessary code for doing so is of course included!
+该贡献假定玩家将在角色创建过程中选择他们的姓名，因此包含必要代码来完成此操作！
 
+### `charcreate` 命令
 
-### `charcreate` command
+该贡献重载了角色创建命令 `charcreate`，以使用角色创建菜单，并支持退出/恢复流程。此外，与核心命令不同，它设计为在菜单中稍后选择角色姓名，因此不会解析传递给它的任何参数。
 
-The contrib overrides the character creation command - `charcreate` - to use a
-character creator menu, as well as supporting exiting/resuming the process. In
-addition, unlike the core command, it's designed for the character name to be
-chosen later on via the menu, so it won't parse any arguments passed to it.
+### 对 `Account` 的更改
 
-### Changes to `Account`
+贡献版本的工作方式与核心 Evennia 大致相同，但修改了 `ooc_appearance_template` 以匹配贡献的命令语法，并修改了 `at_look` 方法以识别进行中的角色。
 
-The contrib version works mostly the same as core evennia, but modifies `ooc_appearance_template`
-to match the contrib's command syntax, and the `at_look` method to recognize an in-progress
-character.
-
-If you've modified your own `at_look` hook, it's an easy change to add: just add this section to the
-playable character list loop.
+如果你已经修改了自己的 `at_look` 钩子，这是一项简单的更改：只需在可玩角色列表循环的开头添加此部分。
 
 ```python
-    # the beginning of the loop starts here
+    # 循环开始的地方
     for char in characters:
         # ...
-        # contrib code starts here
+        # 贡献代码从这里开始
         if char.db.chargen_step:
-            # currently in-progress character; don't display placeholder names
-            result.append(" - |Yin progress|n (|wcharcreate|n to continue)")
+            # 当前正在进行的角色；不显示占位符名称
+            result.append(" - |Y进行中|n (|wcharcreate|n 继续)")
             continue
-        # the rest of your code continues here
+        # 其余代码继续在这里
 ```
-
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/rpg/character_creator/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/rpg/character_creator/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

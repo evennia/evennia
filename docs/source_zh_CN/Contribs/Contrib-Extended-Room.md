@@ -1,22 +1,14 @@
 # Extended Room
 
-Contribution - Griatch 2012, vincent-lg 2019, Griatch 2023
+贡献者 - Griatch 2012, vincent-lg 2019, Griatch 2023
 
-This extends the normal `Room` typeclass to allow its description to change with
-time-of-day and/or season as well as any other state (like flooded or dark).
-Embedding `$state(burning, This place is on fire!)` in the description will
-allow for changing the description based on room state. The room also supports
-`details` for the player to look at in the room (without having to create a new
-in-game object for each), as well as support for random echoes. The room
-comes with a set of alternate commands for `look` and `@desc`, as well as new
-commands `detail`, `roomstate` and `time`.
+该功能扩展了正常的 `Room` 类型类，允许其描述根据时间、季节或其他状态（如洪水或黑暗）而变化。在描述中嵌入 `$state(burning, This place is on fire!)` 将允许根据房间状态更改描述。该房间还支持供玩家查看的 `details`（无需为每一个对象创建新的游戏内对象），并支持随机回声。该房间带有一组替代的 `look` 和 `@desc` 命令，以及新的命令 `detail`、`roomstate` 和 `time`。
 
-## Installation
+## 安装
 
-Add the `ExtendedRoomCmdset` to the default character cmdset will add all
-new commands for use.
+将 `ExtendedRoomCmdset` 添加到默认角色 cmdset 将添加所有新命令供使用。
 
-In more detail, in `mygame/commands/default_cmdsets.py`:
+更具体地说，在 `mygame/commands/default_cmdsets.py` 中：
 
 ```python
 ...
@@ -28,25 +20,20 @@ class CharacterCmdset(default_cmds.CharacterCmdSet):
         super().at_cmdset_creation()
         ...
         self.add(extended_room.ExtendedRoomCmdSet)  # <---
-
 ```
 
-Then reload to make the new commands available. Note that they only work
-on rooms with the typeclass `ExtendedRoom`. Create new rooms with the right
-typeclass or use the `typeclass` command to swap existing rooms. Note that since
-this contrib overrides the `look` and `@desc` commands, you will need to add the
-`extended_room.ExtendedRoomCmdSet` to the default character cmdset *after*
-`super().at_cmdset_creation()`, or they will be overridden by the default look.
+然后重新加载以使新命令可用。请注意，它们仅在具有 `ExtendedRoom` 类型类的房间中有效。使用正确的类型类创建新房间或使用 `typeclass` 命令切换现有房间。请注意，由于此贡献覆盖了 `look` 和 `@desc` 命令，因此您需要在 `super().at_cmdset_creation()` 之后将 `extended_room.ExtendedRoomCmdSet` 添加到默认角色 cmdset，否则它们将被默认的 look 命令覆盖。
 
-To dig a new extended room:
+要挖掘新的扩展房间：
 
-    dig myroom:evennia.contrib.grid.extended_room.ExtendedRoom = north,south
+```
+dig myroom:evennia.contrib.grid.extended_room.ExtendedRoom = north,south
+```
 
-To make all new rooms ExtendedRooms without having to specify it, make your
-`Room` typeclass inherit from the `ExtendedRoom` and then reload:
+要使所有新房间成为 ExtendedRooms，而不必每次指定它，可以让您的 `Room` 类型类继承自 `ExtendedRoom`，然后重新加载：
 
 ```python
-# in mygame/typeclasses/rooms.py
+# 在 mygame/typeclasses/rooms.py 中
 
 from evennia.contrib.grid.extended_room import ExtendedRoom
 
@@ -54,142 +41,142 @@ from evennia.contrib.grid.extended_room import ExtendedRoom
 
 class Room(ObjectParent, ExtendedRoom):
     # ...
-
 ```
 
-## Features
+## 功能
 
-### State-dependent description slots
+### 状态依赖的描述槽
 
-By default, the normal `room.db.desc` description is used. You can however
-add new state-ful descriptions with `room.add_desc(description,
-room_state=roomstate)` or with the in-game command
+默认情况下，使用常规的 `room.db.desc` 描述。您可以通过 `room.add_desc(description, room_state=roomstate)` 或通过游戏内命令添加新的状态描述：
 
 ```
 @desc/roomstate [<description>]
 ```
 
-For example
+例如：
 
 ```
-@desc/dark This room is pitch black.`.
-
+@desc/dark 这个房间一片漆黑。
 ```
 
+这些将存储在属性 `desc_<roomstate>` 中。要设置默认回退描述，只需使用 `@desc <description>`。要在房间上激活某个状态，使用 `room.add/remove_state(*roomstate)` 或游戏内命令：
 
-These will be stored in Attributes `desc_<roomstate>`. To set the default,
-fallback description, just use `@desc <description>`.
-To activate a state on the room, use `room.add/remove_state(*roomstate)` or the in-game
-command
 ```
-roomstate <state>      (use it again to toggle the state off)
+roomstate <state>      (再次使用以切换状态)
 ```
-For example
+
+例如：
+
 ```
 roomstate dark
 ```
-There is one in-built, time-based state `season`. By default these are 'spring',
-'summer', 'autumn' and 'winter'. The `room.get_season()` method returns the
-current season based on the in-game time. By default they change with a 12-month
-in-game time schedule. You can control them with
-```
-ExtendedRoom.months_per_year      # default 12
-ExtendedRoom.seasons_per year     # a dict of {"season": (start, end), ...} where
-                                  # start/end are given in fractions of the whole year
-```
-To set a seasonal description, just set it as normal, with `room.add_desc` or
-in-game with
+
+有一个内置的、基于时间的状态 `season`。默认情况下，这些为 'spring'、'summer'、'autumn' 和 'winter'。`room.get_season()` 方法返回当前季节，基于游戏内时间。默认情况下，它们随 12 个月的游戏内时间安排变化。您可以通过以下方式控制它们：
 
 ```
-@desc/winter This room is filled with snow.
-@desc/autumn Red and yellow leaves cover the ground.
+ExtendedRoom.months_per_year      # 默认 12
+ExtendedRoom.seasons_per_year      # 字典格式 {"season": (start, end), ...} 
+                                      # 其中 start/end 是以整年比例给出的
 ```
 
-Normally the season changes with the in-game time, you can also 'force' a given
-season by setting its state
+要设置季节性描述，只需像往常一样使用 `room.add_desc` 或在游戏内用以下命令：
+
+```
+@desc/winter 这个房间充满了雪。
+@desc/autumn 红色和黄色的树叶覆盖在地面上。
+```
+
+通常季节随游戏内时间变化，您也可以通过设置状态来“强制”设置某个季节：
+
 ```
 roomstate winter
 ```
-If you set the season manually like this, it won't change automatically again
-until you unset it.
 
-You can get the stateful description from the room with `room.get_stateful_desc()`.
+如果您像这样手动设置季节，直到您取消设置之前，它将不会再次自动变化。
 
-### Changing parts of description based on state
+您可以通过 `room.get_stateful_desc()` 获取房间的状态描述。
 
-All descriptions can have embedded `$state(roomstate, description)`
-[FuncParser tags](FuncParser) embedded in them. Here is an example:
+### 根据状态更改描述的部分
+
+所有描述都可以嵌入 `$state(roomstate, description)` [FuncParser 标签](FuncParser) 中。以下是一个示例：
 
 ```py
-room.add_desc("This a nice beach. "
-              "$state(empty, It is completely empty)"
-              "$state(full, It is full of people).", room_state="summer")
+room.add_desc("这是一个漂亮的海滩。 "
+              "$state(empty, 它完全空无一人)"
+              "$state(full, 它人满为患)。", room_state="summer")
 ```
 
-This is a summer-description with special embedded strings. If you set the room
-with
-
-    > room.add_room_state("summer", "empty")
-    > room.get_stateful_desc()
-
-    This is a nice beach. It is completely empty.
-
-    > room.remove_room_state("empty")
-    > room.add_room_state("full")
-    > room.get_stateful_desc()
-
-    This is a nice beach. It is full of people.
-
-There are four default time-of-day states that are meant to be used with these tags. The
-room tracks and changes these automatically. By default they are 'morning',
-'afternoon', 'evening' and 'night'. You can get the current time-slot with
-`room.get_time_of_day`. You can control them with
+这是一个带有特殊嵌入字符串的夏季描述。如果您设置房间为：
 
 ```
-ExtendedRoom.hours_per_day    # default 24
-ExtendedRoom.times_of_day     # dict of {season: (start, end), ...} where
-                              # the start/end are given as fractions of the day.
+> room.add_room_state("summer", "empty")
+> room.get_stateful_desc()
 ```
 
-You use these inside descriptions as normal:
-
-    "A glade. $(morning, The morning sun shines down through the branches)."
-
-### Details
-
-_Details_ are "virtual" targets to look at in a room, without having to create a
-new database instance for every thing. It's good to add more information to a
-location. The details are stored as strings in a dictionary.
-
-    detail window = There is a window leading out.
-    detail rock = The rock has a text written on it: 'Do not dare lift me'.
-
-When you are in the room you can then do `look window` or `look rock` and get
-the matching detail-description. This requires the new custom `look` command.
-
-### Random echoes
-
-The `ExtendedRoom` supports random echoes. Just set them as an Attribute list
-`room_messages`:
+将得到：
 
 ```
-room.room_message_rate = 120   # in seconds. 0 to disable
-room.db.room_messages = ["A car passes by.", "You hear the sound of car horns."]
-room.start_repeat_broadcast_messages()   # also a server reload works
+这是一个漂亮的海滩。它完全空无一人。
 ```
 
-These will start randomly echoing to the room every 120s.
+```
+> room.remove_room_state("empty")
+> room.add_room_state("full")
+> room.get_stateful_desc()
+```
 
+将得到：
 
-### Extra commands
+```
+这是一个漂亮的海滩。它人满为患。
+```
 
-- `CmdExtendedRoomLook` (`look`) - look command supporting room details
-- `CmdExtendedRoomDesc` (`@desc`) - desc command allowing to add stateful descs,
-- `CmdExtendeRoomState` (`roomstate`) - toggle room states
-- `CmdExtendedRoomDetail` (`detail`) - list and manipulate room details
-- `CmdExtendedRoomGameTime` (`time`) - Shows the current time and season in the room.
+有四个默认的时间状态，旨在与这些标签一起使用。房间会自动跟踪并更改这些状态。默认情况下，它们为 'morning'、'afternoon'、'evening' 和 'night'。您可以通过 `room.get_time_of_day` 获取当前时间段。您可以通过以下方式控制这些：
+
+```
+ExtendedRoom.hours_per_day    # 默认 24
+ExtendedRoom.times_of_day      # 字典格式 {season: (start, end), ...} 
+                                 # 其中 start/end 以比例形式给出
+```
+
+您可以在描述中正常使用这些：
+
+```
+"一个林间空地。 $(morning, 清晨的阳光透过树枝洒下。)"
+```
+
+### 详细信息
+
+_详细信息_ 是在房间内查看的“虚拟”目标，而无需为每个目标创建新的数据库实例。这对于向位置添加更多信息非常有用。详细信息以字符串形式存储在字典中。
+
+```
+detail window = 有一扇窗户通往外面。
+detail rock = 这块岩石上写着：“不要轻举妄动”。
+```
+
+当您在房间中时，您可以执行 `look window` 或 `look rock`，并获得匹配的详细描述。这需要新的自定义 `look` 命令。
+
+### 随机回声
+
+`ExtendedRoom` 支持随机回声。只需将其设置为属性列表 `room_messages`：
+
+```python
+room.room_message_rate = 120   # 秒数，0 表示禁用
+room.db.room_messages = ["一辆车经过。", "听到汽车鸣笛的声音。"]
+room.start_repeat_broadcast_messages()   # 也可以通过重新加载服务器来实现
+```
+
+这将开始每 120 秒随机回响到房间。
+
+### 额外命令
+
+- `CmdExtendedRoomLook` (`look`) - 支持房间详细信息的查看命令
+- `CmdExtendedRoomDesc` (`@desc`) - 允许添加状态描述的描述命令
+- `CmdExtendedRoomState` (`roomstate`) - 切换房间状态
+- `CmdExtendedRoomDetail` (`detail`) - 列出及操作房间详细信息
+- `CmdExtendedRoomGameTime` (`time`) - 显示房间中的当前时间和季节。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/grid/extended_room/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/grid/extended_room/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

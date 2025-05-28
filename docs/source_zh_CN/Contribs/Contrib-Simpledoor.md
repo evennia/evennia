@@ -1,24 +1,17 @@
 # SimpleDoor
 
-Contribution by Griatch, 2016
+由 Griatch 贡献于 2016 年
 
-A simple two-way exit that represents a door that can be opened and
-closed from both sides. Can easily be expanded to make it lockable, 
-destroyable etc. 
+这是一个简单的双向出口，代表可以从两侧打开和关闭的门。可以轻松扩展以使其可锁定、可破坏等。
 
-Note that the simpledoor is based on Evennia locks, so it will
-not work for a superuser (which bypasses all locks). The superuser
-will always appear to be able to close/open the door over and over
-without the locks stopping you. To use the door, use `quell` or a
-non-superuser account.
+请注意，SimpleDoor 基于 Evennia 的锁，因此它对超级用户无效（超级用户会绕过所有锁）。超级用户总是可以反复关闭/打开门，而锁不会阻止你。要使用门，请使用 `quell` 或非超级用户账户。
 
-## Installation:
+## 安装：
 
-Import `SimpleDoorCmdSet` from this module into `mygame/commands/default_cmdsets`
-and add it to your `CharacterCmdSet`:
+将此模块中的 `SimpleDoorCmdSet` 导入 `mygame/commands/default_cmdsets`，并将其添加到你的 `CharacterCmdSet`：
 
 ```python
-# in mygame/commands/default_cmdsets.py
+# 在 mygame/commands/default_cmdsets.py 中
 
 from evennia.contrib.grid import simpledoor  <---
 
@@ -30,22 +23,20 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ```
 
-## Usage:
+## 使用：
 
-To try it out, `dig` a new room and then use the (overloaded) `@open`
-commmand to open a new doorway to it like this:
+要试用，请 `dig` 一个新房间，然后使用（重载的）`@open` 命令打开一个通往它的新门，如下所示：
 
-    @open doorway:contrib.grid.simpledoor.SimpleDoor = otherroom
+```
+@open doorway:contrib.grid.simpledoor.SimpleDoor = otherroom
 
-    open doorway
-    close doorway
+open doorway
+close doorway
+```
 
-Note: This uses locks, so if you are a superuser you will not be blocked by
-a locked door - `quell` yourself, if so. Normal users will find that they
-cannot pass through either side of the door once it's closed from the other
-side.
+注意：这使用了锁，因此如果你是超级用户，你将不会被锁住的门阻挡——如果是这样，请 `quell` 自己。普通用户会发现，一旦门从另一侧关闭，他们将无法通过门的任一侧。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/grid/simpledoor/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/grid/simpledoor/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

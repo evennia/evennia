@@ -1,60 +1,26 @@
-# Turn based battle system framework
+# 回合制战斗系统框架
 
-Contribution by Tim Ashley Jenkins, 2017
+由 Tim Ashley Jenkins 于 2017 年贡献
 
-This is a framework for a simple turn-based combat system, similar
-to those used in D&D-style tabletop role playing games. It allows
-any character to start a fight in a room, at which point initiative
-is rolled and a turn order is established. Each participant in combat
-has a limited time to decide their action for that turn (30 seconds by
-default), and combat progresses through the turn order, looping through
-the participants until the fight ends.
+这是一个简单的回合制战斗系统框架，类似于 D&D 风格的桌面角色扮演游戏。它允许任何角色在房间中开始战斗，此时将掷骰决定先攻顺序，并建立回合顺序。战斗中的每个参与者在该回合中有有限的时间来决定他们的行动（默认情况下为 30 秒），战斗按照回合顺序进行，循环遍历参与者直到战斗结束。
 
-This folder contains multiple examples of how such a system can be
-implemented and customized:
+该文件夹包含多个实现和自定义此类系统的示例：
 
-    tb_basic.py - The simplest system, which implements initiative and turn
-            order, attack rolls against defense values, and damage to hit
-            points. Only very basic game mechanics are included.
+- `tb_basic.py` - 最简单的系统，实现了先攻和回合顺序、对防御值的攻击掷骰以及对生命值的伤害。仅包括非常基础的游戏机制。
 
-    tb_equip.py - Adds weapons and armor to the basic implementation of
-            the battle system, including commands for wielding weapons and
-            donning armor, and modifiers to accuracy and damage based on
-            currently used equipment.
+- `tb_equip.py` - 在战斗系统的基本实现中添加了武器和盔甲，包括装备武器和穿戴盔甲的命令，以及基于当前使用装备的准确性和伤害修正。
 
-    tb_items.py - Adds usable items and conditions/status effects, and gives
-        a lot of examples for each. Items can perform nearly any sort of
-        function, including healing, adding or curing conditions, or
-        being used to attack. Conditions affect a fighter's attributes
-        and options in combat and persist outside of fights, counting
-        down per turn in combat and in real time outside combat.
+- `tb_items.py` - 添加了可用物品和条件/状态效果，并为每种效果提供了许多示例。物品可以执行几乎任何类型的功能，包括治疗、添加或治愈状态，或用于攻击。条件影响战斗者的属性和战斗选项，并在战斗外持续存在，在战斗中每回合倒计时，在战斗外实时倒计时。
 
-    tb_magic.py - Adds a spellcasting system, allowing characters to cast
-        spells with a variety of effects by spending MP. Spells are
-        linked to functions, and as such can perform any sort of action
-        the developer can imagine - spells for attacking, healing and
-        conjuring objects are included as examples.
+- `tb_magic.py` - 添加了一个施法系统，允许角色通过消耗 MP 来施放具有多种效果的法术。法术与函数链接，因此可以执行开发者能想象的任何类型的操作——包括攻击、治疗和召唤物品的法术作为示例。
 
-    tb_range.py - Adds a system for abstract positioning and movement, which
-            tracks the distance between different characters and objects in
-            combat, as well as differentiates between melee and ranged
-            attacks.
+- `tb_range.py` - 添加了一个用于抽象定位和移动的系统，跟踪战斗中不同角色和物体之间的距离，并区分近战和远程攻击。
 
-This system is meant as a basic framework to start from, and is modeled
-after the combat systems of popular tabletop role playing games rather than
-the real-time battle systems that many MMOs and some MUDs use. As such, it
-may be better suited to role-playing or more story-oriented games, or games
-meant to closely emulate the experience of playing a tabletop RPG.
+该系统旨在作为一个基本框架，仿照流行的桌面角色扮演游戏的战斗系统，而不是许多 MMO 和一些 MUD 使用的实时战斗系统。因此，它可能更适合角色扮演或更注重故事的游戏，或旨在紧密模拟桌面 RPG 体验的游戏。
 
-Each of these modules contains the full functionality of the battle system
-with different customizations added in - the instructions to install each
-one is contained in the module itself. It's recommended that you install
-and test `tb_basic` first, so you can better understand how the other
-modules expand on it and get a better idea of how you can customize the
-system to your liking and integrate the subsystems presented here into
-your own combat system.
+这些模块中的每一个都包含战斗系统的完整功能，并添加了不同的自定义——每个模块本身都包含安装说明。建议您首先安装和测试 `tb_basic`，以便更好地理解其他模块如何扩展它，并更好地了解如何根据自己的喜好自定义系统，并将此处提供的子系统集成到您自己的战斗系统中。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/turnbattle/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/turnbattle/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

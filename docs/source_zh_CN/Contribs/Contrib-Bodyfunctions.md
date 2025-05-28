@@ -1,21 +1,18 @@
-# Script example
+# 脚本示例
 
-Contribution by Griatch, 2012
+由 Griatch 贡献，2012年
 
-Example script for testing. This adds a simple timer that has your
-character make small verbal observations at irregular intervals.
+这是一个用于测试的示例脚本。该脚本添加了一个简单的计时器，让你的角色在不规则的间隔内进行小的口头观察。
 
-To test, use (in game)
+要测试，请在游戏中使用：
 
     > script me = contrib.tutorials.bodyfunctions.BodyFunctions
 
-## Notes
+## 注意事项
 
-Use `scripts me` to see the script running on you. Note that even though
-the timer ticks down to 0, you will _not_ see an echo every tick (it's
-random if an echo is given on a tick or not).
+使用 `scripts me` 可以查看正在运行的脚本。请注意，尽管计时器会倒计时至 0，但你**不会**在每个滴答声中看到回声（是否给出回声是随机的）。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/tutorials/bodyfunctions/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/tutorials/bodyfunctions/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

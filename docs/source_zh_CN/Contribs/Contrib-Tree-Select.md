@@ -1,168 +1,145 @@
-# Easy menu selection tree
+# 简易菜单选择树
 
-Contribution by Tim Ashley Jenkins, 2017
+由 Tim Ashley Jenkins 于 2017 年贡献
 
-This utility allows you to create and initialize an entire branching EvMenu
-instance from a multi-line string passed to one function.
+此工具允许您通过传递给一个函数的多行字符串创建和初始化整个分支的 EvMenu 实例。
 
-> Note: Since the time this contrib was created, EvMenu itself got its own templating 
-> language that has more features and is not compatible with the style used in 
-> this contrib. Both can still be used in parallel.
+> 注意：自从此贡献创建以来，EvMenu 本身获得了自己的模板语言，具有更多功能，并且与此贡献中使用的样式不兼容。不过，两者仍然可以并行使用。
 
-`EvMenu` is incredibly powerful and flexible but it can be a little overwhelming
-and offers a lot of power that may not be needed for a simple multiple-choice menu.
+`EvMenu` 功能强大且灵活，但对于简单的多项选择菜单来说，可能有些复杂，并提供了许多可能不需要的功能。
 
-This module provides a function, `init_tree_selection`, which acts as a frontend
-for EvMenu, dynamically sourcing the options from a multi-line string you
-provide.  For example, if you define a string as such:
+此模块提供了一个函数 `init_tree_selection`，它作为 EvMenu 的前端，动态地从您提供的多行字符串中获取选项。例如，如果您定义一个字符串如下：
 
-    TEST_MENU = '''Foo
-    Bar
-    Baz
-    Qux'''
+```plaintext
+TEST_MENU = '''Foo
+Bar
+Baz
+Qux'''
+```
 
-And then use `TEST_MENU` as the 'treestr' source when you call
-`init_tree_selection` on a player:
+然后在玩家上调用 `init_tree_selection` 时使用 `TEST_MENU` 作为 'treestr' 源：
 
-    init_tree_selection(TEST_MENU, caller, callback)
+```python
+init_tree_selection(TEST_MENU, caller, callback)
+```
 
-The player will be presented with an EvMenu, like so:
+玩家将看到一个 EvMenu，如下所示：
 
-    ___________________________
+```
+___________________________
 
-    Make your selection:
-    ___________________________
+Make your selection:
+___________________________
 
-    Foo
-    Bar
-    Baz
-    Qux
+Foo
+Bar
+Baz
+Qux
+```
 
-Making a selection will pass the selection's key to the specified callback as a
-string along with the caller, as well as the index of the selection (the line
-number on the source string) along with the source string for the tree itself.
+进行选择将把选择的键作为字符串传递给指定的回调函数，以及调用者、选择的索引（源字符串中的行号）以及树本身的源字符串。
 
-In addition to specifying selections on the menu, you can also specify
-categories.  Categories are indicated by putting options below it preceded with
-a '-' character.  If a selection is a category, then choosing it will bring up a
-new menu node, prompting the player to select between those options, or to go
-back to the previous menu. In addition, categories are marked by default with a
-'[+]' at the end of their key. Both this marker and the option to go back can be
-disabled.
+除了在菜单上指定选择项外，还可以指定类别。类别通过在其下方放置选项并在前面加上 '-' 字符来指示。如果选择项是一个类别，那么选择它将显示一个新菜单节点，提示玩家在这些选项之间进行选择，或返回上一个菜单。此外，类别默认用 '[+]' 标记其键的末尾。此标记和返回选项都可以禁用。
 
-Categories can be nested in other categories as well - just go another '-'
-deeper. You can do this as many times as you like. There's no hard limit to the
-number of categories you can go down.
+类别也可以嵌套在其他类别中——只需再加一个 '-' 即可。您可以根据需要进行多次嵌套。类别的数量没有硬性限制。
 
-For example, let's add some more options to our menu, turning 'Bar' into a
-category.
+例如，让我们为菜单添加更多选项，将 'Bar' 变成一个类别。
 
-    TEST_MENU = '''Foo
-    Bar
-    -You've got to know
-    --When to hold em
-    --When to fold em
-    --When to walk away
-    Baz
-    Qux'''
+```plaintext
+TEST_MENU = '''Foo
+Bar
+-You've got to know
+--When to hold em
+--When to fold em
+--When to walk away
+Baz
+Qux'''
+```
 
-Now when we call the menu, we can see that 'Bar' has become a category instead of a
-selectable option.
+现在，当我们调用菜单时，可以看到 'Bar' 已成为一个类别，而不是一个可选择的选项。
 
-    _______________________________
+```
+_______________________________
 
-    Make your selection:
-    _______________________________
+Make your selection:
+_______________________________
 
-    Foo
-    Bar [+]
-    Baz
-    Qux
+Foo
+Bar [+]
+Baz
+Qux
+```
 
-Note the [+] next to 'Bar'. If we select 'Bar', it'll show us the option listed
-under it.
+注意 'Bar' 旁边的 [+]。如果我们选择 'Bar'，它将显示列在其下的选项。
 
-    ________________________________________________________________
+```
+________________________________________________________
 
-    Bar
-    ________________________________________________________________
+Bar
+________________________________________________________
 
-    You've got to know [+]
-    << Go Back: Return to the previous menu.
+You've got to know [+]
+<< Go Back: Return to the previous menu.
+```
 
-Just the one option, which is a category itself, and the option to go back,
-which will take us back to the previous menu. Let's select 'You've got to know'.
+只有一个选项，它本身就是一个类别，还有返回选项，可以带我们回到上一个菜单。让我们选择 'You've got to know'。
 
-    ________________________________________________________________
+```
+________________________________________________________
 
-    You've got to know
-    ________________________________________________________________
+You've got to know
+________________________________________________________
 
-    When to hold em
-    When to fold em
-    When to walk away
-    << Go Back: Return to the previous menu.
+When to hold em
+When to fold em
+When to walk away
+<< Go Back: Return to the previous menu.
+```
 
-Now we see the three options listed under it, too. We can select one of them or
-use 'Go Back' to return to the 'Bar' menu we were just at before. It's very
-simple to make a branching tree of selections!
+现在我们也可以看到列在其下的三个选项。我们可以选择其中一个，或者使用 'Go Back' 返回到我们刚才所在的 'Bar' 菜单。这使得创建分支选择树变得非常简单！
 
-One last thing - you can set the descriptions for the various options simply by
-adding a ':' character followed by the description to the option's line. For
-example, let's add a description to 'Baz' in our menu:
+最后一点——您可以通过在选项行中添加 ':' 字符后跟描述来为各种选项设置描述。例如，让我们为菜单中的 'Baz' 添加一个描述：
 
-    TEST_MENU = '''Foo
-    Bar
-    -You've got to know
-    --When to hold em
-    --When to fold em
-    --When to walk away
-    Baz: Look at this one: the best option.
-    Qux'''
+```plaintext
+TEST_MENU = '''Foo
+Bar
+-You've got to know
+--When to hold em
+--When to fold em
+--When to walk away
+Baz: Look at this one: the best option.
+Qux'''
+```
 
-Now we see that the Baz option has a description attached that's separate from its key:
+现在我们可以看到 Baz 选项附加了一个与其键分开的描述：
 
-    _______________________________________________________________
+```
+_______________________________________________________________
 
-    Make your selection:
-    _______________________________________________________________
+Make your selection:
+_______________________________________________________________
 
-    Foo
-    Bar [+]
-    Baz: Look at this one: the best option.
-    Qux
+Foo
+Bar [+]
+Baz: Look at this one: the best option.
+Qux
+```
 
-Once the player makes a selection - let's say, 'Foo' - the menu will terminate
-and call your specified callback with the selection, like so:
+一旦玩家做出选择——比如 'Foo'——菜单将终止，并使用选择调用您指定的回调函数，如下所示：
 
-    callback(caller, TEST_MENU, 0, "Foo")
+```python
+callback(caller, TEST_MENU, 0, "Foo")
+```
 
-The index of the selection is given along with a string containing the
-selection's key.  That way, if you have two selections in the menu with the same
-key, you can still differentiate between them.
+选择的索引与包含选择键的字符串一起提供。这样，如果菜单中有两个具有相同键的选择项，您仍然可以区分它们。
 
-And that's all there is to it! For simple branching-tree selections, using this
-system is much easier than manually creating EvMenu nodes. It also makes
-generating menus with dynamic options much easier - since the source of the menu
-tree is just a string, you could easily generate that string procedurally before
-passing it to the `init_tree_selection` function.  For example, if a player casts
-a spell or does an attack without specifying a target, instead of giving them an
-error, you could present them with a list of valid targets to select by
-generating a multi-line string of targets and passing it to
-`init_tree_selection`, with the callable performing the maneuver once a
-selection is made.
+这就是全部内容！对于简单的分支树选择，使用此系统比手动创建 EvMenu 节点要容易得多。这也使得生成具有动态选项的菜单变得更加简单——因为菜单树的源只是一个字符串，您可以在将其传递给 `init_tree_selection` 函数之前轻松地生成该字符串。例如，如果玩家施放法术或进行攻击而未指定目标，与其给他们一个错误，不如通过生成目标的多行字符串并将其传递给 `init_tree_selection` 来向他们展示一个有效目标列表，并在做出选择后执行操作。
 
-This selection system only works for simple branching trees - doing anything
-really complicated like jumping between categories or prompting for arbitrary
-input would still require a full EvMenu implementation. For simple selections,
-however, I'm sure you will find using this function to be much easier!
+此选择系统仅适用于简单的分支树——执行任何复杂操作，如在类别之间跳转或提示输入任意内容，仍然需要完整的 EvMenu 实现。然而，对于简单的选择，我相信您会发现使用此函数要容易得多！
 
-Included in this module is a sample menu and function which will let a player
-change the color of their name - feel free to mess with it to get a feel for how
-this system works by importing this module in your game's `default_cmdsets.py`
-module and adding `CmdNameColor` to your default character's command set.
+此模块中包含一个示例菜单和函数，允许玩家更改其名称的颜色——通过在游戏的 `default_cmdsets.py` 模块中导入此模块并将 `CmdNameColor` 添加到默认角色的命令集中，随意尝试以了解此系统的工作原理。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/tree_select/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/tree_select/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

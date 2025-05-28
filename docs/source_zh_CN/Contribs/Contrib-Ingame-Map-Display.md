@@ -1,21 +1,16 @@
-# Basic Map
+# 基本地图
 
-Contribution - helpme 2022
+贡献者 - helpme 2022
 
-This adds an ascii `map` to a given room which can be viewed with the `map` command.
-You can easily alter it to add special characters, room colors etc. The map shown is
-dynamically generated on use, and supports all compass directions and up/down. Other
-directions are ignored.
+这个模块为给定的房间添加一个 ASCII `地图`，可以通过 `map` 命令查看。您可以轻松修改它以添加特殊字符、房间颜色等。显示的地图是在使用时动态生成的，支持所有罗盘方向以及上下方向。其他方向将被忽略。
 
-If you don't expect the map to be updated frequently, you could choose to save the
-calculated map as a .ndb value on the room and render that instead of running mapping
-calculations anew each time.
+如果您不希望地图频繁更新，可以选择将计算出的地图保存为房间的 .ndb 值，并渲染该值，而不是每次都重新运行地图计算。
 
-## Installation:
+## 安装：
 
-Adding the `MapDisplayCmdSet` to the default character cmdset will add the `map` command.
+将 `MapDisplayCmdSet` 添加到默认角色命令集将添加 `map` 命令。
 
-Specifically, in `mygame/commands/default_cmdsets.py`:
+具体来说，在 `mygame/commands/default_cmdsets.py` 中：
 
 ```python
 ...
@@ -29,28 +24,27 @@ class CharacterCmdset(default_cmds.CharacterCmdSet):
 
 ```
 
-Then `reload` to make the new commands available. 
+然后 `reload` 以使新命令可用。
 
-## Settings:
+## 设置：
 
-In order to change your default map size, you can add to `mygame/server/settings.py`:
+为了更改默认地图大小，您可以在 `mygame/server/settings.py` 中添加：
 
 ```python
-BASIC_MAP_SIZE = 5  # This changes the default map width/height.
-
+BASIC_MAP_SIZE = 5  # 这将更改默认地图的宽度/高度。
 ```
 
-## Features:
+## 特性：
 
-### ASCII map (and evennia supports UTF-8 characters and even emojis)
+### ASCII 地图（evennia 支持 UTF-8 字符甚至表情符号）
 
-This produces an ASCII map for players of configurable size.
+这为玩家生成一个可配置大小的 ASCII 地图。
 
-### New command
+### 新命令
 
-- `CmdMap` - view the map
+- `CmdMap` - 查看地图
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/grid/ingame_map_display/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/grid/ingame_map_display/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

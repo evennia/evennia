@@ -1,70 +1,58 @@
-# Unix-like Command style
+# 类 Unix 命令风格
 
-Contribution by Vincent Le Geoff (vlgeoff), 2017
+由 Vincent Le Geoff (vlgeoff) 于 2017 年贡献
 
-This module contains a command class with an alternate syntax parser implementing
-Unix-style command syntax in-game. This means `--options`, positional arguments
-and stuff like `-n 10`. It might not the best syntax for the average player
-but can be really useful for builders when they need to have a single command do
-many things with many options. It uses the `ArgumentParser` from Python's standard
-library under the hood.
+此模块包含一个命令类，使用替代语法解析器在游戏中实现 Unix 风格的命令语法。这意味着可以使用 `--options`、位置参数以及类似 `-n 10` 的语法。对于普通玩家来说，这可能不是最佳语法，但对于构建者来说，当他们需要一个命令执行多种功能并带有多种选项时，这可能非常有用。它在底层使用 Python 标准库中的 `ArgumentParser`。
 
-## Installation
+## 安装
 
-To use, inherit `UnixCommand` from this module from your own commands. You need
-to override two methods:
+要使用此模块，请从您的命令中继承此模块中的 `UnixCommand`。您需要重写两个方法：
 
-- The `init_parser` method, which adds options to the parser. Note that you
-  should normally *not* override the normal `parse` method when inheriting from
-  `UnixCommand`.
-- The `func` method, called to execute the command once parsed (like any Command).
+- `init_parser` 方法，用于向解析器添加选项。注意，当从 `UnixCommand` 继承时，通常不应重写常规的 `parse` 方法。
+- `func` 方法，在解析命令后调用以执行命令（与任何命令类似）。
 
-Here's a short example:
+以下是一个简单的示例：
 
 ```python
 from evennia.contrib.base_systems.unixcommand import UnixCommand
 
-
 class CmdPlant(UnixCommand):
-
     '''
-    Plant a tree or plant.
+    种植一棵树或植物。
 
-    This command is used to plant something in the room you are in.
+    此命令用于在您所在的房间种植一些东西。
 
-    Examples:
+    示例：
       plant orange -a 8
       plant strawberry --hidden
       plant potato --hidden --age 5
-
     '''
 
     key = "plant"
 
     def init_parser(self):
-        "Add the arguments to the parser."
-        # 'self.parser' inherits `argparse.ArgumentParser`
+        "向解析器添加参数。"
+        # 'self.parser' 继承自 `argparse.ArgumentParser`
         self.parser.add_argument("key",
-                help="the key of the plant to be planted here")
+                help="要在此处种植的植物的关键字")
         self.parser.add_argument("-a", "--age", type=int,
-                default=1, help="the age of the plant to be planted")
+                default=1, help="要种植植物的年龄")
         self.parser.add_argument("--hidden", action="store_true",
-                help="should the newly-planted plant be hidden to players?")
+                help="新种植的植物是否对玩家隐藏？")
 
     def func(self):
-        "func is called only if the parser succeeded."
-        # 'self.opts' contains the parsed options
+        "仅在解析器成功时调用 func。"
+        # 'self.opts' 包含解析后的选项
         key = self.opts.key
         age = self.opts.age
         hidden = self.opts.hidden
-        self.msg("Going to plant '{}', age={}, hidden={}.".format(
+        self.msg("准备种植 '{}', 年龄={}, 隐藏={}。".format(
                 key, age, hidden))
 ```
 
-To see the full power of argparse and the types of supported options, visit
-[the documentation of argparse](https://docs.python.org/2/library/argparse.html).
+要了解 argparse 的全部功能和支持的选项类型，请访问 [argparse 的文档](https://docs.python.org/2/library/argparse.html)。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/base_systems/unixcommand/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/base_systems/unixcommand/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

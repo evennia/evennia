@@ -1,61 +1,36 @@
-# Evennia Tutorial World
+# Evennia 教程世界
 
-Contribution by Griatch 2011, 2015
+由 Griatch 于 2011 和 2015 年贡献
 
-A stand-alone tutorial area for an unmodified Evennia install.
-Think of it as a sort of single-player adventure rather than a
-full-fledged multi-player game world. The various rooms and objects
-are designed to show off features of Evennia, not to be a
-very challenging (nor long) gaming experience. As such it's of course
-only skimming the surface of what is possible. Taking this apart 
-is a great way to start learning the system.
+这是一个适用于未修改的 Evennia 安装的独立教程区域。可以将其视为一种单人冒险，而不是一个完整的多人游戏世界。各种房间和物品旨在展示 Evennia 的功能，而不是提供非常具有挑战性（或长时间）的游戏体验。因此，它当然只是略微触及了可能性。拆解这个教程是学习系统的一个很好的起点。
 
-The tutorial world also includes a game tutor menu example, exemplifying
-Evmenu.
+教程世界还包括一个游戏导师菜单示例，展示了 Evmenu。
 
-## Installation
+## 安装
 
-Log in as superuser (#1), then run
+以超级用户（#1）身份登录，然后运行
 
-    batchcommand contrib.tutorials.tutorial_world.build
+```
+batchcommand contrib.tutorials.tutorial_world.build
+```
 
-Wait a little while for building to complete and don't run the command
-again even if it's slow. This builds the world and connect it to Limbo
-and creates a new exit `tutorial`.
+等待一段时间，直到构建完成，即使速度较慢也不要再次运行该命令。这将构建世界并将其连接到 Limbo，并创建一个新的出口 `tutorial`。
 
-If you are a superuser (User `#1`), use the `quell` command to play
-the tutorial as intended.
+如果您是超级用户（用户 `#1`），请使用 `quell` 命令以预期的方式游玩教程。
 
+## 评论
 
-## Comments
+教程世界旨在供探索和分析。它将帮助您学习如何实现一些更高级的效果，并可能在此过程中提供一些好的想法。
 
-The tutorial world is intended to be explored and analyzed.  It will help you
-learn how to accomplish some more advanced effects and might give some good
-ideas along the way.
+建议您通关一次（作为普通用户，不是超级用户！），然后稍作探索，再回到这里开始查看（大量文档化的）构建/源代码，以了解事物的运作方式——这就是教程世界中的“教程”。
 
-It's suggested you play it through (as a normal user, NOT as Superuser!) and
-explore it a bit, then come back here and start looking into the (heavily
-documented) build/source code to find out how things tick - that's the
-"tutorial" in Tutorial world after all.
+请在 Evennia 问题跟踪器上报告教程中的错误。
 
-Please report bugs in the tutorial to the Evennia issue tracker.
+**以下是剧透内容 - 如果您尚未玩过教程游戏，请不要继续阅读**
 
+## 教程世界房间地图
 
-
-
-
-
-**Spoilers below - don't read on unless you already played the
-tutorial game**
-
-
-
-
-
-
-
-## Tutorial World Room map
-
+```
          ?
          |
      +---+----+    +-------------------+    +--------+   +--------+
@@ -81,33 +56,21 @@ tutorial game**
      o--+          +----------+        |    |                     |
         |          |          |        |    |                     |
         +----------+          +--------+    +---------------------+
+```
 
+## 提示/注意事项：
 
-## Hints/Notes:
-
-* o-- connections to/from Limbo
-* intro/outro areas are rooms that automatically sets/cleans the
-  Character of any settings assigned to it during the
-  tutorial game.
-* The Cliff is a good place to get an overview of the surroundings.
-* The Bridge may seem like a big room, but it is really only one room
-  with custom move commands to make it take longer to cross. You can
-  also fall off the bridge if you are unlucky or take your time to
-  take in the view too long.
-* In the Castle areas an aggressive mob is patrolling. It implements
-  rudimentary AI but packs quite a punch unless you have
-  found yourself a weapon that can harm it. Combat is only
-  possible once you find a weapon.
-* The Antechamber features a puzzle for finding the correct Grave
-  chamber.
-* The Cell  is your reward if you fail in various ways. Finding a
-  way out of it is a small puzzle of its own.
-* The Tomb  is a nice place to find a weapon that can hurt the
-  castle guardian. This is the goal of the tutorial.
-  Explore on, or take the exit to finish the tutorial.
-* ?  - look into the code if you cannot find this bonus area!
+- o-- 连接到/来自 Limbo
+- intro/outro 区域是自动设置/清除角色在教程游戏期间分配的任何设置的房间。
+- 悬崖是一个很好的地方，可以俯瞰周围环境。
+- 桥梁可能看起来像一个大房间，但实际上只是一个房间，使用自定义移动命令使其需要更长时间才能穿过。如果您不幸或花时间欣赏风景过长，也可能会从桥上掉落。
+- 在城堡区域，有一个攻击性小怪在巡逻。它实现了基本的人工智能，但如果您没有找到可以伤害它的武器，它会造成很大的伤害。只有找到武器后才能进行战斗。
+- 前厅有一个解谜，用于寻找正确的墓室。
+- 如果您在各种方式上失败，牢房是您的奖励。找到出路是一个小谜题。
+- 墓室是一个找到可以伤害城堡守卫的武器的好地方。这是教程的目标。继续探索，或通过出口完成教程。
+- ？ - 如果找不到这个奖励区域，请查看代码！
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/tutorials/tutorial_world/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/tutorials/tutorial_world/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,63 +1,38 @@
-# Map Builder
+# 地图构建器
 
-Contribution by Cloud_Keeper 2016
+贡献者：Cloud_Keeper 2016
 
-Build a game map from the drawing of a 2D ASCII map.
+根据2D ASCII地图的绘图构建游戏地图。
 
-This is a command which takes two inputs:
+这是一个命令，它需要两个输入：
 
-    ≈≈≈≈≈
-    ≈♣n♣≈   MAP_LEGEND = {("♣", "♠"): build_forest,
-    ≈∩▲∩≈                 ("∩", "n"): build_mountains,
-    ≈♠n♠≈                 ("▲"): build_temple}
-    ≈≈≈≈≈
+```
+≈≈≈≈≈
+≈♣n♣≈   MAP_LEGEND = {("♣", "♠"): build_forest,
+≈∩▲∩≈                 ("∩", "n"): build_mountains,
+≈♠n♠≈                 ("▲"): build_temple}
+≈≈≈≈≈
+```
 
-A string of ASCII characters representing a map and a dictionary of functions
-containing build instructions. The characters of the map are iterated over and
-compared to a list of trigger characters. When a match is found the
-corresponding function is executed generating the rooms, exits and objects as
-defined by the users build instructions. If a character is not a match to
-a provided trigger character (including spaces) it is simply skipped and the
-process continues.
+一个表示地图的ASCII字符字符串和一个包含构建指令的函数字典。地图的字符会被迭代并与触发字符列表进行比较。当找到匹配项时，将执行相应的函数，生成用户构建指令所定义的房间、出口和对象。如果字符不匹配提供的触发字符（包括空格），则会被简单跳过，处理流程将继续进行。
 
-For instance, the above map represents a temple (▲) amongst mountains (n,∩)
-in a forest (♣,♠) on an island surrounded by water (≈). Each character on the
-first line is iterated over but as there is no match with our `MAP_LEGEND`, it
-is skipped. On the second line it finds "♣" which is a match and so the
-`build_forest` function is called. Next the `build_mountains` function is
-called and so on until the map is completed. Building instructions are passed
-the following arguments:
+例如，上面的地图表示一个寺庙（▲）坐落在山间（n,∩）的森林（♣,♠）上，四周环绕着水（≈）。第一行的每个字符都被迭代，但是由于与我们的 `MAP_LEGEND` 中没有匹配项，因此被跳过。在第二行它找到“♣”，这是一个匹配项，因此将调用 `build_forest` 函数。接着调用 `build_mountains` 函数，直到地图完成。构建指令会接收以下参数：
 
-    x         - The rooms position on the maps x axis
-    y         - The rooms position on the maps y axis
-    caller    - The account calling the command
-    iteration - The current iterations number (0, 1 or 2)
-    room_dict - A dictionary containing room references returned by build
-                functions where tuple coordinates are the keys (x, y).
-                ie room_dict[(2, 2)] will return the temple room above.
+- `x` - 房间在地图上的x轴位置
+- `y` - 房间在地图上的y轴位置
+- `caller` - 调用命令的账户
+- `iteration` - 当前迭代次数（0, 1或2）
+- `room_dict` - 包含房间引用的字典，这些引用是由构建函数返回的，以元组坐标作为键。即 `room_dict[(2, 2)]` 将返回上面的寺庙房间。
 
-Building functions should return the room they create. By default these rooms
-are used to create exits between valid adjacent rooms to the north, south,
-east and west directions. This behaviour can turned off with the use of switch
-arguments. In addition to turning off automatic exit generation the switches
-allow the map to be iterated over a number of times. This is important for
-something like custom exit building. Exits require a reference to both the
-exits location and the exits destination. During the first iteration it is
-possible that an exit is created pointing towards a destination that
-has not yet been created resulting in error. By iterating over the map twice
-the rooms can be created on the first iteration and room reliant code can be
-be used on the second iteration. The iteration number and a dictionary of
-references to rooms previously created is passed to the build commands.
+构建函数应返回它们创建的房间。默认情况下，这些房间用于在有效相邻房间之间的北、南、东和西方向创建出口。这种行为可以通过使用切换参数来关闭。此外，切换参数允许地图多次迭代。这对于自定义出口生成等情况非常重要。由于出口需要对出口位置和目的地的引用，因此在第一次迭代中，可能会创建一个指向尚未创建的目的地的出口，从而引发错误。通过对地图进行两次迭代，可以在第一次迭代中创建房间，并在第二次迭代中使用依赖于房间的代码。迭代编号和对先前创建房间的引用的字典会传递给构建命令。
 
-You then call the command in-game using the path to the MAP and MAP_LEGEND vars
-The path you provide is relative to the evennia or mygame folder.
+然后您在游戏中调用命令，使用 `MAP` 和 `MAP_LEGEND` 变量的路径。您提供的路径是相对于evennia或mygame文件夹的。
 
-See also the [separate tutorial in the docs](Contrib-Mapbuilder-Tutorial).
+参见[文档中的单独教程](./Contrib-Mapbuilder-Tutorial.md)。
 
-## Installation
+## 安装
 
-Use by importing and including the command in your default_cmdsets module.
-For example:
+通过导入并在您的 `default_cmdsets` 模块中包含命令来使用。例如：
 
 ```python
     # mygame/commands/default_cmdsets.py
@@ -69,29 +44,25 @@ For example:
     self.add(mapbuilder.CmdMapBuilder())
 ```
 
-
-## Usage:
+## 使用：
 
     mapbuilder[/switch] <path.to.file.MAPNAME> <path.to.file.MAP_LEGEND>
 
-    one - execute build instructions once without automatic exit creation.
-    two - execute build instructions twice without automatic exit creation.
+- `one` - 执行构建指令一次，不自动创建出口。
+- `two` - 执行构建指令两次，不自动创建出口。
 
-## Examples
+## 示例
 
     mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
     mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
     mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
-            (Legend path defaults to map path)
+            (图例路径默认为地图路径)
 
-Below are two examples showcasing the use of automatic exit generation and
-custom exit generation. Whilst located, and can be used, from this module for
-convenience The below example code should be in `mymap.py` in mygame/world.
+以下是两个示例，展示了自动出口生成和自定义出口生成的使用。虽然可以在这个模块中使用，并且方便，但以下示例代码应放在 `mymap.py` 中的 `mygame/world`。
 
-### Example One
+### 示例一
 
 ```python
-
 from django.conf import settings
 from evennia.utils import utils
 
@@ -99,16 +70,14 @@ from evennia.utils import utils
 
 # -*- coding: utf-8 -*-
 
-# Add the necessary imports for your instructions here.
+# 添加构建指令所需的导入。
 from evennia import create_object
 from typeclasses import rooms, exits
 from random import randint
 import random
 
 
-# A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an
-# island surrounded by water (≈). By giving no instructions for the water
-# characters we effectively skip it and create no rooms for those squares.
+# 一张包含寺庙（▲）的地图，周围环绕着山（n,∩）的森林（♣,♠），位于水（≈）的岛上。
 EXAMPLE1_MAP = '''
 ≈≈≈≈≈
 ≈♣n♣≈
@@ -118,73 +87,68 @@ EXAMPLE1_MAP = '''
 '''
 
 def example1_build_forest(x, y, **kwargs):
-    '''A basic example of build instructions. Make sure to include **kwargs
-    in the arguments and return an instance of the room for exit generation.'''
+    '''构建指令的简单示例。确保其中包含**kwargs，并且返回房间的实例以供出口生成。'''
 
-    # Create a room and provide a basic description.
+    # 创建房间并提供基本描述。
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
-    room.db.desc = "Basic forest room."
+    room.db.desc = "基础森林房间。"
 
-    # Send a message to the account
+    # 向账户发送消息
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
-    # This is generally mandatory.
+    # 这通常是必需的。
     return room
 
 
 def example1_build_mountains(x, y, **kwargs):
-    '''A room that is a little more advanced'''
+    '''一个稍微复杂的房间'''
 
-    # Create the room.
+    # 创建房间。
     room = create_object(rooms.Room, key="mountains" + str(x) + str(y))
 
-    # Generate a description by randomly selecting an entry from a list.
+    # 通过从列表中随机选择条目来生成描述。
     room_desc = [
-        "Mountains as far as the eye can see",
-        "Your path is surrounded by sheer cliffs",
-        "Haven't you seen that rock before?",
+        "山延绵不绝，望不到边",
+        "你的道路被陡峭的悬崖包围",
+        "你以前是否见过那块岩石?",
     ]
     room.db.desc = random.choice(room_desc)
 
-    # Create a random number of objects to populate the room.
+    # 创建随机数量的对象以填充房间。
     for i in range(randint(0, 3)):
-        rock = create_object(key="Rock", location=room)
-        rock.db.desc = "An ordinary rock."
+        rock = create_object(key="岩石", location=room)
+        rock.db.desc = "一块普通的石头。"
 
-    # Send a message to the account
+    # 向账户发送消息
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
-    # This is generally mandatory.
+    # 这通常是必需的。
     return room
 
 
 def example1_build_temple(x, y, **kwargs):
-    '''A unique room that does not need to be as general'''
+    '''一个独特的房间，不需要像之前那么一般化'''
 
-    # Create the room.
+    # 创建房间。
     room = create_object(rooms.Room, key="temple" + str(x) + str(y))
 
-    # Set the description.
+    # 设置描述。
     room.db.desc = (
-        "In what, from the outside, appeared to be a grand and "
-        "ancient temple you've somehow found yourself in the the "
-        "Evennia Inn! It consists of one large room filled with "
-        "tables. The bardisk extends along the east wall, where "
-        "multiple barrels and bottles line the shelves. The "
-        "barkeep seems busy handing out ale and chatting with "
-        "the patrons, which are a rowdy and cheerful lot, "
-        "keeping the sound level only just below thunderous. "
-        "This is a rare spot of mirth on this dread moor."
+        "在外观上是一座宏伟古老的寺庙，你竟然发现自己身处于"
+        "Evennia客栈！这里是一个大房间，四周布满桌子。"
+        "酒吧的桌子延伸在东墙上，各种桶和瓶子排满了货架。"
+        "酒保似乎正忙于分发啤酒，与顾客交谈，顾客们是一群吵闹又愉快的人，"
+        "使得声音水平几乎达到雷鸣般的程度。这是这片可怕沼泽中难得的欢声笑语。"
     )
 
-    # Send a message to the account
+    # 向账户发送消息
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
-    # This is generally mandatory.
+    # 这通常是必需的。
     return room
 
 
-# Include your trigger characters and build functions in a legend dict.
+# 在图例字典中包括您的触发字符和构建函数。
 EXAMPLE1_LEGEND = {
     ("♣", "♠"): example1_build_forest,
     ("∩", "n"): example1_build_mountains,
@@ -192,22 +156,22 @@ EXAMPLE1_LEGEND = {
 }
 ```
 
-### Example Two
+### 示例二
 
 ```python
 # @mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 
 # -*- coding: utf-8 -*-
 
-# Add the necessary imports for your instructions here.
+# 添加构建指令所需的导入。
 # from evennia import create_object
 # from typeclasses import rooms, exits
 # from evennia.utils import utils
 # from random import randint
 # import random
 
-# This is the same layout as Example 1 but included are characters for exits.
-# We can use these characters to determine which rooms should be connected.
+# 这是与示例1相同的布局，但包括了出口的字符。
+# 我们可以使用这些字符来确定哪些房间应连接在一起。
 EXAMPLE2_MAP = '''
 ≈ ≈ ≈ ≈ ≈
 
@@ -221,28 +185,28 @@ EXAMPLE2_MAP = '''
 '''
 
 def example2_build_forest(x, y, **kwargs):
-    '''A basic room'''
-    # If on anything other than the first iteration - Do nothing.
+    '''基础房间'''
+    # 如果不是第一次迭代 - 什么都不做。
     if kwargs["iteration"] > 0:
         return None
 
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
-    room.db.desc = "Basic forest room."
+    room.db.desc = "基础森林房间。"
 
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     return room
 
 def example2_build_verticle_exit(x, y, **kwargs):
-    '''Creates two exits to and from the two rooms north and south.'''
-    # If on the first iteration - Do nothing.
+    '''创建两个出口，分别连接南北两个房间。'''
+    # 如果是在第一次迭代 - 什么都不做。
     if kwargs["iteration"] == 0:
         return
 
     north_room = kwargs["room_dict"][(x, y - 1)]
     south_room = kwargs["room_dict"][(x, y + 1)]
 
-    # create exits in the rooms
+    # 在房间内创建出口
     create_object(
         exits.Exit, key="south", aliases=["s"], location=north_room, destination=south_room
     )
@@ -251,12 +215,12 @@ def example2_build_verticle_exit(x, y, **kwargs):
         exits.Exit, key="north", aliases=["n"], location=south_room, destination=north_room
     )
 
-    kwargs["caller"].msg("Connected: " + north_room.key + " & " + south_room.key)
+    kwargs["caller"].msg("连接： " + north_room.key + " & " + south_room.key)
 
 
 def example2_build_horizontal_exit(x, y, **kwargs):
-    '''Creates two exits to and from the two rooms east and west.'''
-    # If on the first iteration - Do nothing.
+    '''创建两个出口，分别连接东西两个房间。'''
+    # 如果是在第一次迭代 - 什么都不做。
     if kwargs["iteration"] == 0:
         return
 
@@ -267,16 +231,15 @@ def example2_build_horizontal_exit(x, y, **kwargs):
 
     create_object(exits.Exit, key="west", aliases=["w"], location=east_room, destination=west_room)
 
-    kwargs["caller"].msg("Connected: " + west_room.key + " & " + east_room.key)
+    kwargs["caller"].msg("连接： " + west_room.key + " & " + east_room.key)
 
 
-# Include your trigger characters and build functions in a legend dict.
+# 在图例字典中包括您的触发字符和构建函数。
 EXAMPLE2_LEGEND = {
     ("♣", "♠"): example2_build_forest,
     ("|"): example2_build_verticle_exit,
     ("-"): example2_build_horizontal_exit,
 }
-
 ```
 
 ```{toctree}
@@ -287,4 +250,4 @@ Contrib-Mapbuilder-Tutorial
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/grid/mapbuilder/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/grid/mapbuilder/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

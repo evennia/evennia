@@ -1,196 +1,137 @@
 # Evennia in-game Python system
 
-Contrib by Vincent Le Goff 2017
+由 Vincent Le Goff 贡献于在 2017 年
 
-This contrib adds the ability to script with Python in-game. It allows trusted
-staff/builders to dynamically add features and triggers to individual objects
-without needing to do it in external Python modules. Using custom Python in-game,
-specific rooms, exits, characters, objects etc can be made to behave differently from
-its "cousins". This is similar to how softcode works for MU or MudProgs for DIKU.
-Keep in mind, however, that allowing Python in-game comes with _severe_
-security concerns (you must trust your builders deeply), so read the warnings in
-this module carefully before continuing.
+这个模块增加了在游戏中使用 Python 脚本的能力。它允许值得信任的工作人员或建造者动态地为单个对象添加功能和触发器，而无需在外部 Python 模块中进行操作。通过在游戏中使用自定义 Python，可以使特定的房间、出口、角色、对象等表现得与其“同类”不同。这类似于 MU 的软代码或 DIKU 的 MudProgs。然而，请记住，允许在游戏中使用 Python 会带来严重的安全问题（您必须非常信任您的建造者），因此在继续之前请仔细阅读此模块中的警告。
 
-## A WARNING REGARDING SECURITY
+## 关于安全的警告
 
-Evennia's in-game Python system will run arbitrary Python code without much
-restriction.  Such a system is as powerful as potentially dangerous, and you
-will have to keep in mind these points before deciding to install it:
+Evennia 的游戏内 Python 系统将运行任意 Python 代码，几乎没有限制。这样的系统既强大又可能危险，在决定安装它之前，您需要牢记以下几点：
 
-1. Untrusted people can run Python code on your game server with this system.
-   Be careful about who can use this system (see the permissions below).
-2. You can do all of this in Python outside the game.  The in-game Python system
-   is not to replace all your game feature.
+1. 不可信的人可以通过此系统在您的游戏服务器上运行 Python 代码。请注意谁可以使用此系统（请参阅下面的权限）。
+2. 您可以在游戏外的 Python 中完成所有这些。游戏内 Python 系统不是为了替换您所有的游戏功能。
 
-## Extra tutorials
+## 额外教程
 
-These tutorials cover examples of using ingame python. Once you have the system
-installed (see below) they may be an easier way to learn than reading the full
-documentation from beginning to end.
+这些教程涵盖了使用游戏内 Python 的示例。一旦您安装了系统（见下文），它们可能比从头到尾阅读完整文档更容易学习。
 
-- [Dialogue events](Contribs/Contrib-Ingame-Python-Tutorial-Dialogue.md), where
-  NPCs react to things said.
-- [A voice operated elevator](Contribs/Contrib-Ingame-Python-Tutorial-Elevator.md)
-using ingame-python events.
+- [对话事件](Contribs/Contrib-Ingame-Python-Tutorial-Dialogue.md)，NPC 对所说内容做出反应。
+- [语音操控电梯](Contribs/Contrib-Ingame-Python-Tutorial-Elevator.md)，使用游戏内 Python 事件。
 
-## Basic structure and vocabulary
+## 基本结构和术语
 
-- At the basis of the in-game Python system are **events**.  An **event**
-  defines the context in which we would like to call some arbitrary code.  For
-instance, one event is defined on exits and will fire every time a character
-traverses through this exit.  Events are described on a [typeclass](Typeclasses)
-([exits](Exits) in our example).  All objects inheriting from this
-typeclass will have access to this event.
-- **Callbacks** can be set on individual objects, on events defined in code.
-  These **callbacks** can contain arbitrary code and describe a specific
-behavior for an object.  When the event fires, all callbacks connected to this
-object's event are executed.
+- 游戏内 Python 系统的基础是**事件**。一个**事件**定义了我们希望调用一些任意代码的上下文。例如，一个事件是在出口上定义的，并将在角色通过此出口时触发。事件在 [typeclass](Typeclasses) 上描述（在我们的示例中是 [exits](Exits)）。所有继承自此 typeclass 的对象都可以访问此事件。
+- 可以在代码中定义的事件上为单个对象设置**回调**。这些**回调**可以包含任意代码，并描述对象的特定行为。当事件触发时，连接到此对象事件的所有回调将被执行。
 
-To see the system in context, when an object is picked up (using the default
-`get` command), a specific event is fired:
+要在上下文中查看系统，当一个对象被拾取时（使用默认的 `get` 命令），将触发一个特定事件：
 
-1. The event "get" is set on objects (on the `Object` typeclass).
-2. When using the "get" command to pick up an object, this object's `at_get`
-   hook is called.
-3. A modified hook of DefaultObject is set by the event system.  This hook will
-   execute (or call) the "get" event on this object.
-4. All callbacks tied to this object's "get" event will be executed in order.
-   These callbacks act as functions containing Python code that you can write
-   in-game, using specific variables that will be listed when you edit the callback
-   itself.
-5. In individual callbacks, you can add multiple lines of Python code that will
-   be fired at this point.  In this example, the `character` variable will
-   contain the character who has picked up the object, while `obj` will contain the
-   object that was picked up.
+1. 事件“get”设置在对象上（在 `Object` typeclass 上）。
+2. 当使用“get”命令拾取对象时，将调用此对象的 `at_get` 钩子。
+3. 事件系统设置了一个修改过的 DefaultObject 钩子。此钩子将执行（或调用）此对象上的“get”事件。
+4. 所有与此对象的“get”事件相关的回调将按顺序执行。这些回调充当包含您可以在游戏中编写的 Python 代码的函数，使用在编辑回调时列出的特定变量。
+5. 在各个回调中，您可以添加将在此时触发的多行 Python 代码。在此示例中，`character` 变量将包含拾取对象的角色，而 `obj` 将包含被拾取的对象。
 
-Following this example, if you create a callback "get" on the object "a sword",
-and put in it:
+按照此示例，如果您在对象“a sword”上创建一个“get”回调，并在其中放入：
 
 ```python
 character.msg("You have picked up {} and have completed this quest!".format(obj.get_display_name(character)))
-
 ```
 
-When you pick up this object you should see something like:
+当您拾取此对象时，您应该会看到类似以下内容：
 
-    You pick up a sword.
-    You have picked up a sword and have completed this quest!
+```
+You pick up a sword.
+You have picked up a sword and have completed this quest!
+```
 
-## Installation
+## 安装
 
-Being in a separate contrib, the in-game Python system isn't installed by
-default.  You need to do it manually, following these steps:
+作为一个单独的贡献模块，游戏内 Python 系统默认未安装。您需要手动安装，按照以下步骤：
 
-This is the quick summary. Scroll down for more detailed help on each step.
+这是快速总结。向下滚动以获取每个步骤的详细帮助。
 
-1. Launch the main script (important!):
+1. 启动主脚本（重要！）：
 
-        py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
-
-2. Set the permissions (optional):
-   - `EVENTS_WITH_VALIDATION`: a group that can edit callbacks, but will need approval (default to
-     `None`).
-   - `EVENTS_WITHOUT_VALIDATION`: a group with permission to edit callbacks without need of
-     validation (default to `"immortals"`).
-   - `EVENTS_VALIDATING`: a group that can validate callbacks (default to `"immortals"`).
-   - `EVENTS_CALENDAR`: type of the calendar to be used (either `None`, `"standard"` or `"custom"`,
-     default to `None`).
-3. Add the `call` command.
-4. Inherit from the custom typeclasses of the in-game Python system.
-   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
-   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventExit`: to replace `DefaultExit`.
-   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventObject`: to replace `DefaultObject`.
-   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom`: to replace `DefaultRoom`.
-
-The following sections describe in details each step of the installation.
-
-> Note: If you were to start the game without having started the main script (such as when
-resetting your database) you will most likely face a traceback when logging in, telling you
-that a 'callback' property is not defined. After performing step `1` the error will go away.
-
-### Starting the event script
-
-To start the event script, you only need a single command, using `@py`.
-
+    ```bash
     py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+    ```
 
-This command will create a global script (that is, a script independent from any object).  This
-script will hold basic configuration, individual callbacks and so on.  You may access it directly,
-but you will probably use the callback handler.  Creating this script will also create a `callback`
-handler on all objects (see below for details).
+2. 设置权限（可选）：
+   - `EVENTS_WITH_VALIDATION`：一个可以编辑回调但需要批准的组（默认为 `None`）。
+   - `EVENTS_WITHOUT_VALIDATION`：一个有权编辑回调且无需验证的组（默认为 `"immortals"`）。
+   - `EVENTS_VALIDATING`：一个可以验证回调的组（默认为 `"immortals"`）。
+   - `EVENTS_CALENDAR`：要使用的日历类型（`None`、`"standard"` 或 `"custom"`，默认为 `None`）。
+3. 添加 `call` 命令。
+4. 继承游戏内 Python 系统的自定义 typeclasses。
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter`：替换 `DefaultCharacter`。
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventExit`：替换 `DefaultExit`。
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventObject`：替换 `DefaultObject`。
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom`：替换 `DefaultRoom`。
 
-### Editing permissions
+以下部分详细描述了安装的每个步骤。
 
-This contrib comes with its own set of permissions.  They define who can edit callbacks without
-validation, and who can edit callbacks but needs validation.  Validation is a process in which an
-administrator (or somebody trusted as such) will check the callbacks produced by others and will
-accept or reject them.  If accepted, the callbacks are connected, otherwise they are never run.
+> 注意：如果您在未启动主脚本的情况下启动游戏（例如在重置数据库时），您很可能会在登录时遇到回溯，告诉您未定义“callback”属性。执行步骤 `1` 后，错误将消失。
 
-By default, callbacks can only be created by immortals: no one except the immortals can edit
-callbacks, and immortals don't need validation.  It can easily be changed, either through settings
-or dynamically by changing permissions of users.
+### 启动事件脚本
 
-The ingame-python contrib adds three [permissions](Permissions)) in the settings.  You can
-override them by changing the settings into your `server/conf/settings.py` file (see below for an
-example).  The settings defined in the events contrib are:
+要启动事件脚本，您只需要一个命令，使用 `@py`。
 
-- `EVENTS_WITH_VALIDATION`: this defines a permission that can edit callbacks, but will need
-  approval.  If you set this to `"wizards"`, for instance, users with the permission `"wizards"`
-will be able to edit callbacks.  These callbacks will not be connected, though, and will need to be
-checked and approved by an administrator.  This setting can contain `None`, meaning that no user is
-allowed to edit callbacks with validation.
-- `EVENTS_WITHOUT_VALIDATION`: this setting defines a permission allowing editing of callbacks
-  without needing validation.  By default, this setting is set to `"immortals"`.  It means that
-immortals can edit callbacks, and they will be connected when they leave the editor, without needing
-approval.
-- `EVENTS_VALIDATING`: this last setting defines who can validate callbacks.  By default, this is
-  set to `"immortals"`, meaning only immortals can see callbacks needing validation, accept or
-reject them.
+```bash
+py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+```
 
-You can override all these settings in your `server/conf/settings.py` file.  For instance:
+此命令将创建一个全局脚本（即独立于任何对象的脚本）。此脚本将保存基本配置、各个回调等。您可以直接访问它，但您可能会使用回调处理程序。创建此脚本还将在所有对象上创建一个 `callback` 处理程序（有关详细信息，请参见下文）。
+
+### 编辑权限
+
+此贡献模块带有其自己的权限集。它们定义了谁可以在无需验证的情况下编辑回调，谁可以编辑回调但需要验证。验证是一个过程，其中管理员（或被信任的人）将检查其他人生成的回调并接受或拒绝它们。如果被接受，回调将被连接，否则它们永远不会运行。
+
+默认情况下，回调只能由不朽者创建：除了不朽者之外，没有人可以编辑回调，并且不朽者不需要验证。可以通过设置或动态更改用户权限轻松更改。
+
+游戏内 Python 贡献模块在设置中添加了三个[权限](Permissions))。您可以通过将设置更改为 `server/conf/settings.py` 文件来覆盖它们（请参阅下面的示例）。事件贡献中定义的设置是：
+
+- `EVENTS_WITH_VALIDATION`：这定义了一个可以编辑回调但需要批准的权限。如果您将其设置为 `"wizards"`，例如，具有 `"wizards"` 权限的用户将能够编辑回调。但这些回调不会被连接，必须由管理员检查和批准。此设置可以包含 `None`，这意味着没有用户被允许编辑需要验证的回调。
+- `EVENTS_WITHOUT_VALIDATION`：此设置定义了允许编辑回调且无需验证的权限。默认情况下，此设置为 `"immortals"`。这意味着不朽者可以编辑回调，并且在他们离开编辑器时将被连接，无需批准。
+- `EVENTS_VALIDATING`：此最后一个设置定义了谁可以验证回调。默认情况下，此设置为 `"immortals"`，这意味着只有不朽者可以看到需要验证的回调并接受或拒绝它们。
+
+您可以在 `server/conf/settings.py` 文件中覆盖所有这些设置。例如：
 
 ```python
-# ... other settings ...
+# ... 其他设置 ...
 
-# Event settings
+# 事件设置
 EVENTS_WITH_VALIDATION = "wizards"
 EVENTS_WITHOUT_VALIDATION = "immortals"
 EVENTS_VALIDATING = "immortals"
 ```
 
-In addition, there is another setting that must be set if you plan on using the time-related events
-(events that are scheduled at specific, in-game times).  You would need to specify the type of
-calendar you are using.  By default, time-related events are disabled.  You can change the
-`EVENTS_CALENDAR` to set it to:
+此外，如果您计划使用与时间相关的事件（在特定游戏时间安排的事件），则必须设置另一个设置。您需要指定您正在使用的日历类型。默认情况下，与时间相关的事件被禁用。您可以更改 `EVENTS_CALENDAR` 以将其设置为：
 
-- `"standard"`: the standard calendar, with standard days, months, years and so on.
-- `"custom"`: a custom calendar that will use the `custom_gametime` contrib to schedule events.
+- `"standard"`：标准日历，具有标准的天、月、年等。
+- `"custom"`：使用 `custom_gametime` 贡献来安排事件的自定义日历。
 
-This contrib defines two additional permissions that can be set on individual users:
+此贡献模块定义了两个可以在各个用户上设置的附加权限：
 
-- `events_without_validation`: this would give this user the rights to edit callbacks but not
-  require validation before they are connected.
-- `events_validating`: this permission allows this user to run validation checks on callbacks
-  needing to be validated.
+- `events_without_validation`：这将赋予此用户编辑回调的权限，但在连接之前不需要验证。
+- `events_validating`：此权限允许此用户对需要验证的回调进行验证检查。
 
-For instance, to give the right to edit callbacks without needing approval to the player 'kaldara',
-you might do something like:
+例如，要授予玩家 'kaldara' 编辑回调而无需批准的权限，您可以执行以下操作：
 
-    perm *kaldara = events_without_validation
+```bash
+perm *kaldara = events_without_validation
+```
 
-To remove this same permission, just use the `/del` switch:
+要删除此权限，只需使用 `/del` 开关：
 
-    perm/del *kaldara = events_without_validation
+```bash
+perm/del *kaldara = events_without_validation
+```
 
-The rights to use the `call` command are directly related to these permissions: by default, only
-users who have the `events_without_validation` permission or are in (or above) the group defined in
-the `EVENTS_WITH_VALIDATION` setting will be able to call the command (with different switches).
+使用 `call` 命令的权限直接与这些权限相关：默认情况下，只有具有 `events_without_validation` 权限的用户或在 `EVENTS_WITH_VALIDATION` 设置中定义的组（或以上）中的用户才能调用命令（具有不同的开关）。
 
-### Adding the `call` command
+### 添加 `call` 命令
 
-You also have to add the `@call` command to your Character CmdSet.  This command allows your users
-to add, edit and delete callbacks in-game.  In your `commands/default_cmdsets`, it might look like
-this:
+您还必须将 `@call` 命令添加到您的 Character CmdSet。这条命令允许您的用户在游戏中添加、编辑和删除回调。在您的 `commands/default_cmdsets` 中，它可能看起来像这样：
 
 ```python
 from evennia import default_cmds
@@ -198,25 +139,22 @@ from evennia.contrib.base_systems.ingame_python.commands import CmdCallback
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
-    The `CharacterCmdSet` contains general in-game commands like `look`,
-    `get`, etc available on in-game Character objects. It is merged with
-    the `PlayerCmdSet` when a Player puppets a Character.
+    `CharacterCmdSet` 包含游戏中的一般命令，如 `look`、`get` 等，可用于游戏中的角色对象。
+    当玩家操控角色时，它会与 `PlayerCmdSet` 合并。
     """
     key = "DefaultCharacter"
 
     def at_cmdset_creation(self):
         """
-        Populates the cmdset
+        填充命令集
         """
         super().at_cmdset_creation()
         self.add(CmdCallback())
 ```
 
-### Changing parent classes of typeclasses
+### 更改 typeclasses 的父类
 
-Finally, to use the in-game Python system, you need to have your typeclasses inherit from the modified event
-classes.  For instance, in your `typeclasses/characters.py` module, you should change inheritance
-like this:
+最后，要使用游戏内 Python 系统，您需要让您的 typeclasses 继承自修改过的事件类。例如，在您的 `typeclasses/characters.py` 模块中，您应该像这样更改继承：
 
 ```python
 from evennia.contrib.base_systems.ingame_python.typeclasses import EventCharacter
@@ -226,36 +164,25 @@ class Character(EventCharacter):
     # ...
 ```
 
-You should do the same thing for your rooms, exits and objects.  Note that the
-in-game Python system works by overriding some hooks.  Some of these features
-might not be accessible in your game if you don't call the parent methods when
-overriding hooks.
+您应该对您的房间、出口和对象做同样的事情。请注意，游戏内 Python 系统通过覆盖一些钩子来工作。如果您在覆盖钩子时不调用父方法，则某些功能可能在您的游戏中不可用。
 
-## Using the `call` command
+## 使用 `call` 命令
 
-The in-game Python system relies, to a great extent, on its `call` command.
-Who can execute this command, and who can do what with it, will depend on your
-set of permissions.
+游戏内 Python 系统在很大程度上依赖于其 `call` 命令。谁可以执行此命令，以及谁可以使用它做什么，将取决于您的权限设置。
 
-The `call` command allows to add, edit and delete callbacks on specific objects' events.  The event
-system can be used on most Evennia objects, mostly typeclassed objects (excluding players).  The
-first argument of the `call` command is the name of the object you want to edit.  It can also be
-used to know what events are available for this specific object.
+`call` 命令允许在特定对象的事件上添加、编辑和删除回调。事件系统可以用于大多数 Evennia 对象，主要是 typeclassed 对象（不包括玩家）。`call` 命令的第一个参数是您要编辑的对象的名称。它还可以用于了解此特定对象可用的事件。
 
-### Examining callbacks and events
+### 检查回调和事件
 
-To see the events connected to an object, use the `call` command and give the name or ID of the
-object to examine.  For instance, `call here` to examine the events on your current location.  Or
-`call self` to see the events on yourself.
+要查看连接到对象的事件，请使用 `call` 命令并提供要检查的对象的名称或 ID。例如，`call here` 用于检查您当前所在位置的事件。或者 `call self` 查看您自己的事件。
 
-This command will display a table, containing:
+此命令将显示一个表格，包含：
 
-- The name of each event in the first column.
-- The number of callbacks of this name, and the number of total lines of these callbacks in the
-  second column.
-- A short help to tell you when the event is triggered in the third column.
+- 第一列中每个事件的名称。
+- 第二列中这些回调的名称数量和总行数。
+- 第三列中告诉您事件何时触发的简短帮助。
 
-If you execute `call #1` for instance, you might see a table like this:
+如果您执行 `call #1`，您可能会看到这样的表格：
 
 ```
 +------------------+---------+-----------------------------------------------+
@@ -277,17 +204,14 @@ If you execute `call #1` for instance, you might see a table like this:
 +------------------+---------+-----------------------------------------------+
 ```
 
-### Creating a new callback
+### 创建新回调
 
-The `/add` switch should be used to add a callback.  It takes two arguments beyond the object's
-name/DBREF:
+`/add` 开关应用于添加回调。它需要两个参数，除了对象的名称/DBREF：
 
-1. After an = sign, the name of the event to be edited (if not supplied, will display the list of
-   possible events, like above).
-2. The parameters (optional).
+1. 在等号后，事件的名称（如果未提供，将显示可能事件的列表，如上所示）。
+2. 参数（可选）。
 
-We'll see callbacks with parameters later.  For the time being, let's try to prevent a character
-from going through the "north" exit of this room:
+稍后我们将看到带参数的回调。目前，让我们尝试阻止角色通过此房间的“北”出口：
 
 ```
 call north
@@ -305,32 +229,26 @@ call north
 +------------------+---------+-----------------------------------------------+
 ```
 
-If we want to prevent a character from traversing through this exit, the best event for us would be
-"can_traverse".
+如果我们想阻止角色通过此出口，最好的事件是“can_traverse”。
 
-> Why not "traverse"?  If you read the description of both events, you will see "traverse" is called
- **after** the character has traversed through this exit.  It would be too late to prevent it.  On
-> the other hand, "can_traverse" is obviously checked before the character traverses.
+> 为什么不是“traverse”？如果您阅读两个事件的描述，您会看到“traverse”是在角色通过此出口后调用的。阻止它为时已晚。另一方面，“can_traverse”显然是在角色穿越之前检查的。
 
-When we edit the event, we have some more information:
+当我们编辑事件时，我们有更多信息：
 
-    call/add north = can_traverse
+```bash
+call/add north = can_traverse
+```
 
-Can the character traverse through this exit?
-This event is called when a character is about to traverse this
-exit.  You can use the deny() eventfunc to deny the character from
-exiting for this time.
+角色是否可以通过此出口？
+当角色即将通过此出口时，将调用此事件。您可以使用 deny() 事件函数来阻止角色这次退出。
 
-Variables you can use in this event:
+您可以在此事件中使用的变量：
 
-    - character: the character that wants to traverse this exit.
-    - exit: the exit to be traversed.
-    - room: the room in which stands the character before moving.
+- character: 想要通过此出口的角色。
+- exit: 要穿越的出口。
+- room: 角色在移动前所处的房间。
 
-The section dedicated to [eventfuncs](#the-eventfuncs) will elaborate on the `deny()` function and
-other eventfuncs.  Let us say, for the time being, that it can prevent an action (in this case, it
-can prevent the character from traversing through this exit).  In the editor that opened when you
-used `call/add`, you can type something like:
+[事件函数](#the-eventfuncs)部分将详细说明 `deny()` 函数和其他事件函数。暂时说，它可以阻止一个动作（在这种情况下，它可以阻止角色通过此出口）。在您使用 `call/add` 时打开的编辑器中，您可以输入类似的内容：
 
 ```python
 if character.id == 1:
@@ -340,10 +258,9 @@ else:
     deny()
 ```
 
-You can now enter `:wq` to leave the editor by saving the callback.
+您现在可以输入 `:wq` 保存回调并离开编辑器。
 
-If you enter `call north`, you should see that "can_traverse" now has an active callback.  You can
-use `call north = can_traverse` to see more details on the connected callbacks:
+如果您输入 `call north`，您应该会看到“can_traverse”现在有一个活动回调。您可以使用 `call north = can_traverse` 查看有关连接回调的更多详细信息：
 
 ```
 call north = can_traverse
@@ -354,8 +271,7 @@ call north = can_traverse
 +--------------+--------------+----------------+--------------+--------------+
 ```
 
-The left column contains callback numbers.  You can use them to have even more information on a
-specific event.  Here, for instance:
+左列包含回调编号。您可以使用它们来获取有关特定事件的更多信息。例如，在这里：
 
 ```
 call north = can_traverse 1
@@ -371,250 +287,189 @@ else:
     deny()
 ```
 
-Then try to walk through this exit.  Do it with another character if possible, too, to see the
-difference.
+然后尝试通过此出口。尽可能用另一个角色也这样做，以查看差异。
 
-### Editing and removing a callback
+### 编辑和删除回调
 
-You can use the `/edit` switch to the `@call` command to edit a callback.  You should provide, after
-the name of the object to edit and the equal sign:
+您可以使用 `@call` 命令的 `/edit` 开关编辑回调。在要编辑的对象名称和等号后，您应该提供：
 
-1. The name of the event (as seen above).
-2. A number, if several callbacks are connected at this location.
+1. 事件的名称（如上所示）。
+2. 如果在此位置连接了多个回调，则提供一个编号。
 
-You can type `call/edit <object> = <event name>` to see the callbacks that are linked at this
-location.  If there is only one callback, it will be opened in the editor; if more are defined, you
-will be asked for a number to provide (for instance, `call/edit north = can_traverse 2`).
+您可以输入 `call/edit <object> = <event name>` 查看在此位置链接的回调。如果只有一个回调，它将在编辑器中打开；如果定义了更多，您将被要求提供一个编号（例如，`call/edit north = can_traverse 2`）。
 
-The command `call` also provides a `/del` switch to remove a callback.  It takes the same arguments
-as the `/edit` switch.
+`call` 命令还提供一个 `/del` 开关来删除回调。它接受与 `/edit` 开关相同的参数。
 
-When removed, callbacks are logged, so an administrator can retrieve its content, assuming the
-`/del` was an error.
+删除时，回调会被记录，因此管理员可以检索其内容，假设 `/del` 是一个错误。
 
-### The code editor
+### 代码编辑器
 
-When adding or editing a callback, the event editor should open in code mode.  The additional
-options supported by the editor in this mode are describe in [a dedicated section of the EvEditor's
-documentation](https://github.com/evennia/evennia/wiki/EvEditor#the-eveditor-to-edit-code).
+在添加或编辑回调时，事件编辑器应以代码模式打开。编辑器在此模式下支持的附加选项在 [EvEditor 的文档专用部分](https://github.com/evennia/evennia/wiki/EvEditor#the-eveditor-to-edit-code)中进行了描述。
 
-## Using events
+## 使用事件
 
-The following sections describe how to use events for various tasks, from the most simple to the
-most complex.
+以下部分描述了如何使用事件来完成各种任务，从最简单到最复杂。
 
-### The eventfuncs
+### 事件函数
 
-In order to make development a little easier, the in-game Python system provides eventfuncs to be used in
-callbacks themselves.  You don't have to use them, they are just shortcuts.  An eventfunc is just a
-simple function that can be used inside of your callback code.
+为了使开发更容易，游戏内 Python 系统提供了可以在回调中使用的事件函数。您不必使用它们，它们只是快捷方式。事件函数只是可以在回调代码中使用的简单函数。
 
-Function   | Argument                 | Description                       | Example
------------|--------------------------|-----------------------------------|--------
-deny       | `()`                     | Prevent an action from happening. | `deny()`
-get        | `(**kwargs)`             | Get a single object.              | `char = get(id=1)`
-call_event | `(obj, name, seconds=0)` | Call another event.               | `call_event(char, "chain_1", 20)`
+| 函数        | 参数                     | 描述                                 | 示例                                      |
+|-------------|--------------------------|--------------------------------------|-------------------------------------------|
+| deny        | `()`                     | 阻止某个动作发生。                   | `deny()`                                  |
+| get         | `(**kwargs)`             | 获取单个对象。                       | `char = get(id=1)`                        |
+| call_event  | `(obj, name, seconds=0)` | 调用另一个事件。                     | `call_event(char, "chain_1", 20)`         |
 
 #### deny
 
-The `deny()` function allows to interrupt the callback and the action that called it.  In the
-`can_*` events, it can be used to prevent the action from happening.  For instance, in `can_say` on
-rooms, it can prevent the character from saying something in the room.  One could have a `can_eat`
-event set on food that would prevent this character from eating this food.
+`deny()` 函数允许中断回调和调用它的动作。在 `can_*` 事件中，它可以用于阻止动作发生。例如，在房间的 `can_say` 中，它可以阻止角色在房间中说话。可以在食物上设置一个 `can_eat` 事件，以防止此角色吃掉这食物。
 
-Behind the scenes, the `deny()` function raises an exception that is being intercepted by the
-handler of events.  The handler will then report that the action was cancelled.
+在幕后，`deny()` 函数引发了一个被事件处理程序拦截的异常。然后处理程序将报告动作被取消。
 
 #### get
 
-The `get` eventfunc is a shortcut to get a single object with a specific identity.  It's often used
-to retrieve an object with a given ID.  In the section dedicated to [chained
-events](#chained-events), you will see a concrete example of this function in action.
+`get` 事件函数是获取具有特定身份的单个对象的快捷方式。它通常用于检索具有给定 ID 的对象。在专门针对[链式事件](#chained-events)的部分中，您将看到此函数的具体示例。
 
 #### call_event
 
-Some callbacks will call other events.  It is particularly useful for [chained
-events](#chained-events) that are described in a dedicated section.  This eventfunc is used to call
-another event, immediately or in a defined time.
+一些回调将调用其他事件。对于在专门部分中描述的[链式事件](#chained-events)特别有用。此事件函数用于立即或在定义的时间内调用另一个事件。
 
-You need to specify as first parameter the object containing the event.  The second parameter is the
-name of the event to call.  The third parameter is the number of seconds before calling this event.
-By default, this parameter is set to 0 (the event is called immediately).
+您需要指定包含事件的对象作为第一个参数。第二个参数是要调用的事件的名称。第三个参数是调用此事件之前的秒数。默认情况下，此参数设置为 0（事件立即被调用）。
 
-### Variables in callbacks
+### 回调中的变量
 
-In the Python code you will enter in individual callbacks, you will have access to variables in your
-locals.  These variables will depend on the event, and will be clearly listed when you add or edit a
-callback.  As you've seen in the previous example, when we manipulate characters or character
-actions, we often have a `character` variable that holds the character doing the action.
+在您将在各个回调中输入的 Python 代码中，您将可以访问本地变量。这些变量将取决于事件，并将在您添加或编辑回调时明确列出。如您在前面的示例中所见，当我们操作角色或角色动作时，我们通常有一个 `character` 变量，包含执行动作的角色。
 
-In most cases, when an event is fired, all callbacks from this event are called.  Variables are
-created for each event.  Sometimes, however, the callback will execute and then ask for a variable
-in your locals: in other words, some callbacks can alter the actions being performed by changing
-values of variables.  This is always clearly specified in the help of the event.
+在大多数情况下，当事件触发时，将调用此事件的所有回调。每个事件都会创建变量。然而，有时回调会执行，然后在您的本地中请求一个变量：换句话说，一些回调可以通过更改变量值来改变正在执行的动作。这在事件帮助中总是清楚地指定的。
 
-One example that will illustrate this system is the "msg_leave" event that can be set on exits.
-This event can alter the message that will be sent to other characters when someone leaves through
-this exit.
+一个将说明此系统的示例是可以设置在出口上的“msg_leave”事件。此事件可以更改当有人通过此出口离开时将发送给其他角色的消息。
 
-    call/add down = msg_leave
+```bash
+call/add down = msg_leave
+```
 
-Which should display:
+这应该显示：
 
 ```
-Customize the message when a character leaves through this exit.
-This event is called when a character leaves through this exit.
-To customize the message that will be sent to the room where the
-character came from, change the value of the variable "message"
-to give it your custom message.  The character itself will not be
-notified.  You can use mapping between braces, like this:
+自定义角色通过此出口离开时的消息。
+当角色通过此出口离开时，将调用此事件。
+要自定义将发送到角色来自的房间的消息，请更改变量“message”的值以提供您的自定义消息。角色本身不会收到通知。您可以使用括号之间的映射，如下所示：
     message = "{character} falls into a hole!"
-In your mapping, you can use {character} (the character who is
-about to leave), {exit} (the exit), {origin} (the room in which
-the character is), and {destination} (the room in which the character
-is heading for).  If you need to customize the message with other
-information, you can also set "message" to None and send something
-else instead.
+在您的映射中，您可以使用 {character}（即将离开的角色）、{exit}（出口）、{origin}（角色所在的房间）和 {destination}（角色要去的房间）。如果您需要使用其他信息自定义消息，您还可以将“message”设置为 None 并发送其他内容。
 
-Variables you can use in this event:
-    character: the character who is leaving through this exit.
-    exit: the exit being traversed.
-    origin: the location of the character.
-    destination: the destination of the character.
-    message: the message to be displayed in the location.
-    mapping: a dictionary containing additional mapping.
+您可以在此事件中使用的变量：
+    character: 通过此出口离开的角色。
+    exit: 正在穿越的出口。
+    origin: 角色的位置。
+    destination: 角色的目的地。
+    message: 在位置显示的消息。
+    mapping: 包含附加映射的字典。
 ```
 
-If you write something like this in your event:
+如果您在事件中写入类似的内容：
 
 ```python
 message = "{character} falls into a hole in the ground!"
-
 ```
 
-And if the character Wilfred takes this exit, others in the room will see:
+如果角色 Wilfred 走这条出口，房间里的其他人将看到：
 
-    Wildred falls into a hole in the ground!
+```
+Wildred falls into a hole in the ground!
+```
 
-In this case, the in-game Python system placed the variable "message" in the callback locals, but will read
-from it when the event has been executed.
+在这种情况下，游戏内 Python 系统将变量“message”放置在回调本地中，但将在事件执行后从中读取。
 
-### Callbacks with parameters
+### 带参数的回调
 
-Some callbacks are called without parameter.  It has been the case for all examples we have seen
-before.  In some cases, you can create callbacks that are triggered under only some conditions.  A
-typical example is the room's "say" event.  This event is triggered when somebody says something in
-the room.  Individual callbacks set on this event can be configured to fire only when some words are
-used in the sentence.
+一些回调是在没有参数的情况下调用的。对于我们之前看到的所有示例都是这种情况。在某些情况下，您可以创建仅在某些条件下触发的回调。一个典型的例子是房间的“say”事件。此事件在有人在房间中说话时触发。设置在此事件上的各个回调可以配置为仅在句子中使用某些词时触发。
 
-For instance, let's say we want to create a cool voice-operated elevator.  You enter into the
-elevator and say the floor number... and the elevator moves in the right direction.  In this case,
-we could create an callback with the parameter "one":
+例如，假设我们想创建一个很酷的语音操控电梯。您进入电梯并说出楼层号……电梯朝正确的方向移动。在这种情况下，我们可以创建一个带有参数“one”的回调：
 
-    call/add here = say one
+```bash
+call/add here = say one
+```
 
-This callback will only fire when the user says a sentence that contains "one".
+此回调仅在用户说出包含“one”的句子时触发。
 
-But what if we want to have a callback that would fire if the user says 1 or one?  We can provide
-several parameters, separated by a comma.
+但如果我们希望在用户说 1 或 one 时触发回调呢？我们可以提供多个参数，用逗号分隔。
 
-    call/add here = say 1, one
+```bash
+call/add here = say 1, one
+```
 
-Or, still more keywords:
+或者，更多的关键词：
 
-    call/add here = say 1, one, ground
+```bash
+call/add here = say 1, one, ground
+```
 
-This time, the user could say something like "take me to the ground floor" ("ground" is one of our
-keywords defined in the above callback).
+这次，用户可以说“take me to the ground floor”之类的话（“ground”是我们在上述回调中定义的关键词之一）。
 
-Not all events can take parameters, and these who do have different ways of handling them.  There
-isn't a single meaning to parameters that could apply to all events.  Refer to the event
-documentation for details.
+并非所有事件都可以接受参数，并且这些事件处理参数的方式各不相同。没有一个适用于所有事件的参数含义。有关详细信息，请参阅事件文档。
 
-> If you get confused between callback variables and parameters, think of parameters as checks
-> performed before the callback is run.  Event with parameters will only fire some specific
-> callbacks, not all of them.
+> 如果您在回调变量和参数之间感到困惑，请将参数视为在运行回调之前执行的检查。带参数的事件将只触发某些特定的回调，而不是所有回调。
 
-### Time-related events
+### 与时间相关的事件
 
-Events are usually linked to commands,  as we saw before.  However, this is not always the case.
-Events can be triggered by other actions and, as we'll see later, could even be called from inside
-other events!
+事件通常与命令相关联，如我们之前所见。然而，这并不总是如此。事件可以由其他动作触发，正如我们稍后将看到的，甚至可以从其他事件中调用！
 
-There is a specific event, on all objects, that can trigger at a specific time.  It's an event with
-a mandatory parameter, which is the time you expect this event to fire.
+在所有对象上有一个特定的事件，可以在特定时间触发。这是一个具有强制参数的事件，即您希望此事件触发的时间。
 
-For instance, let's add an event on this room that should trigger every day, at precisely 12:00 PM
-(the time is given as game time, not real time):
+例如，让我们在此房间添加一个事件，该事件应每天在 12:00 PM（时间以游戏时间而非实际时间给出）触发：
 
-    call here = time 12:00
+```bash
+call here = time 12:00
+```
 
 ```python
-# This will be called every MUD day at 12:00 PM
+# 这将在每天的 MUD 中午 12:00 调用
 room.msg_contents("It's noon, time to have lunch!")
-
 ```
 
-Now, at noon every MUD day, this event will fire and this callback will be executed.  You can use
-this event on every kind of typeclassed object, to have a specific action done every MUD day at the
-same time.
+现在，在每天的 MUD 中午，此事件将触发并执行此回调。您可以在每种类型的 typeclassed 对象上使用此事件，以便在每天的 MUD 中同时执行特定动作。
 
-Time-related events can be much more complex than this.  They can trigger every in-game hour or more
-often (it might not be a good idea to have events trigger that often on a lot of objects).  You can
-have events that run every in-game week or month or year.  It will greatly vary depending on the
-type of calendar used in your game.  The number of time units is described in the game
-configuration.
+与时间相关的事件可能比这复杂得多。它们可以每小时或更频繁地触发（在许多对象上如此频繁地触发事件可能不是一个好主意）。您可以拥有每周、每月或每年运行的事件。它将根据您游戏中使用的日历类型而大不相同。时间单位的数量在游戏配置中描述。
 
-With a standard calendar, for instance, you have the following units: minutes, hours, days, months
-and years.  You will specify them as numbers separated by either a colon (:), a space ( ), or a dash
-(-).  Pick whatever feels more appropriate (usually, we separate hours and minutes with a colon, the
-other units with a dash).
+例如，使用标准日历，您有以下单位：分钟、小时、天、月和年。您将它们指定为由冒号（:）、空格（）、或短划线（-）分隔的数字。选择感觉更合适的（通常，我们用冒号分隔小时和分钟，用短划线分隔其他单位）。
 
-Some examples of syntax:
+一些语法示例：
 
-- `18:30`: every day at 6:30 PM.
-- `01 12:00`: every month, the first day, at 12 PM.
-- `06-15 09:58`: every year, on the 15th of June (month comes before day), at 9:58 AM.
-- `2025-01-01 00:00`: January 1st, 2025 at midnight (obviously, this will trigger only once).
+- `18:30`：每天晚上 6:30。
+- `01 12:00`：每月的第一天，中午 12 点。
+- `06-15 09:58`：每年 6 月 15 日（月份在日期之前），上午 9:58。
+- `2025-01-01 00:00`：2025 年 1 月 1 日午夜（显然，这只会触发一次）。
 
-Notice that we specify units in the reverse order (year, month, day, hour and minute) and separate
-them with logical separators.  The smallest unit that is not defined is going to set how often the
-event should fire.  That's why, if you use `12:00`, the smallest unit that is not defined is "day":
-the event will fire every day at the specified time.
+请注意，我们以相反的顺序指定单位（年、月、日、小时和分钟），并用逻辑分隔符分隔它们。未定义的最小单位将设置事件应触发的频率。这就是为什么如果您使用 `12:00`，未定义的最小单位是“天”：事件将在指定时间每天触发。
 
-> You can use chained events (see below) in conjunction with time-related events to create more
-random or frequent actions in events.
+> 您可以将链式事件（见下文）与时间相关的事件结合使用，以在事件中创建更多随机或频繁的动作。
 
-### Chained events
+### 链式事件
 
-Callbacks can call other events, either now or a bit later.  It is potentially very powerful.
+回调可以立即或稍后调用其他事件。这可能非常强大。
 
-To use chained events, just use the `call_event` eventfunc.  It takes 2-3 arguments:
+要使用链式事件，只需使用 `call_event` 事件函数。它接受 2-3 个参数：
 
-- The object containing the event.
-- The name of the event to call.
-- Optionally, the number of seconds to wait before calling this event.
+- 包含事件的对象。
+- 要调用的事件的名称。
+- 可选地，在调用此事件之前等待的秒数。
 
-All objects have events that are not triggered by commands or game-related operations.  They are
-called "chain_X", like "chain_1", "chain_2", "chain_3" and so on.  You can give them more specific
-names, as long as it begins by "chain_", like "chain_flood_room".
+所有对象都有不由命令或游戏相关操作触发的事件。它们被称为“chain_X”，如“chain_1”、“chain_2”、“chain_3”等。您可以给它们更具体的名称，只要它以“chain_”开头，如“chain_flood_room”。
 
-Rather than a long explanation, let's look at an example: a subway that will go from one place to
-the next at regular times.  Connecting exits (opening its doors), waiting a bit, closing them,
-rolling around and stopping at a different station.  That's quite a complex set of callbacks, as it
-is, but let's only look at the part that opens and closes the doors:
+与其进行长篇解释，不如看一个例子：一个地铁将在固定时间从一个地方到另一个地方。连接出口（打开门），等待片刻，关闭它们，滚动并在不同的站点停下来。这是一个相当复杂的回调集，但让我们只看打开和关闭门的部分：
 
-    call/add here = time 10:00
+```bash
+call/add here = time 10:00
+```
 
 ```python
-# At 10:00 AM, the subway arrives in the room of ID 22.
-# Notice that exit #23 and #24 are respectively the exit leading
-# on the platform and back in the subway.
+# 在上午 10:00，地铁到达 ID 为 22 的房间。
+# 注意，出口 #23 和 #24 分别是通往站台和返回地铁的出口。
 station = get(id=22)
 to_exit = get(id=23)
 back_exit = get(id=24)
 
-# Open the door
+# 打开门
 to_exit.name = "platform"
 to_exit.aliases = ["p"]
 to_exit.location = room
@@ -623,28 +478,29 @@ back_exit.name = "subway"
 back_exit.location = station
 back_exit.destination = room
 
-# Display some messages
+# 显示一些消息
 room.msg_contents("The doors open and wind gushes in the subway")
 station.msg_contents("The doors of the subway open with a dull clank.")
 
-# Set the doors to close in 20 seconds
+# 设置门在 20 秒后关闭
 call_event(room, "chain_1", 20)
 ```
 
-This callback will:
+此回调将：
 
-1. Be called at 10:00 AM (specify 22:00 to set it to 10:00 PM).
-2. Set an exit between the subway and the station.  Notice that the exits already exist (you will
-   not have to create them), but they don't need to have specific location and destination.
-3. Display a message both in the subway and on the platform.
-4. Call the event "chain_1" to execute in 20 seconds.
+1. 在上午 10:00 被调用（指定 22:00 将其设置为晚上 10:00）。
+2. 在地铁和站台之间设置一个出口。注意，出口已经存在（您不需要创建它们），但它们不需要有特定的位置和目的地。
+3. 在地铁和站台上显示一条消息。
+4. 调用事件“chain_1”以在 20 秒后执行。
 
-And now, what should we have in "chain_1"?
+现在，“chain_1”中应该有什么？
 
-    call/add here = chain_1
+```bash
+call/add here = chain_1
+```
 
 ```python
-# Close the doors
+# 关闭门
 to_exit.location = None
 to_exit.destination = None
 back_exit.location = None
@@ -653,62 +509,43 @@ room.msg_content("After a short warning signal, the doors close and the subway b
 station.msg_content("After a short warning signal, the doors close and the subway begins moving.")
 ```
 
-Behind the scenes, the `call_event` function freezes all variables ("room", "station", "to_exit",
-"back_exit" in our example), so you don't need to define them again.
+在幕后，`call_event` 函数冻结了所有变量（在我们的示例中是“room”、“station”、“to_exit”、“back_exit”），因此您不需要再次定义它们。
 
-A word of caution on callbacks that call chained events: it isn't impossible for a callback to call
-itself at some recursion level.  If `chain_1` calls `chain_2` that calls `chain_3` that calls
-`chain_`, particularly if there's no pause between them, you might run into an infinite loop.
+关于调用链式事件的回调的注意事项：在某些递归级别上，回调调用自身并非不可能。如果 `chain_1` 调用 `chain_2`，然后调用 `chain_3`，然后调用 `chain_`，特别是如果它们之间没有暂停，您可能会遇到无限循环。
 
-Be also careful when it comes to handling characters or objects that may very well move during your
-pause between event calls.  When you use `call_event()`, the MUD doesn't pause and commands can be
-entered by players, fortunately.  It also means that, a character could start an event that pauses
-for awhile, but be gone when the chained event is called.  You need to check that, even lock the
-character into place while you are pausing (some actions should require locking) or at least,
-checking that the character is still in the room, for it might create illogical situations if you
-don't.
+在处理可能在事件调用之间的暂停期间移动的角色或对象时也要小心。当您使用 `call_event()` 时，MUD 不会暂停，玩家可以输入命令，幸运的是。这也意味着，角色可以启动一个暂停一段时间的事件，但在链式事件被调用时已经离开。您需要检查这一点，甚至在暂停时将角色锁定在原地（某些动作需要锁定），或者至少检查角色是否仍在房间中，否则如果您不这样做，可能会产生不合逻辑的情况。
 
-> Chained events are a special case: contrary to standard events, they are created in-game, not
- through code.  They usually contain only one callback, although nothing prevents you from creating
- several chained events in the same object.
+> 链式事件是一个特殊情况：与标准事件相反，它们是在游戏中创建的，而不是通过代码创建的。它们通常只包含一个回调，尽管没有什么可以阻止您在同一对象中创建多个链式事件。
 
-## Using events in code
+## 在代码中使用事件
 
-This section describes callbacks and events from code, how to create new events, how to call them in
-a command, and how to handle specific cases like parameters.
+本节描述了代码中的回调和事件，如何创建新事件，如何在命令中调用它们，以及如何处理参数等特定情况。
 
-Along this section, we will see how to implement the following example: we would like to create a
-"push" command that could be used to push objects.  Objects could react to this command and have
-specific events fired.
+在本节中，我们将看到如何实现以下示例：我们想创建一个“push”命令，可以用来推对象。对象可以对这个命令做出反应并触发特定事件。
 
-### Adding new events
+### 添加新事件
 
-Adding new events should be done in your typeclasses.  Events are contained in the `_events` class
-variable, a dictionary of event names as keys, and tuples to describe these events as values.  You
-also need to register this class, to tell the in-game Python system that it contains events to be added to
-this typeclass.
+添加新事件应该在您的 typeclasses 中完成。事件包含在 `_events` 类变量中，这是一个事件名称作为键的字典，以及描述这些事件的元组作为值。您还需要注册此类，以告知游戏内 Python 系统它包含要添加到此 typeclass 的事件。
 
-Here, we want to add a "push" event on objects.  In your `typeclasses/objects.py` file, you should
-write something like:
+在这里，我们想在对象上添加一个“push”事件。在您的 `typeclasses/objects.py` 文件中，您应该写类似的内容：
 
 ```python
 from evennia.contrib.base_systems.ingame_python.utils import register_events
 from evennia.contrib.base_systems.ingame_python.typeclasses import EventObject
 
 EVENT_PUSH = """
-A character push the object.
-This event is called when a character uses the "push" command on
-an object in the same room.
+角色推对象。
+当角色在同一房间中使用“push”命令对对象时，将调用此事件。
 
-Variables you can use in this event:
-    character: the character that pushes this object.
-    obj: the object connected to this event.
+您可以在此事件中使用的变量：
+    character: 推动此对象的角色。
+    obj: 连接到此事件的对象。
 """
 
 @register_events
 class Object(EventObject):
     """
-    Class representing objects.
+    表示对象的类。
     """
 
     _events = {
@@ -716,41 +553,26 @@ class Object(EventObject):
     }
 ```
 
-- Line 1-2: we import several things we will need from the in-game Python system.  Note that we use
-  `EventObject` as a parent instead of `DefaultObject`, as explained in the installation.
-- Line 4-12: we usually define the help of the event in a separate variable, this is more readable,
-  though there's no rule against doing it another way.  Usually, the help should contain a short
-explanation on a single line, a longer explanation on several lines, and then the list of variables
-with explanations.
-- Line 14: we call a decorator on the class to indicate it contains events.  If you're not familiar
-  with decorators, you don't really have to worry about it, just remember to put this line just
-above the class definition if your class contains events.
-- Line 15: we create the class inheriting from `EventObject`.
-- Line 20-22: we define the events of our objects in an `_events` class variable.  It is a
-  dictionary.  Keys are event names.  Values are a tuple containing:
-  - The list of variable names (list of str).  This will determine what variables are needed when
-    the event triggers.  These variables will be used in callbacks (as we'll see below).
-  - The event help (a str, the one we have defined above).
+- 第 1-2 行：我们从游戏内 Python 系统导入了几个我们需要的东西。注意我们使用 `EventObject` 作为父类而不是 `DefaultObject`，如安装中所述。
+- 第 4-12 行：我们通常在单独的变量中定义事件的帮助信息，这样更具可读性，但没有规则反对以其他方式进行。通常，帮助信息应包含单行的简短说明、几行的更长说明，然后是带有说明的变量列表。
+- 第 14 行：我们在类上调用装饰器以指示它包含事件。如果您不熟悉装饰器，您不必太担心，只需记住将此行放在类定义上方即可，如果您的类包含事件。
+- 第 15 行：我们创建继承自 `EventObject` 的类。
+- 第 20-22 行：我们在 `_events` 类变量中定义对象的事件。这是一个字典。键是事件名称。值是一个包含以下内容的元组：
+  - 变量名称的列表（字符串列表）。这将确定事件触发时需要哪些变量。这些变量将在回调中使用（我们将在下面看到）。
+  - 事件帮助（字符串，我们在上面定义的）。
 
-If you add this code and reload your game, create an object and examine its events with `@call`, you
-should see the "push" event with its help.  Of course, right now, the event exists, but it's not
-fired.
+如果您添加此代码并重新加载游戏，创建一个对象并使用 `@call` 检查其事件，您应该会看到带有帮助信息的“push”事件。当然，目前事件存在，但尚未触发。
 
-### Calling an event in code
+### 在代码中调用事件
 
-The in-game Python system is accessible through a handler on all objects.  This handler is named `callbacks`
-and can be accessed from any typeclassed object (your character, a room, an exit...).  This handler
-offers several methods to examine and call an event or callback on this object.
+游戏内 Python 系统可以通过所有对象上的处理程序访问。此处理程序名为 `callbacks`，可以从任何 typeclassed 对象（您的角色、房间、出口等）访问。此处理程序提供了几个方法来检查和调用此对象上的事件或回调。
 
-To call an event, use the `callbacks.call` method in an object.  It takes as argument:
+要调用事件，请在对象中使用 `callbacks.call` 方法。它接受以下参数：
 
-- The name of the event to call.
-- All variables that will be accessible in the event as positional arguments.  They should be
-  specified in the order chosen when [creating new events](#adding-new-events).
+- 要调用的事件名称。
+- 将在事件中可访问的所有变量作为位置参数。它们应按[创建新事件](#adding-new-events)时选择的顺序指定。
 
-Following the same example, so far, we have created an event on all objects, called "push".  This
-event is never fired for the time being.  We could add a "push" command, taking as argument the name
-of an object.  If this object is valid, it will call its "push" event.
+按照相同的示例，到目前为止，我们在所有对象上创建了一个名为“push”的事件。目前此事件从未被触发。我们可以添加一个“push”命令，接受对象名称作为参数。如果此对象有效，它将调用其“push”事件。
 
 ```python
 from commands.command import Command
@@ -758,53 +580,53 @@ from commands.command import Command
 class CmdPush(Command):
 
     """
-    Push something.
+    推动某物。
 
-    Usage:
+    用法：
         push <something>
 
-    Push something where you are, like an elevator button.
+    推动您所在位置的某物，比如电梯按钮。
 
     """
 
     key = "push"
 
     def func(self):
-        """Called when pushing something."""
+        """在推动某物时调用。"""
         if not self.args.strip():
             self.msg("Usage: push <something>")
             return
 
-        # Search for this object
+        # 搜索此对象
         obj = self.caller.search(self.args)
         if not obj:
             return
 
         self.msg("You push {}.".format(obj.get_display_name(self.caller)))
 
-        # Call the "push" event of this object
+        # 调用此对象的“push”事件
         obj.callbacks.call("push", self.caller, obj)
 ```
 
-Here we use `callbacks.call` with the following arguments:
+在这里我们使用 `callbacks.call`，参数如下：
 
-- `"push"`: the name of the event to be called.
-- `self.caller`: the one who pushed the button (this is our first variable, `character`).
-- `obj`: the object being pushed (our second variable, `obj`).
+- `"push"`：要调用的事件名称。
+- `self.caller`：按下按钮的人（这是我们的第一个变量，`character`）。
+- `obj`：被推动的对象（我们的第二个变量，`obj`）。
 
-In the "push" callbacks of our objects, we then can use the "character" variable (containing the one
-who pushed the object), and the "obj" variable (containing the object that was pushed).
+在我们对象的“push”回调中，我们可以使用“character”变量（包含推动对象的人）和“obj”变量（包含被推动的对象）。
 
-### See it all work
+### 查看一切工作
 
-To see the effect of the two modifications above (the added event and the "push" command), let us
-create a simple object:
+要查看上述两个修改的效果（添加的事件和“push”命令），让我们创建一个简单的对象：
 
-    @create/drop rock
-    @desc rock = It's a single rock, apparently pretty heavy.  Perhaps you can try to push it though.
-    @call/add rock = push
+```bash
+@create/drop rock
+@desc rock = It's a single rock, apparently pretty heavy.  Perhaps you can try to push it though.
+@call/add rock = push
+```
 
-In the callback you could write:
+在回调中您可以写：
 
 ```python
 from random import randint
@@ -814,20 +636,13 @@ if number == 6:
     character.msg("The rock topples over to reveal a beautiful ant-hill!")
 ```
 
-You can now try to "push rock".  You'll try to push the rock, and once out of six times, you will
-see a message about a "beautiful ant-hill".
+您现在可以尝试“push rock”。您将尝试推动岩石，而每六次中有一次，您将看到关于“美丽的蚁丘”的消息。
 
-### Adding new eventfuncs
+### 添加新的事件函数
 
-Eventfuncs, like `deny()`, are defined in
-`contrib/base_systesm/ingame_python/eventfuncs.py`.  You can add your own
-eventfuncs by creating a file named `eventfuncs.py` in your `world` directory.
-The functions defined in this file will be added as helpers.
+事件函数，如 `deny()`，定义在 `contrib/base_systesm/ingame_python/eventfuncs.py` 中。您可以通过在 `world` 目录中创建一个名为 `eventfuncs.py` 的文件来添加自己的事件函数。此文件中定义的函数将作为助手添加。
 
-You can also decide to create your eventfuncs in another location, or even in
-several locations.  To do so, edit the `EVENTFUNCS_LOCATION` setting in your
-`server/conf/settings.py` file, specifying either a python path or a list of
-Python paths in which your helper functions are defined.  For instance:
+您还可以决定在其他位置，甚至在多个位置创建您的事件函数。为此，请在 `server/conf/settings.py` 文件中编辑 `EVENTFUNCS_LOCATION` 设置，指定一个 Python 路径或一个定义了您的助手函数的 Python 路径列表。例如：
 
 ```python
 EVENTFUNCS_LOCATIONS = [
@@ -835,29 +650,19 @@ EVENTFUNCS_LOCATIONS = [
 ]
 ```
 
-### Creating events with parameters
+### 创建带参数的事件
 
-If you want to create events with parameters (if you create a "whisper" or "ask" command, for
-instance, and need to have some characters automatically react to words), you can set an additional
-argument in the tuple of events in your typeclass' `_events` class variable.  This third argument
-must contain a callback that will be called to filter through the list of callbacks when the event
-fires.  Two types of parameters are commonly used (but you can define more parameter types, although
-this is out of the scope of this documentation).
+如果您想创建带参数的事件（例如，如果您创建一个“whisper”或“ask”命令，并需要让一些角色自动对单词做出反应），您可以在 typeclass 的 `_events` 类变量中的事件元组中设置一个附加参数。此第三个参数必须包含一个回调，该回调将在事件触发时调用以过滤回调列表。通常使用两种类型的参数（但您可以定义更多参数类型，尽管这超出了本文档的范围）。
 
-- Keyword parameters: callbacks of this event will be filtered based on specific keywords.  This is
-  useful if you want the user to specify a word and compare this word to a list.
-- Phrase parameters: callbacks will be filtered using an entire phrase and checking all its words.
-  The "say" command uses phrase parameters (you can set a "say" callback to fires if a phrase
-contains one specific word).
+- 关键字参数：将根据特定关键字过滤此事件的回调。如果您希望用户指定一个单词并将其与列表进行比较，这很有用。
+- 短语参数：将使用整个短语过滤回调并检查其所有单词。“say”命令使用短语参数（您可以设置一个“say”回调以在短语包含一个特定单词时触发）。
 
-In both cases, you need to import a function from
-`evennia.contrib.base_systems.ingame_python.utils` and use it as third parameter in your
-event definition.
+在这两种情况下，您需要从 `evennia.contrib.base_systems.ingame_python.utils` 导入一个函数，并在事件定义中将其用作第三个参数。
 
-- `keyword_event` should be used for keyword parameters.
-- `phrase_event` should be used for phrase parameters.
+- `keyword_event` 应用于关键字参数。
+- `phrase_event` 应用于短语参数。
 
-For example, here is the definition of the "say" event:
+例如，以下是“say”事件的定义：
 
 ```python
 from evennia.contrib.base_systems.ingame_python.utils import register_events, phrase_event
@@ -869,30 +674,24 @@ class SomeTypeclass:
     }
 ```
 
-When you call an event using the `obj.callbacks.call` method, you should also provide the parameter,
-using the `parameters` keyword:
+当您使用 `obj.callbacks.call` 方法调用事件时，您还应使用 `parameters` 关键字提供参数：
 
 ```python
 obj.callbacks.call(..., parameters="<put parameters here>")
 ```
 
-It is necessary to specifically call the event with parameters, otherwise the system will not be
-able to know how to filter down the list of callbacks.
+必须使用参数专门调用事件，否则系统将无法知道如何过滤回调列表。
 
-## Disabling all events at once
+## 一次禁用所有事件
 
-When callbacks are running in an infinite loop, for instance, or sending unwanted information to
-players or other sources, you, as the game administrator, have the power to restart without events.
-The best way to do this is to use a custom setting, in your setting file
-(`server/conf/settings.py`):
+当回调在无限循环中运行时，例如，或向玩家或其他来源发送不需要的信息时，您作为游戏管理员有权在没有事件的情况下重新启动。执行此操作的最佳方法是在您的设置文件（`server/conf/settings.py`）中使用自定义设置：
 
 ```python
-# Disable all events
+# 禁用所有事件
 EVENTS_DISABLED = True
 ```
 
-The in-game Python system will still be accessible (you will have access to the `call` command, to debug),
-but no event will be called automatically.
+游戏内 Python 系统仍然可以访问（您将可以访问 `call` 命令进行调试），但不会自动调用任何事件。
 
 
 ```{toctree}
@@ -904,6 +703,8 @@ Contrib-Ingame-Python-Tutorial-Elevator
 ```
 
 
+
+
 ----
 
-<small>此文档页面生成自 `evennia/contrib/base_systems/ingame_python/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/base_systems/ingame_python/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

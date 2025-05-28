@@ -1,36 +1,27 @@
-# Email-based login system
+# 基于电子邮件的登录系统
 
-Contrib by Griatch, 2012
+贡献者：Griatch, 2012
 
-This is a variant of the login system that asks for an email-address
-instead of a username to login. Note that it does not verify the email,
-it just uses it as the identifier rather than a username.
+这是一个登录系统的变体，它要求用户输入电子邮件地址而不是用户名进行登录。请注意，它不验证电子邮件，只使用其作为标识符，而不是用户名。
 
-This used to be the default Evennia login before replacing it with a
-more standard username + password system (having to supply an email
-for some reason caused a lot of confusion when people wanted to expand
-on it. The email is not strictly needed internally, nor is any
-confirmation email sent out anyway).
+这曾是 Evennia 的默认登录方式，后来被更标准的用户名 + 密码系统替代（需提供电子邮件出于某种原因导致用户在扩展时产生了很多困惑。电子邮件在内部并不是严格需要的，也没有发送确认电子邮件）。
 
-## Installation
+## 安装
 
-To your settings file, add/edit the line:
+在您的设置文件中添加/编辑以下行：
 
 ```python
 CMDSET_UNLOGGEDIN = "contrib.base_systems.email_login.UnloggedinCmdSet"
 CONNECTION_SCREEN_MODULE = "contrib.base_systems.email_login.connection_screens"
-
 ```
 
-That's it. Reload the server and reconnect to see it.
+就是这样。重新加载服务器并重新连接以查看效果。
 
-## Notes:
+## 注意事项
 
-If you want to modify the way the connection screen looks, point
-`CONNECTION_SCREEN_MODULE` to your own module. Use the default as a
-guide (see also Evennia docs).
+如果您想修改连接屏幕的外观，请将 `CONNECTION_SCREEN_MODULE` 指向您自己的模块。使用默认设置作为指南（另见 Evennia 文档）。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/base_systems/email_login/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/base_systems/email_login/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

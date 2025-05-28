@@ -1,16 +1,16 @@
-# Item Storage
+# 物品存储
 
-Contribution by helpme (2024)
+由 helpme 贡献于 2024 年
 
-This module allows certain rooms to be marked as storage locations.
+该模块允许将某些房间标记为存储位置。
 
-In those rooms, players can `list`, `store`, and `retrieve` items. Storages can be shared or individual.
+在这些房间中，玩家可以 `list`、`store` 和 `retrieve` 物品。存储可以是共享的，也可以是个人的。
 
-## Installation
+## 安装
 
-This utility adds the storage-related commands. Import the module into your commands and add it to your command set to make it available.
+该工具添加了与存储相关的命令。将模块导入你的命令中，并将其添加到你的命令集中以使其可用。
 
-Specifically, in `mygame/commands/default_cmdsets.py`:
+具体来说，在 `mygame/commands/default_cmdsets.py` 中：
 
 ```python
 ...
@@ -24,18 +24,19 @@ class CharacterCmdset(default_cmds.Character_CmdSet):
 
 ```
 
-Then `reload` to make the `list`, `retrieve`, `store`, and `storage` commands available.
+然后 `reload` 以使 `list`、`retrieve`、`store` 和 `storage` 命令可用。
 
-## Usage
+## 使用
 
-To mark a location as having item storage, use the `storage` command. By default this is a builder-level command. Storage can be shared, which means everyone using the storage can access all items stored there, or individual, which means only the person who stores an item can retrieve it. See `help storage` for further details.
+要将某个位置标记为具有物品存储，请使用 `storage` 命令。默认情况下，这是一个构建者级别的命令。存储可以是共享的，这意味着使用存储的每个人都可以访问存储在那里所有物品，或者是个人的，这意味着只有存储物品的人才能取回它。有关详细信息，请参见 `help storage`。
 
-## Technical info
+## 技术信息
 
-This is a tag-based system. Rooms set as storage rooms are tagged with an identifier marking them as shared or not. Items stored in those rooms are tagged with the storage room identifier and, if the storage room is not shared, the character identifier, and then they are removed from the grid i.e. their location is set to `None`. Upon retrieval, items are untagged and moved back to character inventories.
+这是一个基于标签的系统。被设置为存储房间的房间会被标记为共享或不共享的标识符。在这些房间中存储的物品会被标记为存储房间的标识符，如果存储房间不是共享的，还会被标记为角色标识符，然后它们会从网格中移除，即它们的位置被设置为 `None`。在取回时，物品会被取消标记并移回角色的库存。
 
-When a room is unmarked as storage with the `storage` command, all stored objects are untagged and dropped to the room. You should use the `storage` command to create and remove storages, as otherwise stored objects may become lost.
+当使用 `storage` 命令取消标记房间为存储时，所有存储的物品都会被取消标记并掉落到房间中。你应该使用 `storage` 命令来创建和移除存储，否则存储的物品可能会丢失。
+
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/storage/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/storage/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

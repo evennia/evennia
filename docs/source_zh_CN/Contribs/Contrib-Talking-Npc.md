@@ -1,26 +1,24 @@
-# Talkative NPC example
+# 健谈的 NPC 示例
 
-Contribution by Griatch 2011. Updated by grungies1138, 2016
+由 Griatch 于 2011 年贡献，grungies1138 于 2016 年更新
 
-This is an example of a static NPC object capable of holding a simple menu-driven
-conversation. Suitable for example as a quest giver or merchant.
+这是一个能够进行简单菜单驱动对话的静态 NPC 对象示例。适合作为任务发布者或商人。
 
-## Installation
+## 安装
 
-Create the NPC by creating an object of typeclass `contrib.tutorials.talking_npc.TalkingNPC`,
-For example:
+通过创建一个类型类为 `contrib.tutorials.talking_npc.TalkingNPC` 的对象来创建 NPC，例如：
 
-    create/drop John : contrib.tutorials.talking_npc.TalkingNPC
+```
+create/drop John : contrib.tutorials.talking_npc.TalkingNPC
+```
 
-Use `talk` in the same room as the NPC to start a conversation.
+在与 NPC 同一房间中使用 `talk` 命令来开始对话。
 
-If there are many talkative npcs in the same room you will get to choose which
-one's talk command to call (Evennia handles this automatically).
+如果同一个房间中有多个健谈的 NPC，你将选择与哪个 NPC 进行对话（Evennia 会自动处理这一点）。
 
-This use of EvMenu is very simplistic; See EvMenu for a lot more complex
-possibilities.
+这种 EvMenu 的使用非常简单；有关更复杂的可能性，请参见 EvMenu。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/tutorials/talking_npc/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/tutorials/talking_npc/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

@@ -1,59 +1,47 @@
-# Pseudo-random generator and registry
+# 伪随机生成器和注册表
 
-Contribution by Vincent Le Goff (vlgeoff), 2017
+由 Vincent Le Goff (vlgeoff) 贡献于 2017 年
 
-This utility can be used to generate pseudo-random strings of information
-with specific criteria.  You could, for instance, use it to generate
-phone numbers, license plate numbers, validation codes, in-game security 
-passwords and so on. The strings generated will be stored and won't be repeated.
+这个实用程序可以用于根据特定标准生成伪随机的信息字符串。例如，你可以用它来生成电话号码、车牌号、验证码、游戏内的安全密码等。生成的字符串将被存储且不会重复。
 
-## Usage Example
+## 使用示例
 
-Here's a very simple example:
+这是一个非常简单的示例：
 
 ```python
-
 from evennia.contrib.utils.random_string_generator import RandomStringGenerator
 
-# Create a generator for phone numbers
+# 创建一个电话号码生成器
 phone_generator = RandomStringGenerator("phone number", r"555-[0-9]{3}-[0-9]{4}")
 
-# Generate a phone number (555-XXX-XXXX with X as numbers)
+# 生成一个电话号码（格式为 555-XXX-XXXX，其中 X 为数字）
 number = phone_generator.get()
 
-# `number` will contain something like: "555-981-2207"
-# If you call `phone_generator.get`, it won't give the same anymore.phone_generator.all()
-# Will return a list of all currently-used phone numbers
+# `number` 将包含类似于 "555-981-2207" 的内容
+# 如果再次调用 `phone_generator.get`，将不会得到相同的号码
+phone_generator.all()  # 将返回所有当前使用的电话号码列表
 phone_generator.remove("555-981-2207")
 
-# The number can be generated again
+# 该号码可以再次生成
 ```
 
-## Importing
+## 导入
 
-1. Import the `RandomStringGenerator` class from the contrib.
-2. Create an instance of this class taking two arguments:
-   - The name of the gemerator (like "phone number", "license plate"...).
-   - The regular expression representing the expected results.
-3. Use the generator's `all`, `get` and `remove` methods as shown above.
+1. 从 contrib 中导入 `RandomStringGenerator` 类。
+2. 创建该类的实例，传入两个参数：
+   - 生成器的名称（如 "phone number"、"license plate"...）。
+   - 表示预期结果的正则表达式。
+3. 如上所示使用生成器的 `all`、`get` 和 `remove` 方法。
 
-To understand how to read and create regular expressions, you can refer to
-[the documentation on the re module](https://docs.python.org/2/library/re.html).
-Some examples of regular expressions you could use:
+要了解如何阅读和创建正则表达式，可以参考 [re 模块的文档](https://docs.python.org/2/library/re.html)。以下是一些你可以使用的正则表达式示例：
 
-- `r"555-\d{3}-\d{4}"`: 555, a dash, 3 digits, another dash, 4 digits.
-- `r"[0-9]{3}[A-Z][0-9]{3}"`: 3 digits, a capital letter, 3 digits.
-- `r"[A-Za-z0-9]{8,15}"`: between 8 and 15 letters and digits.
-- ...
+- `r"555-\d{3}-\d{4}"`：555，一个破折号，3 位数字，另一个破折号，4 位数字。
+- `r"[0-9]{3}[A-Z][0-9]{3}"`：3 位数字，一个大写字母，3 位数字。
+- `r"[A-Za-z0-9]{8,15}"`：8 到 15 个字母和数字。
 
-Behind the scenes, a script is created to store the generated information
-for a single generator.  The `RandomStringGenerator` object will also
-read the regular expression you give to it to see what information is
-required (letters, digits, a more restricted class, simple characters...)...
-More complex regular expressions (with branches for instance) might not be
-available.
+在后台，会创建一个脚本来存储单个生成器的生成信息。`RandomStringGenerator` 对象还将读取你提供的正则表达式，以查看所需的信息（字母、数字、更受限的类、简单字符等）。更复杂的正则表达式（例如带分支的）可能无法使用。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/utils/random_string_generator/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/utils/random_string_generator/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

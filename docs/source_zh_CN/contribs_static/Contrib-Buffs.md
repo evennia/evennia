@@ -76,12 +76,12 @@ self.buffs.add(ReflectBuff, to_cache={'reflect': 0.5})  # 单个堆叠的 Reflec
 
 分组 getter 列在下方，返回格式为 `{buffkey: instance}` 的值字典。如果你想遍历所有这些 Buff，应该通过 `dict.values()` 方法进行。
 
-- **`get_all()`** 返回处理器上的所有 Buff。你也可以使用 `handler.all` 属性。
-- **`get_by_type(BuffClass)`** 返回指定类型的 Buff。
-- **`get_by_stat(stat)`** 返回 `mods` 列表中具有指定 `stat` 字符串的 Buff。
-- **`get_by_trigger(string)`** 返回 `triggers` 列表中具有指定字符串的 Buff。
-- **`get_by_source(Object)`** 返回由指定 `source` 对象应用的 Buff。
-- **`get_by_cachevalue(key, value)`** 返回缓存中具有匹配 `key: value` 对的 Buff。`value` 可选。
+- `get_all()`** 返回处理器上的所有 Buff。你也可以使用 `handler.all` 属性。
+- `get_by_type(BuffClass)`** 返回指定类型的 Buff。
+- `get_by_stat(stat)`** 返回 `mods` 列表中具有指定 `stat` 字符串的 Buff。
+- `get_by_trigger(string)`** 返回 `triggers` 列表中具有指定字符串的 Buff。
+- `get_by_source(Object)`** 返回由指定 `source` 对象应用的 Buff。
+- `get_by_cachevalue(key, value)`** 返回缓存中具有匹配 `key: value` 对的 Buff。`value` 可选。
 
 除了 `get_all()` 之外，所有分组 getter 都可以通过可选的 `to_filter` 参数“切片”现有字典。
 
@@ -229,6 +229,7 @@ def take_damage(attacker, damage):
 class ThornsBuff(BaseBuff):
     ...
     triggers = ['taken_damage']
+    # This is the hook method on our thorns buff
     def at_trigger(self, trigger, attacker=None, damage=0, **kwargs):
         if not attacker: 
             return
@@ -384,10 +385,10 @@ class FireSick(BaseBuff):
 
 Buff 实例有一些辅助方法。
 
-- **`remove`/`dispel`**: 允许你移除或解除 Buff。根据可选参数调用 `at_remove`/`at_dispel`。
-- **`pause`/`unpause`**: 暂停和恢复 Buff。如果调用 `at_pause`/`at_unpause`。
-- **`reset`**: 将 Buff 的开始重置为当前时间；与“刷新”相同。
-- **`alter_cache`**: 使用提供的字典中的 `{key:value}` 对更新 Buff 的缓存。可以覆盖默认值，因此要小心！
+- `remove`/`dispel`**: 允许你移除或解除 Buff。根据可选参数调用 `at_remove`/`at_dispel`。
+- `pause`/`unpause`**: 暂停和恢复 Buff。如果调用 `at_pause`/`at_unpause`。
+- `reset`**: 将 Buff 的开始重置为当前时间；与“刷新”相同。
+- `alter_cache`**: 使用提供的字典中的 `{key:value}` 对更新 Buff 的缓存。可以覆盖默认值，因此要小心！
 
 #### 游戏时间持续时间
 

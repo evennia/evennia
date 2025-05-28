@@ -1,39 +1,30 @@
-# Red Button example
+# 红色按钮示例
 
-Contribution by Griatch, 2011
+由 Griatch 贡献于 2011 年
 
-A red button that you can press to have an effect. This is a more advanced example 
-object with its own functionality and state tracking.
+一个可以按下以产生效果的红色按钮。这是一个更高级的示例对象，具有自己的功能和状态跟踪。
 
-Create the button with
+通过以下命令创建按钮：
 
-    create/drop button:contrib.tutorials.red_button.RedButton
+```
+create/drop button:contrib.tutorials.red_button.RedButton
+```
 
-Note that you must drop the button before you can see its messages! It's
-imperative that you press the red button. You know you want to.
+注意，你必须放下按钮才能看到它的消息！按下红色按钮是至关重要的。你知道你想这么做。
 
-Use `del button` to destroy/stop the button when you are done playing.
+完成后使用 `del button` 来销毁/停止按钮。
 
-## Technical
+## 技术细节
 
-The button's functionality is controlled by CmdSets that gets added and removed
-depending on the 'state' the button is in.
+按钮的功能由根据按钮“状态”添加和移除的 CmdSets 控制。
 
-- Lid-closed state: In this state the button is covered by a glass cover and
-  trying to 'push' it will fail. You can 'nudge', 'smash' or 'open' the lid.
-- Lid-open state: In this state the lid is open but will close again after a
-  certain time. Using 'push' now will press the button and trigger the
-  Blind-state.
-- Blind-state: In this mode you are blinded by a bright flash. This will affect
-  your normal commands like 'look' and help until the blindness wears off after
-  a certain time.
+- 盖子关闭状态：在此状态下，按钮被玻璃盖覆盖，尝试“按下”将失败。你可以“轻推”、“猛击”或“打开”盖子。
+- 盖子打开状态：在此状态下，盖子打开，但在一段时间后会再次关闭。此时使用“按下”将按下按钮并触发失明状态。
+- 失明状态：在此模式下，你会被明亮的闪光致盲。这将影响你的正常命令，如“查看”和帮助，直到失明在一段时间后消退。
 
-Timers are handled by persistent delays on the button. These are examples of
-`evennia.utils.utils.delay` calls that wait a certain time before calling a
-method - such as when closing the lid and un-blinding a character.
-
+计时器通过按钮上的持久延迟处理。这些是 `evennia.utils.utils.delay` 调用的示例，等待一定时间后调用某个方法——例如在关闭盖子和解除角色失明时。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/tutorials/red_button/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/tutorials/red_button/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>

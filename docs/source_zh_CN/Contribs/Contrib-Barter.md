@@ -1,129 +1,99 @@
-# Barter system
+# 物物交换系统
 
-Contribution by Griatch, 2012
+由 Griatch 贡献，2012年
 
-This implements a full barter system - a way for players to safely
-trade items between each other in code rather than simple `give/get`
-commands. This increases both safety (at no time will one player have 
-both goods and payment in-hand) and speed, since agreed goods will 
-be moved automatically). By just replacing one side with coin objects,
-(or a mix of coins and goods), this also works fine for regular money 
-transactions.
+此模块实现了完整的物物交换系统——一个安全地让玩家之间在代码中交易物品的方式，而不是简单的 `give/get` 命令。这提高了安全性（任何时候一名玩家都不会同时拥有商品和付款）和效率，因为已经达成的交易会自动进行。通过将一方替换为金币对象（或金币与商品的组合），这也适用于常规货币交易。
 
-## Installation
+## 安装
 
-Just import the CmdsetTrade command into (for example) the default
-cmdset. This will make the trade (or barter) command available
-in-game.
+只需将 `CmdsetTrade` 命令导入（例如）默认命令集，这将在游戏中使交易（或物物交换）命令可用。
 
 ```python
-# in mygame/commands/default_cmdsets.py
+# 在 mygame/commands/default_cmdsets.py 中
 
 from evennia.contrib.game_systems import barter  # <---
 
 # ...
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     # ...
-    def at cmdset_creation(self):
+    def at_cmdset_creation(self):
         # ...
         self.add(barter.CmdsetTrade)  # <---
-
 ```
 
-## Usage
+## 用法
 
-In this module, a "barter" is generally referred to as a "trade".
+在此模块中，"物物交换" 通常被称为 "交易"。
 
-Below is an example of a barter sequence. A and B are the parties.
-The `A>` and `B>` are their inputs.
+以下是一个交易示例。A 和 B 是交易方。`A>` 和 `B>` 是他们的输入。
 
-1) opening a trade
+1) 开始交易
 
-    A> trade B: Hi, I have a nice extra sword. You wanna trade?
+    A> trade B: 嗨，我有把不错的多余剑。你想交易吗？
 
-    B sees:
-    A says: "Hi, I have a nice extra sword. You wanna trade?"
-       A wants to trade with you. Enter 'trade A <emote>' to accept.
+    B 看到：
+    A 说：“嗨，我有把不错的多余剑。你想交易吗？”
+       A 想和你交易。输入 'trade A <情感>' 来接受。
 
-    B> trade A: Hm, I could use a good sword ...
+    B> trade A: 嗯，我可以用一把好剑...
 
-    A sees:
-    B says: "Hm, I could use a good sword ...
-       B accepts the trade. Use 'trade help' for aid.
+    A 看到：
+    B 说：“嗯，我可以用一把好剑...”
+       B 接受了交易。使用 'trade help' 获取帮助。
 
-    B sees:
-    You are now trading with A. Use 'trade help' for aid.
+    B 看到：
+    你现在正在与 A 交易。使用 'trade help' 获取帮助。
 
-2) negotiating
+2) 协商
 
-    A> offer sword: This is a nice sword. I would need some rations in trade.
+    A> offer sword: 这是一把不错的剑。我需要一些口粮作为交换。
 
-    B sees: A says: "This is a nice sword. I would need some rations in trade."
-       [A offers Sword of might.]
+    B 看到：A 说：“这是一把不错的剑。我需要一些口粮作为交换。”
+       [A 提供 剑之力。]
 
     B> evaluate sword
-    B sees:
-    <Sword's description and possibly stats>
+    B 看到：
+    <剑的描述和可能的属性>
 
-    B> offer ration: This is a prime ration.
+    B> offer ration: 这是一个优质口粮。
 
-    A sees:
-    B says: "This is a prime ration."
-      [B offers iron ration]
+    A 看到：
+    B 说：“这是一个优质口粮。”
+      [B 提供 铁口粮]
 
-    A> say Hey, this is a nice sword, I need something more for it.
+    A> say 嘿，这是一把不错的剑，我需要更多东西来换。
 
-    B sees:
-    A says: "Hey this is a nice sword, I need something more for it."
+    B 看到：
+    A 说：“嘿，这是一把不错的剑，我需要更多东西来换。”
 
-    B> offer sword,apple: Alright. I will also include a magic apple. That's my last offer.
+    B> offer sword,apple: 好吧。我还会包括一个魔法苹果。这是我的最后报价。
 
-    A sees:
-    B says: "Alright, I will also include a magic apple. That's my last offer."
-      [B offers iron ration and magic apple]
+    A 看到：
+    B 说：“好吧。我还会包括一个魔法苹果。这是我的最后报价。”
+      [B 提供 铁口粮和魔法苹果]
 
-    A> accept: You are killing me here, but alright.
+    A> accept: 你让我很为难，但好吧。
 
-    B sees: A says: "You are killing me here, but alright."
-      [A accepts your offer. You must now also accept.]
+    B 看到：A 说：“你让我很为难，但好吧。”
+      [A 接受了你的报价。你现在也必须接受。]
 
-    B> accept: Good, nice making business with you.
-      You accept the deal. Deal is made and goods changed hands.
+    B> accept: 好的，愉快的交易。
+      你接受了交易。交易达成，物品交换。
 
-    A sees: B says: "Good, nice making business with you."
-      B accepts the deal. Deal is made and goods changed hands.
+    A 看到：B 说：“好的，愉快的交易。”
+      B 接受了交易。交易达成，物品交换。
 
-At this point the trading system is exited and the negotiated items
-are automatically exchanged between the parties. In this example B was
-the only one changing their offer, but also A could have changed their
-offer until the two parties found something they could agree on. The
-emotes are optional but useful for RP-heavy worlds.
+此时，交易系统已退出，协商的物品会在双方之间自动交换。在这个例子中，只有 B 改变了他们的报价，但 A 也可以在双方达成一致之前更改报价。情感表达是可选的，但在角色扮演重的世界中很有用。
 
-## Technical info
+## 技术信息
 
-The trade is implemented by use of a TradeHandler. This object is a
-common place for storing the current status of negotiations. It is
-created on the object initiating the trade, and also stored on the
-other party once that party agrees to trade. The trade request times
-out after a certain time - this is handled by a Script. Once trade
-starts, the CmdsetTrade cmdset is initiated on both parties along with
-the commands relevant for the trading.
+交易通过使用 `TradeHandler` 实现。这个对象是存储当前协商状态的公共位置。它在发起交易的对象上创建，并且一旦另一方同意交易，也会存储在对方上。交易请求在一定时间后会超时——这是通过脚本处理的。一旦交易开始，`CmdsetTrade` 命令集会在双方上启动，并提供与交易相关的命令。
 
-## Ideas for NPC bartering
+## NPC 物物交换的想法
 
-This module is primarily intended for trade between two players. But
-it can also in principle be used for a player negotiating with an
-AI-controlled NPC. If the NPC uses normal commands they can use it
-directly -- but more efficient is to have the NPC object send its
-replies directly through the tradehandler to the player. One may want
-to add some functionality to the decline command, so players can
-decline specific objects in the NPC offer (decline <object>) and allow
-the AI to maybe offer something else and make it into a proper
-barter.  Along with an AI that "needs" things or has some sort of
-personality in the trading, this can make bartering with NPCs at least
-moderately more interesting than just plain 'buy'.
+此模块主要用于两个玩家之间的交易。但原则上，它也可以用于玩家与 AI 控制的 NPC 的协商。如果 NPC 使用普通命令，他们可以直接使用，但更有效的是让 NPC 对象通过 `tradehandler` 直接向玩家发送回复。可以考虑为拒绝命令添加一些功能，以便玩家可以拒绝 NPC 报价中的特定物品（`decline <object>`），允许 AI 可能提供其他东西，从而进行真正的物物交换。结合一个“需要”东西或在交易中具有某种个性的 AI，可以使与 NPC 的物物交换比单纯的“购买”更有趣。
 
 
 ----
 
-<small>此文档页面生成自 `evennia/contrib/game_systems/barter/README.md`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
+<small>此文档页面并非由 `evennia/contrib/game_systems/barter/README.md`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>
