@@ -5,6 +5,7 @@ an index.
 """
 from collections import defaultdict
 from glob import glob
+from pathlib import Path
 from os.path import abspath, dirname
 from os.path import join as pathjoin
 from os.path import sep
@@ -14,6 +15,7 @@ _DOCS_PATH = pathjoin(_EVENNIA_PATH, "docs")
 
 _SOURCE_DIR = pathjoin(_EVENNIA_PATH, "evennia", "contrib")
 _OUT_DIR = pathjoin(_DOCS_PATH, "source_zh_CN", "Contribs")
+_STATIC_DIR = pathjoin(_DOCS_PATH, "source_zh_CN", "contribs_static")
 _OUT_INDEX_FILE = pathjoin(_OUT_DIR, "Contribs-Overview.md")
 
 _FILENAME_MAP = {"rpsystem": "RPSystem", "xyzgrid": "XYZGrid", "awsstorage": "AWSStorage"}
@@ -113,6 +115,13 @@ FOOTER = """
 <small>此文档页面生成自 `{path}`。对此文件的更改将被覆盖，因此请编辑该文件而不是此文件。</small>
 """
 
+STATIC_FOOTER = """
+
+----
+
+<small>此文档页面并非由 `{path}`自动生成。如想阅读最新文档，请参阅原始README.md文件。</small>
+"""
+
 INDEX_FOOTER = """
 
 ----
@@ -163,13 +172,21 @@ def readmes2docs(directory=_SOURCE_DIR):
             )
             + ".md"
         )
+
         outfile = pathjoin(_OUT_DIR, filename)
 
-        with open(file_path) as fil:
-            data = fil.read()
+        # If a manual translation file exists, ignore the source file from the template.
+        if Path(f"{_STATIC_DIR}/{filename}").exists():
+            with open(f"{_STATIC_DIR}/{filename}") as fil:
+                data = fil.read()
+            clean_file_path = f"evennia{sep}contrib{file_path[len(directory):]}"
+            data += STATIC_FOOTER.format(path=clean_file_path)
+        else:
+            with open(file_path) as fil:
+                data = fil.read()
 
-        clean_file_path = f"evennia{sep}contrib{file_path[len(directory):]}"
-        data += FOOTER.format(path=clean_file_path)
+            clean_file_path = f"evennia{sep}contrib{file_path[len(directory):]}"
+            data += FOOTER.format(path=clean_file_path)
 
         try:
             credits = data.split("\n\n", 3)[1]

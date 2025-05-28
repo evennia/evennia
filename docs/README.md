@@ -136,9 +136,16 @@ For example, the source files for Simplified Chinese documentation should be loc
 
 During compilation, you need to define the `SPHINX_LANGUAGE` environment variable to build the 
 documentation for a specific language. For instance:
-   ```  
-   SPHINX_LANGUAGE=zh_CN make local
-   ```  
+
+    ```
+    SPHINX_LANGUAGE=zh_CN make local
+    ```
+
+Alternatively, you can run make with other environment variables, for example:
+
+    ```
+    EVGAMEDIR=../gamedir SPHINX_LANGUAGE=zh_CN make local
+    ```
 
 - The html-based documentation will appear in the new 
   folder `evennia/docs/build_${SPHINX_LANGUAGE}/html/`. Note any errors from files you have edited.
