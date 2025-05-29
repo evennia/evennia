@@ -1,7 +1,14 @@
 # Makefile to control Evennia documentation building.
 # Most common commands are `make help`, `make quick` and `make local`.
-SOURCEDIR     = source
-BUILDDIR      = build
+SPHINX_LANGUAGE ?= en
+ifeq ($(SPHINX_LANGUAGE), en)
+  SOURCEDIR = source
+  BUILDDIR  = build
+else
+  SOURCEDIR = source_$(SPHINX_LANGUAGE)
+  BUILDDIR  = build_$(SPHINX_LANGUAGE)
+endif
+
 AUTODOCDIR = $(SOURCEDIR)/api
 #
 # You can set these variables from the command line, and also
@@ -61,14 +68,14 @@ _multiversion-check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh multiversion
 
 _clean_api_index:
-	rm -f source/api/*
+	rm -f $(SOURCEDIR)/api/*
 
 _clean_api_rsts:
-	rm -f source/api/*.rst
+	rm -f $(SOURCEDIR)/api/*.rst
 
 # remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
-	for f in source/api/*.rst; do\
+	for f in $(SOURCEDIR)/api/*.rst; do\
         perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
   done
 
@@ -121,7 +128,7 @@ quick:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # abort on warnings too (not working atm)
 quickstrict:
@@ -134,7 +141,7 @@ local:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version + autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # build only that which updated since last run (no clean or index-creation)
 localupdate:
@@ -142,7 +149,7 @@ localupdate:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, only updates, no autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # note that this should be done for each relevant multiversion branch.
 mv-index:
@@ -154,7 +161,7 @@ mv-local:
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."
-	@echo "To see result, open evennia/docs/build/html/<version>/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/<version>/index.html in a browser."
 
 # note - don't run deploy/release manually, the result will clash with the
 # result of the github actions! 
