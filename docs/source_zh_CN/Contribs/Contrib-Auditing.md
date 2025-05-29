@@ -20,29 +20,29 @@
 
 通过在 server.conf 中配置几个设置来完成部署。以下行是必需的：
 
-```plaintext
+```
 SERVER_SESSION_CLASS = 'evennia.contrib.utils.auditing.server.AuditedServerSession'
 ```
 
 这告诉 Evennia 使用此 ServerSession 而不是它自己的。以下是其他可能的选项及其默认值（如果未设置）：
 
 - **审计回调**: 定义一个模块的路径，该模块包含你的回调函数。函数应接受一个字典参数作为输入：
-    ```plaintext
+    ```
     AUDIT_CALLBACK = 'evennia.contrib.utils.auditing.outputs.to_file'
     ```
 
 - **记录用户输入?** : 对此要保持伦理；它将记录玩家和/或管理员之间的所有私人和公共通信（默认值：`False`）。
-    ```plaintext
+    ```
     AUDIT_IN = False
     ```
 
 - **记录服务器输出?** : 这将导致记录所有系统消息和发送到连接玩家的所有广播，因此在繁忙的游戏中，向所有用户的每次广播都会在每个连接用户上产生一个事件！
-    ```plaintext
+    ```
     AUDIT_OUT = False
     ```
 
 - **允许稀疏值**: 默认输出是一个字典。你希望允许包含 null/blank 值的键值对吗？如果你只是写入磁盘，则禁用它可以节省一些磁盘空间，但无论你是否想要稀疏值，如果你将日志发送到 NoSQL/无模式数据库时都是考虑。
-    ```plaintext
+    ```
     AUDIT_ALLOW_SPARSE = False
     ```
 
@@ -53,7 +53,7 @@ SERVER_SESSION_CLASS = 'evennia.contrib.utils.auditing.server.AuditedServerSessi
     > 在正则表达式中，敏感数据本身必须以名为 'secret' 的捕获组进行捕获（有关更多信息，请参见 Python `re` 模块的文档）。
     > 例如： `{'authentication': r"^@auth\s+(?P<secret>[\w]+)"}`。
 
-    ```plaintext
+    ```
     AUDIT_MASKS = []
     ```
 

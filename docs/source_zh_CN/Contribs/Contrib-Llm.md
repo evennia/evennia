@@ -54,7 +54,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ```
 
-有关更多信息，请参阅[添加命令的教程](Beginner-Tutorial-Adding-Commands)。
+有关更多信息，请参阅[添加命令的教程]((../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md)。
 
 默认的 LLM API 配置应与在端口 5000 上运行其 API 的 `text-generation-webui` LLM 服务器一起使用。您还可以通过设置自定义它（如果未添加设置，则使用以下默认值）：
 

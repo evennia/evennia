@@ -128,7 +128,7 @@ quick:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # abort on warnings too (not working atm)
 quickstrict:
@@ -141,7 +141,7 @@ local:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version + autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # build only that which updated since last run (no clean or index-creation)
 localupdate:
@@ -149,7 +149,7 @@ localupdate:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, only updates, no autodocs)."
-	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/index.html in a browser."
 
 # note that this should be done for each relevant multiversion branch.
 mv-index:
@@ -161,7 +161,7 @@ mv-local:
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."
-	@echo "To see result, open evennia/docs/build/html/<version>/index.html in a browser."
+	@echo "To see result, open evennia/docs/${BUILDDIR}/html/<version>/index.html in a browser."
 
 # note - don't run deploy/release manually, the result will clash with the
 # result of the github actions! 

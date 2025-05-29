@@ -9,6 +9,7 @@ from pathlib import Path
 from os.path import abspath, dirname
 from os.path import join as pathjoin
 from os.path import sep
+from ipdb import set_trace
 
 _EVENNIA_PATH = pathjoin(dirname(dirname(dirname(dirname(abspath(__file__))))))
 _DOCS_PATH = pathjoin(_EVENNIA_PATH, "docs")
@@ -104,7 +105,7 @@ _{credits}_
 
 {blurb}
 
-[阅读文档](./{filename}) - [浏览代码](api:{code_location})
+[阅读文档](./{filename}) - [浏览代码](../api/{code_location})
 
 """
 

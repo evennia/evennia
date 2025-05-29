@@ -10,7 +10,7 @@
 
 此模块提供了一个函数 `init_tree_selection`，它作为 EvMenu 的前端，动态地从您提供的多行字符串中获取选项。例如，如果您定义一个字符串如下：
 
-```plaintext
+```
 TEST_MENU = '''Foo
 Bar
 Baz
@@ -45,7 +45,7 @@ Qux
 
 例如，让我们为菜单添加更多选项，将 'Bar' 变成一个类别。
 
-```plaintext
+```
 TEST_MENU = '''Foo
 Bar
 -You've got to know
@@ -100,7 +100,7 @@ When to walk away
 
 最后一点——您可以通过在选项行中添加 ':' 字符后跟描述来为各种选项设置描述。例如，让我们为菜单中的 'Baz' 添加一个描述：
 
-```plaintext
+```
 TEST_MENU = '''Foo
 Bar
 -You've got to know

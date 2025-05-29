@@ -1,5 +1,13 @@
 # Evennia 中的文本内标签解析
 
+```{toctree}
+:maxdepth: 2
+
+Colors.md
+Clickable-Links.md
+Inline-Functions.md
+```
+
 Evennia 会解析嵌入在文本中的各种特殊标签和标记，并根据数据是进出服务器动态转换。
 
 - **颜色** - 使用 `|r`、`|n` 等标记文本的部分为颜色。这些颜色将为 Telnet 连接转换为 ANSI/XTerm256 颜色标签，并为 web 客户端转换为 CSS 信息。

@@ -6,7 +6,7 @@
 
 冷却时间完全是异步的，必须查询以了解其状态。它们不会触发回调，因此不适合在特定时间表上需要发生某些事情的用例（对此，请使用延迟或 TickerHandler）。
 
-有关这一概念的更多信息，请参见 Evennia [教程](Howto-Command-Cooldown)。
+有关这一概念的更多信息，请参见 Evennia [教程](../Howtos/Howto-Command-Cooldown.md)。
 
 ## 安装
 

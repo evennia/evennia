@@ -7,14 +7,14 @@
 ```{toctree}
 :maxdepth: 2
 
-Evennia-代码风格.md
-默认命令语法.md
-版本控制.md
-调试.md
-单元测试.md
-性能分析.md
-持续集成.md
-设置PyCharm.md
+Evennia-Code-Style.md
+Default-Command-Syntax.md
+Version-Control.md
+Debugging.md
+Unit-Testing.md
+Profiling.md
+Continuous-Integration.md
+Setting-up-PyCharm.md
 ```
 
 ## Evennia 更新日志
@@ -22,10 +22,11 @@ Evennia-代码风格.md
 ```{toctree}
 :maxdepth: 2
 
-更新日志.md
+Changelog.md
 ```
+
 
 ```{toctree}
 :hidden:
-发行说明-1.0
+Release-Notes-1.0
 ```

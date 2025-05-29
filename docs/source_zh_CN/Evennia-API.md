@@ -60,12 +60,12 @@ Evennia 的“扁平化 API”提供了常用工具的快捷方式，只需导�
 - [evennia.CmdSet](evennia.commands.cmdset.CmdSet) - 基础 [CmdSet](Components/Command-Sets.md) 类
 - [evennia.default_cmds](Components/Default-Commands.md) - 以属性方式访问所有默认命令类
 
-- [evennia.syscmdkeys](Components/Commands.md#system-commands) - 以属性方式访问系统命令键
+- [evennia.syscmdkeys](Components/Commands.md#系统命令) - 以属性方式访问系统命令键
 
 ### 实用工具 (Utilities)
 
 - [evennia.utils.utils](evennia.utils.utils) - 混合的有用实用程序
-- [evennia.gametime](evennia.utils.gametime.TimeScript) - 服务器运行时间和游戏时间 ([文档](Components/Coding-Utils.md#game-time))
+- [evennia.gametime](evennia.utils.gametime.TimeScript) - 服务器运行时间和游戏时间 ([文档](Components/Coding-Utils.md#游戏时间))
 - [evennia.logger](evennia.utils.logger) - 日志工具
 - [evennia.ansi](evennia.utils.ansi) - ANSI 颜色工具
 - [evennia.spawn](evennia.prototypes.spawner.spawn) - 生成/原型系统 ([文档](Components/Prototypes.md))

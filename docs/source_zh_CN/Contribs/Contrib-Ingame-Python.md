@@ -15,12 +15,12 @@ Evennia 的游戏内 Python 系统将运行任意 Python 代码，几乎没有�
 
 这些教程涵盖了使用游戏内 Python 的示例。一旦您安装了系统（见下文），它们可能比从头到尾阅读完整文档更容易学习。
 
-- [对话事件](Contribs/Contrib-Ingame-Python-Tutorial-Dialogue.md)，NPC 对所说内容做出反应。
-- [语音操控电梯](Contribs/Contrib-Ingame-Python-Tutorial-Elevator.md)，使用游戏内 Python 事件。
+- [对话事件](./Contrib-Ingame-Python-Tutorial-Dialogue.md)，NPC 对所说内容做出反应。
+- [语音操控电梯](./Contrib-Ingame-Python-Tutorial-Elevator.md)，使用游戏内 Python 事件。
 
 ## 基本结构和术语
 
-- 游戏内 Python 系统的基础是**事件**。一个**事件**定义了我们希望调用一些任意代码的上下文。例如，一个事件是在出口上定义的，并将在角色通过此出口时触发。事件在 [typeclass](Typeclasses) 上描述（在我们的示例中是 [exits](Exits)）。所有继承自此 typeclass 的对象都可以访问此事件。
+- 游戏内 Python 系统的基础是**事件**。一个**事件**定义了我们希望调用一些任意代码的上下文。例如，一个事件是在出口上定义的，并将在角色通过此出口时触发。事件在 [typeclass](../Components/Typeclasses.md) 上描述（在我们的示例中是 [exits](../Components/Exits.md)）。所有继承自此 typeclass 的对象都可以访问此事件。
 - 可以在代码中定义的事件上为单个对象设置**回调**。这些**回调**可以包含任意代码，并描述对象的特定行为。当事件触发时，连接到此对象事件的所有回调将被执行。
 
 要在上下文中查看系统，当一个对象被拾取时（使用默认的 `get` 命令），将触发一个特定事件：
@@ -88,7 +88,7 @@ py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.Eve
 
 默认情况下，回调只能由不朽者创建：除了不朽者之外，没有人可以编辑回调，并且不朽者不需要验证。可以通过设置或动态更改用户权限轻松更改。
 
-游戏内 Python 贡献模块在设置中添加了三个[权限](Permissions))。您可以通过将设置更改为 `server/conf/settings.py` 文件来覆盖它们（请参阅下面的示例）。事件贡献中定义的设置是：
+游戏内 Python 贡献模块在设置中添加了三个[权限](../Components/Permissions.md))。您可以通过将设置更改为 `server/conf/settings.py` 文件来覆盖它们（请参阅下面的示例）。事件贡献中定义的设置是：
 
 - `EVENTS_WITH_VALIDATION`：这定义了一个可以编辑回调但需要批准的权限。如果您将其设置为 `"wizards"`，例如，具有 `"wizards"` 权限的用户将能够编辑回调。但这些回调不会被连接，必须由管理员检查和批准。此设置可以包含 `None`，这意味着没有用户被允许编辑需要验证的回调。
 - `EVENTS_WITHOUT_VALIDATION`：此设置定义了允许编辑回调且无需验证的权限。默认情况下，此设置为 `"immortals"`。这意味着不朽者可以编辑回调，并且在他们离开编辑器时将被连接，无需批准。
@@ -248,7 +248,7 @@ call/add north = can_traverse
 - exit: 要穿越的出口。
 - room: 角色在移动前所处的房间。
 
-[事件函数](#the-eventfuncs)部分将详细说明 `deny()` 函数和其他事件函数。暂时说，它可以阻止一个动作（在这种情况下，它可以阻止角色通过此出口）。在您使用 `call/add` 时打开的编辑器中，您可以输入类似的内容：
+[事件函数](#事件函数)部分将详细说明 `deny()` 函数和其他事件函数。暂时说，它可以阻止一个动作（在这种情况下，它可以阻止角色通过此出口）。在您使用 `call/add` 时打开的编辑器中，您可以输入类似的内容：
 
 ```python
 if character.id == 1:
@@ -328,11 +328,11 @@ else:
 
 #### get
 
-`get` 事件函数是获取具有特定身份的单个对象的快捷方式。它通常用于检索具有给定 ID 的对象。在专门针对[链式事件](#chained-events)的部分中，您将看到此函数的具体示例。
+`get` 事件函数是获取具有特定身份的单个对象的快捷方式。它通常用于检索具有给定 ID 的对象。在专门针对[链式事件](#链式事件)的部分中，您将看到此函数的具体示例。
 
 #### call_event
 
-一些回调将调用其他事件。对于在专门部分中描述的[链式事件](#chained-events)特别有用。此事件函数用于立即或在定义的时间内调用另一个事件。
+一些回调将调用其他事件。对于在专门部分中描述的[链式事件](#链式事件)特别有用。此事件函数用于立即或在定义的时间内调用另一个事件。
 
 您需要指定包含事件的对象作为第一个参数。第二个参数是要调用的事件的名称。第三个参数是调用此事件之前的秒数。默认情况下，此参数设置为 0（事件立即被调用）。
 
@@ -570,7 +570,7 @@ class Object(EventObject):
 要调用事件，请在对象中使用 `callbacks.call` 方法。它接受以下参数：
 
 - 要调用的事件名称。
-- 将在事件中可访问的所有变量作为位置参数。它们应按[创建新事件](#adding-new-events)时选择的顺序指定。
+- 将在事件中可访问的所有变量作为位置参数。它们应按[创建新事件](#添加新事件)时选择的顺序指定。
 
 按照相同的示例，到目前为止，我们在所有对象上创建了一个名为“push”的事件。目前此事件从未被触发。我们可以添加一个“push”命令，接受对象名称作为参数。如果此对象有效，它将调用其“push”事件。
 
@@ -620,7 +620,7 @@ class CmdPush(Command):
 
 要查看上述两个修改的效果（添加的事件和“push”命令），让我们创建一个简单的对象：
 
-```bash
+```
 @create/drop rock
 @desc rock = It's a single rock, apparently pretty heavy.  Perhaps you can try to push it though.
 @call/add rock = push

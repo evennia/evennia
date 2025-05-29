@@ -61,8 +61,15 @@ Contributing-Docs
 Licensing
 Links
 
+```
+</details>
+
+
+```{toctree}
 :hidden:
 
 Evennia-API
 Licensing
 Unimplemented
+
+```

@@ -46,7 +46,7 @@ https://docs.godotengine.org/en/stable/tutorials/networking/websocket.html
 
 我们需要定义通向您的 MUD 的 URL，使用您在 Evennia 设置中使用的相同值。接下来，我们编写一些基本代码以建立连接。这将在场景准备好时连接，在接收到数据时轮询并打印数据，并在场景退出时关闭连接。
 
-```gdscript
+```
 extends Node
 
 # 我们将连接的 URL。
@@ -79,7 +79,7 @@ func _exit_tree():
 
 下面是一个示例：
 
-```gdscript
+```
 func _handle_data(data):
 	print(data)  # 用于调试的打印
 	var data_array = JSON.parse_string(data)
@@ -101,7 +101,7 @@ func write_to_rtb(msg):
 
 现在要发送数据，我们连接按钮按下信号到一个方法，读取标签输入并通过 websocket 发送，然后清除标签。
 
-```gdscript
+```
 func _on_button_pressed():
 	var msg = text_edit.text
 	var msg_arr = ['text', [msg], {}]
@@ -116,7 +116,7 @@ func _on_button_pressed():
 
 ## 完整示例脚本
 
-```gdscript
+```
 extends Node
 
 # 我们将连接的 URL。

@@ -408,7 +408,7 @@ LEGEND = {
 
 ```
 
-图例是可选的，任何未在您的图例中明确给出的符号将回退到其在默认图例中的值[如下所述](#default-legend)。
+图例是可选的，任何未在您的图例中明确给出的符号将回退到其在默认图例中的值[如下所述](#默认图例)。
 
 - [MapNode](evennia.contrib.grid.xyzgrid.xymap_legend.MapNode) 是所有节点的基类。
 - [MapLink](evennia.contrib.grid.xyzgrid.xymap_legend.MapLink) 是所有链接的基类。
