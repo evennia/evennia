@@ -70,6 +70,12 @@ _CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _MAX_NESTING = settings.FUNCPARSER_MAX_NESTING
 _START_CHAR = settings.FUNCPARSER_START_CHAR
 _ESCAPE_CHAR = settings.FUNCPARSER_ESCAPE_CHAR
+_YOU_FORMAT_FUNCS = {
+    "upper": str.upper,
+    "lower": str.lower,
+    "capital": str.capitalize,
+    "title": str.title,
+}
 
 
 @dataclasses.dataclass
@@ -1233,12 +1239,30 @@ def funcparser_callable_you(
 
     capitalize = bool(capitalize)
     if caller == receiver:
-        return "You" if capitalize else "you"
-    return (
-        caller.get_display_name(looker=receiver)
-        if hasattr(caller, "get_display_name")
-        else str(caller)
-    )
+        name = "You" if capitalize else "you"
+    else:
+        if kwargs.get("article"):
+            name = (
+                caller.get_numbered_name(1, looker=receiver, return_string=True)
+                if hasattr(caller, "get_numbered_name")
+                else str(caller)
+            )
+        else:
+            name = (
+                caller.get_display_name(looker=receiver)
+                if hasattr(caller, "get_display_name")
+                else str(caller)
+            )
+
+    # a specified format overrides 'capitalize' and also applies to "you"
+    if (fmt := kwargs.get('format')):
+        try:
+            name = _YOU_FORMAT_FUNCS[fmt](name)
+        except KeyError:
+            callable_name = "$You" if capitalize else "$you"
+            raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
+
+    return name
 
 
 def funcparser_callable_you_capitalize(
@@ -1300,15 +1324,32 @@ def funcparser_callable_your(
 
     capitalize = bool(capitalize)
     if caller == receiver:
-        return "Your" if capitalize else "your"
+        name = "Your" if capitalize else "your"
+    else:
+        if kwargs.get("article"):
+            name = (
+                caller.get_numbered_name(1, looker=receiver, return_string=True)
+                if hasattr(caller, "get_numbered_name")
+                else str(caller)
+            )
+        else:
+            name = (
+                caller.get_display_name(looker=receiver)
+                if hasattr(caller, "get_display_name")
+                else str(caller)
+            )
 
-    name = (
-        caller.get_display_name(looker=receiver)
-        if hasattr(caller, "get_display_name")
-        else str(caller)
-    )
+    # a specified format overrides 'capitalize' and also applies to "your"
+    if (fmt := kwargs.get('format')):
+        try:
+            name = _YOU_FORMAT_FUNCS[fmt](name)
+        except KeyError:
+            callable_name = "$Your" if capitalize else "$your"
+            raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
 
-    return name + "'s"
+    if caller != receiver:
+        name += "'s"
+    return name
 
 
 def funcparser_callable_your_capitalize(
