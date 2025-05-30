@@ -21,6 +21,7 @@ import textwrap
 import threading
 import traceback
 import types
+import pytz
 from ast import literal_eval
 from collections import OrderedDict, defaultdict
 from inspect import getmembers, getmodule, getmro, ismodule, trace
@@ -670,13 +671,16 @@ def time_format(seconds, style=0):
     return retval.strip()
 
 
-def datetime_format(dtobj):
+def datetime_format(dtobj, time_zone=None):
     """
     Pretty-prints the time since a given time.
 
     Args:
         dtobj (datetime): An datetime object, e.g. from Django's
             `DateTimeField`.
+        time_zone (tzfile): If provided, the current date/time is
+             adjusted to the given time zone for the elapsed time
+             calculations. This should be used if `dtobj` is not UTC.
 
     Returns:
         deltatime (str): A string describing how long ago `dtobj`
@@ -685,6 +689,8 @@ def datetime_format(dtobj):
     """
 
     now = timezone.now()
+    if time_zone:
+        now = time_as_timezone(now, time_zone)
 
     if dtobj.year < now.year:
         # another year (Apr 5, 2019)
@@ -3112,3 +3118,20 @@ def value_is_integer(value):
         return False
 
     return True
+
+
+def time_as_timezone(base_time, time_zone):
+    """
+    Convert a date/time to a local date/time based on `timezone`.
+
+    Args:
+        base_time (datetime): The time to convert.
+        time_zone (tzfile): The time zone to convert to.
+
+    Returns
+        result (datetime): The converted time.
+    """
+    if not time_zone or base_time.tzname() == time_zone.zone:
+        return base_time
+
+    return base_time.astimezone(time_zone)
