@@ -130,6 +130,10 @@ extra = [
 "Issue tracker" = "https://github.com/evennia/evennia/issues"
 "Patreon" = "https://www.patreon.com/griatch"
 
+[project.scripts]
+evennia = "evennia.server.evennia_launcher:main"
+
+
 [tool.black]
 line-length = 100
 target-version = ['py310', 'py311']
