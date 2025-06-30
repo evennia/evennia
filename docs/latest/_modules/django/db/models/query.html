@@ -117,7 +117,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.expressions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Case</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">When</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cast</span><span class="p">,</span> <span class="n">Trunc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.query_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilteredRelation</span><span class="p">,</span> <span class="n">Q</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.sql.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CURSOR</span><span class="p">,</span> <span class="n">GET_ITERATOR_CHUNK_SIZE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.sql.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">GET_ITERATOR_CHUNK_SIZE</span><span class="p">,</span> <span class="n">ROW_COUNT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AltersData</span><span class="p">,</span>
     <span class="n">create_namedtuple_class</span><span class="p">,</span>
@@ -262,11 +262,14 @@
                     <span class="s2">&quot;Raw query must include the primary key&quot;</span>
                 <span class="p">)</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">queryset</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
-            <span class="n">converters</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">get_converters</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">get_col</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">get_col</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
+            <span class="n">converters</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">get_converters</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">converters</span><span class="p">:</span>
                 <span class="n">query_iterator</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">apply_converters</span><span class="p">(</span><span class="n">query_iterator</span><span class="p">,</span> <span class="n">converters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compiler</span><span class="o">.</span><span class="n">has_composite_fields</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+                <span class="n">query_iterator</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">composite_fields_to_tuples</span><span class="p">(</span>
+                    <span class="n">query_iterator</span><span class="p">,</span> <span class="n">cols</span>
+                <span class="p">)</span>
             <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">query_iterator</span><span class="p">:</span>
                 <span class="c1"># Associate fields to values</span>
                 <span class="n">model_init_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">model_init_pos</span><span class="p">]</span>
@@ -291,12 +294,15 @@
         <span class="n">query</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span>
         <span class="n">compiler</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">queryset</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
 
-        <span class="c1"># extra(select=...) cols are always at the start of the row.</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">extra_select</span><span class="p">,</span>
-            <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">values_select</span><span class="p">,</span>
-            <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">annotation_select</span><span class="p">,</span>
-        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">selected</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># extra(select=...) cols are always at the start of the row.</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">extra_select</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">values_select</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">annotation_select</span><span class="p">,</span>
+            <span class="p">]</span>
         <span class="n">indexes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">compiler</span><span class="o">.</span><span class="n">results_iter</span><span class="p">(</span>
             <span class="n">chunked_fetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunked_fetch</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span>
@@ -314,28 +320,6 @@
         <span class="n">queryset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span>
         <span class="n">query</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span>
         <span class="n">compiler</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">queryset</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">queryset</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
-            <span class="c1"># extra(select=...) cols are always at the start of the row.</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">extra_select</span><span class="p">,</span>
-                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">values_select</span><span class="p">,</span>
-                <span class="o">*</span><span class="n">query</span><span class="o">.</span><span class="n">annotation_select</span><span class="p">,</span>
-            <span class="p">]</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="o">*</span><span class="n">queryset</span><span class="o">.</span><span class="n">_fields</span><span class="p">,</span>
-                <span class="o">*</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">annotation_select</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">queryset</span><span class="o">.</span><span class="n">_fields</span><span class="p">),</span>
-            <span class="p">]</span>
-            <span class="k">if</span> <span class="n">fields</span> <span class="o">!=</span> <span class="n">names</span><span class="p">:</span>
-                <span class="c1"># Reorder according to fields.</span>
-                <span class="n">index_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)}</span>
-                <span class="n">rowfactory</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">index_map</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">])</span>
-                <span class="k">return</span> <span class="nb">map</span><span class="p">(</span>
-                    <span class="n">rowfactory</span><span class="p">,</span>
-                    <span class="n">compiler</span><span class="o">.</span><span class="n">results_iter</span><span class="p">(</span>
-                        <span class="n">chunked_fetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunked_fetch</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span>
-                    <span class="p">),</span>
-                <span class="p">)</span>
         <span class="k">return</span> <span class="n">compiler</span><span class="o">.</span><span class="n">results_iter</span><span class="p">(</span>
             <span class="n">tuple_expected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">chunked_fetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunked_fetch</span><span class="p">,</span>
@@ -770,15 +754,19 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span>
 
+    <span class="n">create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acreate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">acreate</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_for_bulk_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.expressions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseDefault</span>
 
         <span class="n">connection</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">_is_pk_set</span><span class="p">():</span>
                 <span class="c1"># Populate new PK values.</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk</span><span class="o">.</span><span class="n">get_pk_value_on_save</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">supports_default_keyword_in_bulk_insert</span><span class="p">:</span>
@@ -831,7 +819,7 @@
                     <span class="s2">&quot;bulk_create() can only be used with concrete fields in &quot;</span>
                     <span class="s2">&quot;update_fields.&quot;</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">primary_key</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">update_fields</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk_fields</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">update_fields</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;bulk_create() cannot be used with primary keys in &quot;</span>
                     <span class="s2">&quot;update_fields.&quot;</span>
@@ -904,7 +892,7 @@
         <span class="n">objs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_for_bulk_create</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">objs_with_pk</span><span class="p">,</span> <span class="n">objs_without_pk</span> <span class="o">=</span> <span class="n">partition</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span>
+            <span class="n">objs_without_pk</span><span class="p">,</span> <span class="n">objs_with_pk</span> <span class="o">=</span> <span class="n">partition</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">_is_pk_set</span><span class="p">(),</span> <span class="n">objs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">objs_with_pk</span><span class="p">:</span>
                 <span class="n">returned_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batched_insert</span><span class="p">(</span>
                     <span class="n">objs_with_pk</span><span class="p">,</span>
@@ -945,6 +933,8 @@
 
         <span class="k">return</span> <span class="n">objs</span>
 
+    <span class="n">bulk_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">abulk_create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">objs</span><span class="p">,</span>
@@ -963,6 +953,8 @@
             <span class="n">unique_fields</span><span class="o">=</span><span class="n">unique_fields</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="n">abulk_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the given fields in each of the given objects in the database.</span>
@@ -972,12 +964,16 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Field names must be given to bulk_update().&quot;</span><span class="p">)</span>
         <span class="n">objs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_is_pk_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All bulk_update() objects must have a primary key set.&quot;</span><span class="p">)</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">opts</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">concrete</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="n">many_to_many</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bulk_update() can only be used with concrete fields.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">primary_key</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
+        <span class="n">all_pk_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">pk_fields</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">all_parents</span><span class="p">:</span>
+            <span class="n">all_pk_fields</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span> <span class="ow">in</span> <span class="n">all_pk_fields</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bulk_update() cannot be used with primary key fields.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">objs</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -989,7 +985,9 @@
         <span class="c1"># and once in the WHEN. Each field will also have one CAST.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_for_write</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">connection</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span>
-        <span class="n">max_batch_size</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">bulk_batch_size</span><span class="p">([</span><span class="s2">&quot;pk&quot;</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">fields</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span>
+        <span class="n">max_batch_size</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">bulk_batch_size</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">opts</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">+</span> <span class="n">fields</span><span class="p">,</span> <span class="n">objs</span>
+        <span class="p">)</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">)</span> <span class="k">if</span> <span class="n">batch_size</span> <span class="k">else</span> <span class="n">max_batch_size</span>
         <span class="n">requires_casting</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">requires_casted_case_in_updates</span>
         <span class="n">batches</span> <span class="o">=</span> <span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">))</span>
@@ -1051,11 +1049,15 @@
                     <span class="k">pass</span>
                 <span class="k">raise</span>
 
+    <span class="n">get_or_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">)(</span>
             <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
+
+    <span class="n">aget_or_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1090,9 +1092,10 @@
                 <span class="c1"># This is to maintain backward compatibility as these fields</span>
                 <span class="c1"># are not updated unless explicitly specified in the</span>
                 <span class="c1"># update_fields list.</span>
+                <span class="n">pk_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk_fields</span>
                 <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">local_concrete_fields</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-                        <span class="n">field</span><span class="o">.</span><span class="n">primary_key</span> <span class="ow">or</span> <span class="n">field</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">pre_save</span> <span class="ow">is</span> <span class="n">Field</span><span class="o">.</span><span class="n">pre_save</span>
+                        <span class="n">field</span> <span class="ow">in</span> <span class="n">pk_fields</span> <span class="ow">or</span> <span class="n">field</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">pre_save</span> <span class="ow">is</span> <span class="n">Field</span><span class="o">.</span><span class="n">pre_save</span>
                     <span class="p">):</span>
                         <span class="n">update_fields</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">:</span>
@@ -1102,12 +1105,16 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="kc">False</span>
 
+    <span class="n">update_or_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aupdate_or_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">)(</span>
             <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span>
             <span class="n">create_defaults</span><span class="o">=</span><span class="n">create_defaults</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
+
+    <span class="n">aupdate_or_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1211,6 +1218,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">is_sliced</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot use &#39;limit&#39; or &#39;offset&#39; with in_bulk().&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterable_class</span><span class="p">,</span> <span class="n">ModelIterable</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;in_bulk() cannot be used with values() or values_list().&quot;</span><span class="p">)</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span>
         <span class="n">unique_fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">constraint</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1231,7 +1240,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">id_list</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">{}</span>
             <span class="n">filter_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">__in&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
-            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">max_query_params</span>
+            <span class="n">max_params</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">max_query_params</span> <span class="ow">or</span> <span class="mi">0</span>
+            <span class="n">num_fields</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">pk_fields</span><span class="p">)</span> <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;pk&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_params</span> <span class="o">//</span> <span class="n">num_fields</span>
             <span class="n">id_list</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">id_list</span><span class="p">)</span>
             <span class="c1"># If the database has a limit on the number of query parameters</span>
             <span class="c1"># (e.g. SQLite), retrieve objects in batches if necessary.</span>
@@ -1298,11 +1309,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">query</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">DeleteQuery</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">using</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">CURSOR</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">cursor</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">cursor</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span>
-        <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">using</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">ROW_COUNT</span><span class="p">)</span>
 
     <span class="n">_raw_delete</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -1338,10 +1345,11 @@
                 <span class="n">new_order_by</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
         <span class="n">query</span><span class="o">.</span><span class="n">order_by</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_order_by</span><span class="p">)</span>
 
-        <span class="c1"># Clear any annotations so that they won&#39;t be present in subqueries.</span>
-        <span class="n">query</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Clear SELECT clause as all annotation references were inlined by</span>
+        <span class="c1"># add_update_values() already.</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">clear_select_clause</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">mark_for_rollback_on_error</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">):</span>
-            <span class="n">rows</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">CURSOR</span><span class="p">)</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">ROW_COUNT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">rows</span>
 
@@ -1366,7 +1374,7 @@
         <span class="c1"># Clear any annotations so that they won&#39;t be present in subqueries.</span>
         <span class="n">query</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">CURSOR</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">ROW_COUNT</span><span class="p">)</span>
 
     <span class="n">_update</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">_update</span><span class="o">.</span><span class="n">queryset_only</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1397,7 +1405,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;obj&#39; must be a model instance.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">_is_pk_set</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;QuerySet.contains() cannot be used on unsaved objects.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span>
@@ -1461,24 +1469,33 @@
                 <span class="s2">&quot;field.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">field_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">)}</span>
+        <span class="n">field_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="kc">False</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">)}</span>
         <span class="n">_fields</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">expressions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">field_name</span> <span class="o">=</span> <span class="n">field</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">):</span>
-                <span class="n">field_id_prefix</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">field_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
                     <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;default_alias&quot;</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                 <span class="p">)</span>
-                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">field_id</span> <span class="o">=</span> <span class="n">field_id_prefix</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+                <span class="n">expression</span> <span class="o">=</span> <span class="n">field</span>
+                <span class="c1"># For backward compatibility reasons expressions are always</span>
+                <span class="c1"># prefixed with the counter even if their default alias doesn&#39;t</span>
+                <span class="c1"># collide with field names. Changing this logic could break</span>
+                <span class="c1"># some usage of named=True.</span>
+                <span class="n">seen</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">seen</span> <span class="o">:=</span> <span class="n">field_names</span><span class="p">[</span><span class="n">field_name</span><span class="p">]:</span>
+                <span class="n">expression</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">field_name_prefix</span> <span class="o">=</span> <span class="n">field_name</span>
+                <span class="k">while</span> <span class="p">(</span><span class="n">field_name</span> <span class="o">:=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field_name_prefix</span><span class="si">}{</span><span class="n">counter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">:</span>
                     <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">if</span> <span class="n">field_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">:</span>
-                        <span class="k">break</span>
-                <span class="n">expressions</span><span class="p">[</span><span class="n">field_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span>
-                <span class="n">_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_id</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expression</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">expressions</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">expression</span>
+            <span class="n">field_names</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
 
         <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">(</span><span class="o">*</span><span class="n">_fields</span><span class="p">,</span> <span class="o">**</span><span class="n">expressions</span><span class="p">)</span>
         <span class="n">clone</span><span class="o">.</span><span class="n">_iterable_class</span> <span class="o">=</span> <span class="p">(</span>
@@ -1630,6 +1647,8 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">qs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">qs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_combinator_query</span><span class="p">(</span><span class="s2">&quot;union&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">qs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="nb">all</span><span class="o">=</span><span class="nb">all</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">other_qs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combinator_query</span><span class="p">(</span><span class="s2">&quot;union&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">other_qs</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="nb">all</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other_qs</span><span class="p">):</span>
@@ -1733,14 +1752,16 @@
         <span class="p">)</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="c1"># The default_alias property may raise a TypeError.</span>
+            <span class="c1"># The default_alias property raises TypeError if default_alias</span>
+            <span class="c1"># can&#39;t be set automatically or AttributeError if it isn&#39;t an</span>
+            <span class="c1"># attribute.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">default_alias</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;The named annotation &#39;</span><span class="si">%s</span><span class="s2">&#39; conflicts with the &quot;</span>
                         <span class="s2">&quot;default name for another annotation.&quot;</span> <span class="o">%</span> <span class="n">arg</span><span class="o">.</span><span class="n">default_alias</span>
                     <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Complex annotations require an alias&quot;</span><span class="p">)</span>
             <span class="n">annotations</span><span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">default_alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">arg</span>
         <span class="n">annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1835,7 +1856,7 @@
 <span class="sd">        Defer the loading of data for certain fields until they are accessed.</span>
 <span class="sd">        Add the set of deferred fields to any existing set of deferred fields.</span>
 <span class="sd">        The only exception to this is if None is passed in as the only</span>
-<span class="sd">        parameter, in which case removal all deferrals.</span>
+<span class="sd">        parameter, in which case remove all deferrals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_not_support_combined_queries</span><span class="p">(</span><span class="s2">&quot;defer&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2054,10 +2075,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_known_related_objects</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">resolve_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># values() queryset can only be used as nested queries</span>
-            <span class="c1"># if they are set up to select only a single field.</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot use multi-field values as a filter value.&quot;</span><span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">resolve_expression</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">query</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span>
         <span class="k">return</span> <span class="n">query</span>
@@ -2793,7 +2810,11 @@
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">klass_info</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
+        <span class="c1"># A primary key must have all of its constituents not-NULL as</span>
+        <span class="c1"># NULL != NULL and thus NULL cannot be referenced through a foreign</span>
+        <span class="c1"># relationship. Therefore checking for a single member of the primary</span>
+        <span class="c1"># key is enough to determine if the referenced object exists or not.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">related_populators</span> <span class="o">=</span> <span class="n">get_related_populators</span><span class="p">(</span><span class="n">klass_info</span><span class="p">,</span> <span class="n">select</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local_setter</span> <span class="o">=</span> <span class="n">klass_info</span><span class="p">[</span><span class="s2">&quot;local_setter&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_setter</span> <span class="o">=</span> <span class="n">klass_info</span><span class="p">[</span><span class="s2">&quot;remote_setter&quot;</span><span class="p">]</span>
