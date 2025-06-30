@@ -18,6 +18,7 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Feat][pull3757]: Add more i18n strings to `DefaultObject` for easier translation (JohnFi)
 - [Feat][pull3783]: Support users of `ruff` linter by adding compatible config in `pyproject.toml` (jaborsh)
 - [Feat][pull3777]: New contrib `debugpy` for debugging Evennia with in VSCode with `debugpy` adapter (electroglyph)
+- [Feat][pull3795]: Support evennia launcher for use with `uv` installation (TehomCD)
 - [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
   strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
 - [Fix][pull3682]: Allow in-game help searching for commands natively starting
@@ -92,6 +93,7 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3783]: https://github.com/evennia/evennia/pull/3783
 [pull3777]: https://github.com/evennia/evennia/pull/3777
 [pull3794]: https://github.com/evennia/evennia/pull/3794
+[pull3795]: https://github.com/evennia/evennia/pull/3795
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 [issue3788]: https://github.com/evennia/evennia/issues/3788
