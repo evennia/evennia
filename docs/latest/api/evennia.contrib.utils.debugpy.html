@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>evennia.contrib.utils.auditing.tests &#8212; Evennia latest documentation</title>
+    <title>evennia.contrib.utils.debugpy &#8212; Evennia latest documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="evennia.contrib.utils.debugpy" href="evennia.contrib.utils.debugpy.html" />
-    <link rel="prev" title="evennia.contrib.utils.auditing.server" href="evennia.contrib.utils.auditing.server.html" /> 
+    <link rel="next" title="evennia.contrib.utils.debugpy.cmd" href="evennia.contrib.utils.debugpy.cmd.html" />
+    <link rel="prev" title="evennia.contrib.utils.auditing.tests" href="evennia.contrib.utils.auditing.tests.html" /> 
   </head><body>
 
      
@@ -34,19 +34,18 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.utils.debugpy.html" title="evennia.contrib.utils.debugpy"
+          <a href="evennia.contrib.utils.debugpy.cmd.html" title="evennia.contrib.utils.debugpy.cmd"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.utils.auditing.server.html" title="evennia.contrib.utils.auditing.server"
+          <a href="evennia.contrib.utils.auditing.tests.html" title="evennia.contrib.utils.auditing.tests"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
-          <li class="nav-item nav-item-5"><a href="evennia.contrib.utils.html" >evennia.contrib.utils</a> &#187;</li>
-          <li class="nav-item nav-item-6"><a href="evennia.contrib.utils.auditing.html" accesskey="U">evennia.contrib.utils.auditing</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.auditing.tests</a></li> 
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.utils.html" accesskey="U">evennia.contrib.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.debugpy</a></li> 
       </ul>
     </div>  
 
@@ -69,15 +68,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.contrib.utils.auditing.server.html"
-                        title="previous chapter">evennia.contrib.utils.auditing.server</a></p>
+  <p class="topless"><a href="evennia.contrib.utils.auditing.tests.html"
+                        title="previous chapter">evennia.contrib.utils.auditing.tests</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="evennia.contrib.utils.debugpy.html"
-                        title="next chapter">evennia.contrib.utils.debugpy</a></p>
+  <p class="topless"><a href="evennia.contrib.utils.debugpy.cmd.html"
+                        title="next chapter">evennia.contrib.utils.debugpy.cmd</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.utils.auditing.tests.md.txt"
+      <li><a href="../_sources/api/evennia.contrib.utils.debugpy.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -95,7 +94,7 @@
 <h3>Doc Versions</h3>
 <ul>
   
-    <li><a href="evennia.contrib.utils.auditing.tests.html">latest (main branch)</a></li>
+    <li><a href="evennia.contrib.utils.debugpy.html">latest (main branch)</a></li>
 
     <li><a href="../4.x/index.html">v4.0.0 branch (outdated)</a></li>
   
@@ -115,35 +114,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.utils.auditing.tests">
-<span id="evennia-contrib-utils-auditing-tests"></span><h1>evennia.contrib.utils.auditing.tests<a class="headerlink" href="#module-evennia.contrib.utils.auditing.tests" title="Permalink to this headline">¶</a></h1>
-<p>Module containing the test cases for the Audit system.</p>
-<dl class="py class">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.utils.auditing.tests.</code><code class="sig-name descname">AuditingTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.setup_session">
-<code class="sig-name descname">setup_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.setup_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.setup_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides default one in EvenniaTest</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">
-<code class="sig-name descname">test_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure the ‘mask’ function is properly masking potentially sensitive
-information from strings.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_audit">
-<code class="sig-name descname">test_audit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_audit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure the ‘audit’ function is returning a dictionary based on values
-parsed from the Session object.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="module-evennia.contrib.utils.debugpy">
+<span id="evennia-contrib-utils-debugpy"></span><h1>evennia.contrib.utils.debugpy<a class="headerlink" href="#module-evennia.contrib.utils.debugpy" title="Permalink to this headline">¶</a></h1>
+<p>VSCode Evennia debugger adapter - electroglyph, 2025</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.utils.debugpy.cmd.html">evennia.contrib.utils.debugpy.cmd</a></li>
+</ul>
+</div>
 </section>
 
 
@@ -162,10 +140,10 @@ parsed from the Session object.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.utils.debugpy.html" title="evennia.contrib.utils.debugpy"
+          <a href="evennia.contrib.utils.debugpy.cmd.html" title="evennia.contrib.utils.debugpy.cmd"
              >next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.utils.auditing.server.html" title="evennia.contrib.utils.auditing.server"
+          <a href="evennia.contrib.utils.auditing.tests.html" title="evennia.contrib.utils.auditing.tests"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -173,8 +151,7 @@ parsed from the Session object.</p>
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
           <li class="nav-item nav-item-5"><a href="evennia.contrib.utils.html" >evennia.contrib.utils</a> &#187;</li>
-          <li class="nav-item nav-item-6"><a href="evennia.contrib.utils.auditing.html" >evennia.contrib.utils.auditing</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.auditing.tests</a></li> 
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.debugpy</a></li> 
       </ul>
     </div>
 

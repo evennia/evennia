@@ -1880,11 +1880,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SETTINGS_DOTPATH</span>
 
-    <span class="c1"># required since django1.7</span>
-    <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-
     <span class="c1"># test existence of the settings module</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No module named&quot;</span><span class="p">):</span>
