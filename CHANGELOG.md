@@ -52,6 +52,7 @@ This upgrade requires running `evennia migrate` on your existing database
   since otherwise plurals were lost (jaborsh)
 - [Fix][issue3788]: `GLOBAL_SCRIPTS.all()` raised error (Griatch)
 - [Fix][issue3790]: Fix migration issue due to new db init-check code in launcher (Griatch)
+- [Fix][issue3794]: Make sure to pass `move_type` kwarg to `at_pre_object_receive|leave` hooks (Griatch)
 - Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
 - Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
 - Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
@@ -90,6 +91,7 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3768]: https://github.com/evennia/evennia/pull/3768
 [pull3783]: https://github.com/evennia/evennia/pull/3783
 [pull3777]: https://github.com/evennia/evennia/pull/3777
+[pull3794]: https://github.com/evennia/evennia/pull/3794
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 [issue3788]: https://github.com/evennia/evennia/issues/3788
