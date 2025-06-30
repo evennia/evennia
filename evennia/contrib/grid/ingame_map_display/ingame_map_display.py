@@ -1,4 +1,4 @@
-"""
+r"""
 Basic Map - helpme 2022
 
 This adds an ascii `map` to a given room which can be viewed with the `map` command.
@@ -60,7 +60,6 @@ arguments passed into the Map command.
 import time
 
 from django.conf import settings
-
 from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 

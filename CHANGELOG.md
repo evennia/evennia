@@ -2,7 +2,7 @@
 
 ## Main branch
 
-Updated dependencies: Django >5.1 (<5,2), Twisted >24 (<25).
+Updated dependencies: Django >5.2 (<5.3), Twisted >24 (<25).
 Python versions: 3.11, 3.12, 3.13.
 
 This upgrade requires running `evennia migrate` on your existing database
