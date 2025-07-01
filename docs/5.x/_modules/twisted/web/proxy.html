@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.web.proxy &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.proxy</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.web.proxy</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.web.test.test_proxy -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Simplistic HTTP proxy support.</span>
+
+<span class="sd">This comes in two main variants - the Proxy and the ReverseProxy.</span>
+
+<span class="sd">When a Proxy is in use, a browser trying to connect to a server (say,</span>
+<span class="sd">www.yahoo.com) will be intercepted by the Proxy, and the proxy will covertly</span>
+<span class="sd">connect to the server, and return the result.</span>
+
+<span class="sd">When a ReverseProxy is in use, the client connects directly to the ReverseProxy</span>
+<span class="sd">(say, www.yahoo.com) which farms off the request to one of a pool of servers,</span>
+<span class="sd">and returns the result.</span>
+
+<span class="sd">Normally, a Proxy is used on the client end of an Internet connection, while a</span>
+<span class="sd">ReverseProxy is used on the server end.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span> <span class="k">as</span> <span class="n">urlquote</span><span class="p">,</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urlunparse</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">_QUEUED_SENTINEL</span><span class="p">,</span> <span class="n">HTTPChannel</span><span class="p">,</span> <span class="n">HTTPClient</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">NOT_DONE_YET</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProxyClient</span><span class="p">(</span><span class="n">HTTPClient</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by ProxyClientFactory to implement a simple web proxy.</span>
+
+<span class="sd">    @ivar _finished: A flag which indicates whether or not the original request</span>
+<span class="sd">        has been finished yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_finished</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">rest</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">father</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span> <span class="o">=</span> <span class="n">father</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="s2">&quot;proxy-connection&quot;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;proxy-connection&quot;</span><span class="p">]</span>
+        <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;close&quot;</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;keep-alive&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendHeader</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endHeaders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handleStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">setResponseCode</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">),</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handleHeader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># t.web.server.Request sets default values for these headers in its</span>
+        <span class="c1"># &#39;process&#39; method. When these headers are received from the remote</span>
+        <span class="c1"># server, they ought to override the defaults, rather than append to</span>
+        <span class="c1"># them.</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;content-type&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">responseHeaders</span><span class="o">.</span><span class="n">setRawHeaders</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[</span><span class="n">value</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">responseHeaders</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handleResponsePart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handleResponseEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finish the original request, indicating that the response has been</span>
+<span class="sd">        completely written to it, and disconnect the outgoing transport.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProxyClientFactory</span><span class="p">(</span><span class="n">ClientFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by ProxyRequest to implement a simple web proxy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Type is wrong.  See: https://twistedmatrix.com/trac/ticket/10006</span>
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">ProxyClient</span>  <span class="c1"># type: ignore[assignment]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">rest</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">father</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span> <span class="o">=</span> <span class="n">father</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">father</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Report a connection failure in a response to the incoming request as</span>
+<span class="sd">        an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">setResponseCode</span><span class="p">(</span><span class="mi">501</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Gateway error&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">responseHeaders</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;text/html&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&lt;H1&gt;Could not connect&lt;/H1&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">father</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProxyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by Proxy to implement a simple web proxy.</span>
+
+<span class="sd">    @ivar reactor: the reactor used to create connections.</span>
+<span class="sd">    @type reactor: object providing L{twisted.internet.interfaces.IReactorTCP}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">protocols</span> <span class="o">=</span> <span class="p">{</span><span class="sa">b</span><span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="n">ProxyClientFactory</span><span class="p">}</span>
+    <span class="n">ports</span> <span class="o">=</span> <span class="p">{</span><span class="sa">b</span><span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queued</span><span class="o">=</span><span class="n">_QUEUED_SENTINEL</span><span class="p">,</span> <span class="n">reactor</span><span class="o">=</span><span class="n">reactor</span><span class="p">):</span>
+        <span class="n">Request</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queued</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">rest</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">((</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rest</span><span class="p">:</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span>
+        <span class="n">class_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocols</span><span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAllHeaders</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="s2">&quot;host&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">clientFactory</span> <span class="o">=</span> <span class="n">class_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">rest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clientproto</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">clientFactory</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Proxy</span><span class="p">(</span><span class="n">HTTPChannel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a simple web proxy.</span>
+
+<span class="sd">    Since it inherits from L{twisted.web.http.HTTPChannel}, to use it you</span>
+<span class="sd">    should do something like this::</span>
+
+<span class="sd">        from twisted.web import http</span>
+<span class="sd">        f = http.HTTPFactory()</span>
+<span class="sd">        f.protocol = Proxy</span>
+
+<span class="sd">    Make the HTTPFactory a listener on a port as per usual, and you have</span>
+<span class="sd">    a fully-functioning web proxy!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">requestFactory</span> <span class="o">=</span> <span class="n">ProxyRequest</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ReverseProxyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by ReverseProxy to implement a simple reverse proxy.</span>
+
+<span class="sd">    @ivar proxyClientFactoryClass: a proxy client factory class, used to create</span>
+<span class="sd">        new connections.</span>
+<span class="sd">    @type proxyClientFactoryClass: L{ClientFactory}</span>
+
+<span class="sd">    @ivar reactor: the reactor used to create connections.</span>
+<span class="sd">    @type reactor: object providing L{twisted.internet.interfaces.IReactorTCP}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxyClientFactoryClass</span> <span class="o">=</span> <span class="n">ProxyClientFactory</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queued</span><span class="o">=</span><span class="n">_QUEUED_SENTINEL</span><span class="p">,</span> <span class="n">reactor</span><span class="o">=</span><span class="n">reactor</span><span class="p">):</span>
+        <span class="n">Request</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queued</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle this request by connecting to the proxied server and forwarding</span>
+<span class="sd">        it there, then forwarding the response back as the response to this</span>
+<span class="sd">        request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestHeaders</span><span class="o">.</span><span class="n">setRawHeaders</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)])</span>
+        <span class="n">clientFactory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxyClientFactoryClass</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clientproto</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getAllHeaders</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">clientFactory</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ReverseProxy</span><span class="p">(</span><span class="n">HTTPChannel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements a simple reverse proxy.</span>
+
+<span class="sd">    For details of usage, see the file examples/reverse-proxy.py.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">requestFactory</span> <span class="o">=</span> <span class="n">ReverseProxyRequest</span>
+
+
+<div class="viewcode-block" id="ReverseProxyResource">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.ReverseProxyResource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReverseProxyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resource that renders the results gotten from another server</span>
+
+<span class="sd">    Put this resource in the tree to cause everything below it to be relayed</span>
+<span class="sd">    to a different server.</span>
+
+<span class="sd">    @ivar proxyClientFactoryClass: a proxy client factory class, used to create</span>
+<span class="sd">        new connections.</span>
+<span class="sd">    @type proxyClientFactoryClass: L{ClientFactory}</span>
+
+<span class="sd">    @ivar reactor: the reactor used to create connections.</span>
+<span class="sd">    @type reactor: object providing L{twisted.internet.interfaces.IReactorTCP}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxyClientFactoryClass</span> <span class="o">=</span> <span class="n">ProxyClientFactory</span>
+
+<div class="viewcode-block" id="ReverseProxyResource.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.ReverseProxyResource.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">reactor</span><span class="o">=</span><span class="n">reactor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param host: the host of the web server to proxy.</span>
+<span class="sd">        @type host: C{str}</span>
+
+<span class="sd">        @param port: the port of the web server to proxy.</span>
+<span class="sd">        @type port: C{port}</span>
+
+<span class="sd">        @param path: the base path to fetch data from. Note that you shouldn&#39;t</span>
+<span class="sd">            put any trailing slashes in it, it will be added automatically in</span>
+<span class="sd">            request. For example, if you put B{/foo}, a request on B{/bar} will</span>
+<span class="sd">            be proxied to B{/foo/bar}.  Any required encoding of special</span>
+<span class="sd">            characters (such as &quot; &quot; or &quot;/&quot;) should have been done already.</span>
+
+<span class="sd">        @type path: C{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Resource</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span></div>
+
+
+<div class="viewcode-block" id="ReverseProxyResource.getChild">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.ReverseProxyResource.getChild">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and return a proxy resource with the same proxy configuration</span>
+<span class="sd">        as this one, except that its path also contains the segment given by</span>
+<span class="sd">        C{path} at the end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ReverseProxyResource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">urlquote</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReverseProxyResource.render">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.ReverseProxyResource.render">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render a request by forwarding it to the proxied server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># RFC 2616 tells us that we can omit the port if it&#39;s the default port,</span>
+        <span class="c1"># but we have to provide it otherwise</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="mi">80</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">requestHeaders</span><span class="o">.</span><span class="n">setRawHeaders</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">host</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)])</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">uri</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">qs</span><span class="p">:</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;?&quot;</span> <span class="o">+</span> <span class="n">qs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="n">clientFactory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxyClientFactoryClass</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">rest</span><span class="p">,</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">clientproto</span><span class="p">,</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">getAllHeaders</span><span class="p">(),</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+            <span class="n">request</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">clientFactory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">NOT_DONE_YET</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.proxy</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

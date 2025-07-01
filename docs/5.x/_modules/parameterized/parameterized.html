@@ -1,0 +1,859 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>parameterized.parameterized &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">parameterized.parameterized</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for parameterized.parameterized</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MethodType</span> <span class="k">as</span> <span class="n">MethodType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">mock</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mock</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">mock</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">MaybeOrderedDict</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">MaybeOrderedDict</span> <span class="o">=</span> <span class="nb">dict</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkipTest</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SkipTest</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="c1"># NOTE: even though Python 2 support has been dropped, these checks have been</span>
+<span class="c1"># left in place to avoid merge conflicts. They can be removed in the future, and</span>
+<span class="c1"># future code can be written to assume Python 3.</span>
+<span class="n">PY3</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="n">PY2</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+
+
+<span class="k">if</span> <span class="n">PY3</span><span class="p">:</span>
+    <span class="c1"># Python 3 doesn&#39;t have an InstanceType, so just use a dummy type.</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">InstanceType</span><span class="p">():</span>
+        <span class="k">pass</span>
+    <span class="n">lzip</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">))</span>
+    <span class="n">text_type</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bytes_type</span> <span class="o">=</span> <span class="nb">bytes</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_method</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span>
+        <span class="k">return</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstanceType</span>
+    <span class="n">lzip</span> <span class="o">=</span> <span class="nb">zip</span>
+    <span class="n">text_type</span> <span class="o">=</span> <span class="n">unicode</span>
+    <span class="n">bytes_type</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">string_types</span> <span class="o">=</span> <span class="n">basestring</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_method</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">to_text</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">text_type</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">text_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">text_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;latin1&quot;</span><span class="p">)</span>
+
+<span class="n">CompatArgSpec</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CompatArgSpec&quot;</span><span class="p">,</span> <span class="s2">&quot;args varargs keywords defaults&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PY2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CompatArgSpec</span><span class="p">(</span><span class="o">*</span><span class="n">inspect</span><span class="o">.</span><span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">kwonlyargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">((</span>
+            <span class="s2">&quot;parameterized does not (yet) support functions with keyword &quot;</span>
+            <span class="s2">&quot;only arguments, but </span><span class="si">%r</span><span class="s2"> has keyword only arguments. &quot;</span>
+            <span class="s2">&quot;Please open an issue with your usecase if this affects you: &quot;</span>
+            <span class="s2">&quot;https://github.com/wolever/parameterized/issues/new&quot;</span>
+        <span class="p">)</span> <span class="o">%</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="p">))</span>
+    <span class="k">return</span> <span class="n">CompatArgSpec</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">skip_on_empty_helper</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="n">SkipTest</span><span class="p">(</span><span class="s2">&quot;parameterized input is empty&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reapply_patches_if_need</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy_wrapper</span><span class="p">(</span><span class="n">orgfunc</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">orgfunc</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">dummy_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">orgfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dummy_func</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;patchings&#39;</span><span class="p">):</span>
+        <span class="n">is_original_async</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">dummy_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">tmp_patchings</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">patchings</span>
+        <span class="nb">delattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;patchings&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">patch_obj</span> <span class="ow">in</span> <span class="n">tmp_patchings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_original_async</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">patch_obj</span><span class="o">.</span><span class="n">decorate_async_callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">patch_obj</span><span class="o">.</span><span class="n">decorate_callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+<span class="c1"># `parameterized.expand` strips out `mock` patches from the source method in favor of re-applying them over the</span>
+<span class="c1"># generated methods instead. Sadly, this can cause problems with old versions of the `mock` package, as shown in</span>
+<span class="c1"># https://bugs.python.org/issue40126 (bpo-40126).</span>
+<span class="c1">#</span>
+<span class="c1"># Long story short, bpo-40126 arises whenever the `patchings` list of a `mock`-decorated method is left fully empty.</span>
+<span class="c1">#</span>
+<span class="c1"># The bug has been fixed in the `mock` code itself since:</span>
+<span class="c1">#   - Python 3.7.8-rc1, 3.8.3-rc1 and later (for the `unittest.mock` package) [0][1].</span>
+<span class="c1">#   - Version 4 of the `mock` backport package (https://pypi.org/project/mock/) [2].</span>
+<span class="c1">#</span>
+<span class="c1"># To work around the problem when running old `mock` versions, we avoid fully stripping out patches from the source</span>
+<span class="c1"># method in favor of replacing them with a &quot;dummy&quot; no-op patch instead.</span>
+<span class="c1">#</span>
+<span class="c1"># [0] https://docs.python.org/release/3.7.10/whatsnew/changelog.html#python-3-7-8-release-candidate-1</span>
+<span class="c1"># [1] https://docs.python.org/release/3.8.10/whatsnew/changelog.html#python-3-8-3-release-candidate-1</span>
+<span class="c1"># [2] https://mock.readthedocs.io/en/stable/changelog.html#b1</span>
+
+<span class="n">PYTHON_DOESNT_HAVE_FIX_FOR_BPO_40126</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_mock_backport</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_mock_backport</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">MOCK_BACKPORT_DOESNT_HAVE_FIX_FOR_BPO_40126</span> <span class="o">=</span> <span class="n">_mock_backport</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_mock_backport</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span>
+
+<span class="n">AVOID_CLEARING_MOCK_PATCHES</span> <span class="o">=</span> <span class="n">PYTHON_DOESNT_HAVE_FIX_FOR_BPO_40126</span> <span class="ow">or</span> <span class="n">MOCK_BACKPORT_DOESNT_HAVE_FIX_FOR_BPO_40126</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DummyPatchTarget</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">dummy_attribute</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_dummy_patch</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">mock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">DummyPatchTarget</span><span class="p">(),</span> <span class="s2">&quot;dummy_attribute&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Missing mock package&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_patches_if_need</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;patchings&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">AVOID_CLEARING_MOCK_PATCHES</span><span class="p">:</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">patchings</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DummyPatchTarget</span><span class="o">.</span><span class="n">create_dummy_patch</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">patchings</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="n">_param</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;args kwargs&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">param</span><span class="p">(</span><span class="n">_param</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Represents a single parameter to a test case.</span>
+
+<span class="sd">        For example::</span>
+
+<span class="sd">            &gt;&gt;&gt; p = param(&quot;foo&quot;, bar=16)</span>
+<span class="sd">            &gt;&gt;&gt; p</span>
+<span class="sd">            param(&quot;foo&quot;, bar=16)</span>
+<span class="sd">            &gt;&gt;&gt; p.args</span>
+<span class="sd">            (&#39;foo&#39;, )</span>
+<span class="sd">            &gt;&gt;&gt; p.kwargs</span>
+<span class="sd">            {&#39;bar&#39;: 16}</span>
+
+<span class="sd">        Intended to be used as an argument to ``@parameterized``::</span>
+
+<span class="sd">            @parameterized([</span>
+<span class="sd">                param(&quot;foo&quot;, bar=16),</span>
+<span class="sd">            ])</span>
+<span class="sd">            def test_stuff(foo, bar=16):</span>
+<span class="sd">                pass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_param</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explicit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates a ``param`` by explicitly specifying ``args`` and</span>
+<span class="sd">            ``kwargs``::</span>
+
+<span class="sd">                &gt;&gt;&gt; param.explicit([1,2,3])</span>
+<span class="sd">                param(*(1, 2, 3))</span>
+<span class="sd">                &gt;&gt;&gt; param.explicit(kwargs={&quot;foo&quot;: 42})</span>
+<span class="sd">                param(*(), **{&quot;foo&quot;: &quot;42&quot;})</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="ow">or</span> <span class="p">()</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns an instance of ``param()`` for ``@parameterized`` argument</span>
+<span class="sd">            ``args``::</span>
+
+<span class="sd">                &gt;&gt;&gt; param.from_decorator((42, ))</span>
+<span class="sd">                param(args=(42, ), kwargs={})</span>
+<span class="sd">                &gt;&gt;&gt; param.from_decorator(&quot;foo&quot;)</span>
+<span class="sd">                param(args=(&quot;foo&quot;, ), kwargs={})</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">args</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;after * must be&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">raise</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Parameters must be tuples, but </span><span class="si">%r</span><span class="s2"> is not (hint: use &#39;(</span><span class="si">%r</span><span class="s2">, )&#39;)&quot;</span>
+                <span class="o">%</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;param(*</span><span class="si">%r</span><span class="s2">, **</span><span class="si">%r</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="bp">self</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">QuietOrderedDict</span><span class="p">(</span><span class="n">MaybeOrderedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; When OrderedDict is available, use it to make sure that the kwargs in</span>
+<span class="sd">        doc strings are consistently ordered. &quot;&quot;&quot;</span>
+    <span class="fm">__str__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__str__</span>
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__repr__</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parameterized_argument_value_pairs</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return tuples of parameterized arguments and their values.</span>
+
+<span class="sd">        This is useful if you are writing your own doc_func</span>
+<span class="sd">        function and need to know the values for each parameter name::</span>
+
+<span class="sd">            &gt;&gt;&gt; def func(a, foo=None, bar=42, **kwargs): pass</span>
+<span class="sd">            &gt;&gt;&gt; p = param(1, foo=7, extra=99)</span>
+<span class="sd">            &gt;&gt;&gt; parameterized_argument_value_pairs(func, p)</span>
+<span class="sd">            [(&quot;a&quot;, 1), (&quot;foo&quot;, 7), (&quot;bar&quot;, 42), (&quot;**kwargs&quot;, {&quot;extra&quot;: 99})]</span>
+
+<span class="sd">        If the function&#39;s first argument is named ``self`` then it will be</span>
+<span class="sd">        ignored::</span>
+
+<span class="sd">            &gt;&gt;&gt; def func(self, a): pass</span>
+<span class="sd">            &gt;&gt;&gt; p = param(1)</span>
+<span class="sd">            &gt;&gt;&gt; parameterized_argument_value_pairs(func, p)</span>
+<span class="sd">            [(&quot;a&quot;, 1)]</span>
+
+<span class="sd">        Additionally, empty ``*args`` or ``**kwargs`` will be ignored::</span>
+
+<span class="sd">            &gt;&gt;&gt; def func(foo, *args): pass</span>
+<span class="sd">            &gt;&gt;&gt; p = param(1)</span>
+<span class="sd">            &gt;&gt;&gt; parameterized_argument_value_pairs(func, p)</span>
+<span class="sd">            [(&quot;foo&quot;, 1)]</span>
+<span class="sd">            &gt;&gt;&gt; p = param(1, 16)</span>
+<span class="sd">            &gt;&gt;&gt; parameterized_argument_value_pairs(func, p)</span>
+<span class="sd">            [(&quot;foo&quot;, 1), (&quot;*args&quot;, (16, ))]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argspec</span> <span class="o">=</span> <span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">arg_offset</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="n">named_args</span> <span class="o">=</span> <span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">arg_offset</span><span class="p">:]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">lzip</span><span class="p">(</span><span class="n">named_args</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">named_args</span> <span class="o">=</span> <span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="n">arg_offset</span><span class="p">:]</span>
+    <span class="n">varargs</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">):]</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">))</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">named_args</span><span class="p">,</span> <span class="n">argspec</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">or</span> <span class="p">[])</span>
+    <span class="p">])</span>
+
+    <span class="n">seen_arg_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span> <span class="n">n</span> <span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">result</span> <span class="p">])</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="n">QuietOrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">kwargs</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_arg_names</span>
+    <span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">varargs</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;*</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">argspec</span><span class="o">.</span><span class="n">varargs</span><span class="p">,</span> <span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">varargs</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;**</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">argspec</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span> <span class="p">),</span> <span class="n">keywords</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">short_repr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A shortened repr of ``x`` which is guaranteed to be ``unicode``::</span>
+
+<span class="sd">            &gt;&gt;&gt; short_repr(&quot;foo&quot;)</span>
+<span class="sd">            u&quot;foo&quot;</span>
+<span class="sd">            &gt;&gt;&gt; short_repr(&quot;123456789&quot;, n=4)</span>
+<span class="sd">            u&quot;12...89&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x_repr</span> <span class="o">=</span> <span class="n">to_text</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_repr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">x_repr</span> <span class="o">=</span> <span class="n">x_repr</span><span class="p">[:</span><span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span> <span class="o">+</span> <span class="n">x_repr</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">x_repr</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">x_repr</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">default_doc_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">all_args_with_values</span> <span class="o">=</span> <span class="n">parameterized_argument_value_pairs</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="c1"># Assumes that the function passed is a bound method.</span>
+    <span class="n">descs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">short_repr</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">all_args_with_values</span><span class="p">]</span>
+
+    <span class="c1"># The documentation might be a multiline string, so split it</span>
+    <span class="c1"># and just work with the first string, ignoring the period</span>
+    <span class="c1"># at the end if there is one.</span>
+    <span class="n">first</span><span class="p">,</span> <span class="n">nl</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">first</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">first</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">[with </span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot; &quot;</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">descs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">to_text</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">first</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">nl</span><span class="p">,</span> <span class="n">rest</span><span class="p">]</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">default_name_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="n">base_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">name_suffix</span> <span class="o">=</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">string_types</span><span class="p">):</span>
+        <span class="n">name_suffix</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">parameterized</span><span class="o">.</span><span class="n">to_safe_name</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">base_name</span> <span class="o">+</span> <span class="n">name_suffix</span>
+
+
+<span class="n">_test_runner_override</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_test_runner_guess</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">_test_runners</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;unittest&quot;</span><span class="p">,</span> <span class="s2">&quot;unittest2&quot;</span><span class="p">,</span> <span class="s2">&quot;nose&quot;</span><span class="p">,</span> <span class="s2">&quot;nose2&quot;</span><span class="p">,</span> <span class="s2">&quot;pytest&quot;</span><span class="p">])</span>
+<span class="n">_test_runner_aliases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;_pytest&quot;</span><span class="p">:</span> <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_test_runner</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">_test_runner_override</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_test_runners</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid test runner: </span><span class="si">%r</span><span class="s2"> (must be one of: </span><span class="si">%s</span><span class="s2">)&quot;</span>
+            <span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_test_runners</span><span class="p">)),</span>
+        <span class="p">)</span>
+    <span class="n">_test_runner_override</span> <span class="o">=</span> <span class="n">name</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_runner</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Guess which test runner we&#39;re using by traversing the stack and looking</span>
+<span class="sd">        for the first matching module. This *should* be reasonably safe, as</span>
+<span class="sd">        it&#39;s done during test discovery where the test runner should be the</span>
+<span class="sd">        stack frame immediately outside. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_test_runner_override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_test_runner_override</span>
+    <span class="k">global</span> <span class="n">_test_runner_guess</span>
+    <span class="k">if</span> <span class="n">_test_runner_guess</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__name__&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">_test_runner_aliases</span><span class="p">:</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="n">_test_runner_aliases</span><span class="p">[</span><span class="n">module</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">_test_runners</span><span class="p">:</span>
+                <span class="n">_test_runner_guess</span> <span class="o">=</span> <span class="n">module</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;python2.6/unittest.py&quot;</span><span class="p">):</span>
+                <span class="n">_test_runner_guess</span> <span class="o">=</span> <span class="s2">&quot;unittest&quot;</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_test_runner_guess</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">_test_runner_guess</span>
+
+
+
+<div class="viewcode-block" id="parameterized">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">parameterized</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parameterize a test case::</span>
+
+<span class="sd">            class TestInt(object):</span>
+<span class="sd">                @parameterized([</span>
+<span class="sd">                    (&quot;A&quot;, 10),</span>
+<span class="sd">                    (&quot;F&quot;, 15),</span>
+<span class="sd">                    param(&quot;10&quot;, 42, base=42)</span>
+<span class="sd">                ])</span>
+<span class="sd">                def test_int(self, input, expected, base=16):</span>
+<span class="sd">                    actual = int(input, base=base)</span>
+<span class="sd">                    assert_equal(actual, expected)</span>
+
+<span class="sd">            @parameterized([</span>
+<span class="sd">                (2, 3, 5)</span>
+<span class="sd">                (3, 5, 8),</span>
+<span class="sd">            ])</span>
+<span class="sd">            def test_add(a, b, expected):</span>
+<span class="sd">                assert_equal(a + b, expected)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="parameterized.__init__">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">doc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_on_empty</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_as_callable</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_func</span> <span class="o">=</span> <span class="n">doc_func</span> <span class="ow">or</span> <span class="n">default_doc_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_on_empty</span> <span class="o">=</span> <span class="n">skip_on_empty</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_not_in_testcase_subclass</span><span class="p">()</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">test_self</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">test_cls</span> <span class="o">=</span> <span class="n">test_self</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">test_self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">test_self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">test_cls</span><span class="p">,</span> <span class="n">InstanceType</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">((</span>
+                        <span class="s2">&quot;@parameterized can&#39;t be used with old-style classes, but &quot;</span>
+                        <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> has an old-style class. Consider using a new-style &quot;</span>
+                        <span class="s2">&quot;class, or &#39;@parameterized.expand&#39; &quot;</span>
+                        <span class="s2">&quot;(see http://stackoverflow.com/q/54867/71522 for more &quot;</span>
+                        <span class="s2">&quot;information on old-style classes).&quot;</span>
+                    <span class="p">)</span> <span class="o">%</span><span class="p">(</span><span class="n">test_self</span><span class="p">,</span> <span class="p">))</span>
+
+            <span class="n">original_doc</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="vm">__doc__</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">parameterized_input</span><span class="p">):</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">from_decorator</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">unbound_func</span><span class="p">,</span> <span class="n">nose_tuple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_as_nose_tuple</span><span class="p">(</span><span class="n">test_self</span><span class="p">,</span> <span class="n">test_func</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">nose_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__doc__</span>
+                    <span class="c1"># Nose uses `getattr(instance, test_func.__name__)` to get</span>
+                    <span class="c1"># a method bound to the test instance (as opposed to a</span>
+                    <span class="c1"># method bound to the instance of the class created when</span>
+                    <span class="c1"># tests were being enumerated). Set a value here to make</span>
+                    <span class="c1"># sure nose can get the correct test method.</span>
+                    <span class="k">if</span> <span class="n">test_self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">test_cls</span><span class="p">,</span> <span class="n">test_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">unbound_func</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">nose_tuple</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">test_self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="nb">delattr</span><span class="p">(</span><span class="n">test_cls</span><span class="p">,</span> <span class="n">test_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                    <span class="n">wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">original_doc</span>
+
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_input</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">input</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_on_empty</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Parameters iterable is empty (hint: use &quot;</span>
+                    <span class="s2">&quot;`parameterized([], skip_on_empty=True)` to skip &quot;</span>
+                    <span class="s2">&quot;this test when the input is empty)&quot;</span>
+                <span class="p">)</span>
+            <span class="n">wrapper</span> <span class="o">=</span> <span class="n">wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">)(</span><span class="n">skip_on_empty_helper</span><span class="p">)</span>
+
+        <span class="n">wrapper</span><span class="o">.</span><span class="n">parameterized_input</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="n">wrapper</span><span class="o">.</span><span class="n">parameterized_func</span> <span class="o">=</span> <span class="n">test_func</span>
+        <span class="n">test_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;_parameterized_original_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">test_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+<div class="viewcode-block" id="parameterized.param_as_nose_tuple">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.param_as_nose_tuple">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">param_as_nose_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">nose_func</span> <span class="o">=</span> <span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">nose_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="c1"># Track the unbound function because we need to setattr the unbound</span>
+        <span class="c1"># function onto the class for nose to work (see comments above), and</span>
+        <span class="c1"># Python 3 doesn&#39;t let us pull the function out of a bound method.</span>
+        <span class="n">unbound_func</span> <span class="o">=</span> <span class="n">nose_func</span>
+        <span class="k">if</span> <span class="n">test_self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Under nose on Py2 we need to return an unbound method to make</span>
+            <span class="c1"># sure that the `self` in the method is properly shared with the</span>
+            <span class="c1"># `self` used in `setUp` and `tearDown`. But only there. Everyone</span>
+            <span class="c1"># else needs a bound method.</span>
+            <span class="n">func_self</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="kc">None</span> <span class="k">if</span> <span class="n">PY2</span> <span class="ow">and</span> <span class="n">detect_runner</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nose&quot;</span> <span class="k">else</span>
+                <span class="n">test_self</span>
+            <span class="p">)</span>
+            <span class="n">nose_func</span> <span class="o">=</span> <span class="n">make_method</span><span class="p">(</span><span class="n">nose_func</span><span class="p">,</span> <span class="n">func_self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">test_self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">unbound_func</span><span class="p">,</span> <span class="p">(</span><span class="n">nose_func</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">or</span> <span class="p">{},</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="parameterized.assert_not_in_testcase_subclass">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.assert_not_in_testcase_subclass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assert_not_in_testcase_subclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parent_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terrible_magic_get_defining_classes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">)</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">parent_classes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Warning: &#39;@parameterized&#39; tests won&#39;t work &quot;</span>
+                            <span class="s2">&quot;inside subclasses of &#39;TestCase&#39; - use &quot;</span>
+                            <span class="s2">&quot;&#39;@parameterized.expand&#39; instead.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_terrible_magic_get_defining_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the set of parent classes of the class currently being defined.</span>
+<span class="sd">            Will likely only work if called from the ``parameterized`` decorator.</span>
+<span class="sd">            This function is entirely @brandon_rhodes&#39;s fault, as he suggested</span>
+<span class="sd">            the implementation: http://stackoverflow.com/a/8793684/71522</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">code_context</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">and</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">code_context</span> <span class="ow">and</span> <span class="n">code_context</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;class &quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">parents</span> <span class="o">=</span> <span class="n">code_context</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+        <span class="n">parents</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parents</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">parents</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">f_globals</span><span class="p">,</span> <span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">f_locals</span><span class="p">)</span>
+
+<div class="viewcode-block" id="parameterized.input_as_callable">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.input_as_callable">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_as_callable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">check_input_values</span><span class="p">(</span><span class="nb">input</span><span class="p">())</span>
+        <span class="n">input_values</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">check_input_values</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">input_values</span></div>
+
+
+<div class="viewcode-block" id="parameterized.check_input_values">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.check_input_values">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_input_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_values</span><span class="p">):</span>
+        <span class="c1"># Explicitly convery non-list inputs to a list so that:</span>
+        <span class="c1"># 1. A helpful exception will be raised if they aren&#39;t iterable, and</span>
+        <span class="c1"># 2. Generators are unwrapped exactly once (otherwise `nosetests</span>
+        <span class="c1">#    --processes=n` has issues; see:</span>
+        <span class="c1">#    https://github.com/wolever/nose-parameterized/pull/31)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">input_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="n">param</span><span class="o">.</span><span class="n">from_decorator</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">input_values</span> <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="parameterized.expand">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.expand">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">name_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_on_empty</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">legacy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; A &quot;brute force&quot; method of parameterizing test cases. Creates new</span>
+<span class="sd">            test cases and injects them into the namespace that the wrapped</span>
+<span class="sd">            function is being defined in. Useful for parameterizing tests in</span>
+<span class="sd">            subclasses of &#39;UnitTest&#39;, where Nose test generators don&#39;t work.</span>
+
+<span class="sd">            :param input: An iterable of values to pass to the test function.</span>
+<span class="sd">            :param name_func: A function that takes a single argument (the</span>
+<span class="sd">                value from the input iterable) and returns a string to use as</span>
+<span class="sd">                the name of the test case. If not provided, the name of the</span>
+<span class="sd">                test case will be the name of the test function with the</span>
+<span class="sd">                parameter value appended.</span>
+<span class="sd">            :param doc_func: A function that takes a single argument (the</span>
+<span class="sd">                value from the input iterable) and returns a string to use as</span>
+<span class="sd">                the docstring of the test case. If not provided, the docstring</span>
+<span class="sd">                of the test case will be the docstring of the test function.</span>
+<span class="sd">            :param skip_on_empty: If True, the test will be skipped if the</span>
+<span class="sd">                input iterable is empty. If False, a ValueError will be raised</span>
+<span class="sd">                if the input iterable is empty.</span>
+<span class="sd">            :param namespace: The namespace (dict-like) to inject the test cases</span>
+<span class="sd">                into. If not provided, the namespace of the test function will</span>
+<span class="sd">                be used.</span>
+
+<span class="sd">            &gt;&gt;&gt; @parameterized.expand([(&quot;foo&quot;, 1, 2)])</span>
+<span class="sd">            ... def test_add1(name, input, expected):</span>
+<span class="sd">            ...     actual = add1(input)</span>
+<span class="sd">            ...     assert_equal(actual, expected)</span>
+<span class="sd">            ...</span>
+<span class="sd">            &gt;&gt;&gt; locals()</span>
+<span class="sd">            ... &#39;test_add1_foo_0&#39;: &lt;function ...&gt; ...</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;testcase_func_name&quot;</span> <span class="ow">in</span> <span class="n">legacy</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;testcase_func_name= is deprecated; use name_func=&quot;</span><span class="p">,</span>
+                          <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name_func</span><span class="p">:</span>
+                <span class="n">name_func</span> <span class="o">=</span> <span class="n">legacy</span><span class="p">[</span><span class="s2">&quot;testcase_func_name&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;testcase_func_doc&quot;</span> <span class="ow">in</span> <span class="n">legacy</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;testcase_func_doc= is deprecated; use doc_func=&quot;</span><span class="p">,</span>
+                          <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">doc_func</span><span class="p">:</span>
+                <span class="n">doc_func</span> <span class="o">=</span> <span class="n">legacy</span><span class="p">[</span><span class="s2">&quot;testcase_func_doc&quot;</span><span class="p">]</span>
+
+        <span class="n">doc_func</span> <span class="o">=</span> <span class="n">doc_func</span> <span class="ow">or</span> <span class="n">default_doc_func</span>
+        <span class="n">name_func</span> <span class="o">=</span> <span class="n">name_func</span> <span class="ow">or</span> <span class="n">default_name_func</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">parameterized_expand_wrapper</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">frame_locals</span> <span class="o">=</span> <span class="n">namespace</span>
+            <span class="k">if</span> <span class="n">frame_locals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">frame_locals</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_locals</span>
+
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">input_as_callable</span><span class="p">(</span><span class="nb">input</span><span class="p">)()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parameters</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_on_empty</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Parameters iterable is empty (hint: use &quot;</span>
+                        <span class="s2">&quot;`parameterized.expand([], skip_on_empty=True)` to skip &quot;</span>
+                        <span class="s2">&quot;this test when the input is empty)&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">skip_on_empty_helper</span><span class="p">)</span>
+
+            <span class="n">digits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name_func</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;{num:0&gt;</span><span class="si">{digits}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">digits</span><span class="o">=</span><span class="n">digits</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">),</span> <span class="n">p</span><span class="p">)</span>
+                <span class="c1"># If the original function has patches applied by &#39;mock.patch&#39;,</span>
+                <span class="c1"># re-construct all patches on the just former decoration layer</span>
+                <span class="c1"># of param_as_standalone_func so as not to share</span>
+                <span class="c1"># patch objects between new functions</span>
+                <span class="n">nf</span> <span class="o">=</span> <span class="n">reapply_patches_if_need</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">frame_locals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">param_as_standalone_func</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="n">frame_locals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc_func</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+            <span class="c1"># Delete original patches to prevent new function from evaluating</span>
+            <span class="c1"># original patching object as well as re-constructed patches.</span>
+            <span class="n">delete_patches_if_need</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">parameterized_expand_wrapper</span></div>
+
+
+<div class="viewcode-block" id="parameterized.param_as_standalone_func">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.param_as_standalone_func">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">param_as_standalone_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">standalone_func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">standalone_func</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+        <span class="n">standalone_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="c1"># place_as is used by py.test to determine what source file should be</span>
+        <span class="c1"># used for this test.</span>
+        <span class="n">standalone_func</span><span class="o">.</span><span class="n">place_as</span> <span class="o">=</span> <span class="n">func</span>
+
+        <span class="c1"># Remove __wrapped__ because py.test will try to look at __wrapped__</span>
+        <span class="c1"># to determine which parameters should be used with this test case,</span>
+        <span class="c1"># and obviously we don&#39;t need it to do any parameterization.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">standalone_func</span><span class="o">.</span><span class="n">__wrapped__</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">standalone_func</span></div>
+
+
+<div class="viewcode-block" id="parameterized.to_safe_name">
+<a class="viewcode-back" href="../../api/evennia.utils.verb_conjugation.tests.html#evennia.commands.default.tests.parameterized.to_safe_name">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_safe_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[^a-zA-Z0-9_]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parameterized_class</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">input_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">class_name_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classname_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parameterizes a test class by setting attributes on the class.</span>
+
+<span class="sd">        Can be used in two ways:</span>
+
+<span class="sd">        1) With a list of dictionaries containing attributes to override::</span>
+
+<span class="sd">            @parameterized_class([</span>
+<span class="sd">                { &quot;username&quot;: &quot;foo&quot; },</span>
+<span class="sd">                { &quot;username&quot;: &quot;bar&quot;, &quot;access_level&quot;: 2 },</span>
+<span class="sd">            ])</span>
+<span class="sd">            class TestUserAccessLevel(TestCase):</span>
+<span class="sd">                ...</span>
+
+<span class="sd">        2) With a tuple of attributes, then a list of tuples of values:</span>
+
+<span class="sd">            @parameterized_class((&quot;username&quot;, &quot;access_level&quot;), [</span>
+<span class="sd">                (&quot;foo&quot;, 1),</span>
+<span class="sd">                (&quot;bar&quot;, 2)</span>
+<span class="sd">            ])</span>
+<span class="sd">            class TestUserAccessLevel(TestCase):</span>
+<span class="sd">                ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attrs</span><span class="p">]</span>
+
+    <span class="n">input_dicts</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">attrs</span> <span class="k">if</span> <span class="n">input_values</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+        <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">vals</span><span class="p">))</span> <span class="k">for</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">input_values</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">class_name_func</span> <span class="o">=</span> <span class="n">class_name_func</span> <span class="ow">or</span> <span class="n">default_class_name_func</span>
+
+    <span class="k">if</span> <span class="n">classname_func</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;classname_func= is deprecated; use class_name_func= instead. &quot;</span>
+            <span class="s2">&quot;See: https://github.com/wolever/parameterized/pull/74#issuecomment-613577057&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">class_name_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">classname_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">input_dicts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">base_class</span><span class="p">):</span>
+        <span class="n">test_class_module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__module__</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">input_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_dicts</span><span class="p">):</span>
+            <span class="n">test_class_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+            <span class="n">test_class_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+
+            <span class="n">name</span> <span class="o">=</span> <span class="n">class_name_func</span><span class="p">(</span><span class="n">base_class</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">input_dict</span><span class="p">)</span>
+
+            <span class="n">test_class_module</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">base_class</span><span class="p">,</span> <span class="p">),</span> <span class="n">test_class_dict</span><span class="p">)</span>
+
+        <span class="c1"># We need to leave the base class in place (see issue #73), but if we</span>
+        <span class="c1"># leave the test_ methods in place, the test runner will try to pick</span>
+        <span class="c1"># them up and run them... which doesn&#39;t make sense, since no parameters</span>
+        <span class="c1"># will have been applied.</span>
+        <span class="c1"># Address this by iterating over the base class and remove all test</span>
+        <span class="c1"># methods.</span>
+        <span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">method_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="n">base_class</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_class</span>
+
+    <span class="k">return</span> <span class="n">decorator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_class_name_suffix</span><span class="p">(</span><span class="n">params_dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parameterized</span><span class="o">.</span><span class="n">to_safe_name</span><span class="p">(</span><span class="n">params_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+
+    <span class="n">params_vals</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">params_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">PY3</span> <span class="k">else</span>
+        <span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parameterized</span><span class="o">.</span><span class="n">to_safe_name</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span>
+        <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params_vals</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span>
+    <span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">default_class_name_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">params_dict</span><span class="p">):</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">get_class_name_suffix</span><span class="p">(</span><span class="n">params_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="n">num</span><span class="p">,</span>
+        <span class="n">suffix</span> <span class="ow">and</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">parameterized.parameterized</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

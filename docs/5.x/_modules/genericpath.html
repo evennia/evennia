@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>genericpath &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">genericpath</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for genericpath</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Path operations common to more than one OS</span>
+<span class="sd">Do not use directly.  The OS specific modules import the appropriate</span>
+<span class="sd">functions from this module themselves.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">stat</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;commonprefix&#39;</span><span class="p">,</span> <span class="s1">&#39;exists&#39;</span><span class="p">,</span> <span class="s1">&#39;getatime&#39;</span><span class="p">,</span> <span class="s1">&#39;getctime&#39;</span><span class="p">,</span> <span class="s1">&#39;getmtime&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;getsize&#39;</span><span class="p">,</span> <span class="s1">&#39;isdevdrive&#39;</span><span class="p">,</span> <span class="s1">&#39;isdir&#39;</span><span class="p">,</span> <span class="s1">&#39;isfile&#39;</span><span class="p">,</span> <span class="s1">&#39;isjunction&#39;</span><span class="p">,</span> <span class="s1">&#39;islink&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;lexists&#39;</span><span class="p">,</span> <span class="s1">&#39;samefile&#39;</span><span class="p">,</span> <span class="s1">&#39;sameopenfile&#39;</span><span class="p">,</span> <span class="s1">&#39;samestat&#39;</span><span class="p">]</span>
+
+
+<span class="c1"># Does a path exist?</span>
+<span class="c1"># This is false for dangling symbolic links on systems that support them.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a path exists.  Returns False for broken symbolic links&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="c1"># Being true for dangling symbolic links is also useful.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lexists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a path exists.  Returns True for broken symbolic links&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">lstat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># This follows symbolic links, so both islink() and isdir() can be true</span>
+<span class="c1"># for the same path on systems that support symlinks</span>
+<div class="viewcode-block" id="isfile">
+<a class="viewcode-back" href="../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.isfile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a path is a regular file&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Is a path a directory?</span>
+<span class="c1"># This follows symbolic links, so both islink() and isdir()</span>
+<span class="c1"># can be true for the same path on systems that support symlinks</span>
+<div class="viewcode-block" id="isdir">
+<a class="viewcode-back" href="../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.isdir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isdir</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return true if the pathname refers to an existing directory.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISDIR</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Is a path a symbolic link?</span>
+<span class="c1"># This will always return false on systems where os.lstat doesn&#39;t exist.</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">islink</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a path is a symbolic link&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">lstat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISLNK</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span>
+
+
+<span class="c1"># Is a path a junction?</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isjunction</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a path is a junction</span>
+<span class="sd">    Junctions are not supported on the current platform&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">isdevdrive</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines whether the specified path is on a Windows Dev Drive.</span>
+<span class="sd">    Dev Drives are not supported on the current platform&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getsize</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the size of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getmtime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the last modification time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getatime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the last access time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_atime</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getctime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the metadata change time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_ctime</span>
+
+
+<span class="c1"># Return the longest prefix of all list elements.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">commonprefix</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="s2">&quot;Given a list of pathnames, returns the longest common leading component&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span> <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+    <span class="c1"># Some people pass in a list of pathname parts to operate in an OS-agnostic</span>
+    <span class="c1"># fashion; don&#39;t try to translate in that case as that&#39;s an abuse of the</span>
+    <span class="c1"># API and they are already doing what they need to be OS-agnostic and so</span>
+    <span class="c1"># they most likely won&#39;t be using an os.PathLike object in the sublists.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="n">s2</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">s1</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s1</span>
+
+<span class="c1"># Are two stat buffers (obtained from stat, fstat or lstat)</span>
+<span class="c1"># describing the same file?</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">samestat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether two stat buffers reference the same file&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">st_ino</span> <span class="o">==</span> <span class="n">s2</span><span class="o">.</span><span class="n">st_ino</span> <span class="ow">and</span>
+            <span class="n">s1</span><span class="o">.</span><span class="n">st_dev</span> <span class="o">==</span> <span class="n">s2</span><span class="o">.</span><span class="n">st_dev</span><span class="p">)</span>
+
+
+<span class="c1"># Are two filenames really pointing to the same file?</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">samefile</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether two pathnames reference the same actual file or directory</span>
+
+<span class="sd">    This is determined by the device number and i-node number and</span>
+<span class="sd">    raises an exception if an os.stat() call on either pathname fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">samestat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+
+
+<span class="c1"># Are two open files really referencing the same file?</span>
+<span class="c1"># (Not necessarily the same file descriptor!)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sameopenfile</span><span class="p">(</span><span class="n">fp1</span><span class="p">,</span> <span class="n">fp2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether two open file objects reference the same file&quot;&quot;&quot;</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fstat</span><span class="p">(</span><span class="n">fp1</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fstat</span><span class="p">(</span><span class="n">fp2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">samestat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+
+
+<span class="c1"># Split a path in root and extension.</span>
+<span class="c1"># The extension is everything starting at the last dot in the last</span>
+<span class="c1"># pathname component; the root is everything before that.</span>
+<span class="c1"># It is always true that root + ext == p.</span>
+
+<span class="c1"># Generic implementation of splitext, to be parametrized with</span>
+<span class="c1"># the separators</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_splitext</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">altsep</span><span class="p">,</span> <span class="n">extsep</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split the extension from a pathname.</span>
+
+<span class="sd">    Extension is everything from the last dot to the end, ignoring</span>
+<span class="sd">    leading dots.  Returns &quot;(root, ext)&quot;; ext may be empty.&quot;&quot;&quot;</span>
+    <span class="c1"># NOTE: This code must work for text and bytes strings.</span>
+
+    <span class="n">sepIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">altsep</span><span class="p">:</span>
+        <span class="n">altsepIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">altsep</span><span class="p">)</span>
+        <span class="n">sepIndex</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sepIndex</span><span class="p">,</span> <span class="n">altsepIndex</span><span class="p">)</span>
+
+    <span class="n">dotIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">extsep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dotIndex</span> <span class="o">&gt;</span> <span class="n">sepIndex</span><span class="p">:</span>
+        <span class="c1"># skip all leading dots</span>
+        <span class="n">filenameIndex</span> <span class="o">=</span> <span class="n">sepIndex</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">filenameIndex</span> <span class="o">&lt;</span> <span class="n">dotIndex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="n">filenameIndex</span><span class="p">:</span><span class="n">filenameIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">extsep</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span><span class="p">[:</span><span class="n">dotIndex</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="n">dotIndex</span><span class="p">:]</span>
+            <span class="n">filenameIndex</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">[:</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_arg_types</span><span class="p">(</span><span class="n">funcname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">hasstr</span> <span class="o">=</span> <span class="n">hasbytes</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">hasstr</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">hasbytes</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">funcname</span><span class="si">}</span><span class="s1">() argument must be str, bytes, or &#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;os.PathLike object, not </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="k">if</span> <span class="n">hasstr</span> <span class="ow">and</span> <span class="n">hasbytes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t mix strings and bytes in path components&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">genericpath</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

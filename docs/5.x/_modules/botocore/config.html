@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>botocore.config &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">botocore.config</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for botocore.config</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You</span>
+<span class="c1"># may not use this file except in compliance with the License. A copy of</span>
+<span class="c1"># the License is located at</span>
+<span class="c1">#</span>
+<span class="c1"># http://aws.amazon.com/apache2.0/</span>
+<span class="c1">#</span>
+<span class="c1"># or in the &quot;license&quot; file accompanying this file. This file is</span>
+<span class="c1"># distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF</span>
+<span class="c1"># ANY KIND, either express or implied. See the License for the specific</span>
+<span class="c1"># language governing permissions and limitations under the License.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.endpoint</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_TIMEOUT</span><span class="p">,</span> <span class="n">MAX_POOL_CONNECTIONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InvalidMaxRetryAttemptsError</span><span class="p">,</span>
+    <span class="n">InvalidRetryConfigurationError</span><span class="p">,</span>
+    <span class="n">InvalidRetryModeError</span><span class="p">,</span>
+    <span class="n">InvalidS3AddressingStyleError</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Config">
+<a class="viewcode-back" href="../../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.Config">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced configuration for Botocore clients.</span>
+
+<span class="sd">    :type region_name: str</span>
+<span class="sd">    :param region_name: The region to use in instantiating the client</span>
+
+<span class="sd">    :type signature_version: str</span>
+<span class="sd">    :param signature_version: The signature version when signing requests.</span>
+
+<span class="sd">    :type user_agent: str</span>
+<span class="sd">    :param user_agent: The value to use in the User-Agent header.</span>
+
+<span class="sd">    :type user_agent_extra: str</span>
+<span class="sd">    :param user_agent_extra: The value to append to the current User-Agent</span>
+<span class="sd">        header value.</span>
+
+<span class="sd">    :type user_agent_appid: str</span>
+<span class="sd">    :param user_agent_appid: A value that gets included in the User-Agent</span>
+<span class="sd">        string in the format &quot;app/&lt;user_agent_appid&gt;&quot;. Allowed characters are</span>
+<span class="sd">        ASCII alphanumerics and ``!$%&amp;&#39;*+-.^_`|~``. All other characters will</span>
+<span class="sd">        be replaced by a ``-``.</span>
+
+<span class="sd">    :type connect_timeout: float or int</span>
+<span class="sd">    :param connect_timeout: The time in seconds till a timeout exception is</span>
+<span class="sd">        thrown when attempting to make a connection. The default is 60</span>
+<span class="sd">        seconds.</span>
+
+<span class="sd">    :type read_timeout: float or int</span>
+<span class="sd">    :param read_timeout: The time in seconds till a timeout exception is</span>
+<span class="sd">        thrown when attempting to read from a connection. The default is</span>
+<span class="sd">        60 seconds.</span>
+
+<span class="sd">    :type parameter_validation: bool</span>
+<span class="sd">    :param parameter_validation: Whether parameter validation should occur</span>
+<span class="sd">        when serializing requests. The default is True.  You can disable</span>
+<span class="sd">        parameter validation for performance reasons.  Otherwise, it&#39;s</span>
+<span class="sd">        recommended to leave parameter validation enabled.</span>
+
+<span class="sd">    :type max_pool_connections: int</span>
+<span class="sd">    :param max_pool_connections: The maximum number of connections to</span>
+<span class="sd">        keep in a connection pool.  If this value is not set, the default</span>
+<span class="sd">        value of 10 is used.</span>
+
+<span class="sd">    :type proxies: dict</span>
+<span class="sd">    :param proxies: A dictionary of proxy servers to use by protocol or</span>
+<span class="sd">        endpoint, e.g.:</span>
+<span class="sd">        ``{&#39;http&#39;: &#39;foo.bar:3128&#39;, &#39;http://hostname&#39;: &#39;foo.bar:4012&#39;}``.</span>
+<span class="sd">        The proxies are used on each request.</span>
+
+<span class="sd">    :type proxies_config: dict</span>
+<span class="sd">    :param proxies_config: A dictionary of additional proxy configurations.</span>
+<span class="sd">        Valid keys are:</span>
+
+<span class="sd">        * ``proxy_ca_bundle`` -- The path to a custom certificate bundle to use</span>
+<span class="sd">          when establishing SSL/TLS connections with proxy.</span>
+
+<span class="sd">        * ``proxy_client_cert`` -- The path to a certificate for proxy</span>
+<span class="sd">          TLS client authentication.</span>
+
+<span class="sd">          When a string is provided it is treated as a path to a proxy client</span>
+<span class="sd">          certificate. When a two element tuple is provided, it will be</span>
+<span class="sd">          interpreted as the path to the client certificate, and the path</span>
+<span class="sd">          to the certificate key.</span>
+
+<span class="sd">        * ``proxy_use_forwarding_for_https`` -- For HTTPS proxies,</span>
+<span class="sd">          forward your requests to HTTPS destinations with an absolute</span>
+<span class="sd">          URI. We strongly recommend you only use this option with</span>
+<span class="sd">          trusted or corporate proxies. Value must be boolean.</span>
+
+<span class="sd">    :type s3: dict</span>
+<span class="sd">    :param s3: A dictionary of S3 specific configurations.</span>
+<span class="sd">        Valid keys are:</span>
+
+<span class="sd">        * ``use_accelerate_endpoint`` -- Refers to whether to use the S3</span>
+<span class="sd">          Accelerate endpoint. The value must be a boolean. If True, the</span>
+<span class="sd">          client will use the S3 Accelerate endpoint. If the S3 Accelerate</span>
+<span class="sd">          endpoint is being used then the addressing style will always</span>
+<span class="sd">          be virtual.</span>
+
+<span class="sd">        * ``payload_signing_enabled`` -- Refers to whether or not to SHA256</span>
+<span class="sd">          sign sigv4 payloads. By default, this is disabled for streaming</span>
+<span class="sd">          uploads (UploadPart and PutObject).</span>
+
+<span class="sd">        * ``addressing_style`` -- Refers to the style in which to address</span>
+<span class="sd">          s3 endpoints. Values must be a string that equals one of:</span>
+
+<span class="sd">          * ``auto`` -- Addressing style is chosen for user. Depending</span>
+<span class="sd">            on the configuration of client, the endpoint may be addressed in</span>
+<span class="sd">            the virtual or the path style. Note that this is the default</span>
+<span class="sd">            behavior if no style is specified.</span>
+
+<span class="sd">          * ``virtual`` -- Addressing style is always virtual. The name of the</span>
+<span class="sd">            bucket must be DNS compatible or an exception will be thrown.</span>
+<span class="sd">            Endpoints will be addressed as such: ``amzn-s3-demo-bucket.s3.amazonaws.com``</span>
+
+<span class="sd">          * ``path`` -- Addressing style is always by path. Endpoints will be</span>
+<span class="sd">            addressed as such: ``s3.amazonaws.com/amzn-s3-demo-bucket``</span>
+
+<span class="sd">        * ``us_east_1_regional_endpoint`` -- Refers to what S3 endpoint to use</span>
+<span class="sd">          when the region is configured to be us-east-1. Values must be a</span>
+<span class="sd">          string that equals:</span>
+
+<span class="sd">          * ``regional`` -- Use the us-east-1.amazonaws.com endpoint if the</span>
+<span class="sd">            client is configured to use the us-east-1 region.</span>
+
+<span class="sd">          * ``legacy`` -- Use the s3.amazonaws.com endpoint if the client is</span>
+<span class="sd">            configured to use the us-east-1 region. This is the default if</span>
+<span class="sd">            the configuration option is not specified.</span>
+
+
+<span class="sd">    :type retries: dict</span>
+<span class="sd">    :param retries: A dictionary for configuration related to retry behavior.</span>
+<span class="sd">        Valid keys are:</span>
+
+<span class="sd">        * ``total_max_attempts`` -- An integer representing the maximum number of</span>
+<span class="sd">          total attempts that will be made on a single request.  This includes</span>
+<span class="sd">          the initial request, so a value of 1 indicates that no requests</span>
+<span class="sd">          will be retried.  If ``total_max_attempts`` and ``max_attempts``</span>
+<span class="sd">          are both provided, ``total_max_attempts`` takes precedence.</span>
+<span class="sd">          ``total_max_attempts`` is preferred over ``max_attempts`` because</span>
+<span class="sd">          it maps to the ``AWS_MAX_ATTEMPTS`` environment variable and</span>
+<span class="sd">          the ``max_attempts`` config file value.</span>
+<span class="sd">        * ``max_attempts`` -- An integer representing the maximum number of</span>
+<span class="sd">          retry attempts that will be made on a single request. For</span>
+<span class="sd">          example, setting this value to 2 will result in the request</span>
+<span class="sd">          being retried at most two times after the initial request. Setting</span>
+<span class="sd">          this value to 0 will result in no retries ever being attempted after</span>
+<span class="sd">          the initial request. If not provided, the number of retries will</span>
+<span class="sd">          default to the value specified in the service model, which is</span>
+<span class="sd">          typically four retries.</span>
+<span class="sd">        * ``mode`` -- A string representing the type of retry mode botocore</span>
+<span class="sd">          should use.  Valid values are:</span>
+
+<span class="sd">          * ``legacy`` - The pre-existing retry behavior.</span>
+
+<span class="sd">          * ``standard`` - The standardized set of retry rules. This will also</span>
+<span class="sd">            default to 3 max attempts unless overridden.</span>
+
+<span class="sd">          * ``adaptive`` - Retries with additional client side throttling.</span>
+
+<span class="sd">    :type client_cert: str, (str, str)</span>
+<span class="sd">    :param client_cert: The path to a certificate for TLS client authentication.</span>
+
+<span class="sd">        When a string is provided it is treated as a path to a client</span>
+<span class="sd">        certificate to be used when creating a TLS connection.</span>
+
+<span class="sd">        If a client key is to be provided alongside the client certificate the</span>
+<span class="sd">        client_cert should be set to a tuple of length two where the first</span>
+<span class="sd">        element is the path to the client certificate and the second element is</span>
+<span class="sd">        the path to the certificate key.</span>
+
+<span class="sd">    :type inject_host_prefix: bool</span>
+<span class="sd">    :param inject_host_prefix: Whether host prefix injection should occur.</span>
+
+<span class="sd">        Defaults to True.</span>
+
+<span class="sd">        Setting this to False disables the injection of operation parameters</span>
+<span class="sd">        into the prefix of the hostname. This is useful for clients providing</span>
+<span class="sd">        custom endpoints that should not have their host prefix modified.</span>
+
+<span class="sd">    :type use_dualstack_endpoint: bool</span>
+<span class="sd">    :param use_dualstack_endpoint: Setting to True enables dualstack</span>
+<span class="sd">        endpoint resolution.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type use_fips_endpoint: bool</span>
+<span class="sd">    :param use_fips_endpoint: Setting to True enables fips</span>
+<span class="sd">        endpoint resolution.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type ignore_configured_endpoint_urls: bool</span>
+<span class="sd">    :param ignore_configured_endpoint_urls: Setting to True disables use</span>
+<span class="sd">        of endpoint URLs provided via environment variables and</span>
+<span class="sd">        the shared configuration file.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type tcp_keepalive: bool</span>
+<span class="sd">    :param tcp_keepalive: Enables the TCP Keep-Alive socket option used when</span>
+<span class="sd">        creating new connections if set to True.</span>
+
+<span class="sd">        Defaults to False.</span>
+
+<span class="sd">    :type request_min_compression_size_bytes: int</span>
+<span class="sd">    :param request_min_compression_size_bytes: The minimum size in bytes that a</span>
+<span class="sd">        request body should be to trigger compression. All requests with</span>
+<span class="sd">        streaming input that don&#39;t contain the ``requiresLength`` trait will be</span>
+<span class="sd">        compressed regardless of this setting.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type disable_request_compression: bool</span>
+<span class="sd">    :param disable_request_compression: Disables request body compression if</span>
+<span class="sd">        set to True.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type sigv4a_signing_region_set: string</span>
+<span class="sd">    :param sigv4a_signing_region_set: A set of AWS regions to apply the signature for</span>
+<span class="sd">        when using SigV4a for signing. Set to ``*`` to represent all regions.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type client_context_params: dict</span>
+<span class="sd">    :param client_context_params: A dictionary of parameters specific to</span>
+<span class="sd">        individual services. If available, valid parameters can be found in</span>
+<span class="sd">        the ``Client Context Parameters`` section of the service client&#39;s</span>
+<span class="sd">        documentation. Invalid parameters or ones that are not used by the</span>
+<span class="sd">        specified service will be ignored.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type request_checksum_calculation: str</span>
+<span class="sd">    :param request_checksum_calculation: Determines when a checksum will be</span>
+<span class="sd">        calculated for request payloads. Valid values are:</span>
+
+<span class="sd">        * ``when_supported`` -- When set, a checksum will be calculated for</span>
+<span class="sd">          all request payloads of operations modeled with the ``httpChecksum``</span>
+<span class="sd">          trait where ``requestChecksumRequired`` is ``true`` or a</span>
+<span class="sd">          ``requestAlgorithmMember`` is modeled.</span>
+
+<span class="sd">        * ``when_required`` -- When set, a checksum will only be calculated</span>
+<span class="sd">          for request payloads of operations modeled with the ``httpChecksum``</span>
+<span class="sd">          trait where ``requestChecksumRequired`` is ``true`` or where a</span>
+<span class="sd">          ``requestAlgorithmMember`` is modeled and supplied.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type response_checksum_validation: str</span>
+<span class="sd">    :param response_checksum_validation: Determines when checksum validation</span>
+<span class="sd">        will be performed on response payloads. Valid values are:</span>
+
+<span class="sd">        * ``when_supported`` -- When set, checksum validation is performed on</span>
+<span class="sd">          all response payloads of operations modeled with the ``httpChecksum``</span>
+<span class="sd">          trait where ``responseAlgorithms`` is modeled, except when no modeled</span>
+<span class="sd">          checksum algorithms are supported.</span>
+
+<span class="sd">        * ``when_required`` -- When set, checksum validation is not performed</span>
+<span class="sd">          on response payloads of operations unless the checksum algorithm is</span>
+<span class="sd">          supported and the ``requestValidationModeMember`` member is set to ``ENABLED``.</span>
+
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    :type account_id_endpoint_mode: str</span>
+<span class="sd">    :param account_id_endpoint_mode: The value used to determine the client&#39;s</span>
+<span class="sd">        behavior for account ID based endpoint routing. Valid values are:</span>
+
+<span class="sd">        * ``preferred`` - The endpoint should include account ID if available.</span>
+<span class="sd">        * ``disabled`` - A resolved endpoint does not include account ID.</span>
+<span class="sd">        * ``required`` - The endpoint must include account ID. If the account ID</span>
+<span class="sd">          isn&#39;t available, an exception will be raised.</span>
+
+<span class="sd">        If a value is not provided, the client will default to ``preferred``.</span>
+
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">OPTION_DEFAULTS</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;region_name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;signature_version&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;user_agent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;user_agent_extra&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;user_agent_appid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;connect_timeout&#39;</span><span class="p">,</span> <span class="n">DEFAULT_TIMEOUT</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;read_timeout&#39;</span><span class="p">,</span> <span class="n">DEFAULT_TIMEOUT</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;parameter_validation&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;max_pool_connections&#39;</span><span class="p">,</span> <span class="n">MAX_POOL_CONNECTIONS</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;proxies&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;proxies_config&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;client_cert&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;inject_host_prefix&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;endpoint_discovery_enabled&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;use_dualstack_endpoint&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;use_fips_endpoint&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;ignore_configured_endpoint_urls&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;defaults_mode&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;tcp_keepalive&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;request_min_compression_size_bytes&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;disable_request_compression&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;client_context_params&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;sigv4a_signing_region_set&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;request_checksum_calculation&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;response_checksum_validation&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;account_id_endpoint_mode&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">NON_LEGACY_OPTION_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;connect_timeout&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Config.__init__">
+<a class="viewcode-back" href="../../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.Config.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_provided_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_user_provided_options</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Merge the user_provided options onto the default options</span>
+        <span class="n">config_vars</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OPTION_DEFAULTS</span><span class="p">)</span>
+        <span class="n">defaults_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_provided_options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;defaults_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;legacy&#39;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">defaults_mode</span> <span class="o">!=</span> <span class="s1">&#39;legacy&#39;</span><span class="p">:</span>
+            <span class="n">config_vars</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NON_LEGACY_OPTION_DEFAULTS</span><span class="p">)</span>
+        <span class="n">config_vars</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_provided_options</span><span class="p">)</span>
+
+        <span class="c1"># Set the attributes based on the config_vars</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config_vars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Validate the s3 options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_s3_configuration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s3</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_retry_configuration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record_user_provided_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">option_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OPTION_DEFAULTS</span><span class="p">)</span>
+        <span class="n">user_provided_options</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Iterate through the kwargs passed through to the constructor and</span>
+        <span class="c1"># map valid keys to the dictionary</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OPTION_DEFAULTS</span><span class="p">:</span>
+                <span class="n">user_provided_options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># The key must exist in the available options</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got unexpected keyword argument &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># The number of args should not be longer than the allowed</span>
+        <span class="c1"># options</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">option_order</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Takes at most </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">option_order</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2"> given)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Iterate through the args passed through to the constructor and map</span>
+        <span class="c1"># them to appropriate keys.</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="c1"># If a kwarg was specified for the arg, then error out</span>
+            <span class="k">if</span> <span class="n">option_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">user_provided_options</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Got multiple values for keyword argument &#39;</span><span class="si">{</span><span class="n">option_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+            <span class="n">user_provided_options</span><span class="p">[</span><span class="n">option_order</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">arg</span>
+
+        <span class="k">return</span> <span class="n">user_provided_options</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_s3_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s3</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">addressing_style</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;addressing_style&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">addressing_style</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">InvalidS3AddressingStyleError</span><span class="p">(</span>
+                    <span class="n">s3_addressing_style</span><span class="o">=</span><span class="n">addressing_style</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_retry_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retries</span><span class="p">):</span>
+        <span class="n">valid_options</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;max_attempts&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">,</span> <span class="s1">&#39;total_max_attempts&#39;</span><span class="p">)</span>
+        <span class="n">valid_modes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;legacy&#39;</span><span class="p">,</span> <span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">retries</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">retries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_options</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidRetryConfigurationError</span><span class="p">(</span>
+                        <span class="n">retry_config_option</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                        <span class="n">valid_options</span><span class="o">=</span><span class="n">valid_options</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;max_attempts&#39;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidMaxRetryAttemptsError</span><span class="p">(</span>
+                        <span class="n">provided_max_attempts</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                        <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;total_max_attempts&#39;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidMaxRetryAttemptsError</span><span class="p">(</span>
+                        <span class="n">provided_max_attempts</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                        <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;mode&#39;</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_modes</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidRetryModeError</span><span class="p">(</span>
+                        <span class="n">provided_retry_mode</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                        <span class="n">valid_modes</span><span class="o">=</span><span class="n">valid_modes</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<div class="viewcode-block" id="Config.merge">
+<a class="viewcode-back" href="../../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.Config.merge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merges the config object with another config object</span>
+
+<span class="sd">        This will merge in all non-default values from the provided config</span>
+<span class="sd">        and return a new config object</span>
+
+<span class="sd">        :type other_config: botocore.config.Config</span>
+<span class="sd">        :param other config: Another config object to merge with. The values</span>
+<span class="sd">            in the provided config object will take precedence in the merging</span>
+
+<span class="sd">        :returns: A config object built from the merged values of both</span>
+<span class="sd">            config objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Make a copy of the current attributes in the config object.</span>
+        <span class="n">config_options</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_provided_options</span><span class="p">)</span>
+
+        <span class="c1"># Merge in the user provided options from the other config</span>
+        <span class="n">config_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other_config</span><span class="o">.</span><span class="n">_user_provided_options</span><span class="p">)</span>
+
+        <span class="c1"># Return a new config object with the merged properties.</span>
+        <span class="k">return</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">config_options</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">botocore.config</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

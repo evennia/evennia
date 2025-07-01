@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.internet.threads &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.threads</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.internet.threads</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Extended thread dispatching support.</span>
+
+<span class="sd">For basic support see reactor threading API docs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">Queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamSpec</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">IReactorFromThreads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">failure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.threadpool</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPool</span>
+
+<span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
+<span class="n">_R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_R&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">deferToThreadPool</span><span class="p">(</span>
+    <span class="n">reactor</span><span class="p">:</span> <span class="n">IReactorFromThreads</span><span class="p">,</span>
+    <span class="n">threadpool</span><span class="p">:</span> <span class="n">ThreadPool</span><span class="p">,</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_R</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">_P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">_P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">[</span><span class="n">_R</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call the function C{f} using a thread from the given threadpool and return</span>
+<span class="sd">    the result as a Deferred.</span>
+
+<span class="sd">    This function is only used by client code which is maintaining its own</span>
+<span class="sd">    threadpool.  To run a function in the reactor&#39;s threadpool, use</span>
+<span class="sd">    C{deferToThread}.</span>
+
+<span class="sd">    @param reactor: The reactor in whose main thread the Deferred will be</span>
+<span class="sd">        invoked.</span>
+
+<span class="sd">    @param threadpool: An object which supports the C{callInThreadWithCallback}</span>
+<span class="sd">        method of C{twisted.python.threadpool.ThreadPool}.</span>
+
+<span class="sd">    @param f: The function to call.</span>
+<span class="sd">    @param args: positional arguments to pass to f.</span>
+<span class="sd">    @param kwargs: keyword arguments to pass to f.</span>
+
+<span class="sd">    @return: A Deferred which fires a callback with the result of f, or an</span>
+<span class="sd">        errback with a L{twisted.python.failure.Failure} if f throws an</span>
+<span class="sd">        exception.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span><span class="p">:</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">[</span><span class="n">_R</span><span class="p">]</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">onResult</span><span class="p">(</span><span class="n">success</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">_R</span> <span class="o">|</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">reactor</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reactor</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+    <span class="n">threadpool</span><span class="o">.</span><span class="n">callInThreadWithCallback</span><span class="p">(</span><span class="n">onResult</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<div class="viewcode-block" id="deferToThread">
+<a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.deferToThread">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">deferToThread</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a function in a thread and return the result as a Deferred.</span>
+
+<span class="sd">    @param f: The function to call.</span>
+<span class="sd">    @param args: positional arguments to pass to f.</span>
+<span class="sd">    @param kwargs: keyword arguments to pass to f.</span>
+
+<span class="sd">    @return: A Deferred which fires a callback with the result of f,</span>
+<span class="sd">    or an errback with a L{twisted.python.failure.Failure} if f throws</span>
+<span class="sd">    an exception.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="k">return</span> <span class="n">deferToThreadPool</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">reactor</span><span class="o">.</span><span class="n">getThreadPool</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_runMultiple</span><span class="p">(</span><span class="n">tupleList</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a list of functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">tupleList</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">callMultipleInThread</span><span class="p">(</span><span class="n">tupleList</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a list of functions in the same thread.</span>
+
+<span class="sd">    tupleList should be a list of (function, argsList, kwargsDict) tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="n">reactor</span><span class="o">.</span><span class="n">callInThread</span><span class="p">(</span><span class="n">_runMultiple</span><span class="p">,</span> <span class="n">tupleList</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">blockingCallFromThread</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a function in the reactor from a thread, and wait for the result</span>
+<span class="sd">    synchronously.  If the function returns a L{Deferred}, wait for its</span>
+<span class="sd">    result and return that.</span>
+
+<span class="sd">    @param reactor: The L{IReactorThreads} provider which will be used to</span>
+<span class="sd">        schedule the function call.</span>
+<span class="sd">    @param f: the callable to run in the reactor thread</span>
+<span class="sd">    @type f: any callable.</span>
+<span class="sd">    @param a: the arguments to pass to C{f}.</span>
+<span class="sd">    @param kw: the keyword arguments to pass to C{f}.</span>
+
+<span class="sd">    @return: the result of the L{Deferred} returned by C{f}, or the result</span>
+<span class="sd">        of C{f} if it returns anything other than a L{Deferred}.</span>
+
+<span class="sd">    @raise Exception: If C{f} raises a synchronous exception,</span>
+<span class="sd">        C{blockingCallFromThread} will raise that exception.  If C{f}</span>
+<span class="sd">        returns a L{Deferred} which fires with a L{Failure},</span>
+<span class="sd">        C{blockingCallFromThread} will raise that failure&#39;s exception (see</span>
+<span class="sd">        L{Failure.raiseException}).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callFromThread</span><span class="p">():</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">maybeDeferred</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">addBoth</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">)</span>
+
+    <span class="n">reactor</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="n">_callFromThread</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">failure</span><span class="o">.</span><span class="n">Failure</span><span class="p">):</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">raiseException</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;deferToThread&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deferToThreadPool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;callMultipleInThread&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;blockingCallFromThread&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.threads</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

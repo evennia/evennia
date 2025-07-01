@@ -1,0 +1,871 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simpleeval &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">simpleeval</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for simpleeval</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">SimpleEval - (C) 2013-2024 Daniel Fairhead</span>
+<span class="sd">-------------------------------------</span>
+
+<span class="sd">An short, easy to use, safe and reasonably extensible expression evaluator.</span>
+<span class="sd">Designed for things like in a website where you want to allow the user to</span>
+<span class="sd">generate a string, or a number from some other input, without allowing full</span>
+<span class="sd">eval() or other unsafe or needlessly complex linguistics.</span>
+
+<span class="sd">-------------------------------------</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in</span>
+<span class="sd">all copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="sd">THE SOFTWARE.</span>
+
+<span class="sd">-------------------------------------</span>
+
+<span class="sd">Initial idea copied from J.F. Sebastian on Stack Overflow</span>
+<span class="sd">( http://stackoverflow.com/a/9558001/1973500 ) with</span>
+<span class="sd">modifications and many improvements.</span>
+
+<span class="sd">-------------------------------------</span>
+<span class="sd">Contributors:</span>
+<span class="sd">- corro (Robin Baumgartner) (py3k)</span>
+<span class="sd">- dratchkov (David R) (nested dicts)</span>
+<span class="sd">- marky1991 (Mark Young) (slicing)</span>
+<span class="sd">- T045T (Nils Berg) (!=, py3kstr, obj.</span>
+<span class="sd">- perkinslr (Logan Perkins) (.__globals__ or .func_ breakouts)</span>
+<span class="sd">- impala2 (Kirill Stepanov) (massive _eval refactor)</span>
+<span class="sd">- gk (ugik) (Other iterables than str can DOS too, and can be made)</span>
+<span class="sd">- daveisfera (Dave Johansen) &#39;not&#39; Boolean op, Pycharm, pep8, various other fixes</span>
+<span class="sd">- xaled (Khalid Grandi) method chaining correctly, double-eval bugfix.</span>
+<span class="sd">- EdwardBetts (Edward Betts) spelling correction.</span>
+<span class="sd">- charlax (Charles-Axel Dein charlax) Makefile and cleanups</span>
+<span class="sd">- mommothazaz123 (Andrew Zhu) f&quot;string&quot; support, Python 3.8 support</span>
+<span class="sd">- lubieowoce (Uryga) various potential vulnerabilities</span>
+<span class="sd">- JCavallo (Jean Cavallo) names dict shouldn&#39;t be modified</span>
+<span class="sd">- Birne94 (Daniel Birnstiel) for fixing leaking generators, star expressions</span>
+<span class="sd">- patricksurry (Patrick Surry) or should return last value, even if falsy.</span>
+<span class="sd">- shughes-uk (Samantha Hughes) python w/o &#39;site&#39; should not fail to import.</span>
+<span class="sd">- KOLANICH packaging / deployment / setup help &amp; &lt;&lt; + &gt;&gt; &amp; other bit ops</span>
+<span class="sd">- graingert (Thomas Grainger) packaging / deployment / setup help</span>
+<span class="sd">- bozokopic (Bozo Kopic) Memory leak fix</span>
+<span class="sd">- daxamin (Dax Amin) Better error for attempting to eval empty string</span>
+<span class="sd">- smurfix (Matthias Urlichs) Allow clearing functions / operators / etc completely</span>
+<span class="sd">- koenigsley (Mikhail Yeremeyev) documentation typos correction.</span>
+<span class="sd">- kurtmckee (Kurt McKee) Infrastructure updates</span>
+<span class="sd">- edgarrmondragon (Edgar Ramírez-Mondragón) Address Python 3.12+ deprecation warnings</span>
+<span class="sd">- cedk (Cédric Krier) &lt;ced@b2ck.com&gt; Allow running tests with Werror</span>
+<span class="sd">- decorator-factory &lt;decorator-factory@protonmail.com&gt; More security fixes</span>
+<span class="sd">- lkruitwagen (Lucas Kruitwagen) Adding support for dict comprehensions</span>
+
+<span class="sd">-------------------------------------</span>
+<span class="sd">Basic Usage:</span>
+
+<span class="sd">&gt;&gt;&gt; s = SimpleEval()</span>
+<span class="sd">&gt;&gt;&gt; s.eval(&quot;20 + 30&quot;)</span>
+<span class="sd">50</span>
+
+<span class="sd">You can add your own functions easily too:</span>
+
+<span class="sd">if file.txt contents is &quot;11&quot;</span>
+
+<span class="sd">&gt;&gt;&gt; def get_file():</span>
+<span class="sd">...     with open(&quot;file.txt&quot;, &#39;r&#39;) as f:</span>
+<span class="sd">...         return f.read()</span>
+
+<span class="sd">&gt;&gt;&gt; s.functions[&quot;get_file&quot;] = get_file</span>
+<span class="sd">&gt;&gt;&gt; s.eval(&quot;int(get_file()) + 31&quot;)</span>
+<span class="sd">42</span>
+
+<span class="sd">For more information, see the full package documentation on pypi, or the github</span>
+<span class="sd">repo.</span>
+
+<span class="sd">-----------</span>
+
+<span class="sd">If you don&#39;t need to re-use the evaluator (with it&#39;s names, functions, etc),</span>
+<span class="sd">then you can use the simple_eval() function:</span>
+
+<span class="sd">&gt;&gt;&gt; simple_eval(&quot;21 + 19&quot;)</span>
+<span class="sd">40</span>
+
+<span class="sd">You can pass names, operators and functions to the simple_eval function as</span>
+<span class="sd">well:</span>
+
+<span class="sd">&gt;&gt;&gt; simple_eval(&quot;40 + two&quot;, names={&quot;two&quot;: 2})</span>
+<span class="sd">42</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
+
+<span class="c1">########################################</span>
+<span class="c1"># Module wide &#39;globals&#39;</span>
+
+<span class="n">MAX_STRING_LENGTH</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">MAX_COMPREHENSION_LENGTH</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">MAX_POWER</span> <span class="o">=</span> <span class="mi">4000000</span>  <span class="c1"># highest exponent</span>
+<span class="n">MAX_SHIFT</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># highest &lt;&lt; or &gt;&gt; (lshift / rshift)</span>
+<span class="n">MAX_SHIFT_BASE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>  <span class="c1"># highest on left side of &lt;&lt; or &gt;&gt;</span>
+<span class="n">DISALLOW_PREFIXES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;func_&quot;</span><span class="p">]</span>
+<span class="n">DISALLOW_METHODS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;format_map&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tb_frame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gi_frame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ag_frame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cr_frame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exec&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Disallow functions:</span>
+<span class="c1"># This, strictly speaking, is not necessary.  These /should/ never be accessable anyway,</span>
+<span class="c1"># if DISALLOW_PREFIXES and DISALLOW_METHODS are all right.  This is here to try and help</span>
+<span class="c1"># people not be stupid.  Allowing these functions opens up all sorts of holes - if any of</span>
+<span class="c1"># their functionality is required, then please wrap them up in a safe container.  And think</span>
+<span class="c1"># very hard about it first.  And don&#39;t say I didn&#39;t warn you.</span>
+<span class="c1"># builtins is a dict in python &gt;3.6 but a module before</span>
+<span class="n">DISALLOW_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">,</span> <span class="nb">eval</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">,</span> <span class="nb">setattr</span><span class="p">,</span> <span class="nb">repr</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">exec</span><span class="p">}</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">__builtins__</span><span class="p">,</span> <span class="s2">&quot;help&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+    <span class="nb">hasattr</span><span class="p">(</span><span class="n">__builtins__</span><span class="p">,</span> <span class="s2">&quot;__contains__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;help&quot;</span> <span class="ow">in</span> <span class="n">__builtins__</span>  <span class="c1"># type: ignore</span>
+<span class="p">):</span>
+    <span class="c1"># PyInstaller environment doesn&#39;t include this module.</span>
+    <span class="n">DISALLOW_FUNCTIONS</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">help</span><span class="p">)</span>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># Exceptions:</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidExpression</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic Exception&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionNotDefined</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;sorry! That function isn&#39;t defined!&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Function &#39;</span><span class="si">{0}</span><span class="s2">&#39; not defined,&quot;</span> <span class="s2">&quot; for expression &#39;</span><span class="si">{1}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">func_name</span><span class="p">,</span> <span class="n">expression</span>
+        <span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;func_name&quot;</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>  <span class="c1"># bypass 2to3 confusion.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NameNotDefined</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;a name isn&#39;t defined.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; is not defined for expression &#39;</span><span class="si">{1}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AttributeDoesNotExist</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;attribute does not exist&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Attribute &#39;</span><span class="si">{0}</span><span class="s2">&#39; does not exist in expression &#39;</span><span class="si">{1}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">attr</span><span class="p">,</span> <span class="n">expression</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OperatorNotDefined</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;operator does not exist&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Operator &#39;</span><span class="si">{0}</span><span class="s2">&#39; does not exist in expression &#39;</span><span class="si">{1}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FeatureNotAvailable</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;What you&#39;re trying to do is not allowed.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NumberTooHigh</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sorry! That number is too high. I don&#39;t want to spend the</span>
+<span class="sd">    next 10 years evaluating this expression!&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IterableTooLong</span><span class="p">(</span><span class="n">InvalidExpression</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;That iterable is **way** too long, baby.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AssignmentAttempted</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assignment not allowed in SimpleEval&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MultipleExpressions</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Only the first expression parsed will be used&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># Default simple functions to include:</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">random_int</span><span class="p">(</span><span class="n">top</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;return a random int below &lt;top&gt;&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">top</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_power</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;a limited exponent/to-the-power-of function, for safety reasons&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_POWER</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_POWER</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NumberTooHigh</span><span class="p">(</span><span class="s2">&quot;Sorry! I don&#39;t want to evaluate </span><span class="si">{0}</span><span class="s2"> ** </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">**</span><span class="n">b</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_mult</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;limit the number of times an iterable can be repeated...&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span><span class="s2">&quot;Sorry, I will not evalute something that long.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span><span class="s2">&quot;Sorry, I will not evalute something that long.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;iterable length limit again&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span>
+                <span class="s2">&quot;Sorry, adding those two together would&quot;</span> <span class="s2">&quot; make something too long.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_rshift</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;rshift, but with input limits&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_SHIFT</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_SHIFT_BASE</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NumberTooHigh</span><span class="p">(</span><span class="s2">&quot;Sorry! I don&#39;t want to evaluate </span><span class="si">{0}</span><span class="s2"> &gt;&gt; </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;&gt;</span> <span class="n">b</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_lshift</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;lshift, but with input limits&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_SHIFT</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_SHIFT_BASE</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NumberTooHigh</span><span class="p">(</span><span class="s2">&quot;Sorry! I don&#39;t want to evaluate </span><span class="si">{0}</span><span class="s2"> &lt;&lt; </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">&lt;&lt;</span> <span class="n">b</span>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># Defaults for the evaluator:</span>
+
+<span class="n">DEFAULT_OPERATORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Add</span><span class="p">:</span> <span class="n">safe_add</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Sub</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Mult</span><span class="p">:</span> <span class="n">safe_mult</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Div</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">truediv</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">FloorDiv</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">floordiv</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">RShift</span><span class="p">:</span> <span class="n">safe_rshift</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">LShift</span><span class="p">:</span> <span class="n">safe_lshift</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Pow</span><span class="p">:</span> <span class="n">safe_power</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Mod</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Eq</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">eq</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">NotEq</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">ne</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Gt</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Lt</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">GtE</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">LtE</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">le</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Not</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">not_</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">USub</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">neg</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">UAdd</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">BitXor</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">xor</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">BitOr</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">or_</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">BitAnd</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Invert</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">In</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">op</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">NotIn</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">Is</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="n">y</span><span class="p">,</span>
+    <span class="n">ast</span><span class="o">.</span><span class="n">IsNot</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">y</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">DEFAULT_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;rand&quot;</span><span class="p">:</span> <span class="n">random</span><span class="p">,</span>
+    <span class="s2">&quot;randint&quot;</span><span class="p">:</span> <span class="n">random_int</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">DEFAULT_NAMES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+<span class="n">ATTR_INDEX_FALLBACK</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># And the actual evaluator:</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SimpleEval</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A very simple expression parser.</span>
+<span class="sd">    &gt;&gt;&gt; s = SimpleEval()</span>
+<span class="sd">    &gt;&gt;&gt; s.eval(&quot;20 + 30 - ( 10 * 5)&quot;)</span>
+<span class="sd">    0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the evaluator instance.  Set up valid operators (+,-, etc)</span>
+<span class="sd">        functions (add, random, get_val, whatever) and names.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">operators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">operators</span> <span class="o">=</span> <span class="n">DEFAULT_OPERATORS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">functions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">functions</span> <span class="o">=</span> <span class="n">DEFAULT_FUNCTIONS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">DEFAULT_NAMES</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="o">=</span> <span class="n">operators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functions</span> <span class="o">=</span> <span class="n">functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Expr</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_expr</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_assign</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">AugAssign</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_aug_assign</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Import</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_import</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_name</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">UnaryOp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_unaryop</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_binop</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">BoolOp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_boolop</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Compare</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_compare</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">IfExp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_ifexp</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_call</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">keyword</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_keyword</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Subscript</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_subscript</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_attribute</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_index</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Slice</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_slice</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">JoinedStr</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_joinedstr</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">FormattedValue</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_formattedvalue</span><span class="p">,</span>
+            <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_constant</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="c1"># py3.12 deprecated ast.Num, ast.Str, ast.NameConstant</span>
+            <span class="c1"># https://docs.python.org/3.12/whatsnew/3.12.html#deprecated</span>
+            <span class="k">if</span> <span class="n">Num</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ast</span><span class="p">,</span> <span class="s2">&quot;Num&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">Num</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_num</span>
+
+            <span class="k">if</span> <span class="n">Str</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ast</span><span class="p">,</span> <span class="s2">&quot;Str&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">Str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_str</span>
+
+            <span class="k">if</span> <span class="n">NameConstant</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ast</span><span class="p">,</span> <span class="s2">&quot;NameConstant&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">NameConstant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_constant</span>
+
+        <span class="c1"># Defaults:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ATTR_INDEX_FALLBACK</span> <span class="o">=</span> <span class="n">ATTR_INDEX_FALLBACK</span>
+
+        <span class="c1"># Check for forbidden functions:</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">DISALLOW_FUNCTIONS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span><span class="s2">&quot;This function </span><span class="si">{}</span><span class="s2"> is a really bad idea.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;parse an expression into a node tree&quot;&quot;&quot;</span>
+
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidExpression</span><span class="p">(</span><span class="s2">&quot;Sorry, cannot evaluate empty string&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; contains multiple expressions. Only the first will be used.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expr</span><span class="p">),</span>
+                <span class="n">MultipleExpressions</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">previously_parsed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;evaluate an expresssion, using the operators, functions and</span>
+<span class="sd">        names previously set up.&quot;&quot;&quot;</span>
+
+        <span class="c1"># set a copy of the expression aside, so we can give nice errors...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">previously_parsed</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">expr</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The internal evaluator used on each node in the parsed tree.&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span>
+                <span class="s2">&quot;Sorry, </span><span class="si">{0}</span><span class="s2"> is not available in this &quot;</span> <span class="s2">&quot;evaluator&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">handler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Assignment (</span><span class="si">{}</span><span class="s2">) attempted, but this is ignored&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">),</span> <span class="n">AssignmentAttempted</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_aug_assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Assignment (</span><span class="si">{}</span><span class="s2">) attempted, but this is ignored&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">),</span> <span class="n">AssignmentAttempted</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_import</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span><span class="s2">&quot;Sorry, &#39;import&#39; is not allowed.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_num</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">n</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_str</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span>
+                <span class="s2">&quot;String Literal in statement is too long! (</span><span class="si">{0}</span><span class="s2">, when </span><span class="si">{1}</span><span class="s2"> is max)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">s</span><span class="p">),</span> <span class="n">MAX_STRING_LENGTH</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_constant</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span>
+                <span class="s2">&quot;Literal in statement is too long! (</span><span class="si">{0}</span><span class="s2">, when </span><span class="si">{1}</span><span class="s2"> is max)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">MAX_STRING_LENGTH</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_unaryop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operators</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OperatorNotDefined</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">operand</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operators</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OperatorNotDefined</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_boolop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">to_return</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">And</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="n">to_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">to_return</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Or</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="n">to_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">to_return</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">to_return</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+        <span class="n">to_return</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">operation</span><span class="p">,</span> <span class="n">comp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">ops</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">comparators</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">to_return</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">right</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+            <span class="n">to_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operators</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">operation</span><span class="p">)](</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_return</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_ifexp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orelse</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FunctionNotDefined</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span><span class="s2">&quot;Lambda Functions not implemented&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">DISALLOW_FUNCTIONS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span><span class="s2">&quot;This function is forbidden&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_keyword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">arg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># This happens at least for slicing</span>
+            <span class="c1"># This is a safe thing to do because it is impossible</span>
+            <span class="c1"># that there is a true expression assigning to none</span>
+            <span class="c1"># (the compiler rejects it, so you can&#39;t even</span>
+            <span class="c1"># pass that to ast.parse)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">NameNotDefined</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidExpression</span><span class="p">(</span>
+                <span class="s1">&#39;Trying to use name (variable) &quot;</span><span class="si">{0}</span><span class="s1">&quot;&#39;</span>
+                <span class="s1">&#39; when no &quot;names&quot; defined for&#39;</span>
+                <span class="s2">&quot; evaluator&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+        <span class="k">raise</span> <span class="n">NameNotDefined</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_subscript</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">slice</span><span class="p">)</span>
+        <span class="c1"># Currently if there&#39;s a KeyError, that gets raised straight up.</span>
+        <span class="c1"># TODO: Should that be wrapped in an InvalidExpression?</span>
+        <span class="k">return</span> <span class="n">container</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">DISALLOW_PREFIXES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span>
+                    <span class="s2">&quot;Sorry, access to __attributes &quot;</span>
+                    <span class="s2">&quot; or func_ attributes is not available. &quot;</span>
+                    <span class="s2">&quot;(</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">attr</span> <span class="ow">in</span> <span class="n">DISALLOW_METHODS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FeatureNotAvailable</span><span class="p">(</span>
+                <span class="s2">&quot;Sorry, this method is not available. &quot;</span> <span class="s2">&quot;(</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># eval node</span>
+        <span class="n">node_evaluated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Maybe the base object is an actual object, not just a dict</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node_evaluated</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># TODO: is this a good idea?  Try and look for [x] if .x doesn&#39;t work?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ATTR_INDEX_FALLBACK</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">node_evaluated</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># If it is neither, raise an exception</span>
+        <span class="k">raise</span> <span class="n">AttributeDoesNotExist</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">step</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">lower</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">upper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_joinedstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">evaluated_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">+</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span><span class="s2">&quot;Sorry, I will not evaluate something this long.&quot;</span><span class="p">)</span>
+            <span class="n">evaluated_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evaluated_values</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_formattedvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">format_spec</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;{:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">format_spec</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+            <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvalWithCompoundTypes</span><span class="p">(</span><span class="n">SimpleEval</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SimpleEval with additional Compound Types, and their respective</span>
+<span class="sd">    function editions. (list, tuple, dict, set).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_max_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EvalWithCompoundTypes</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">list</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">set</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Dict</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_dict</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Tuple</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_tuple</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">List</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_list</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Set</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_set</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">ListComp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_comprehension</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">GeneratorExp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_comprehension</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">DictComp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_comprehension</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">previously_parsed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># reset _max_count for each eval run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EvalWithCompoundTypes</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">previously_parsed</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># &quot;{**x}&quot; gets parsed as a key-value pair of (None, Name(x))</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">elts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Starred</span><span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">elts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">elts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eval_comprehension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">DictComp</span><span class="p">):</span>
+            <span class="n">to_return</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">to_return</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">extra_names</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">previous_name_evaller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">eval_names_extra</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Here we hide our extra scope for within this comprehension</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">extra_names</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">extra_names</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">previous_name_evaller</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">:</span> <span class="n">eval_names_extra</span><span class="p">})</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">recurse_targets</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Recursively (enter, (into, (nested, name), unpacking)) = \</span>
+<span class="sd">                             and, (assign, (values, to), each</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
+                <span class="n">extra_names</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">elts</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="n">recurse_targets</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">do_generator</span><span class="p">(</span><span class="n">gi</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">generators</span><span class="p">[</span><span class="n">gi</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">iter</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_max_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_count</span> <span class="o">&gt;</span> <span class="n">MAX_COMPREHENSION_LENGTH</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">IterableTooLong</span><span class="p">(</span><span class="s2">&quot;Comprehension generates too many elements&quot;</span><span class="p">)</span>
+                <span class="n">recurse_targets</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">iff</span><span class="p">)</span> <span class="k">for</span> <span class="n">iff</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">ifs</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">generators</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">gi</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">do_generator</span><span class="p">(</span><span class="n">gi</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_return</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="n">to_return</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_return</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                            <span class="n">to_return</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">elt</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">do_generator</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">:</span> <span class="n">previous_name_evaller</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">to_return</span>
+
+
+<div class="viewcode-block" id="simple_eval">
+<a class="viewcode-back" href="../api/evennia.utils.utils.html#evennia.contrib.rpg.dice.dice.simple_eval">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">simple_eval</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">operators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simply evaluate an expresssion&quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">SimpleEval</span><span class="p">(</span><span class="n">operators</span><span class="o">=</span><span class="n">operators</span><span class="p">,</span> <span class="n">functions</span><span class="o">=</span><span class="n">functions</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">simpleeval</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

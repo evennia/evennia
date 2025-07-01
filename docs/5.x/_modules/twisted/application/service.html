@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.application.service &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.application.service</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.application.service</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.application.test.test_service -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Service architecture for Twisted.</span>
+
+<span class="sd">Services are arranged in a hierarchy. At the leafs of the hierarchy,</span>
+<span class="sd">the services which actually interact with the outside world are started.</span>
+<span class="sd">Services can be named or anonymous -- usually, they will be named if</span>
+<span class="sd">there is need to access them through the hierarchy (from a parent or</span>
+<span class="sd">a sibling).</span>
+
+<span class="sd">Maintainer: Moshe Zadka</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Attribute</span><span class="p">,</span> <span class="n">Interface</span><span class="p">,</span> <span class="n">implementer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.persisted</span><span class="w"> </span><span class="kn">import</span> <span class="n">sob</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">IPlugin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">components</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.reflect</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedAny</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IServiceMaker</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object which can be used to construct services in a flexible</span>
+<span class="sd">    way.</span>
+
+<span class="sd">    This interface should most often be implemented along with</span>
+<span class="sd">    L{twisted.plugin.IPlugin}, and will most often be used by the</span>
+<span class="sd">    &#39;twistd&#39; command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tapname</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+        <span class="s2">&quot;A short string naming this Twisted plugin, for example &#39;web&#39; or &quot;</span>
+        <span class="s2">&quot;&#39;pencil&#39;. This name will be used as the subcommand of &#39;twistd&#39;.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+        <span class="s2">&quot;A brief summary of the features provided by this &quot;</span>
+        <span class="s2">&quot;Twisted application plugin.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+        <span class="s2">&quot;A C</span><span class="si">{twisted.python.usage.Options}</span><span class="s2"> subclass defining the &quot;</span>
+        <span class="s2">&quot;configuration options for this application.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">makeService</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and return an object providing</span>
+<span class="sd">        L{twisted.application.service.IService}.</span>
+
+<span class="sd">        @param options: A mapping (typically a C{dict} or</span>
+<span class="sd">        L{twisted.python.usage.Options} instance) of configuration</span>
+<span class="sd">        options to desired configuration values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IPlugin</span><span class="p">,</span> <span class="n">IServiceMaker</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceMaker</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility class to simplify the definition of L{IServiceMaker} plugins.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">tapname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tapname</span> <span class="o">=</span> <span class="n">tapname</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">namedAny</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">Options</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">makeService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">namedAny</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">makeService</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IService</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A service.</span>
+
+<span class="sd">    Run start-up and shut-down code at the appropriate times.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span><span class="s2">&quot;A C</span><span class="si">{str}</span><span class="s2"> which is the name of the service or C</span><span class="si">{None}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">running</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span><span class="s2">&quot;A C</span><span class="si">{boolean}</span><span class="s2"> which indicates whether the service is running.&quot;</span><span class="p">)</span>
+
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span><span class="s2">&quot;An C</span><span class="si">{IServiceCollection}</span><span class="s2"> which is the parent or C</span><span class="si">{None}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setName</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the name of the service.</span>
+
+<span class="sd">        @type name: C{str}</span>
+<span class="sd">        @raise RuntimeError: Raised if the service already has a parent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setServiceParent</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the parent of the service.  This method is responsible for setting</span>
+<span class="sd">        the C{parent} attribute on this service (the child service).</span>
+
+<span class="sd">        @type parent: L{IServiceCollection}</span>
+<span class="sd">        @raise RuntimeError: Raised if the service already has a parent</span>
+<span class="sd">            or if the service has a name and the parent already has a child</span>
+<span class="sd">            by that name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">disownServiceParent</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this API to remove an L{IService} from an L{IServiceCollection}.</span>
+
+<span class="sd">        This method is used symmetrically with L{setServiceParent} in that it</span>
+<span class="sd">        sets the C{parent} attribute on the child.</span>
+
+<span class="sd">        @rtype: L{Deferred&lt;defer.Deferred&gt;}</span>
+<span class="sd">        @return: a L{Deferred&lt;defer.Deferred&gt;} which is triggered when the</span>
+<span class="sd">            service has finished shutting down. If shutting down is immediate,</span>
+<span class="sd">            a value can be returned (usually, L{None}).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startService</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopService</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the service.</span>
+
+<span class="sd">        @rtype: L{Deferred&lt;defer.Deferred&gt;}</span>
+<span class="sd">        @return: a L{Deferred&lt;defer.Deferred&gt;} which is triggered when the</span>
+<span class="sd">            service has finished shutting down. If shutting down is immediate,</span>
+<span class="sd">            a value can be returned (usually, L{None}).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">privilegedStartService</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do preparation work for starting the service.</span>
+
+<span class="sd">        Here things which should be done before changing directory,</span>
+<span class="sd">        root or shedding privileges are done.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Service">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IService</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for services.</span>
+
+<span class="sd">    Most services should inherit from this class. It handles the</span>
+<span class="sd">    book-keeping responsibilities of starting and stopping, as well</span>
+<span class="sd">    as not serializing this book-keeping information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">running</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;running&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">del</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;running&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">dict</span>
+
+<div class="viewcode-block" id="Service.setName">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.setName">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;cannot change name when parent exists&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Service.setServiceParent">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.setServiceParent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setServiceParent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disownServiceParent</span><span class="p">()</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">IServiceCollection</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">addService</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Service.disownServiceParent">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.disownServiceParent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disownServiceParent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">removeService</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="Service.privilegedStartService">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.privilegedStartService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Service.startService">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.startService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Service.stopService">
+<a class="viewcode-back" href="../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.Service.stopService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IServiceCollection</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collection of services.</span>
+
+<span class="sd">    Contain several services, and manage their start-up/shut-down.</span>
+<span class="sd">    Services can be accessed by name if they have a name, and it</span>
+<span class="sd">    is always possible to iterate over them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getServiceNamed</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the child service with a given name.</span>
+
+<span class="sd">        @type name: C{str}</span>
+<span class="sd">        @rtype: L{IService}</span>
+<span class="sd">        @raise KeyError: Raised if the service has no child with the</span>
+<span class="sd">            given name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an iterator over all child services.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addService</span><span class="p">(</span><span class="n">service</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a child service.</span>
+
+<span class="sd">        Only implementations of L{IService.setServiceParent} should use this</span>
+<span class="sd">        method.</span>
+
+<span class="sd">        @type service: L{IService}</span>
+<span class="sd">        @raise RuntimeError: Raised if the service has a child with</span>
+<span class="sd">            the given name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeService</span><span class="p">(</span><span class="n">service</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a child service.</span>
+
+<span class="sd">        Only implementations of L{IService.disownServiceParent} should</span>
+<span class="sd">        use this method.</span>
+
+<span class="sd">        @type service: L{IService}</span>
+<span class="sd">        @raise ValueError: Raised if the given service is not a child.</span>
+<span class="sd">        @rtype: L{Deferred&lt;defer.Deferred&gt;}</span>
+<span class="sd">        @return: a L{Deferred&lt;defer.Deferred&gt;} which is triggered when the</span>
+<span class="sd">            service has finished shutting down. If shutting down is immediate,</span>
+<span class="sd">            a value can be returned (usually, L{None}).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="MultiService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IServiceCollection</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Straightforward Service Container.</span>
+
+<span class="sd">    Hold a collection of services, and manage them in a simplistic</span>
+<span class="sd">    way. No service will wait for another, but this object itself</span>
+<span class="sd">    will not finish shutting down until all of its child services</span>
+<span class="sd">    will finish.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MultiService.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namedServices</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="MultiService.privilegedStartService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.privilegedStartService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Service</span><span class="o">.</span><span class="n">privilegedStartService</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">privilegedStartService</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MultiService.startService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.startService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Service</span><span class="o">.</span><span class="n">startService</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MultiService.stopService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.stopService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Service</span><span class="o">.</span><span class="n">stopService</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">services</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">defer</span><span class="o">.</span><span class="n">maybeDeferred</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">DeferredList</span><span class="p">(</span><span class="n">l</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MultiService.getServiceNamed">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.getServiceNamed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getServiceNamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namedServices</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiService.addService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.addService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addService</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namedServices</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot have two services with same name&quot;</span> <span class="s2">&quot; &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namedServices</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="c1"># It may be too late for that, but we will do our best</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">privilegedStartService</span><span class="p">()</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MultiService.removeService">
+<a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.game_index_client.service.MultiService.removeService">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeService</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">namedServices</span><span class="p">[</span><span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="c1"># Returning this so as not to lose information from the</span>
+            <span class="c1"># MultiService.stopService deferred.</span>
+            <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IProcess</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process running parameters.</span>
+
+<span class="sd">    Represents parameters for how processes should be run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">processName</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A C{str} giving the name the process should have in ps (or L{None}</span>
+<span class="sd">        to leave the name alone).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">uid</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An C{int} giving the user id as which the process should run (or</span>
+<span class="sd">        L{None} to leave the UID alone).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">gid</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An C{int} giving the group id as which the process should run (or</span>
+<span class="sd">        L{None} to leave the GID alone).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IProcess</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process running parameters.</span>
+
+<span class="sd">    Sets up uid/gid in the constructor, and has a default</span>
+<span class="sd">    of L{None} as C{processName}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">processName</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set uid and gid.</span>
+
+<span class="sd">        @param uid: The user ID as whom to execute the process.  If</span>
+<span class="sd">            this is L{None}, no attempt will be made to change the UID.</span>
+
+<span class="sd">        @param gid: The group ID as whom to execute the process.  If</span>
+<span class="sd">            this is L{None}, no attempt will be made to change the GID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">gid</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">Application</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a compound class.</span>
+
+<span class="sd">    Return an object supporting the L{IService}, L{IServiceCollection},</span>
+<span class="sd">    L{IProcess} and L{sob.IPersistable} interfaces, with the given</span>
+<span class="sd">    parameters. Always access the return value by explicit casting to</span>
+<span class="sd">    one of the interfaces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">Componentized</span><span class="p">()</span>
+    <span class="n">availableComponents</span> <span class="o">=</span> <span class="p">[</span><span class="n">MultiService</span><span class="p">(),</span> <span class="n">Process</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="p">),</span> <span class="n">sob</span><span class="o">.</span><span class="n">Persistent</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">availableComponents</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">addComponent</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">ignoreClass</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">IService</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">loadApplication</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">passphrase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load Application from a given file.</span>
+
+<span class="sd">    The serialization format it was saved in should be given as</span>
+<span class="sd">    C{kind}, and is one of C{pickle}, C{source}, C{xml} or C{python}. If</span>
+<span class="sd">    C{passphrase} is given, the application was encrypted with the</span>
+<span class="sd">    given passphrase.</span>
+
+<span class="sd">    @type filename: C{str}</span>
+<span class="sd">    @type kind: C{str}</span>
+<span class="sd">    @type passphrase: C{str}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;python&quot;</span><span class="p">:</span>
+        <span class="n">application</span> <span class="o">=</span> <span class="n">sob</span><span class="o">.</span><span class="n">loadValueFromFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;application&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">application</span> <span class="o">=</span> <span class="n">sob</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">application</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;IServiceMaker&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IService&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Service&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IServiceCollection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MultiService&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IProcess&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Process&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Application&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;loadApplication&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.application.service</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

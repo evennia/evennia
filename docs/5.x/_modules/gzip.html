@@ -1,0 +1,839 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gzip &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">gzip</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gzip</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions that read and write gzipped files.</span>
+
+<span class="sd">The user of the file doesn&#39;t have to worry about the compression,</span>
+<span class="sd">but random access is not allowed.&quot;&quot;&quot;</span>
+
+<span class="c1"># based on Andrew Kuchling&#39;s minigzip.py distributed with the zlib module</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">_compression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zlib</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;BadGzipFile&quot;</span><span class="p">,</span> <span class="s2">&quot;GzipFile&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;compress&quot;</span><span class="p">,</span> <span class="s2">&quot;decompress&quot;</span><span class="p">]</span>
+
+<span class="n">FTEXT</span><span class="p">,</span> <span class="n">FHCRC</span><span class="p">,</span> <span class="n">FEXTRA</span><span class="p">,</span> <span class="n">FNAME</span><span class="p">,</span> <span class="n">FCOMMENT</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span>
+
+<span class="n">READ</span> <span class="o">=</span> <span class="s1">&#39;rb&#39;</span>
+<span class="n">WRITE</span> <span class="o">=</span> <span class="s1">&#39;wb&#39;</span>
+
+<span class="n">_COMPRESS_LEVEL_FAST</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">_COMPRESS_LEVEL_TRADEOFF</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">_COMPRESS_LEVEL_BEST</span> <span class="o">=</span> <span class="mi">9</span>
+
+<span class="n">READ_BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">1024</span>
+<span class="n">_WRITE_BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">io</span><span class="o">.</span><span class="n">DEFAULT_BUFFER_SIZE</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="n">_COMPRESS_LEVEL_BEST</span><span class="p">,</span>
+         <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a gzip-compressed file in binary or text mode.</span>
+
+<span class="sd">    The filename argument can be an actual filename (a str or bytes object), or</span>
+<span class="sd">    an existing file object to read from or write to.</span>
+
+<span class="sd">    The mode argument can be &quot;r&quot;, &quot;rb&quot;, &quot;w&quot;, &quot;wb&quot;, &quot;x&quot;, &quot;xb&quot;, &quot;a&quot; or &quot;ab&quot; for</span>
+<span class="sd">    binary mode, or &quot;rt&quot;, &quot;wt&quot;, &quot;xt&quot; or &quot;at&quot; for text mode. The default mode is</span>
+<span class="sd">    &quot;rb&quot;, and the default compresslevel is 9.</span>
+
+<span class="sd">    For binary mode, this function is equivalent to the GzipFile constructor:</span>
+<span class="sd">    GzipFile(filename, mode, compresslevel). In this case, the encoding, errors</span>
+<span class="sd">    and newline arguments must not be provided.</span>
+
+<span class="sd">    For text mode, a GzipFile object is created, and wrapped in an</span>
+<span class="sd">    io.TextIOWrapper instance with the specified encoding, error handling</span>
+<span class="sd">    behavior, and line ending(s).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid mode: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mode</span><span class="p">,))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument &#39;encoding&#39; not supported in binary mode&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument &#39;errors&#39; not supported in binary mode&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument &#39;newline&#39; not supported in binary mode&quot;</span><span class="p">)</span>
+
+    <span class="n">gz_mode</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)):</span>
+        <span class="n">binary_file</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gz_mode</span><span class="p">,</span> <span class="n">compresslevel</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">):</span>
+        <span class="n">binary_file</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">gz_mode</span><span class="p">,</span> <span class="n">compresslevel</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;filename must be a str or bytes object, or a file&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">text_encoding</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="n">binary_file</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">newline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">binary_file</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">write32u</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="c1"># The L format writes the bit pattern correctly whether signed</span>
+    <span class="c1"># or unsigned.</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_PaddedFile</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimal read-only file object that prepends a string to the contents</span>
+<span class="sd">    of an actual file. Shouldn&#39;t be used outside of gzip.py, as it lacks</span>
+<span class="sd">    essential functionality.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">prepend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">+</span> <span class="n">size</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
+            <span class="n">read</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">+=</span> <span class="n">size</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">read</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">read</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">read</span><span class="p">:]</span> <span class="o">+</span> \
+                   <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">+</span><span class="n">read</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">prepend</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Assume data was read since the last prepend() call</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">off</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">seekable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Allows fast-forwarding even in unseekable streams</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BadGzipFile</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised in some cases for invalid gzip files.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_WriteBufferStream</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">RawIOBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimal object to pass WriteBuffer flushes into GzipFile&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gzip_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gzip_file</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">gzip_file</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">gzip_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_file</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">gzip_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;lost gzip_file&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gzip_file</span><span class="o">.</span><span class="n">_write_raw</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">seekable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="GzipFile">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GzipFile</span><span class="p">(</span><span class="n">_compression</span><span class="o">.</span><span class="n">BaseStream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The GzipFile class simulates most of the methods of a file object with</span>
+<span class="sd">    the exception of the truncate() method.</span>
+
+<span class="sd">    This class only supports opening files in binary mode. If you need to open a</span>
+<span class="sd">    compressed file in text mode, use the gzip.open() function.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Overridden with internal file object to be closed, if only a filename</span>
+    <span class="c1"># is passed in</span>
+    <span class="n">myfileobj</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GzipFile.__init__">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">compresslevel</span><span class="o">=</span><span class="n">_COMPRESS_LEVEL_BEST</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for the GzipFile class.</span>
+
+<span class="sd">        At least one of fileobj and filename must be given a</span>
+<span class="sd">        non-trivial value.</span>
+
+<span class="sd">        The new class instance is based on fileobj, which can be a regular</span>
+<span class="sd">        file, an io.BytesIO object, or any other object which simulates a file.</span>
+<span class="sd">        It defaults to None, in which case filename is opened to provide</span>
+<span class="sd">        a file object.</span>
+
+<span class="sd">        When fileobj is not None, the filename argument is only used to be</span>
+<span class="sd">        included in the gzip file header, which may include the original</span>
+<span class="sd">        filename of the uncompressed file.  It defaults to the filename of</span>
+<span class="sd">        fileobj, if discernible; otherwise, it defaults to the empty string,</span>
+<span class="sd">        and in this case the original filename is not included in the header.</span>
+
+<span class="sd">        The mode argument can be any of &#39;r&#39;, &#39;rb&#39;, &#39;a&#39;, &#39;ab&#39;, &#39;w&#39;, &#39;wb&#39;, &#39;x&#39;, or</span>
+<span class="sd">        &#39;xb&#39; depending on whether the file will be read or written.  The default</span>
+<span class="sd">        is the mode of fileobj if discernible; otherwise, the default is &#39;rb&#39;.</span>
+<span class="sd">        A mode of &#39;r&#39; is equivalent to one of &#39;rb&#39;, and similarly for &#39;w&#39; and</span>
+<span class="sd">        &#39;wb&#39;, &#39;a&#39; and &#39;ab&#39;, and &#39;x&#39; and &#39;xb&#39;.</span>
+
+<span class="sd">        The compresslevel argument is an integer from 0 to 9 controlling the</span>
+<span class="sd">        level of compression; 1 is fastest and produces the least compression,</span>
+<span class="sd">        and 9 is slowest and produces the most compression. 0 is no compression</span>
+<span class="sd">        at all. The default is 9.</span>
+
+<span class="sd">        The optional mtime argument is the timestamp requested by gzip. The time</span>
+<span class="sd">        is in Unix format, i.e., seconds since 00:00:00 UTC, January 1, 1970.</span>
+<span class="sd">        If mtime is omitted or None, the current time is used. Use mtime = 0</span>
+<span class="sd">        to generate a compressed stream that does not depend on creation time.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">or</span> <span class="s1">&#39;U&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid mode: </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s1">&#39;b&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">+=</span> <span class="s1">&#39;b&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fileobj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fileobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myfileobj</span> <span class="o">=</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">or</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fileobj</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">origmode</span> <span class="o">=</span> <span class="n">mode</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fileobj</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+
+            <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">READ</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">_GzipReader</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">filename</span>
+
+            <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">origmode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;GzipFile was opened for writing, but this will &quot;</span>
+                        <span class="s2">&quot;change in future Python releases.  &quot;</span>
+                        <span class="s2">&quot;Specify the mode argument for opening it for writing.&quot;</span><span class="p">,</span>
+                        <span class="ne">FutureWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">WRITE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_write</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compress</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compressobj</span><span class="p">(</span><span class="n">compresslevel</span><span class="p">,</span>
+                                                 <span class="n">zlib</span><span class="o">.</span><span class="n">DEFLATED</span><span class="p">,</span>
+                                                 <span class="o">-</span><span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">,</span>
+                                                 <span class="n">zlib</span><span class="o">.</span><span class="n">DEF_MEM_LEVEL</span><span class="p">,</span>
+                                                 <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_mtime</span> <span class="o">=</span> <span class="n">mtime</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span> <span class="o">=</span> <span class="n">_WRITE_BUFFER_SIZE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BufferedWriter</span><span class="p">(</span><span class="n">_WriteBufferStream</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+                                                 <span class="n">buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid mode: </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span> <span class="o">=</span> <span class="n">fileobj</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">WRITE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_gzip_header</span><span class="p">(</span><span class="n">compresslevel</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># Avoid a ResourceWarning if the write fails,</span>
+            <span class="c1"># eg read-only file or KeyboardInterrupt</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>
+            <span class="k">raise</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Last modification time read from stream, or None&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">_last_mtime</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;gzip &#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;&gt;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crc</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writebuf</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bufsize</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Current file offset for seek(), tell(), etc</span>
+
+<div class="viewcode-block" id="GzipFile.tell">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.tell">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_gzip_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compresslevel</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\037\213</span><span class="s1">&#39;</span><span class="p">)</span>             <span class="c1"># magic header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\010</span><span class="s1">&#39;</span><span class="p">)</span>                 <span class="c1"># compression method</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># RFC 1952 requires the FNAME field to be Latin-1. Do not</span>
+            <span class="c1"># include filenames that cannot be represented that way.</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">UnicodeEncodeError</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="n">FNAME</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">))</span>
+        <span class="n">mtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_mtime</span>
+        <span class="k">if</span> <span class="n">mtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">write32u</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mtime</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">compresslevel</span> <span class="o">==</span> <span class="n">_COMPRESS_LEVEL_BEST</span><span class="p">:</span>
+            <span class="n">xfl</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\002</span><span class="s1">&#39;</span>
+        <span class="k">elif</span> <span class="n">compresslevel</span> <span class="o">==</span> <span class="n">_COMPRESS_LEVEL_FAST</span><span class="p">:</span>
+            <span class="n">xfl</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\004</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xfl</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\000</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xfl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\377</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\000</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GzipFile.write">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.write">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">WRITE</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EBADF</span><span class="p">,</span> <span class="s2">&quot;write() on read-only GzipFile object&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;write() on closed GzipFile object&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Called by our self._buffer underlying WriteBufferStream.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># accept any data that supports the buffer protocol</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nbytes</span>
+
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compress</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="n">length</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crc</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">length</span>
+
+        <span class="k">return</span> <span class="n">length</span>
+
+<div class="viewcode-block" id="GzipFile.read">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">READ</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EBADF</span><span class="p">,</span> <span class="s2">&quot;read() on write-only GzipFile object&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.read1">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.read1">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements BufferedIOBase.read1()</span>
+
+<span class="sd">        Reads up to a buffer&#39;s worth of data if size is negative.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">READ</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EBADF</span><span class="p">,</span> <span class="s2">&quot;read1() on write-only GzipFile object&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">DEFAULT_BUFFER_SIZE</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">read1</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.peek">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.peek">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">peek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">READ</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EBADF</span><span class="p">,</span> <span class="s2">&quot;peek() on write-only GzipFile object&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">peek</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span> <span class="ow">is</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GzipFile.close">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span>
+        <span class="k">if</span> <span class="n">fileobj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">WRITE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compress</span><span class="o">.</span><span class="n">flush</span><span class="p">())</span>
+                <span class="n">write32u</span><span class="p">(</span><span class="n">fileobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crc</span><span class="p">)</span>
+                <span class="c1"># self.size may exceed 2 GiB, or even 4 GiB</span>
+                <span class="n">write32u</span><span class="p">(</span><span class="n">fileobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">READ</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">myfileobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myfileobj</span>
+        <span class="k">if</span> <span class="n">myfileobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myfileobj</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">myfileobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GzipFile.flush">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.flush">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zlib_mode</span><span class="o">=</span><span class="n">zlib</span><span class="o">.</span><span class="n">Z_SYNC_FLUSH</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">WRITE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="c1"># Ensure the compressor&#39;s buffer is flushed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compress</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">zlib_mode</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.fileno">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.fileno">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invoke the underlying file object&#39;s fileno() method.</span>
+
+<span class="sd">        This will raise AttributeError if the underlying file object</span>
+<span class="sd">        doesn&#39;t support fileno().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.rewind">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.rewind">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rewind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return the uncompressed stream file position indicator to the</span>
+<span class="sd">        beginning of the file&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">READ</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t rewind in write mode&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.readable">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.readable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">readable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">READ</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.writable">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.writable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">WRITE</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.seekable">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.seekable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seekable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.seek">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.seek">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">whence</span><span class="o">=</span><span class="n">io</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">WRITE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+            <span class="c1"># Flush buffer to ensure validity of self.offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">whence</span> <span class="o">!=</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">whence</span> <span class="o">==</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_CUR</span><span class="p">:</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">offset</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Seek from end not supported&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Negative seek in write mode&#39;</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">READ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">whence</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span></div>
+
+
+<div class="viewcode-block" id="GzipFile.readline">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.awsstorage.aws_s3_cdn.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.GzipFile.readline">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_not_closed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_exact</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Read exactly *n* bytes from `fp`</span>
+
+<span class="sd">    This method is required because fp may be unbuffered,</span>
+<span class="sd">    i.e. return short reads.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">b</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Compressed file ended before the &quot;</span>
+                           <span class="s2">&quot;end-of-stream marker was reached&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">+=</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_gzip_header</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Read a gzip header from `fp` and progress to the end of the header.</span>
+
+<span class="sd">    Returns last mtime if header was present or None otherwise.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">magic</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">magic</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\037\213</span><span class="s1">&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s1">&#39;Not a gzipped file (</span><span class="si">%r</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">magic</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">last_mtime</span><span class="p">)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;BBIxx&quot;</span><span class="p">,</span> <span class="n">_read_exact</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s1">&#39;Unknown compression method&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">FEXTRA</span><span class="p">:</span>
+        <span class="c1"># Read &amp; discard the extra field, if present</span>
+        <span class="n">extra_len</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="n">_read_exact</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">_read_exact</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">extra_len</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">FNAME</span><span class="p">:</span>
+        <span class="c1"># Read and discard a null-terminated string containing the filename</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span> <span class="ow">or</span> <span class="n">s</span><span class="o">==</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\000</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">FCOMMENT</span><span class="p">:</span>
+        <span class="c1"># Read and discard a null-terminated string containing a comment</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span> <span class="ow">or</span> <span class="n">s</span><span class="o">==</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\000</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">FHCRC</span><span class="p">:</span>
+        <span class="n">_read_exact</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>     <span class="c1"># Read &amp; discard the 16-bit header CRC</span>
+    <span class="k">return</span> <span class="n">last_mtime</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_GzipReader</span><span class="p">(</span><span class="n">_compression</span><span class="o">.</span><span class="n">DecompressReader</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_PaddedFile</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span> <span class="n">zlib</span><span class="o">.</span><span class="n">_ZlibDecompressor</span><span class="p">,</span>
+                         <span class="n">wbits</span><span class="o">=-</span><span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">)</span>
+        <span class="c1"># Set flag indicating start of a new member</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_new_member</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mtime</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_crc</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stream_size</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Decompressed size of unconcatenated stream</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_gzip_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">last_mtime</span> <span class="o">=</span> <span class="n">_read_gzip_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">last_mtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mtime</span> <span class="o">=</span> <span class="n">last_mtime</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readall</span><span class="p">()</span>
+        <span class="c1"># size=0 is special because decompress(max_length=0) is not supported</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># For certain input data, a single</span>
+        <span class="c1"># call to decompress() may not return</span>
+        <span class="c1"># any data. In this case, retry until we get some data or reach EOF.</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">eof</span><span class="p">:</span>
+                <span class="c1"># Ending case: we&#39;ve come to the end of a member in the file,</span>
+                <span class="c1"># so finish up this member, and read a new gzip header.</span>
+                <span class="c1"># Check the CRC and file size, and set the flag so we read</span>
+                <span class="c1"># a new member</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_eof</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_new_member</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomp_factory</span><span class="p">(</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_decomp_args</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_member</span><span class="p">:</span>
+                <span class="c1"># If the _new_member flag is set, we have to</span>
+                <span class="c1"># jump to the next member, if there is one.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_read</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_gzip_header</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span>
+                    <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_new_member</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Read a chunk of data from the file</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">needs_input</span><span class="p">:</span>
+                <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">READ_BUFFER_SIZE</span><span class="p">)</span>
+                <span class="n">uncompress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">uncompress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">unused_data</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="c1"># Prepend the already read bytes to the fileobj so they can</span>
+                <span class="c1"># be seen by _read_eof() and _read_gzip_header()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decompressor</span><span class="o">.</span><span class="n">unused_data</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">uncompress</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">buf</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Compressed file ended before the &quot;</span>
+                               <span class="s2">&quot;end-of-stream marker was reached&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_crc</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="n">uncompress</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stream_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">uncompress</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">uncompress</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uncompress</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_eof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We&#39;ve read to the end of the file</span>
+        <span class="c1"># We check that the computed CRC and size of the</span>
+        <span class="c1"># uncompressed data matches the stored values.  Note that the size</span>
+        <span class="c1"># stored is the true file size mod 2**32.</span>
+        <span class="n">crc32</span><span class="p">,</span> <span class="n">isize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;II&quot;</span><span class="p">,</span> <span class="n">_read_exact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">crc32</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s2">&quot;CRC check failed </span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">crc32</span><span class="p">),</span>
+                                                             <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_crc</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">isize</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream_size</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s2">&quot;Incorrect length of data produced&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Gzip files can be padded with zeroes and still have archives.</span>
+        <span class="c1"># Consume all zero bytes and set the file position to the first</span>
+        <span class="c1"># non-zero byte. See http://www.gzip.org/#faq8</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+        <span class="k">while</span> <span class="n">c</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_rewind</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_new_member</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compress</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="n">_COMPRESS_LEVEL_BEST</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compress data in one shot and return the compressed string.</span>
+
+<span class="sd">    compresslevel sets the compression level in range of 0-9.</span>
+<span class="sd">    mtime can be used to set the modification time. The modification time is</span>
+<span class="sd">    set to the current time by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Wbits=31 automatically includes a gzip header and trailer.</span>
+    <span class="n">gzip_data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">compresslevel</span><span class="p">,</span> <span class="n">wbits</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1"># Reuse gzip header created by zlib, replace mtime and OS byte for</span>
+    <span class="c1"># consistency.</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;4sLBB&quot;</span><span class="p">,</span> <span class="n">gzip_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mtime</span><span class="p">),</span> <span class="n">gzip_data</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="mi">255</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">header</span> <span class="o">+</span> <span class="n">gzip_data</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decompress a gzip compressed string in one shot.</span>
+<span class="sd">    Return the decompressed string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">decompressed_members</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_read_gzip_header</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decompressed_members</span><span class="p">)</span>
+        <span class="c1"># Use a zlib raw deflate compressor</span>
+        <span class="n">do</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompressobj</span><span class="p">(</span><span class="n">wbits</span><span class="o">=-</span><span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">)</span>
+        <span class="c1"># Read all the data except the header</span>
+        <span class="n">decompressed</span> <span class="o">=</span> <span class="n">do</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">():])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">do</span><span class="o">.</span><span class="n">eof</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">do</span><span class="o">.</span><span class="n">unused_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Compressed file ended before the end-of-stream &quot;</span>
+                           <span class="s2">&quot;marker was reached&quot;</span><span class="p">)</span>
+        <span class="n">crc</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;II&quot;</span><span class="p">,</span> <span class="n">do</span><span class="o">.</span><span class="n">unused_data</span><span class="p">[:</span><span class="mi">8</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">crc</span> <span class="o">!=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="n">decompressed</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s2">&quot;CRC check failed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">decompressed</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">BadGzipFile</span><span class="p">(</span><span class="s2">&quot;Incorrect length of data produced&quot;</span><span class="p">)</span>
+        <span class="n">decompressed_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decompressed</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">do</span><span class="o">.</span><span class="n">unused_data</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">argparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentParser</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span>
+        <span class="s2">&quot;A simple command line interface for the gzip module: act like gzip, &quot;</span>
+        <span class="s2">&quot;but do not delete the input file.&quot;</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--fast&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;compress faster&#39;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--best&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;compress better&#39;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--decompress&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;act like gunzip instead of gzip&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">compresslevel</span> <span class="o">=</span> <span class="n">_COMPRESS_LEVEL_TRADEOFF</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">fast</span><span class="p">:</span>
+        <span class="n">compresslevel</span> <span class="o">=</span> <span class="n">_COMPRESS_LEVEL_FAST</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">best</span><span class="p">:</span>
+        <span class="n">compresslevel</span> <span class="o">=</span> <span class="n">_COMPRESS_LEVEL_BEST</span>
+
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">decompress</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">buffer</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;.gz&quot;</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filename doesn&#39;t end in .gz: </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">arg</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">buffer</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span>
+                             <span class="n">compresslevel</span><span class="o">=</span><span class="n">compresslevel</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">arg</span> <span class="o">+</span> <span class="s2">&quot;.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">READ_BUFFER_SIZE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">gzip</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

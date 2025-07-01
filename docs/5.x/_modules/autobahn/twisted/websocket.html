@@ -1,0 +1,990 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>autobahn.twisted.websocket &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">autobahn.twisted.websocket</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for autobahn.twisted.websocket</h1><div class="highlight"><pre>
+<span></span><span class="c1">###############################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># The MIT License (MIT)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) Crossbar.io Technologies GmbH</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in</span>
+<span class="c1"># all copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="c1"># THE SOFTWARE.</span>
+<span class="c1">#</span>
+<span class="c1">###############################################################################</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">base64</span><span class="w"> </span><span class="kn">import</span> <span class="n">b64encode</span><span class="p">,</span> <span class="n">b64decode</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">implementer</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">txaio</span>
+<span class="n">txaio</span><span class="o">.</span><span class="n">use_twisted</span><span class="p">()</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">twisted.internet.protocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">endpoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">ITransport</span><span class="p">,</span> <span class="n">ISSLTransport</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionDone</span><span class="p">,</span> <span class="n">ConnectionAborted</span><span class="p">,</span> \
+    <span class="n">ConnectionLost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">public</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_is_tls_error</span><span class="p">,</span> <span class="n">_maybe_tls_reason</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.wamp</span><span class="w"> </span><span class="kn">import</span> <span class="n">websocket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.websocket.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionRequest</span><span class="p">,</span> <span class="n">ConnectionResponse</span><span class="p">,</span> <span class="n">ConnectionDeny</span><span class="p">,</span> \
+    <span class="n">TransportDetails</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.websocket</span><span class="w"> </span><span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.websocket.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">IWebSocketClientAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.twisted.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">peer2str</span><span class="p">,</span> <span class="n">transport_channel_id</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">autobahn.websocket.compress</span><span class="w"> </span><span class="kn">import</span> <span class="n">PerMessageDeflateOffer</span><span class="p">,</span> \
+    <span class="n">PerMessageDeflateOfferAccept</span><span class="p">,</span> \
+    <span class="n">PerMessageDeflateResponse</span><span class="p">,</span> \
+    <span class="n">PerMessageDeflateResponseAccept</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;create_client_agent&#39;</span><span class="p">,</span>
+
+    <span class="s1">&#39;WebSocketAdapterProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WebSocketServerProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WebSocketClientProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WebSocketAdapterFactory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WebSocketServerFactory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WebSocketClientFactory&#39;</span><span class="p">,</span>
+
+    <span class="s1">&#39;WrappingWebSocketAdapter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WrappingWebSocketServerProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WrappingWebSocketClientProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WrappingWebSocketServerFactory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WrappingWebSocketClientFactory&#39;</span><span class="p">,</span>
+
+    <span class="s1">&#39;listenWS&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;connectWS&#39;</span><span class="p">,</span>
+
+    <span class="s1">&#39;WampWebSocketServerProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WampWebSocketServerFactory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WampWebSocketClientProtocol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WampWebSocketClientFactory&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_client_agent</span><span class="p">(</span><span class="n">reactor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: an instance implementing IWebSocketClientAgent</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_TwistedWebSocketClientAgent</span><span class="p">(</span><span class="n">reactor</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_transport_config</span><span class="p">(</span><span class="n">transport_config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    raises a ValueError if `transport_config` is invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># XXX move me to &quot;autobahn.websocket.util&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transport_config</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;transport_config&#39; must be a string, found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">transport_config</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="c1"># XXX also accept everything Crossbar has in client transport configs? e.g like:</span>
+    <span class="c1"># { &quot;type&quot;: &quot;websocket&quot;, &quot;endpoint&quot;: {&quot;type&quot;: &quot;tcp&quot;, &quot;host&quot;: &quot;example.com&quot;, ...}}</span>
+    <span class="c1"># XXX what about TLS options? (the above point would address that too)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">transport_config</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ws://&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+       <span class="ow">not</span> <span class="n">transport_config</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;wss://&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;transport_config&#39; must start with &#39;ws://&#39; or &#39;wss://&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_client_options</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    raises a ValueError if `options` is invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># XXX move me to &quot;autobahn.websocket.util&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;options&#39; must be a dict&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># anything that WebSocketClientFactory accepts (at least)</span>
+    <span class="n">valid_keys</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;origin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;protocols&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;useragent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;headers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;proxy&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">actual_k</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">actual_k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_keys</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;options&#39; may not contain &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">actual_k</span><span class="p">)</span>
+            <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_endpoint_from_config</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">transport_config</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+    <span class="c1"># XXX might want some Crossbar code here? e.g. if we allow</span>
+    <span class="c1"># &quot;transport_config&quot; to be a dict etc.</span>
+
+    <span class="c1"># ... passing in the Factory is weird, but that&#39;s what parses all</span>
+    <span class="c1"># the options and the URL currently</span>
+
+    <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">isSecure</span><span class="p">:</span>
+        <span class="c1"># create default client SSL context factory when none given</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span>
+        <span class="n">context_factory</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">optionsForClientTLS</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">contextFactory</span> <span class="o">=</span> <span class="n">context_factory</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">HostnameEndpoint</span><span class="p">(</span>
+            <span class="n">reactor</span><span class="p">,</span>
+            <span class="n">factory</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+            <span class="n">factory</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
+            <span class="c1"># timeout,  option?</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">isSecure</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">SSL4ClientEndpoint</span><span class="p">(</span>
+                <span class="n">reactor</span><span class="p">,</span>
+                <span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">context_factory</span><span class="p">,</span>
+                <span class="c1"># timeout,  option?</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">HostnameEndpoint</span><span class="p">(</span>  <span class="c1"># XXX right? not TCP4ClientEndpoint</span>
+                <span class="n">reactor</span><span class="p">,</span>
+                <span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="c1"># timeout,  option?</span>
+                <span class="c1"># attemptDelay,  option?</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">endpoint</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_TwistedWebSocketClientAgent</span><span class="p">(</span><span class="n">IWebSocketClientAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This agent creates connections using Twisted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transport_config</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">protocol_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a new connection.</span>
+
+<span class="sd">        :param dict transport_config: valid transport configuration</span>
+
+<span class="sd">        :param dict options: additional options for the factory</span>
+
+<span class="sd">        :param protocol_class: a callable that returns an instance of</span>
+<span class="sd">            the protocol (WebSocketClientProtocol if the default None</span>
+<span class="sd">            is passed in)</span>
+
+<span class="sd">        :returns: a Deferred that fires with an instance of</span>
+<span class="sd">            `protocol_class` (or WebSocketClientProtocol by default)</span>
+<span class="sd">            that has successfully shaken hands (completed the</span>
+<span class="sd">            handshake).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_transport_config</span><span class="p">(</span><span class="n">transport_config</span><span class="p">)</span>
+        <span class="n">check_client_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="n">factory</span> <span class="o">=</span> <span class="n">WebSocketClientFactory</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">transport_config</span><span class="p">,</span>
+            <span class="n">reactor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">options</span>
+        <span class="p">)</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">WebSocketClientProtocol</span> <span class="k">if</span> <span class="n">protocol_class</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">protocol_class</span>
+        <span class="c1"># XXX might want &quot;contextFactory&quot; for TLS ...? (or e.g. CA etc options?)</span>
+
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">_endpoint_from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">transport_config</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+        <span class="n">rtn_d</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+        <span class="n">proto_d</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">failed</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">rtn_d</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">got_proto</span><span class="p">(</span><span class="n">proto</span><span class="p">):</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">handshake_completed</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                <span class="n">rtn_d</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">arg</span>
+            <span class="n">proto</span><span class="o">.</span><span class="n">is_open</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="n">handshake_completed</span><span class="p">,</span> <span class="n">failed</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">proto</span>
+        <span class="n">proto_d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="n">got_proto</span><span class="p">,</span> <span class="n">failed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rtn_d</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketAdapterProtocol</span><span class="p">(</span><span class="n">twisted</span><span class="o">.</span><span class="n">internet</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adapter class for Twisted WebSocket client and server protocols.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">txaio</span><span class="o">.</span><span class="n">make_logger</span><span class="p">()</span>
+
+    <span class="n">peer</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">peer_transport</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># the peer we are connected to</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="n">peer2str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">getPeer</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># ProcessProtocols lack getPeer()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="s1">&#39;process:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peer_transport</span> <span class="o">=</span> <span class="s1">&#39;websocket&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectionMade</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Connection made to </span><span class="si">{peer}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
+
+        <span class="c1"># Set &quot;Nagle&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">setTcpNoDelay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tcpNoDelay</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>  <span class="c1"># don&#39;t touch this! does not work: AttributeError, OSError</span>
+            <span class="c1"># eg Unix Domain sockets throw Errno 22 on this</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ConnectionDone</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connection to/from </span><span class="si">{peer}</span><span class="s2"> was closed cleanly&quot;</span><span class="p">,</span>
+                           <span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">_is_tls_error</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_maybe_tls_reason</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ConnectionAborted</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connection to/from </span><span class="si">{peer}</span><span class="s2"> was aborted locally&quot;</span><span class="p">,</span>
+                           <span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ConnectionLost</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">message</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Connection to/from </span><span class="si">{peer}</span><span class="s2"> was lost in a non-clean fashion: </span><span class="si">{message}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># at least: FileDescriptorOverrun, ConnectionFdescWentAway - but maybe others as well?</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connection to/from </span><span class="si">{peer}</span><span class="s2"> lost (</span><span class="si">{error_type}</span><span class="s2">): </span><span class="si">{error}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                           <span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectionLost</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataReceived</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_closeConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">abort</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="s1">&#39;abortConnection&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">abortConnection</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># e.g. ProcessProtocol lacks abortConnection()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onOpen</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageBegin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageBegin</span><span class="p">(</span><span class="n">isBinary</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageFrameBegin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageFrameBegin</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageFrameData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageFrameData</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageFrameEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageFrameEnd</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageFrame</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessageEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessageEnd</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onMessage</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onPing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onPing</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onPong</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onPong</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onClose</span><span class="p">(</span><span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">registerProducer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">producer</span><span class="p">,</span> <span class="n">streaming</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a Twisted producer with this protocol.</span>
+
+<span class="sd">        :param producer: A Twisted push or pull producer.</span>
+<span class="sd">        :type producer: object</span>
+<span class="sd">        :param streaming: Producer type.</span>
+<span class="sd">        :type streaming: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">registerProducer</span><span class="p">(</span><span class="n">producer</span><span class="p">,</span> <span class="n">streaming</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregisterProducer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unregister Twisted producer with this protocol.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">unregisterProducer</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="WebSocketServerProtocol">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.webclient.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketServerProtocol">[docs]</a>
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketServerProtocol</span><span class="p">(</span><span class="n">WebSocketAdapterProtocol</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketServerProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for Twisted-based WebSocket server protocols.</span>
+
+<span class="sd">    Implements :class:`autobahn.websocket.interfaces.IWebSocketChannel`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">txaio</span><span class="o">.</span><span class="n">make_logger</span><span class="p">()</span>
+
+<div class="viewcode-block" id="WebSocketServerProtocol.get_channel_id">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.webclient.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketServerProtocol.get_channel_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_id_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements :func:`autobahn.wamp.interfaces.ITransport.get_channel_id`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">transport_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">channel_id_type</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WebSocketClientProtocol">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketClientProtocol">[docs]</a>
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketClientProtocol</span><span class="p">(</span><span class="n">WebSocketAdapterProtocol</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketClientProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for Twisted-based WebSocket client protocols.</span>
+
+<span class="sd">    Implements :class:`autobahn.websocket.interfaces.IWebSocketChannel`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">txaio</span><span class="o">.</span><span class="n">make_logger</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onConnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onConnect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WebSocketClientProtocol.startTLS">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketClientProtocol.startTLS">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startTLS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting TLS upgrade&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">startTLS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">contextFactory</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebSocketClientProtocol.get_channel_id">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketClientProtocol.get_channel_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_id_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements :func:`autobahn.wamp.interfaces.ITransport.get_channel_id`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">transport_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">channel_id_type</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_transport_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal helper.</span>
+<span class="sd">        Base class calls this to create a TransportDetails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># note that ITLSTransport exists too, which is &quot;a TCP</span>
+        <span class="c1"># transport that *can be upgraded* to TLS&quot; .. if it *is*</span>
+        <span class="c1"># upgraded to TLS, then the transport will implement</span>
+        <span class="c1"># ISSLTransport at that point according to Twisted</span>
+        <span class="c1"># documentation</span>
+        <span class="c1"># the peer we are connected to</span>
+        <span class="n">is_secure</span> <span class="o">=</span> <span class="n">ISSLTransport</span><span class="o">.</span><span class="n">providedBy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_secure</span><span class="p">:</span>
+            <span class="n">secure_channel_id</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;tls-unique&#39;</span><span class="p">:</span> <span class="n">transport_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;tls-unique&#39;</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">secure_channel_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">TransportDetails</span><span class="p">(</span><span class="n">peer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">,</span> <span class="n">is_secure</span><span class="o">=</span><span class="n">is_secure</span><span class="p">,</span> <span class="n">secure_channel_id</span><span class="o">=</span><span class="n">secure_channel_id</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketAdapterFactory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adapter class for Twisted-based WebSocket client and server factories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="WebSocketServerFactory">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketServerFactory">[docs]</a>
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketServerFactory</span><span class="p">(</span><span class="n">WebSocketAdapterFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketServerFactory</span><span class="p">,</span> <span class="n">twisted</span><span class="o">.</span><span class="n">internet</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for Twisted-based WebSocket server factories.</span>
+
+<span class="sd">    Implements :class:`autobahn.websocket.interfaces.IWebSocketServerChannelFactory`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WebSocketServerFactory.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketServerFactory.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            In addition to all arguments to the constructor of</span>
+<span class="sd">            :meth:`autobahn.websocket.interfaces.IWebSocketServerChannelFactory`,</span>
+<span class="sd">            you can supply a ``reactor`` keyword argument to specify the</span>
+<span class="sd">            Twisted reactor to be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># lazy import to avoid reactor install upon module import</span>
+        <span class="n">reactor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;reactor&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+
+        <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketServerFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WebSocketClientFactory">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketClientFactory">[docs]</a>
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebSocketClientFactory</span><span class="p">(</span><span class="n">WebSocketAdapterFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">twisted</span><span class="o">.</span><span class="n">internet</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">ClientFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for Twisted-based WebSocket client factories.</span>
+
+<span class="sd">    Implements :class:`autobahn.websocket.interfaces.IWebSocketClientChannelFactory`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WebSocketClientFactory.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.WebSocketClientFactory.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            In addition to all arguments to the constructor of</span>
+<span class="sd">            :func:`autobahn.websocket.interfaces.IWebSocketClientChannelFactory`,</span>
+<span class="sd">            you can supply a ``reactor`` keyword argument to specify the</span>
+<span class="sd">            Twisted reactor to be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># lazy import to avoid reactor install upon module import</span>
+        <span class="n">reactor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;reactor&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+
+        <span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketClientFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># we must up-call *before* we set up the contextFactory</span>
+        <span class="c1"># because we need self.host etc to be set properly.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSecure</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if we have a proxy, then our factory will be used to</span>
+            <span class="c1"># create the connection after CONNECT and if it&#39;s doing</span>
+            <span class="c1"># TLS it needs a contextFactory</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contextFactory</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">optionsForClientTLS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">)</span></div>
+</div>
+
+        <span class="c1"># NOTE: there&#39;s thus no way to send in our own</span>
+        <span class="c1"># context-factory, nor any TLS options.</span>
+
+        <span class="c1"># Possibly we should allow &#39;proxy&#39; to contain an actual</span>
+        <span class="c1"># IStreamClientEndpoint instance instead of configuration for</span>
+        <span class="c1"># how to make one</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">ITransport</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WrappingWebSocketAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An adapter for stream-based transport over WebSocket.</span>
+
+<span class="sd">    This follows `websockify &lt;https://github.com/kanaka/websockify&gt;`_</span>
+<span class="sd">    and should be compatible with that.</span>
+
+<span class="sd">    It uses WebSocket subprotocol negotiation and supports the</span>
+<span class="sd">    following WebSocket subprotocols:</span>
+
+<span class="sd">      - ``binary`` (or a compatible subprotocol)</span>
+<span class="sd">      - ``base64``</span>
+
+<span class="sd">    Octets are either transmitted as the payload of WebSocket binary</span>
+<span class="sd">    messages when using the ``binary`` subprotocol (or an alternative</span>
+<span class="sd">    binary compatible subprotocol), or encoded with Base64 and then</span>
+<span class="sd">    transmitted as the payload of WebSocket text messages when using</span>
+<span class="sd">    the ``base64`` subprotocol.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">onConnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requestOrResponse</span><span class="p">):</span>
+        <span class="c1"># Negotiate either the &#39;binary&#39; or the &#39;base64&#39; WebSocket subprotocol</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requestOrResponse</span><span class="p">,</span> <span class="n">ConnectionRequest</span><span class="p">):</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">requestOrResponse</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">protocols</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_binaryMode</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">!=</span> <span class="s1">&#39;base64&#39;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">p</span>
+            <span class="k">raise</span> <span class="n">ConnectionDeny</span><span class="p">(</span><span class="n">ConnectionDeny</span><span class="o">.</span><span class="n">NOT_ACCEPTABLE</span><span class="p">,</span> <span class="s1">&#39;this server only speaks </span><span class="si">{0}</span><span class="s1"> WebSocket subprotocols&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requestOrResponse</span><span class="p">,</span> <span class="n">ConnectionResponse</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requestOrResponse</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">protocol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fail_connection</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketProtocol</span><span class="o">.</span><span class="n">CLOSE_STATUS_CODE_PROTOCOL_ERROR</span><span class="p">,</span> <span class="s1">&#39;this client only speaks </span><span class="si">{0}</span><span class="s1"> WebSocket subprotocols&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_binaryMode</span> <span class="o">=</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">protocol</span> <span class="o">!=</span> <span class="s1">&#39;base64&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># should not arrive here</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;logic error&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proto</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isBinary</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binaryMode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fail_connection</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketProtocol</span><span class="o">.</span><span class="n">CLOSE_STATUS_CODE_UNSUPPORTED_DATA</span><span class="p">,</span> <span class="s1">&#39;message payload type does not match the negotiated subprotocol&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isBinary</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">payload</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_fail_connection</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">WebSocketProtocol</span><span class="o">.</span><span class="n">CLOSE_STATUS_CODE_INVALID_PAYLOAD</span><span class="p">,</span> <span class="s1">&#39;message payload base64 decoding error: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_proto</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proto</span><span class="o">.</span><span class="n">connectionLost</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># part of ITransport</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binaryMode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">isBinary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">isBinary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">writeSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># part of ITransport</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">loseConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># part of ITransport</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getPeer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># part of ITransport</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">getPeer</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getHost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># part of ITransport</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">getHost</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WrappingWebSocketServerProtocol</span><span class="p">(</span><span class="n">WrappingWebSocketAdapter</span><span class="p">,</span> <span class="n">WebSocketServerProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Server protocol for stream-based transport over WebSocket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WrappingWebSocketClientProtocol</span><span class="p">(</span><span class="n">WrappingWebSocketAdapter</span><span class="p">,</span> <span class="n">WebSocketClientProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Client protocol for stream-based transport over WebSocket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WrappingWebSocketServerFactory</span><span class="p">(</span><span class="n">WebSocketServerFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapping server factory for stream-based transport over WebSocket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">factory</span><span class="p">,</span>
+                 <span class="n">url</span><span class="p">,</span>
+                 <span class="n">reactor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">enableCompression</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">autoFragmentSize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">subprotocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param factory: Stream-based factory to be wrapped.</span>
+<span class="sd">        :type factory: A subclass of ``twisted.internet.protocol.Factory``</span>
+<span class="sd">        :param url: WebSocket URL of the server this server factory will work for.</span>
+<span class="sd">        :type url: unicode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;base64&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">subprotocol</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subprotocol</span><span class="p">)</span>
+
+        <span class="n">WebSocketServerFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                        <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                                        <span class="n">reactor</span><span class="o">=</span><span class="n">reactor</span><span class="p">,</span>
+                                        <span class="n">protocols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">)</span>
+
+        <span class="c1"># automatically fragment outgoing traffic into WebSocket frames</span>
+        <span class="c1"># of this size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">autoFragmentSize</span><span class="o">=</span><span class="n">autoFragmentSize</span><span class="p">)</span>
+
+        <span class="c1"># play nice and perform WS closing handshake</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">failByDrop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">enableCompression</span><span class="p">:</span>
+            <span class="c1"># Enable WebSocket extension &quot;permessage-deflate&quot;.</span>
+
+            <span class="c1"># Function to accept offers from the client ..</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="n">offers</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">offer</span> <span class="ow">in</span> <span class="n">offers</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offer</span><span class="p">,</span> <span class="n">PerMessageDeflateOffer</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">PerMessageDeflateOfferAccept</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">perMessageCompressionAccept</span><span class="o">=</span><span class="n">accept</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">proto</span> <span class="o">=</span> <span class="n">WrappingWebSocketServerProtocol</span><span class="p">()</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">_proto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">_proto</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">proto</span>
+        <span class="k">return</span> <span class="n">proto</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="o">.</span><span class="n">startFactory</span><span class="p">()</span>
+        <span class="n">WebSocketServerFactory</span><span class="o">.</span><span class="n">startFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="o">.</span><span class="n">stopFactory</span><span class="p">()</span>
+        <span class="n">WebSocketServerFactory</span><span class="o">.</span><span class="n">stopFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WrappingWebSocketClientFactory</span><span class="p">(</span><span class="n">WebSocketClientFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapping client factory for stream-based transport over WebSocket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">factory</span><span class="p">,</span>
+                 <span class="n">url</span><span class="p">,</span>
+                 <span class="n">reactor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">enableCompression</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">autoFragmentSize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">subprotocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param factory: Stream-based factory to be wrapped.</span>
+<span class="sd">        :type factory: A subclass of ``twisted.internet.protocol.Factory``</span>
+<span class="sd">        :param url: WebSocket URL of the server this client factory will connect to.</span>
+<span class="sd">        :type url: unicode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;base64&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">subprotocol</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subprotocol</span><span class="p">)</span>
+
+        <span class="n">WebSocketClientFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                        <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                                        <span class="n">reactor</span><span class="o">=</span><span class="n">reactor</span><span class="p">,</span>
+                                        <span class="n">protocols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_subprotocols</span><span class="p">)</span>
+
+        <span class="c1"># automatically fragment outgoing traffic into WebSocket frames</span>
+        <span class="c1"># of this size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">autoFragmentSize</span><span class="o">=</span><span class="n">autoFragmentSize</span><span class="p">)</span>
+
+        <span class="c1"># play nice and perform WS closing handshake</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">failByDrop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">enableCompression</span><span class="p">:</span>
+            <span class="c1"># Enable WebSocket extension &quot;permessage-deflate&quot;.</span>
+
+            <span class="c1"># The extensions offered to the server ..</span>
+            <span class="n">offers</span> <span class="o">=</span> <span class="p">[</span><span class="n">PerMessageDeflateOffer</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">perMessageCompressionOffers</span><span class="o">=</span><span class="n">offers</span><span class="p">)</span>
+
+            <span class="c1"># Function to accept responses from the server ..</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">PerMessageDeflateResponse</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">PerMessageDeflateResponseAccept</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setProtocolOptions</span><span class="p">(</span><span class="n">perMessageCompressionAccept</span><span class="o">=</span><span class="n">accept</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">proto</span> <span class="o">=</span> <span class="n">WrappingWebSocketClientProtocol</span><span class="p">()</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">_proto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">_proto</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">proto</span>
+        <span class="k">return</span> <span class="n">proto</span>
+
+
+<div class="viewcode-block" id="connectWS">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.grapevine.html#evennia.contrib.base_systems.godotwebsocket.webclient.connectWS">[docs]</a>
+<span class="nd">@public</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">connectWS</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">bindAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Establish WebSocket connection to a server. The connection parameters like target</span>
+<span class="sd">    host, port, resource and others are provided via the factory.</span>
+
+<span class="sd">    :param factory: The WebSocket protocol factory to be used for creating client protocol instances.</span>
+<span class="sd">    :type factory: An :class:`autobahn.websocket.WebSocketClientFactory` instance.</span>
+
+<span class="sd">    :param contextFactory: SSL context factory, required for secure WebSocket connections (&quot;wss&quot;).</span>
+<span class="sd">    :type contextFactory: A `twisted.internet.ssl.ClientContextFactory &lt;http://twistedmatrix.com/documents/current/api/twisted.internet.ssl.ClientContextFactory.html&gt;`_ instance.</span>
+
+<span class="sd">    :param timeout: Number of seconds to wait before assuming the connection has failed.</span>
+<span class="sd">    :type timeout: int</span>
+
+<span class="sd">    :param bindAddress: A (host, port) tuple of local address to bind to, or None.</span>
+<span class="sd">    :type bindAddress: tuple</span>
+
+<span class="sd">    :returns: The connector.</span>
+<span class="sd">    :rtype: An object which implements `twisted.interface.IConnector &lt;http://twistedmatrix.com/documents/current/api/twisted.internet.interfaces.IConnector.html&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># lazy import to avoid reactor install upon module import</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;reactor&#39;</span><span class="p">):</span>
+        <span class="n">reactor</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">reactor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">isSecure</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">contextFactory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># create default client SSL context factory when none given</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span>
+            <span class="n">contextFactory</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">ClientContextFactory</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">contextFactory</span> <span class="o">=</span> <span class="n">contextFactory</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">factory</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span> <span class="n">factory</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">bindAddress</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">isSecure</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">connectSSL</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">bindAddress</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">bindAddress</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conn</span></div>
+
+
+
+<span class="nd">@public</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">listenWS</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backlog</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listen for incoming WebSocket connections from clients. The connection parameters like</span>
+<span class="sd">    listening port and others are provided via the factory.</span>
+
+<span class="sd">    :param factory: The WebSocket protocol factory to be used for creating server protocol instances.</span>
+<span class="sd">    :type factory: An :class:`autobahn.websocket.WebSocketServerFactory` instance.</span>
+
+<span class="sd">    :param contextFactory: SSL context factory, required for secure WebSocket connections (&quot;wss&quot;).</span>
+<span class="sd">    :type contextFactory: A twisted.internet.ssl.ContextFactory.</span>
+
+<span class="sd">    :param backlog: Size of the listen queue.</span>
+<span class="sd">    :type backlog: int</span>
+
+<span class="sd">    :param interface: The interface (derived from hostname given) to bind to, defaults to &#39;&#39; (all).</span>
+<span class="sd">    :type interface: str</span>
+
+<span class="sd">    :returns: The listening port.</span>
+<span class="sd">    :rtype: An object that implements `twisted.interface.IListeningPort &lt;http://twistedmatrix.com/documents/current/api/twisted.internet.interfaces.IListeningPort.html&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># lazy import to avoid reactor install upon module import</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;reactor&#39;</span><span class="p">):</span>
+        <span class="n">reactor</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">reactor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">isSecure</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">contextFactory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Secure WebSocket listen requested, but no SSL context factory given&quot;</span><span class="p">)</span>
+        <span class="n">listener</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">listenSSL</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="p">,</span> <span class="n">backlog</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">listener</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">listenTCP</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">backlog</span><span class="p">,</span> <span class="n">interface</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">listener</span>
+
+
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WampWebSocketServerProtocol</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketServerProtocol</span><span class="p">,</span> <span class="n">WebSocketServerProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Twisted-based WAMP-over-WebSocket server protocol.</span>
+
+<span class="sd">    Implements:</span>
+
+<span class="sd">    * :class:`autobahn.wamp.interfaces.ITransport`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WampWebSocketServerFactory</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketServerFactory</span><span class="p">,</span> <span class="n">WebSocketServerFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Twisted-based WAMP-over-WebSocket server protocol factory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">WampWebSocketServerProtocol</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param factory: A callable that produces instances that implement</span>
+<span class="sd">            :class:`autobahn.wamp.interfaces.ITransportHandler`</span>
+<span class="sd">        :type factory: callable</span>
+
+<span class="sd">        :param serializers: A list of WAMP serializers to use (or ``None``</span>
+<span class="sd">            for all available serializers).</span>
+<span class="sd">        :type serializers: list of objects implementing</span>
+<span class="sd">            :class:`autobahn.wamp.interfaces.ISerializer`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">serializers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;serializers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketServerFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">serializers</span><span class="p">)</span>
+
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;protocols&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocols</span>
+
+        <span class="c1"># noinspection PyCallByClass</span>
+        <span class="n">WebSocketServerFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WampWebSocketClientProtocol</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketClientProtocol</span><span class="p">,</span> <span class="n">WebSocketClientProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Twisted-based WAMP-over-WebSocket client protocol.</span>
+
+<span class="sd">    Implements:</span>
+
+<span class="sd">    * :class:`autobahn.wamp.interfaces.ITransport`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="nd">@public</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WampWebSocketClientFactory</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketClientFactory</span><span class="p">,</span> <span class="n">WebSocketClientFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Twisted-based WAMP-over-WebSocket client protocol factory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">WampWebSocketClientProtocol</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param factory: A callable that produces instances that implement</span>
+<span class="sd">            :class:`autobahn.wamp.interfaces.ITransportHandler`</span>
+<span class="sd">        :type factory: callable</span>
+
+<span class="sd">        :param serializer: The WAMP serializer to use (or ``None`` for</span>
+<span class="sd">           &quot;best&quot; serializer, chosen as the first serializer available from</span>
+<span class="sd">           this list: CBOR, MessagePack, UBJSON, JSON).</span>
+<span class="sd">        :type serializer: object implementing :class:`autobahn.wamp.interfaces.ISerializer`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">serializers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;serializers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">websocket</span><span class="o">.</span><span class="n">WampWebSocketClientFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">serializers</span><span class="p">)</span>
+
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;protocols&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocols</span>
+
+        <span class="n">WebSocketClientFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">autobahn.twisted.websocket</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

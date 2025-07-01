@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lunr.stemmer &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">lunr.stemmer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for lunr.stemmer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of Porter Stemming Algorithm from</span>
+<span class="sd">https://tartarus.org/martin/PorterStemmer/python.txt</span>
+
+<span class="sd">Note: The Python implementation returns different results than the JS</span>
+<span class="sd">version:</span>
+<span class="sd">- Stemming &quot;lay&quot; returns &quot;lai&quot; in Python, but &quot;lay&quot; in JS</span>
+<span class="sd">- Stemming &quot;try&quot; returns &quot;try&quot; in Python, but &quot;tri&quot; in JS</span>
+
+
+<span class="sd">Porter Stemming Algorithm</span>
+<span class="sd">This is the Porter stemming algorithm, ported to Python from the</span>
+<span class="sd">version coded up in ANSI C by the author. It may be be regarded</span>
+<span class="sd">as canonical, in that it follows the algorithm presented in</span>
+
+<span class="sd">Porter, 1980, An algorithm for suffix stripping, Program, Vol. 14,</span>
+<span class="sd">no. 3, pp 130-137,</span>
+
+<span class="sd">only differing from it at the points maked --DEPARTURE-- below.</span>
+
+<span class="sd">See also http://www.tartarus.org/~martin/PorterStemmer</span>
+
+<span class="sd">The algorithm as described in the paper could be exactly replicated</span>
+<span class="sd">by adjusting the points of DEPARTURE, but this is barely necessary,</span>
+<span class="sd">because (a) the points of DEPARTURE are definitely improvements, and</span>
+<span class="sd">(b) no encoding of the Porter stemmer I have seen is anything like</span>
+<span class="sd">as exact as this version, even with the points of DEPARTURE!</span>
+
+<span class="sd">Vivake Gupta (v@nano.com)</span>
+
+<span class="sd">Release 1: January 2001</span>
+
+<span class="sd">Further adjustments by Santiago Bruno (bananabruno@gmail.com)</span>
+<span class="sd">to allow word input not restricted to one word per line, leading</span>
+<span class="sd">to:</span>
+
+<span class="sd">release 2: July 2008</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lunr.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PorterStemmer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The main part of the stemming algorithm starts here.</span>
+<span class="sd">        b is a buffer holding a word to be stemmed. The letters are in b[k0],</span>
+<span class="sd">        b[k0+1] ... ending at b[k]. In fact k0 = 0 in this demo program. k is</span>
+<span class="sd">        readjusted downwards as the stemming progresses. Zero termination is</span>
+<span class="sd">        not in fact used in the algorithm.</span>
+
+<span class="sd">        Note that only lower case sequences are stemmed. Forcing to lower case</span>
+<span class="sd">        should be done before stem(...) is called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># buffer for word to be stemmed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># j is a general offset into the string</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;cons(i) is TRUE &lt;=&gt; b[i] is a consonant.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;o&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">k0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;m() measures the number of consonant sequences between k0 and j.</span>
+<span class="sd">        if c is a consonant sequence and v a vowel sequence, and &lt;..&gt;</span>
+<span class="sd">        indicates arbitrary presence,</span>
+
+<span class="sd">           &lt;c&gt;&lt;v&gt;       gives 0</span>
+<span class="sd">           &lt;c&gt;vc&lt;v&gt;     gives 1</span>
+<span class="sd">           &lt;c&gt;vcvc&lt;v&gt;   gives 2</span>
+<span class="sd">           &lt;c&gt;vcvcvc&lt;v&gt; gives 3</span>
+<span class="sd">           ....</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k0</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">n</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">n</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">vowelinstem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;vowelinstem() is TRUE &lt;=&gt; k0,...j contains a vowel&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">doublec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;doublec(j) is TRUE &lt;=&gt; j,(j-1) contain a double consonant.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cvc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;cvc(i) is TRUE &lt;=&gt; i-2,i-1,i has the form consonant - vowel - consonant</span>
+<span class="sd">        and also if the second c is not w,x or y. this is used when trying to</span>
+<span class="sd">        restore an e at the end of a short  e.g.</span>
+
+<span class="sd">           cav(e), lov(e), hop(e), crim(e), but</span>
+<span class="sd">           snow, box, tray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span> <span class="ow">or</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">or</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ends(s) is TRUE &lt;=&gt; k0,...k ends with the string s.&quot;&quot;&quot;</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]:</span>  <span class="c1"># tiny speed-up</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="n">length</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="n">length</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setto(s) sets (j+1),...k to the characters in the string s, readjusting k.&quot;&quot;&quot;</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">length</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">length</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">r</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;r(s) is used further down.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step1ab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step1ab() gets rid of plurals and -ed or -ing. e.g.</span>
+
+<span class="sd">        caresses  -&gt;  caress</span>
+<span class="sd">        ponies    -&gt;  poni</span>
+<span class="sd">        ties      -&gt;  ti</span>
+<span class="sd">        caress    -&gt;  caress</span>
+<span class="sd">        cats      -&gt;  cat</span>
+
+<span class="sd">        feed      -&gt;  feed</span>
+<span class="sd">        agreed    -&gt;  agree</span>
+<span class="sd">        disabled  -&gt;  disable</span>
+
+<span class="sd">        matting   -&gt;  mat</span>
+<span class="sd">        mating    -&gt;  mate</span>
+<span class="sd">        meeting   -&gt;  meet</span>
+<span class="sd">        milling   -&gt;  mill</span>
+<span class="sd">        messing   -&gt;  mess</span>
+
+<span class="sd">        meetings  -&gt;  meet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;sses&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ies&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;eed&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ed&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ing&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vowelinstem</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;at&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="s2">&quot;ate&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;bl&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="s2">&quot;ble&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;iz&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="s2">&quot;ize&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">doublec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">ch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span> <span class="ow">or</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cvc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setto</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step1c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step1c() turns terminal y to i when there is another vowel in the stem.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vowelinstem</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;i&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step2() maps double suffices to single ones.</span>
+<span class="sd">        so -ization ( = -ize plus -ation) maps to -ize etc. note that the</span>
+<span class="sd">        string before the suffix must give m() &gt; 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ational&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ate&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;tional&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;tion&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;enci&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ence&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;anci&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ance&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;izer&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ize&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;bli&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ble&quot;</span><span class="p">)</span>  <span class="c1"># --DEPARTURE--</span>
+            <span class="c1"># To match the published algorithm, replace this phrase with</span>
+            <span class="c1">#   if self.ends(&quot;abli&quot;):      self.r(&quot;able&quot;)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;alli&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;al&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;entli&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ent&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;eli&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ousli&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ous&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ization&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ize&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ation&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ate&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ator&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ate&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;alism&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;al&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;iveness&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ive&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;fulness&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ful&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ousness&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ous&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;t&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;aliti&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;al&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;iviti&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ive&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;biliti&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ble&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;g&quot;</span><span class="p">:</span>  <span class="c1"># --DEPARTURE--</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;logi&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="c1"># To match the published algorithm, delete this phrase</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step3() dels with -ic-, -full, -ness etc. similar strategy to step2.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;icate&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ic&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ative&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;alize&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;al&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;iciti&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ic&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ical&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;ic&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ful&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ness&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step4</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step4() takes off -ant, -ence etc., in context &lt;c&gt;vcvc&lt;v&gt;.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;al&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ance&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ence&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;er&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ic&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;able&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ible&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ant&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ement&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ment&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ent&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ion&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;t&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ou&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="c1"># takes care of -ous</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ism&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;t&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ate&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;iti&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ous&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;v&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ive&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">(</span><span class="s2">&quot;ize&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;step5() removes a final -e if m() &gt; 1, and changes -ll to -l if</span>
+<span class="sd">        m() &gt; 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cvc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">doublec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;In stem(p,i,j), p is a char pointer, and the string to be stemmed</span>
+<span class="sd">        is from p[i] to p[j] inclusive. Typically i is zero and j is the</span>
+<span class="sd">        offset to the last character of a string, (p[j+1] == &#39;\0&#39;). The</span>
+<span class="sd">        stemmer adjusts the characters p[i] ... p[j] and returns the new</span>
+<span class="sd">        end-point of the string, k. Stemming never increases word length, so</span>
+<span class="sd">        i &lt;= k &lt;= j. To turn the stemmer into a module, declare &#39;stem&#39; as</span>
+<span class="sd">        extern, and delete the remainder of this file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: removed i and j from the original implementation</span>
+        <span class="c1"># to comply with the `token.update` API</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># copy the parameters into statics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>  <span class="c1"># --DEPARTURE--</span>
+
+        <span class="c1"># With this line, strings of length 1 or 2 don&#39;t go through the</span>
+        <span class="c1"># stemming process, although no mention is made of this in the</span>
+        <span class="c1"># published algorithm. Remove the line to match the published</span>
+        <span class="c1"># algorithm.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">step1ab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step1c</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step3</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step4</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step5</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">k0</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+
+<span class="n">porter_stemmer</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="stemmer">
+<a class="viewcode-back" href="../../api/evennia.help.utils.html#evennia.help.utils.stemmer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stemmer</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper around the PorterStemmer for inclusion in pipeline.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        language (str): ISO-639-1 code of the language.</span>
+<span class="sd">        token (lunr.Token): The token to stem.</span>
+<span class="sd">        i (int): The index of the token in a set.</span>
+<span class="sd">        tokens (list): A list of tokens representing the set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">porter_stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span></div>
+
+
+
+<span class="n">Pipeline</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">stemmer</span><span class="p">,</span> <span class="s2">&quot;stemmer&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">lunr.stemmer</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.web.wsgi &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.wsgi</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.web.wsgi</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An implementation of</span>
+<span class="sd">U{Python Web Server Gateway Interface v1.0.1&lt;http://www.python.org/dev/peps/pep-3333/&gt;}.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sys</span><span class="w"> </span><span class="kn">import</span> <span class="n">exc_info</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">implementer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.threads</span><span class="w"> </span><span class="kn">import</span> <span class="n">blockingCallFromThread</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.failure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Failure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_SERVER_ERROR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.resource</span><span class="w"> </span><span class="kn">import</span> <span class="n">IResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">NOT_DONE_YET</span>
+
+
+<span class="c1"># PEP-3333 -- which has superseded PEP-333 -- states that text strings MUST</span>
+<span class="c1"># be represented using the platform&#39;s native string type, limited to</span>
+<span class="c1"># characters defined in ISO-8859-1. Byte strings are used only for values</span>
+<span class="c1"># read from wsgi.input, passed to write() or yielded by the application.</span>
+<span class="c1">#</span>
+<span class="c1"># Put another way:</span>
+<span class="c1">#</span>
+<span class="c1"># - All text strings are of type str, and all binary data are of</span>
+<span class="c1">#   type bytes. Text MUST always be limited to that which can be encoded as</span>
+<span class="c1">#   ISO-8859-1, U+0000 to U+00FF inclusive.</span>
+<span class="c1">#</span>
+<span class="c1"># The following pair of functions -- _wsgiString() and _wsgiStringToBytes() --</span>
+<span class="c1"># are used to make Twisted&#39;s WSGI support compliant with the standard.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_wsgiString</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert C{string} to a WSGI &quot;bytes-as-unicode&quot; string.</span>
+
+<span class="sd">    If it&#39;s a byte string, decode as ISO-8859-1. If it&#39;s a Unicode string,</span>
+<span class="sd">    round-trip it to bytes and back using ISO-8859-1 as the encoding.</span>
+
+<span class="sd">    @type string: C{str} or C{bytes}</span>
+<span class="sd">    @rtype: C{str}</span>
+
+<span class="sd">    @raise UnicodeEncodeError: If C{string} contains non-ISO-8859-1 chars.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;iso-8859-1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;iso-8859-1&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;iso-8859-1&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_wsgiStringToBytes</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert C{string} from a WSGI &quot;bytes-as-unicode&quot; string to an</span>
+<span class="sd">    ISO-8859-1 byte string.</span>
+
+<span class="sd">    @type string: C{str}</span>
+<span class="sd">    @rtype: C{bytes}</span>
+
+<span class="sd">    @raise UnicodeEncodeError: If C{string} contains non-ISO-8859-1 chars.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;iso-8859-1&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ErrorStream</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    File-like object instances of which are used as the value for the</span>
+<span class="sd">    C{&#39;wsgi.errors&#39;} key in the C{environ} dictionary passed to the application</span>
+<span class="sd">    object.</span>
+
+<span class="sd">    This simply passes writes on to L{logging&lt;twisted.logger&gt;} system as</span>
+<span class="sd">    error events from the C{&#39;wsgi&#39;} system.  In the future, it may be desirable</span>
+<span class="sd">    to expose more information in the events it logs, such as the application</span>
+<span class="sd">    object which generated the message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an event for the logging system with the given bytes as the</span>
+<span class="sd">        message.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+
+<span class="sd">        @type data: str</span>
+
+<span class="sd">        @raise TypeError: if C{data} is not a native string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;write() argument must be str, not </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Note that in old style, message was a tuple.  logger._legacy</span>
+        <span class="c1"># will overwrite this value if it is not properly formatted here.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="s2">&quot;wsgi&quot;</span><span class="p">,</span> <span class="n">isError</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="p">(</span><span class="n">data</span><span class="p">,))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">writelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iovec</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Join the given lines and pass them to C{write} to be handled in the</span>
+<span class="sd">        usual way.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+
+<span class="sd">        @param iovec: A C{list} of C{&#39;\\n&#39;}-terminated C{str} which will be</span>
+<span class="sd">            logged.</span>
+
+<span class="sd">        @raise TypeError: if C{iovec} contains any non-native strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iovec</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nothing is buffered, so flushing does nothing.  This method is required</span>
+<span class="sd">        to exist by PEP 333, though.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_InputStream</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    File-like object instances of which are used as the value for the</span>
+<span class="sd">    C{&#39;wsgi.input&#39;} key in the C{environ} dictionary passed to the application</span>
+<span class="sd">    object.</span>
+
+<span class="sd">    This only exists to make the handling of C{readline(-1)} consistent across</span>
+<span class="sd">    different possible underlying file-like object implementations.  The other</span>
+<span class="sd">    supported methods pass through directly to the wrapped object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the instance.</span>
+
+<span class="sd">        This is called in the I/O thread, not a WSGI application thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="nb">input</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass through to the underlying C{read}.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Avoid passing None because cStringIO and file don&#39;t like it.</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass through to the underlying C{readline}, with a size of C{-1} replaced</span>
+<span class="sd">        with a size of L{None}.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for -1 because StringIO doesn&#39;t handle it correctly.  Check for</span>
+        <span class="c1"># None because files and tempfiles don&#39;t accept that.</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass through to the underlying C{readlines}.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Avoid passing None because cStringIO and file don&#39;t like it.</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass through to the underlying C{__iter__}.</span>
+
+<span class="sd">        This is called in a WSGI application thread, not the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_WSGIResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper for L{WSGIResource} which drives the WSGI application using a</span>
+<span class="sd">    threadpool and hooks it up to the L{http.Request}.</span>
+
+<span class="sd">    @ivar started: A L{bool} indicating whether or not the response status and</span>
+<span class="sd">        headers have been written to the request yet.  This may only be read or</span>
+<span class="sd">        written in the WSGI application thread.</span>
+
+<span class="sd">    @ivar reactor: An L{IReactorThreads} provider which is used to call methods</span>
+<span class="sd">        on the request in the I/O thread.</span>
+
+<span class="sd">    @ivar threadpool: A L{ThreadPool} which is used to call the WSGI</span>
+<span class="sd">        application object in a non-I/O thread.</span>
+
+<span class="sd">    @ivar application: The WSGI application object.</span>
+
+<span class="sd">    @ivar request: The L{http.Request} upon which the WSGI environment is</span>
+<span class="sd">        based and to which the application&#39;s output will be sent.</span>
+
+<span class="sd">    @ivar environ: The WSGI environment L{dict}.</span>
+
+<span class="sd">    @ivar status: The HTTP response status L{str} supplied to the WSGI</span>
+<span class="sd">        I{start_response} callable by the application.</span>
+
+<span class="sd">    @ivar headers: A list of HTTP response headers supplied to the WSGI</span>
+<span class="sd">        I{start_response} callable by the application.</span>
+
+<span class="sd">    @ivar _requestFinished: A flag which indicates whether it is possible to</span>
+<span class="sd">        generate more response data or not.  This is L{False} until</span>
+<span class="sd">        L{http.Request.notifyFinish} tells us the request is done,</span>
+<span class="sd">        then L{True}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_requestFinished</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threadpool</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="o">=</span> <span class="n">threadpool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">application</span> <span class="o">=</span> <span class="n">application</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">notifyFinish</span><span class="p">()</span><span class="o">.</span><span class="n">addBoth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">prepath</span><span class="p">:</span>
+            <span class="n">scriptName</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">prepath</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scriptName</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">postpath</span><span class="p">:</span>
+            <span class="n">pathInfo</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">postpath</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pathInfo</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">queryString</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">queryString</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># All keys and values need to be native strings, i.e. of type str in</span>
+        <span class="c1"># *both* Python 2 and Python 3, so says PEP-3333.</span>
+        <span class="n">remotePeer</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getClientAddress</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;REQUEST_METHOD&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">),</span>
+            <span class="s2">&quot;REMOTE_ADDR&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">remotePeer</span><span class="o">.</span><span class="n">host</span><span class="p">),</span>
+            <span class="s2">&quot;REMOTE_PORT&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">remotePeer</span><span class="o">.</span><span class="n">port</span><span class="p">)),</span>
+            <span class="s2">&quot;SCRIPT_NAME&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">scriptName</span><span class="p">),</span>
+            <span class="s2">&quot;PATH_INFO&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">pathInfo</span><span class="p">),</span>
+            <span class="s2">&quot;QUERY_STRING&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">queryString</span><span class="p">),</span>
+            <span class="s2">&quot;CONTENT_TYPE&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">getHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;content-type&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;CONTENT_LENGTH&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">getHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;content-length&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;SERVER_NAME&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">getRequestHostname</span><span class="p">()),</span>
+            <span class="s2">&quot;SERVER_PORT&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">getHost</span><span class="p">()</span><span class="o">.</span><span class="n">port</span><span class="p">)),</span>
+            <span class="s2">&quot;SERVER_PROTOCOL&quot;</span><span class="p">:</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">clientproto</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># The application object is entirely in control of response headers;</span>
+        <span class="c1"># disable the default Content-Type value normally provided by</span>
+        <span class="c1"># twisted.web.server.Request.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">defaultContentType</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">requestHeaders</span><span class="o">.</span><span class="n">getAllRawHeaders</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;HTTP_&quot;</span> <span class="o">+</span> <span class="n">_wsgiString</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="c1"># It might be preferable for http.HTTPChannel to clear out</span>
+            <span class="c1"># newlines.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_wsgiString</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;wsgi.version&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;wsgi.url_scheme&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">isSecure</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;https&quot;</span> <span class="ow">or</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;wsgi.run_once&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;wsgi.multithread&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;wsgi.multiprocess&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;wsgi.errors&quot;</span><span class="p">:</span> <span class="n">_ErrorStream</span><span class="p">(),</span>
+                <span class="c1"># Attend: request.content was owned by the I/O thread up until</span>
+                <span class="c1"># this point.  By wrapping it and putting the result into the</span>
+                <span class="c1"># environment dictionary, it is effectively being given to</span>
+                <span class="c1"># another thread.  This means that whatever it is, it has to be</span>
+                <span class="c1"># safe to access it from two different threads.  The access</span>
+                <span class="c1"># *should* all be serialized (first the I/O thread writes to</span>
+                <span class="c1"># it, then the WSGI thread reads from it, then the I/O thread</span>
+                <span class="c1"># closes it).  However, since the request is made available to</span>
+                <span class="c1"># arbitrary application code during resource traversal, it&#39;s</span>
+                <span class="c1"># possible that some other code might decide to use it in the</span>
+                <span class="c1"># I/O thread concurrently with its use in the WSGI thread.</span>
+                <span class="c1"># More likely than not, this will break.  This seems like an</span>
+                <span class="c1"># unlikely possibility to me, but if it is to be allowed,</span>
+                <span class="c1"># something here needs to change. -exarkun</span>
+                <span class="s2">&quot;wsgi.input&quot;</span><span class="p">:</span> <span class="n">_InputStream</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">content</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Record the end of the response generation for the request being</span>
+<span class="sd">        serviced.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requestFinished</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startResponse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">excInfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The WSGI I{start_response} callable.  The given values are saved until</span>
+<span class="sd">        they are needed to generate the response.</span>
+
+<span class="sd">        This will be called in a non-I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="ow">and</span> <span class="n">excInfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">excInfo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">excInfo</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># PEP-3333 mandates that status should be a native string. In practice</span>
+        <span class="c1"># this is mandated by Twisted&#39;s HTTP implementation too.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;status must be str, not </span><span class="si">{!r}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">status</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># PEP-3333 mandates that headers should be a plain list, but in</span>
+        <span class="c1"># practice we work with any sequence type and only warn when it&#39;s not</span>
+        <span class="c1"># a plain list.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">pass</span>  <span class="c1"># This is okay.</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;headers should be a list, not </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;headers must be a list, not </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># PEP-3333 mandates that each header should be a (str, str) tuple, but</span>
+        <span class="c1"># in practice we work with any sequence type and only warn when it&#39;s</span>
+        <span class="c1"># not a plain list.</span>
+        <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">pass</span>  <span class="c1"># This is okay.</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;header should be a (str, str) tuple, not </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                    <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;header must be a (str, str) tuple, not </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="c1"># However, the sequence MUST contain only 2 elements.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;header must be a (str, str) tuple, not </span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Both elements MUST be native strings. Non-native strings will be</span>
+            <span class="c1"># rejected by the underlying HTTP machinery in any case, but we</span>
+            <span class="c1"># reject them here in order to provide a more informative error.</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">header</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;header must be (str, str) tuple, not </span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">write</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The WSGI I{write} callable returned by the I{start_response} callable.</span>
+<span class="sd">        The given bytes will be written to the response body, possibly flushing</span>
+<span class="sd">        the status and headers first.</span>
+
+<span class="sd">        This will be called in a non-I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># PEP-3333 states:</span>
+        <span class="c1">#</span>
+        <span class="c1">#   The server or gateway must transmit the yielded bytestrings to the</span>
+        <span class="c1">#   client in an unbuffered fashion, completing the transmission of</span>
+        <span class="c1">#   each bytestring before requesting another one.</span>
+        <span class="c1">#</span>
+        <span class="c1"># This write() method is used for the imperative and (indirectly) for</span>
+        <span class="c1"># the more familiar iterable-of-bytestrings WSGI mechanism. It uses</span>
+        <span class="c1"># C{blockingCallFromThread} to schedule writes. This allows exceptions</span>
+        <span class="c1"># to propagate up from the underlying HTTP implementation. However,</span>
+        <span class="c1"># that underlying implementation does not, as yet, provide any way to</span>
+        <span class="c1"># know if the written data has been transmitted, so this method</span>
+        <span class="c1"># violates the above part of PEP-3333.</span>
+        <span class="c1">#</span>
+        <span class="c1"># PEP-3333 also says that a server may:</span>
+        <span class="c1">#</span>
+        <span class="c1">#   Use a different thread to ensure that the block continues to be</span>
+        <span class="c1">#   transmitted while the application produces the next block.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Which suggests that this is actually compliant with PEP-3333,</span>
+        <span class="c1"># because writes are done in the reactor thread.</span>
+        <span class="c1">#</span>
+        <span class="c1"># However, providing some back-pressure may nevertheless be a Good</span>
+        <span class="c1"># Thing at some point in the future.</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">wsgiWrite</span><span class="p">(</span><span class="n">started</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">started</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sendResponseHeaders</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">blockingCallFromThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="p">,</span> <span class="n">wsgiWrite</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sendResponseHeaders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the response code and response headers on the request object, but</span>
+<span class="sd">        do not flush them.  The caller is responsible for doing a write in</span>
+<span class="sd">        order for anything to actually be written out in response to the</span>
+<span class="sd">        request.</span>
+
+<span class="sd">        This must be called in the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">code</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">setResponseCode</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">_wsgiStringToBytes</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t allow the application to control these required headers.</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">responseHeaders</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span>
+                    <span class="n">_wsgiStringToBytes</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">_wsgiStringToBytes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the WSGI application in the threadpool.</span>
+
+<span class="sd">        This must be called in the I/O thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span><span class="o">.</span><span class="n">callInThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the WSGI application object, iterate it, and handle its output.</span>
+
+<span class="sd">        This must be called in a non-I/O thread (ie, a WSGI application</span>
+<span class="sd">        thread).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">appIterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">environ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">startResponse</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">appIterator</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requestFinished</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">appIterator</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">close</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">wsgiError</span><span class="p">(</span><span class="n">started</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">failure</span><span class="p">(</span>
+                    <span class="s2">&quot;WSGI application error&quot;</span><span class="p">,</span> <span class="n">failure</span><span class="o">=</span><span class="n">Failure</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">started</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">setResponseCode</span><span class="p">(</span><span class="n">INTERNAL_SERVER_ERROR</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="n">wsgiError</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">wsgiFinish</span><span class="p">(</span><span class="n">started</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requestFinished</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">started</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_sendResponseHeaders</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="n">wsgiFinish</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="WSGIResource">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIResource">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IResource</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WSGIResource</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An L{IResource} implementation which delegates responsibility for all</span>
+<span class="sd">    resources hierarchically inferior to it to a WSGI application.</span>
+
+<span class="sd">    The C{environ} argument passed to the application, includes the</span>
+<span class="sd">    C{REMOTE_PORT} key to complement the C{REMOTE_ADDR} key.</span>
+
+<span class="sd">    @ivar _reactor: An L{IReactorThreads} provider which will be passed on to</span>
+<span class="sd">        L{_WSGIResponse} to schedule calls in the I/O thread.</span>
+
+<span class="sd">    @ivar _threadpool: A L{ThreadPool} which will be passed on to</span>
+<span class="sd">        L{_WSGIResponse} to run the WSGI application object.</span>
+
+<span class="sd">    @ivar _application: The WSGI application object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Further resource segments are left up to the WSGI application object to</span>
+    <span class="c1"># handle.</span>
+    <span class="n">isLeaf</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="WSGIResource.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIResource.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threadpool</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threadpool</span> <span class="o">=</span> <span class="n">threadpool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_application</span> <span class="o">=</span> <span class="n">application</span></div>
+
+
+<div class="viewcode-block" id="WSGIResource.render">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIResource.render">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn the request into the appropriate C{environ} C{dict} suitable to be</span>
+<span class="sd">        passed to the WSGI application object and then pass it on.</span>
+
+<span class="sd">        The WSGI application object is given almost complete control of the</span>
+<span class="sd">        rendering process.  C{NOT_DONE_YET} will always be returned in order</span>
+<span class="sd">        and response completion will be dictated by the application object, as</span>
+<span class="sd">        will the status, headers, and the response body.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">_WSGIResponse</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threadpool</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_application</span><span class="p">,</span> <span class="n">request</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">NOT_DONE_YET</span></div>
+
+
+<div class="viewcode-block" id="WSGIResource.getChildWithDefault">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIResource.getChildWithDefault">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getChildWithDefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject attempts to retrieve a child resource.  All path segments beyond</span>
+<span class="sd">        the one which refers to this resource are handled by the WSGI</span>
+<span class="sd">        application object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot get IResource children from WSGIResource&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WSGIResource.putChild">
+<a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIResource.putChild">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">putChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject attempts to add a child resource to this resource.  The WSGI</span>
+<span class="sd">        application object handles all path segments beneath this resource, so</span>
+<span class="sd">        L{IResource} children can never be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot put IResource children under WSGIResource&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;WSGIResource&quot;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.wsgi</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

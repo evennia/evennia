@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>botocore.exceptions &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">botocore.exceptions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for botocore.exceptions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2012-2013 Mitch Garnaat http://garnaat.org/</span>
+<span class="c1"># Copyright 2012-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You</span>
+<span class="c1"># may not use this file except in compliance with the License. A copy of</span>
+<span class="c1"># the License is located at</span>
+<span class="c1">#</span>
+<span class="c1"># http://aws.amazon.com/apache2.0/</span>
+<span class="c1">#</span>
+<span class="c1"># or in the &quot;license&quot; file accompanying this file. This file is</span>
+<span class="c1"># distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF</span>
+<span class="c1"># ANY KIND, either express or implied. See the License for the specific</span>
+<span class="c1"># language governing permissions and limitations under the License.</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.vendored</span><span class="w"> </span><span class="kn">import</span> <span class="n">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.vendored.requests.packages</span><span class="w"> </span><span class="kn">import</span> <span class="n">urllib3</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_exception_from_packed_args</span><span class="p">(</span><span class="n">exception_cls</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># This is helpful for reducing Exceptions that only accept kwargs as</span>
+    <span class="c1"># only positional arguments can be provided for __reduce__</span>
+    <span class="c1"># Ideally, this would also be a class method on the BotoCoreError</span>
+    <span class="c1"># but instance methods cannot be pickled.</span>
+    <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">exception_cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BotoCoreError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base exception class for BotoCore exceptions.</span>
+
+<span class="sd">    :ivar msg: The descriptive message associated with the error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;An unspecified error occurred&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_exception_from_packed_args</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataNotFoundError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The data associated with a particular path could not be loaded.</span>
+
+<span class="sd">    :ivar data_path: The data path that the user attempted to load.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unable to load data for: </span><span class="si">{data_path}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownServiceError</span><span class="p">(</span><span class="n">DataNotFoundError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when trying to load data for an unknown service.</span>
+
+<span class="sd">    :ivar service_name: The name of the unknown service.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Unknown service: &#39;</span><span class="si">{service_name}</span><span class="s2">&#39;. Valid service names are: &quot;</span>
+        <span class="s2">&quot;</span><span class="si">{known_service_names}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownRegionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when trying to load data for an unknown region.</span>
+
+<span class="sd">    :ivar region_name: The name of the unknown region.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Unknown region: &#39;</span><span class="si">{region_name}</span><span class="s2">&#39;. </span><span class="si">{error_msg}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ApiVersionNotFoundError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The data associated with either the API version or a compatible one</span>
+<span class="sd">    could not be loaded.</span>
+
+<span class="sd">    :ivar data_path: The data path that the user attempted to load.</span>
+<span class="sd">    :ivar api_version: The API version that the user attempted to load.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unable to load data </span><span class="si">{data_path}</span><span class="s1"> for: </span><span class="si">{api_version}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">HTTPClientError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;An HTTP Client raised an unhandled exception: </span><span class="si">{error}</span><span class="s1">&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_exception_from_packed_args</span><span class="p">,</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;An HTTP Client failed to establish a connection: </span><span class="si">{error}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidIMDSEndpointError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Invalid endpoint EC2 Instance Metadata endpoint: </span><span class="si">{endpoint}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidIMDSEndpointModeError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Invalid EC2 Instance Metadata endpoint mode: </span><span class="si">{mode}</span><span class="s1">&#39;</span>
+        <span class="s1">&#39; Valid endpoint modes (case-insensitive): </span><span class="si">{valid_modes}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EndpointConnectionError</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Could not connect to the endpoint URL: &quot;</span><span class="si">{endpoint_url}</span><span class="s1">&quot;&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SSLError</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">SSLError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;SSL validation failed for </span><span class="si">{endpoint_url}</span><span class="s1"> </span><span class="si">{error}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectionClosedError</span><span class="p">(</span><span class="n">HTTPClientError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Connection was closed before we received a valid response &#39;</span>
+        <span class="s1">&#39;from endpoint URL: &quot;</span><span class="si">{endpoint_url}</span><span class="s1">&quot;.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ReadTimeoutError</span><span class="p">(</span>
+    <span class="n">HTTPClientError</span><span class="p">,</span>
+    <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span>
+    <span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeoutError</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Read timeout on endpoint URL: &quot;</span><span class="si">{endpoint_url}</span><span class="s1">&quot;&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectTimeoutError</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectTimeout</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Connect timeout on endpoint URL: &quot;</span><span class="si">{endpoint_url}</span><span class="s1">&quot;&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProxyConnectionError</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ProxyError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Failed to connect to proxy URL: &quot;</span><span class="si">{proxy_url}</span><span class="s1">&quot;&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ResponseStreamingError</span><span class="p">(</span><span class="n">HTTPClientError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;An error occurred while reading from response stream: </span><span class="si">{error}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NoCredentialsError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    No credentials could be found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unable to locate credentials&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NoAuthTokenError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    No authorization token could be found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unable to locate authorization token&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TokenRetrievalError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Error attempting to retrieve a token from a remote source.</span>
+
+<span class="sd">    :ivar provider: The name of the token provider.</span>
+<span class="sd">    :ivar error_msg: The msg explaining why the token could not be retrieved.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Error when retrieving token from </span><span class="si">{provider}</span><span class="s1">: </span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PartialCredentialsError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only partial credentials were found.</span>
+
+<span class="sd">    :ivar cred_var: The missing credential variable name.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Partial credentials found in </span><span class="si">{provider}</span><span class="s1">, missing: </span><span class="si">{cred_var}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CredentialRetrievalError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Error attempting to retrieve credentials from a remote source.</span>
+
+<span class="sd">    :ivar provider: The name of the credential provider.</span>
+<span class="sd">    :ivar error_msg: The msg explaining why credentials could not be</span>
+<span class="sd">        retrieved.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Error when retrieving credentials from </span><span class="si">{provider}</span><span class="s1">: </span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownSignatureVersionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Requested Signature Version is not known.</span>
+
+<span class="sd">    :ivar signature_version: The name of the requested signature version.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unknown Signature Version: </span><span class="si">{signature_version}</span><span class="s1">.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceNotInRegionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The service is not available in requested region.</span>
+
+<span class="sd">    :ivar service_name: The name of the service.</span>
+<span class="sd">    :ivar region_name: The name of the region.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Service </span><span class="si">{service_name}</span><span class="s1"> not available in region </span><span class="si">{region_name}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseEndpointResolverError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base error for endpoint resolving errors.</span>
+
+<span class="sd">    Should never be raised directly, but clients can catch</span>
+<span class="sd">    this exception if they want to generically handle any errors</span>
+<span class="sd">    during the endpoint resolution process.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NoRegionError</span><span class="p">(</span><span class="n">BaseEndpointResolverError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;No region was specified.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;You must specify a region.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EndpointVariantError</span><span class="p">(</span><span class="n">BaseEndpointResolverError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Could not construct modeled endpoint variant.</span>
+
+<span class="sd">    :ivar error_msg: The message explaining why the modeled endpoint variant</span>
+<span class="sd">        is unable to be constructed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Unable to construct a modeled endpoint with the following &#39;</span>
+        <span class="s1">&#39;variant(s) </span><span class="si">{tags}</span><span class="s1">: &#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownEndpointError</span><span class="p">(</span><span class="n">BaseEndpointResolverError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Could not construct an endpoint.</span>
+
+<span class="sd">    :ivar service_name: The name of the service.</span>
+<span class="sd">    :ivar region_name: The name of the region.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Unable to construct an endpoint for &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{service_name}</span><span class="s1"> in region </span><span class="si">{region_name}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownFIPSEndpointError</span><span class="p">(</span><span class="n">BaseEndpointResolverError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Could not construct a FIPS endpoint.</span>
+
+<span class="sd">    :ivar service_name: The name of the service.</span>
+<span class="sd">    :ivar region_name: The name of the region.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;The provided FIPS pseudo-region &quot;</span><span class="si">{region_name}</span><span class="s1">&quot; is not known for &#39;</span>
+        <span class="s1">&#39;the service &quot;</span><span class="si">{service_name}</span><span class="s1">&quot;. A FIPS compliant endpoint cannot be &#39;</span>
+        <span class="s1">&#39;constructed.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProfileNotFound</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The specified configuration profile was not found in the</span>
+<span class="sd">    configuration file.</span>
+
+<span class="sd">    :ivar profile: The name of the profile the user attempted to load.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;The config profile (</span><span class="si">{profile}</span><span class="s1">) could not be found&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigParseError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The configuration file could not be parsed.</span>
+
+<span class="sd">    :ivar path: The path to the configuration file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unable to parse config file: </span><span class="si">{path}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigNotFound</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The specified configuration file could not be found.</span>
+
+<span class="sd">    :ivar path: The path to the configuration file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;The specified config file (</span><span class="si">{path}</span><span class="s1">) could not be found.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MissingParametersError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    One or more required parameters were not supplied.</span>
+
+<span class="sd">    :ivar object: The object that has missing parameters.</span>
+<span class="sd">        This can be an operation or a parameter (in the</span>
+<span class="sd">        case of inner params).  The str() of this object</span>
+<span class="sd">        will be used so it doesn&#39;t need to implement anything</span>
+<span class="sd">        other than str().</span>
+<span class="sd">    :ivar missing: The names of the missing parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;The following required parameters are missing for &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{object_name}</span><span class="s1">: </span><span class="si">{missing}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ValidationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An exception occurred validating parameters.</span>
+
+<span class="sd">    Subclasses must accept a ``value`` and ``param``</span>
+<span class="sd">    argument in their ``__init__``.</span>
+
+<span class="sd">    :ivar value: The value that was being validated.</span>
+<span class="sd">    :ivar param: The parameter that failed validation.</span>
+<span class="sd">    :ivar type_name: The name of the underlying type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Invalid value (&#39;</span><span class="si">{value}</span><span class="s2">&#39;) for param </span><span class="si">{param}</span><span class="s2"> &quot;</span> <span class="s2">&quot;of type </span><span class="si">{type_name}</span><span class="s2"> &quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ParamValidationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Parameter validation failed:</span><span class="se">\n</span><span class="si">{report}</span><span class="s1">&#39;</span>
+
+
+<span class="c1"># These exceptions subclass from ValidationError so that code</span>
+<span class="c1"># can just &#39;except ValidationError&#39; to catch any possibly validation</span>
+<span class="c1"># error.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownKeyError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unknown key in a struct parameter.</span>
+
+<span class="sd">    :ivar value: The value that was being checked.</span>
+<span class="sd">    :ivar param: The name of the parameter.</span>
+<span class="sd">    :ivar choices: The valid choices the value can be.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Unknown key &#39;</span><span class="si">{value}</span><span class="s2">&#39; for param &#39;</span><span class="si">{param}</span><span class="s2">&#39;.  Must be one &quot;</span>
+        <span class="s2">&quot;of: </span><span class="si">{choices}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RangeError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A parameter value was out of the valid range.</span>
+
+<span class="sd">    :ivar value: The value that was being checked.</span>
+<span class="sd">    :ivar param: The parameter that failed validation.</span>
+<span class="sd">    :ivar min_value: The specified minimum value.</span>
+<span class="sd">    :ivar max_value: The specified maximum value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Value out of range for param </span><span class="si">{param}</span><span class="s1">: &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{min_value}</span><span class="s1"> &lt;= </span><span class="si">{value}</span><span class="s1"> &lt;= </span><span class="si">{max_value}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownParameterError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unknown top level parameter.</span>
+
+<span class="sd">    :ivar name: The name of the unknown parameter.</span>
+<span class="sd">    :ivar operation: The name of the operation.</span>
+<span class="sd">    :ivar choices: The valid choices the parameter name can be.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Unknown parameter &#39;</span><span class="si">{name}</span><span class="s2">&#39; for operation </span><span class="si">{operation}</span><span class="s2">.  Must be one &quot;</span>
+        <span class="s2">&quot;of: </span><span class="si">{choices}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidRegionError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Invalid region_name provided to client or resource.</span>
+
+<span class="sd">    :ivar region_name: region_name that was being validated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Provided region_name &#39;</span><span class="si">{region_name}</span><span class="s2">&#39; doesn&#39;t match a supported format.&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AliasConflictParameterError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Error when an alias is provided for a parameter as well as the original.</span>
+
+<span class="sd">    :ivar original: The name of the original parameter.</span>
+<span class="sd">    :ivar alias: The name of the alias</span>
+<span class="sd">    :ivar operation: The name of the operation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Parameter &#39;</span><span class="si">{original}</span><span class="s2">&#39; and its alias &#39;</span><span class="si">{alias}</span><span class="s2">&#39; were provided &quot;</span>
+        <span class="s2">&quot;for operation </span><span class="si">{operation}</span><span class="s2">.  Only one of them may be used.&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownServiceStyle</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unknown style of service invocation.</span>
+
+<span class="sd">    :ivar service_style: The style requested.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;The service style (</span><span class="si">{service_style}</span><span class="s1">) is not understood.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PaginationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Error during pagination: </span><span class="si">{message}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OperationNotPageableError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Operation cannot be paginated: </span><span class="si">{operation_name}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ChecksumError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The expected checksum did not match the calculated checksum.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Checksum </span><span class="si">{checksum_type}</span><span class="s1"> failed, expected checksum &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{expected_checksum}</span><span class="s1"> did not match calculated checksum &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{actual_checksum}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnseekableStreamError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Need to seek a stream, but stream does not support seeking.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Need to rewind the stream </span><span class="si">{stream_object}</span><span class="s1">, but stream &#39;</span>
+        <span class="s1">&#39;is not seekable.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WaiterError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Waiter failed to reach desired state.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Waiter </span><span class="si">{name}</span><span class="s1"> failed: </span><span class="si">{reason}</span><span class="s1">&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">last_response</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_response</span> <span class="o">=</span> <span class="n">last_response</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IncompleteReadError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP response did not return expected number of bytes.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;</span><span class="si">{actual_bytes}</span><span class="s1"> read, but total bytes &#39;</span> <span class="s1">&#39;expected is </span><span class="si">{expected_bytes}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidExpressionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expression is either invalid or too complex.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Invalid expression </span><span class="si">{expression}</span><span class="s1">: Only dotted lookups are supported.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownCredentialError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tried to insert before/after an unregistered credential type.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Credential named </span><span class="si">{name}</span><span class="s1"> not found.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WaiterConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when processing waiter configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Error processing waiter config: </span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownClientMethodError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when trying to access a method on a client that does not exist.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Client does not have method: </span><span class="si">{method_name}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedSignatureVersionError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when trying to use an unsupported Signature Version.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Signature version(s) are not supported: </span><span class="si">{signature_version}</span><span class="s1">&#39;</span>
+
+
+<div class="viewcode-block" id="ClientError">
+<a class="viewcode-back" href="../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.ClientError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClientError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="n">MSG_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;An error occurred (</span><span class="si">{error_code}</span><span class="s1">) when calling the </span><span class="si">{operation_name}</span><span class="s1"> &#39;</span>
+        <span class="s1">&#39;operation</span><span class="si">{retry_info}</span><span class="s1">: </span><span class="si">{error_message}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ClientError.__init__">
+<a class="viewcode-back" href="../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.aws_s3_cdn.ClientError.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_response</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">):</span>
+        <span class="n">retry_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_retry_info</span><span class="p">(</span><span class="n">error_response</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">error_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Error&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MSG_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">error_code</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Code&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">),</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Message&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">),</span>
+            <span class="n">operation_name</span><span class="o">=</span><span class="n">operation_name</span><span class="p">,</span>
+            <span class="n">retry_info</span><span class="o">=</span><span class="n">retry_info</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">error_response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operation_name</span> <span class="o">=</span> <span class="n">operation_name</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_retry_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">retry_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;ResponseMetadata&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;ResponseMetadata&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MaxAttemptsReached&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s1">&#39;RetryAttempts&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+                    <span class="n">retry_info</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot; (reached max retries: </span><span class="si">{</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;RetryAttempts&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">return</span> <span class="n">retry_info</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Subclasses of ClientError&#39;s are dynamically generated and</span>
+        <span class="c1"># cannot be pickled unless they are attributes of a</span>
+        <span class="c1"># module. So at the very least return a ClientError back.</span>
+        <span class="k">return</span> <span class="n">ClientError</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operation_name</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EventStreamError</span><span class="p">(</span><span class="n">ClientError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedTLSVersionWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Warn when an openssl version that uses TLS 1.2 is required&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ImminentRemovalWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidDNSNameError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when virtual host path is forced on a non-DNS compatible bucket&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Bucket named </span><span class="si">{bucket_name}</span><span class="s1"> is not DNS compatible. Virtual &#39;</span>
+        <span class="s1">&#39;hosted-style addressing cannot be used. The addressing style &#39;</span>
+        <span class="s1">&#39;can be configured by removing the addressing_style value &#39;</span>
+        <span class="s1">&#39;or setting that value to </span><span class="se">\&#39;</span><span class="s1">path</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">auto</span><span class="se">\&#39;</span><span class="s1"> in the AWS Config &#39;</span>
+        <span class="s1">&#39;file or in the botocore.client.Config object.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidS3AddressingStyleError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an invalid path style is specified&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;S3 addressing style </span><span class="si">{s3_addressing_style}</span><span class="s1"> is invalid. Valid options &#39;</span>
+        <span class="s1">&#39;are: </span><span class="se">\&#39;</span><span class="s1">auto</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">virtual</span><span class="se">\&#39;</span><span class="s1">, and </span><span class="se">\&#39;</span><span class="s1">path</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedS3ArnError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when S3 ARN provided to Bucket parameter is not supported&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;S3 ARN </span><span class="si">{arn}</span><span class="s1"> provided to &quot;Bucket&quot; parameter is invalid. Only &#39;</span>
+        <span class="s1">&#39;ARNs for S3 access-points are supported.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedS3ControlArnError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when S3 ARN provided to S3 control parameter is not supported&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;S3 ARN &quot;</span><span class="si">{arn}</span><span class="s1">&quot; provided is invalid for this operation. </span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidHostLabelError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an invalid host label would be bound to an endpoint&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Invalid host label to be bound to the hostname of the endpoint: &#39;</span>
+        <span class="s1">&#39;&quot;</span><span class="si">{label}</span><span class="s1">&quot;.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedOutpostResourceError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when S3 Outpost ARN provided to Bucket parameter is incomplete&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;S3 Outpost ARN resource &quot;</span><span class="si">{resource_name}</span><span class="s1">&quot; provided to &quot;Bucket&quot; &#39;</span>
+        <span class="s1">&#39;parameter is invalid. Only ARNs for S3 Outpost arns with an &#39;</span>
+        <span class="s1">&#39;access-point sub-resource are supported.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedS3ConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an unsupported configuration is used with access-points&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unsupported configuration when using S3: </span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedS3AccesspointConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an unsupported configuration is used with access-points&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unsupported configuration when using S3 access-points: </span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidEndpointDiscoveryConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when invalid value supplied for endpoint_discovery_enabled&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Unsupported configuration value for endpoint_discovery_enabled. &#39;</span>
+        <span class="s1">&#39;Expected one of (&quot;true&quot;, &quot;false&quot;, &quot;auto&quot;) but got </span><span class="si">{config_value}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedS3ControlConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an unsupported configuration is used with S3 Control&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unsupported configuration when using S3 Control: </span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidRetryConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when invalid retry configuration is specified&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Cannot provide retry configuration for &quot;</span><span class="si">{retry_config_option}</span><span class="s1">&quot;. &#39;</span>
+        <span class="s1">&#39;Valid retry configuration options are: </span><span class="si">{valid_options}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidMaxRetryAttemptsError</span><span class="p">(</span><span class="n">InvalidRetryConfigurationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when invalid retry configuration is specified&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Value provided to &quot;max_attempts&quot;: </span><span class="si">{provided_max_attempts}</span><span class="s1"> must &#39;</span>
+        <span class="s1">&#39;be an integer greater than or equal to </span><span class="si">{min_value}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidRetryModeError</span><span class="p">(</span><span class="n">InvalidRetryConfigurationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when invalid retry mode configuration is specified&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Invalid value provided to &quot;mode&quot;: &quot;</span><span class="si">{provided_retry_mode}</span><span class="s1">&quot; must &#39;</span>
+        <span class="s1">&#39;be one of: </span><span class="si">{valid_modes}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidS3UsEast1RegionalEndpointConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error for invalid s3 us-east-1 regional endpoints configuration&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;S3 us-east-1 regional endpoint option &#39;</span>
+        <span class="s1">&#39;</span><span class="si">{s3_us_east_1_regional_endpoint_config}</span><span class="s1"> is &#39;</span>
+        <span class="s1">&#39;invalid. Valid options are: &quot;legacy&quot;, &quot;regional&quot;&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidSTSRegionalEndpointsConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when invalid sts regional endpoints configuration is specified&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;STS regional endpoints option </span><span class="si">{sts_regional_endpoints_config}</span><span class="s1"> is &#39;</span>
+        <span class="s1">&#39;invalid. Valid options are: &quot;legacy&quot;, &quot;regional&quot;&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StubResponseError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Error getting response stub for operation </span><span class="si">{operation_name}</span><span class="s1">: </span><span class="si">{reason}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StubAssertionError</span><span class="p">(</span><span class="n">StubResponseError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnStubbedResponseError</span><span class="p">(</span><span class="n">StubResponseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InfiniteLoopConfigError</span><span class="p">(</span><span class="n">InvalidConfigError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Infinite loop in credential configuration detected. Attempting to &#39;</span>
+        <span class="s1">&#39;load from profile </span><span class="si">{source_profile}</span><span class="s1"> which has already been visited. &#39;</span>
+        <span class="s1">&#39;Visited profiles: </span><span class="si">{visited_profiles}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RefreshWithMFAUnsupportedError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Cannot refresh credentials: MFA token required.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MD5UnavailableError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;This system does not support MD5 generation.&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MissingDependencyException</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Missing Dependency: </span><span class="si">{msg}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MetadataRetrievalError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Error retrieving metadata: </span><span class="si">{error_msg}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UndefinedModelAttributeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MissingServiceIdError</span><span class="p">(</span><span class="n">UndefinedModelAttributeError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The model being used for the service </span><span class="si">{service_name}</span><span class="s2"> is missing the &quot;</span>
+        <span class="s2">&quot;serviceId metadata property, which is required.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SSOError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;An unspecified error happened when resolving AWS credentials or an &quot;</span>
+        <span class="s2">&quot;access token from SSO.&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SSOTokenLoadError</span><span class="p">(</span><span class="n">SSOError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;Error loading SSO Token: </span><span class="si">{error_msg}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnauthorizedSSOTokenError</span><span class="p">(</span><span class="n">SSOError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The SSO session associated with this profile has expired or is &quot;</span>
+        <span class="s2">&quot;otherwise invalid. To refresh this SSO session run aws sso login &quot;</span>
+        <span class="s2">&quot;with the corresponding profile.&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CapacityNotAvailableError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Insufficient request capacity available.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidProxiesConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Invalid configuration value(s) provided for proxies_config.&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidDefaultsMode</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Client configured with invalid defaults mode: </span><span class="si">{mode}</span><span class="s1">. &#39;</span>
+        <span class="s1">&#39;Valid defaults modes include: </span><span class="si">{valid_modes}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AwsChunkedWrapperError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FlexibleChecksumError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{error_msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidEndpointConfigurationError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Invalid endpoint configuration: </span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EndpointProviderError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base error for the EndpointProvider class&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EndpointResolutionError</span><span class="p">(</span><span class="n">EndpointProviderError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when input parameters resolve to an error rule&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{msg}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownEndpointResolutionBuiltInName</span><span class="p">(</span><span class="n">EndpointProviderError</span><span class="p">):</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;Unknown builtin variable name: </span><span class="si">{name}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidChecksumConfigError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when an invalid checksum config value is supplied.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Unsupported configuration value for </span><span class="si">{config_key}</span><span class="s1">. &#39;</span>
+        <span class="s1">&#39;Expected one of </span><span class="si">{valid_options}</span><span class="s1"> but got </span><span class="si">{config_value}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedServiceProtocolsError</span><span class="p">(</span><span class="n">BotoCoreError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when a service does not use any protocol supported by botocore.&quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Botocore supports </span><span class="si">{botocore_supported_protocols}</span><span class="s1">, but service </span><span class="si">{service}</span><span class="s1"> only &#39;</span>
+        <span class="s1">&#39;supports </span><span class="si">{service_supported_protocols}</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">botocore.exceptions</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

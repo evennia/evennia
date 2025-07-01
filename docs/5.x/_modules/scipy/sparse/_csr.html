@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scipy.sparse._csr &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scipy.sparse._csr</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scipy.sparse._csr</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Compressed Sparse Row matrix format&quot;&quot;&quot;</span>
+
+<span class="n">__docformat__</span> <span class="o">=</span> <span class="s2">&quot;restructuredtext en&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;csr_array&#39;</span><span class="p">,</span> <span class="s1">&#39;csr_matrix&#39;</span><span class="p">,</span> <span class="s1">&#39;isspmatrix_csr&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">spmatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_spbase</span><span class="p">,</span> <span class="n">sparray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sparsetools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">csr_tocsc</span><span class="p">,</span> <span class="n">csr_tobsr</span><span class="p">,</span> <span class="n">csr_count_blocks</span><span class="p">,</span>
+                           <span class="n">get_csr_submatrix</span><span class="p">,</span> <span class="n">csr_sample_values</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sputils</span><span class="w"> </span><span class="kn">import</span> <span class="n">upcast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._compressed</span><span class="w"> </span><span class="kn">import</span> <span class="n">_cs_matrix</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_csr_base</span><span class="p">(</span><span class="n">_cs_matrix</span><span class="p">):</span>
+    <span class="n">_format</span> <span class="o">=</span> <span class="s1">&#39;csr&#39;</span>
+    <span class="n">_allow_nd</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">axes</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sparse arrays/matrices do not support &quot;</span>
+                              <span class="s2">&quot;an &#39;axes&#39; parameter because swapping &quot;</span>
+                              <span class="s2">&quot;dimensions is the only logical permutation.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="bp">self</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csc_container</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+
+    <span class="n">transpose</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_spbase</span><span class="o">.</span><span class="n">transpose</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot convert a 1d sparse array to lil format&quot;</span><span class="p">)</span>
+        <span class="n">lil</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lil_container</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum_duplicates</span><span class="p">()</span>
+        <span class="n">ptr</span><span class="p">,</span><span class="n">ind</span><span class="p">,</span><span class="n">dat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">lil</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">lil</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">rows</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">lil</span>
+
+    <span class="n">tolil</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_spbase</span><span class="o">.</span><span class="n">tolil</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tocsr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="n">tocsr</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_spbase</span><span class="o">.</span><span class="n">tocsr</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tocsc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot convert a 1d sparse array to csc format&quot;</span><span class="p">)</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">idx_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_dtype</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">),</span>
+                                    <span class="n">maxval</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnz</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">upcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">csr_tocsc</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">idx_dtype</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">idx_dtype</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                  <span class="n">indptr</span><span class="p">,</span>
+                  <span class="n">indices</span><span class="p">,</span>
+                  <span class="n">data</span><span class="p">)</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csc_container</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">has_sorted_indices</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">A</span>
+
+    <span class="n">tocsc</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_spbase</span><span class="o">.</span><span class="n">tocsc</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tobsr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocksize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot convert a 1d sparse array to bsr format&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">blocksize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">._spfuncs</span><span class="w"> </span><span class="kn">import</span> <span class="n">estimate_blocksize</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tobsr</span><span class="p">(</span><span class="n">blocksize</span><span class="o">=</span><span class="n">estimate_blocksize</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">blocksize</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">arg1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bsr_container</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">R</span><span class="p">,</span><span class="n">C</span> <span class="o">=</span> <span class="n">blocksize</span>
+            <span class="n">M</span><span class="p">,</span><span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="k">if</span> <span class="n">R</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">C</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">M</span> <span class="o">%</span> <span class="n">R</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">N</span> <span class="o">%</span> <span class="n">C</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid blocksize </span><span class="si">{</span><span class="n">blocksize</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="n">blks</span> <span class="o">=</span> <span class="n">csr_count_blocks</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+
+            <span class="n">idx_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_dtype</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">),</span>
+                                        <span class="n">maxval</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">N</span><span class="o">//</span><span class="n">C</span><span class="p">,</span> <span class="n">blks</span><span class="p">))</span>
+            <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">M</span><span class="o">//</span><span class="n">R</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">blks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">blks</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">C</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+            <span class="n">csr_tobsr</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">idx_dtype</span><span class="p">),</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">idx_dtype</span><span class="p">),</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bsr_container</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+            <span class="p">)</span>
+
+    <span class="n">tobsr</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_spbase</span><span class="o">.</span><span class="n">tobsr</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="c1"># these functions are used by the parent class (_cs_matrix)</span>
+    <span class="c1"># to remove redundancy between csc_matrix and csr_array</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_swap</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;swap the members of x if this is a column-oriented matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">zero</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">u</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">zero</span>
+                <span class="k">yield</span> <span class="n">d</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">zero</span>
+            <span class="k">return</span>
+
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="c1"># return 1d (sparray) or 2drow (spmatrix)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sparray</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">indptr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">-</span> <span class="n">i0</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_getrow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a copy of row i of the matrix, as a (1 x n)</span>
+<span class="sd">        CSR matrix (row vector).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;index (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">) out of range&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">M</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">M</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;index (</span><span class="si">%d</span><span class="s1">) out of range&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">get_csr_submatrix</span><span class="p">(</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
+                              <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_getcol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a copy of column i. A (m x 1) sparse array (column vector).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;getcol not provided for 1d arrays. Use indexing A[j]&quot;</span><span class="p">)</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">N</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">N</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;index (</span><span class="si">%d</span><span class="s1">) out of range&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">indptr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">get_csr_submatrix</span><span class="p">(</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                              <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">spot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">==</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">spot</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">spot</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">step</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ret</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minor_slice</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">idx_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_dtype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">idx_dtype</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">csr_sample_values</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                          <span class="n">row</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_intXarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getrow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">_minor_index_fancy</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_intXslice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">step</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># TODO: uncomment this once it&#39;s faster:</span>
+        <span class="c1"># return self._getrow(row)._minor_slice(col)</span>
+
+        <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+        <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">row</span><span class="p">:</span><span class="n">row</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">row_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">ii</span><span class="p">:</span><span class="n">jj</span><span class="p">]</span>
+        <span class="n">row_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ii</span><span class="p">:</span><span class="n">jj</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">stride</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_indices</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">row_indices</span> <span class="o">&lt;</span> <span class="n">stop</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_indices</span> <span class="o">&lt;=</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">row_indices</span> <span class="o">&gt;</span> <span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">row_indices</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">%</span> <span class="n">stride</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="n">row_indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride</span>
+        <span class="n">row_data</span> <span class="o">=</span> <span class="n">row_data</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="n">row_indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">row_indices</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">row_data</span> <span class="o">=</span> <span class="n">row_data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">row_indices</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">row_indices</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">stride</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="n">row_data</span><span class="p">,</span> <span class="n">row_indices</span><span class="p">,</span> <span class="n">row_indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                              <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sliceXint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">step</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_major_slice</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="n">minor</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sliceXarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_major_slice</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">_minor_index_fancy</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_arrayXint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_major_index_fancy</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="n">minor</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_arrayXslice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">step</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">*</span><span class="n">col</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_arrayXarray</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_major_index_fancy</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">_get_submatrix</span><span class="p">(</span><span class="n">minor</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_many</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">idx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_many</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">isspmatrix_csr</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Is `x` of csr_matrix type?</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x</span>
+<span class="sd">        object to check for being a csr matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if `x` is a csr matrix, False otherwise</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from scipy.sparse import csr_array, csr_matrix, coo_matrix, isspmatrix_csr</span>
+<span class="sd">    &gt;&gt;&gt; isspmatrix_csr(csr_matrix([[5]]))</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; isspmatrix_csr(csr_array([[5]]))</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; isspmatrix_csr(coo_matrix([[5]]))</span>
+<span class="sd">    False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">csr_matrix</span><span class="p">)</span>
+
+
+<span class="c1"># This namespace class separates array from matrix with isinstance</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">csr_array</span><span class="p">(</span><span class="n">_csr_base</span><span class="p">,</span> <span class="n">sparray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compressed Sparse Row array.</span>
+
+<span class="sd">    This can be instantiated in several ways:</span>
+<span class="sd">        csr_array(D)</span>
+<span class="sd">            where D is a 2-D ndarray</span>
+
+<span class="sd">        csr_array(S)</span>
+<span class="sd">            with another sparse array or matrix S (equivalent to S.tocsr())</span>
+
+<span class="sd">        csr_array((M, N), [dtype])</span>
+<span class="sd">            to construct an empty array with shape (M, N)</span>
+<span class="sd">            dtype is optional, defaulting to dtype=&#39;d&#39;.</span>
+
+<span class="sd">        csr_array((data, (row_ind, col_ind)), [shape=(M, N)])</span>
+<span class="sd">            where ``data``, ``row_ind`` and ``col_ind`` satisfy the</span>
+<span class="sd">            relationship ``a[row_ind[k], col_ind[k]] = data[k]``.</span>
+
+<span class="sd">        csr_array((data, indices, indptr), [shape=(M, N)])</span>
+<span class="sd">            is the standard CSR representation where the column indices for</span>
+<span class="sd">            row i are stored in ``indices[indptr[i]:indptr[i+1]]`` and their</span>
+<span class="sd">            corresponding values are stored in ``data[indptr[i]:indptr[i+1]]``.</span>
+<span class="sd">            If the shape parameter is not supplied, the array dimensions</span>
+<span class="sd">            are inferred from the index arrays.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        Data type of the array</span>
+<span class="sd">    shape : 2-tuple</span>
+<span class="sd">        Shape of the array</span>
+<span class="sd">    ndim : int</span>
+<span class="sd">        Number of dimensions (this is always 2)</span>
+<span class="sd">    nnz</span>
+<span class="sd">    size</span>
+<span class="sd">    data</span>
+<span class="sd">        CSR format data array of the array</span>
+<span class="sd">    indices</span>
+<span class="sd">        CSR format index array of the array</span>
+<span class="sd">    indptr</span>
+<span class="sd">        CSR format index pointer array of the array</span>
+<span class="sd">    has_sorted_indices</span>
+<span class="sd">    has_canonical_format</span>
+<span class="sd">    T</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Sparse arrays can be used in arithmetic operations: they support</span>
+<span class="sd">    addition, subtraction, multiplication, division, and matrix power.</span>
+
+<span class="sd">    Advantages of the CSR format</span>
+<span class="sd">      - efficient arithmetic operations CSR + CSR, CSR * CSR, etc.</span>
+<span class="sd">      - efficient row slicing</span>
+<span class="sd">      - fast matrix vector products</span>
+
+<span class="sd">    Disadvantages of the CSR format</span>
+<span class="sd">      - slow column slicing operations (consider CSC)</span>
+<span class="sd">      - changes to the sparsity structure are expensive (consider LIL or DOK)</span>
+
+<span class="sd">    Canonical Format</span>
+<span class="sd">        - Within each row, indices are sorted by column.</span>
+<span class="sd">        - There are no duplicate entries.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from scipy.sparse import csr_array</span>
+<span class="sd">    &gt;&gt;&gt; csr_array((3, 4), dtype=np.int8).toarray()</span>
+<span class="sd">    array([[0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0]], dtype=int8)</span>
+
+<span class="sd">    &gt;&gt;&gt; row = np.array([0, 0, 1, 2, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; col = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; csr_array((data, (row, col)), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[1, 0, 2],</span>
+<span class="sd">           [0, 0, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+
+<span class="sd">    &gt;&gt;&gt; indptr = np.array([0, 2, 3, 6])</span>
+<span class="sd">    &gt;&gt;&gt; indices = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; csr_array((data, indices, indptr), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[1, 0, 2],</span>
+<span class="sd">           [0, 0, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+
+<span class="sd">    Duplicate entries are summed together:</span>
+
+<span class="sd">    &gt;&gt;&gt; row = np.array([0, 1, 2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; col = np.array([0, 1, 1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 4, 8])</span>
+<span class="sd">    &gt;&gt;&gt; csr_array((data, (row, col)), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[9, 0, 0],</span>
+<span class="sd">           [0, 2, 0],</span>
+<span class="sd">           [0, 4, 0]])</span>
+
+<span class="sd">    As an example of how to construct a CSR array incrementally,</span>
+<span class="sd">    the following snippet builds a term-document array from texts:</span>
+
+<span class="sd">    &gt;&gt;&gt; docs = [[&quot;hello&quot;, &quot;world&quot;, &quot;hello&quot;], [&quot;goodbye&quot;, &quot;cruel&quot;, &quot;world&quot;]]</span>
+<span class="sd">    &gt;&gt;&gt; indptr = [0]</span>
+<span class="sd">    &gt;&gt;&gt; indices = []</span>
+<span class="sd">    &gt;&gt;&gt; data = []</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary = {}</span>
+<span class="sd">    &gt;&gt;&gt; for d in docs:</span>
+<span class="sd">    ...     for term in d:</span>
+<span class="sd">    ...         index = vocabulary.setdefault(term, len(vocabulary))</span>
+<span class="sd">    ...         indices.append(index)</span>
+<span class="sd">    ...         data.append(1)</span>
+<span class="sd">    ...     indptr.append(len(indices))</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; csr_array((data, indices, indptr), dtype=int).toarray()</span>
+<span class="sd">    array([[2, 1, 0, 0],</span>
+<span class="sd">           [0, 1, 1, 1]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="csr_matrix">
+<a class="viewcode-back" href="../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.csr_matrix">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">csr_matrix</span><span class="p">(</span><span class="n">spmatrix</span><span class="p">,</span> <span class="n">_csr_base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compressed Sparse Row matrix.</span>
+
+<span class="sd">    This can be instantiated in several ways:</span>
+<span class="sd">        csr_matrix(D)</span>
+<span class="sd">            where D is a 2-D ndarray</span>
+
+<span class="sd">        csr_matrix(S)</span>
+<span class="sd">            with another sparse array or matrix S (equivalent to S.tocsr())</span>
+
+<span class="sd">        csr_matrix((M, N), [dtype])</span>
+<span class="sd">            to construct an empty matrix with shape (M, N)</span>
+<span class="sd">            dtype is optional, defaulting to dtype=&#39;d&#39;.</span>
+
+<span class="sd">        csr_matrix((data, (row_ind, col_ind)), [shape=(M, N)])</span>
+<span class="sd">            where ``data``, ``row_ind`` and ``col_ind`` satisfy the</span>
+<span class="sd">            relationship ``a[row_ind[k], col_ind[k]] = data[k]``.</span>
+
+<span class="sd">        csr_matrix((data, indices, indptr), [shape=(M, N)])</span>
+<span class="sd">            is the standard CSR representation where the column indices for</span>
+<span class="sd">            row i are stored in ``indices[indptr[i]:indptr[i+1]]`` and their</span>
+<span class="sd">            corresponding values are stored in ``data[indptr[i]:indptr[i+1]]``.</span>
+<span class="sd">            If the shape parameter is not supplied, the matrix dimensions</span>
+<span class="sd">            are inferred from the index arrays.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        Data type of the matrix</span>
+<span class="sd">    shape : 2-tuple</span>
+<span class="sd">        Shape of the matrix</span>
+<span class="sd">    ndim : int</span>
+<span class="sd">        Number of dimensions (this is always 2)</span>
+<span class="sd">    nnz</span>
+<span class="sd">    size</span>
+<span class="sd">    data</span>
+<span class="sd">        CSR format data array of the matrix</span>
+<span class="sd">    indices</span>
+<span class="sd">        CSR format index array of the matrix</span>
+<span class="sd">    indptr</span>
+<span class="sd">        CSR format index pointer array of the matrix</span>
+<span class="sd">    has_sorted_indices</span>
+<span class="sd">    has_canonical_format</span>
+<span class="sd">    T</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Sparse matrices can be used in arithmetic operations: they support</span>
+<span class="sd">    addition, subtraction, multiplication, division, and matrix power.</span>
+
+<span class="sd">    Advantages of the CSR format</span>
+<span class="sd">      - efficient arithmetic operations CSR + CSR, CSR * CSR, etc.</span>
+<span class="sd">      - efficient row slicing</span>
+<span class="sd">      - fast matrix vector products</span>
+
+<span class="sd">    Disadvantages of the CSR format</span>
+<span class="sd">      - slow column slicing operations (consider CSC)</span>
+<span class="sd">      - changes to the sparsity structure are expensive (consider LIL or DOK)</span>
+
+<span class="sd">    Canonical Format</span>
+<span class="sd">        - Within each row, indices are sorted by column.</span>
+<span class="sd">        - There are no duplicate entries.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from scipy.sparse import csr_matrix</span>
+<span class="sd">    &gt;&gt;&gt; csr_matrix((3, 4), dtype=np.int8).toarray()</span>
+<span class="sd">    array([[0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0]], dtype=int8)</span>
+
+<span class="sd">    &gt;&gt;&gt; row = np.array([0, 0, 1, 2, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; col = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; csr_matrix((data, (row, col)), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[1, 0, 2],</span>
+<span class="sd">           [0, 0, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+
+<span class="sd">    &gt;&gt;&gt; indptr = np.array([0, 2, 3, 6])</span>
+<span class="sd">    &gt;&gt;&gt; indices = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; csr_matrix((data, indices, indptr), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[1, 0, 2],</span>
+<span class="sd">           [0, 0, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+
+<span class="sd">    Duplicate entries are summed together:</span>
+
+<span class="sd">    &gt;&gt;&gt; row = np.array([0, 1, 2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; col = np.array([0, 1, 1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 2, 4, 8])</span>
+<span class="sd">    &gt;&gt;&gt; csr_matrix((data, (row, col)), shape=(3, 3)).toarray()</span>
+<span class="sd">    array([[9, 0, 0],</span>
+<span class="sd">           [0, 2, 0],</span>
+<span class="sd">           [0, 4, 0]])</span>
+
+<span class="sd">    As an example of how to construct a CSR matrix incrementally,</span>
+<span class="sd">    the following snippet builds a term-document matrix from texts:</span>
+
+<span class="sd">    &gt;&gt;&gt; docs = [[&quot;hello&quot;, &quot;world&quot;, &quot;hello&quot;], [&quot;goodbye&quot;, &quot;cruel&quot;, &quot;world&quot;]]</span>
+<span class="sd">    &gt;&gt;&gt; indptr = [0]</span>
+<span class="sd">    &gt;&gt;&gt; indices = []</span>
+<span class="sd">    &gt;&gt;&gt; data = []</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary = {}</span>
+<span class="sd">    &gt;&gt;&gt; for d in docs:</span>
+<span class="sd">    ...     for term in d:</span>
+<span class="sd">    ...         index = vocabulary.setdefault(term, len(vocabulary))</span>
+<span class="sd">    ...         indices.append(index)</span>
+<span class="sd">    ...         data.append(1)</span>
+<span class="sd">    ...     indptr.append(len(indices))</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; csr_matrix((data, indices, indptr), dtype=int).toarray()</span>
+<span class="sd">    array([[2, 1, 0, 0],</span>
+<span class="sd">           [0, 1, 1, 1]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scipy.sparse._csr</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

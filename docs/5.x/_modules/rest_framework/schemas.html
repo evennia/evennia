@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rest_framework.schemas &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">rest_framework.schemas</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rest_framework.schemas</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">rest_framework.schemas</span>
+
+<span class="sd">schemas:</span>
+<span class="sd">    __init__.py</span>
+<span class="sd">    generators.py   # Top-down schema generation</span>
+<span class="sd">    inspectors.py   # Per-endpoint view introspection</span>
+<span class="sd">    utils.py        # Shared helper functions</span>
+<span class="sd">    views.py        # Houses `SchemaView`, `APIView` subclass.</span>
+
+<span class="sd">We expose a minimal &quot;public&quot; API directly from `schemas`. This covers the</span>
+<span class="sd">basic use-cases:</span>
+
+<span class="sd">    from rest_framework.schemas import (</span>
+<span class="sd">        AutoSchema,</span>
+<span class="sd">        ManualSchema,</span>
+<span class="sd">        get_schema_view,</span>
+<span class="sd">        SchemaGenerator,</span>
+<span class="sd">    )</span>
+
+<span class="sd">Other access should target the submodules directly</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_settings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">coreapi</span><span class="p">,</span> <span class="n">openapi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.coreapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoSchema</span><span class="p">,</span> <span class="n">ManualSchema</span><span class="p">,</span> <span class="n">SchemaGenerator</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.inspectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultSchema</span>  <span class="c1"># noqa</span>
+
+
+<div class="viewcode-block" id="get_schema_view">
+<a class="viewcode-back" href="../../api/evennia.web.api.urls.html#evennia.web.api.urls.get_schema_view">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_schema_view</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">urlconf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">renderer_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">public</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">authentication_classes</span><span class="o">=</span><span class="n">api_settings</span><span class="o">.</span><span class="n">DEFAULT_AUTHENTICATION_CLASSES</span><span class="p">,</span>
+        <span class="n">permission_classes</span><span class="o">=</span><span class="n">api_settings</span><span class="o">.</span><span class="n">DEFAULT_PERMISSION_CLASSES</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a schema view.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">generator_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">coreapi</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">():</span>
+            <span class="n">generator_class</span> <span class="o">=</span> <span class="n">coreapi</span><span class="o">.</span><span class="n">SchemaGenerator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">generator_class</span> <span class="o">=</span> <span class="n">openapi</span><span class="o">.</span><span class="n">SchemaGenerator</span>
+
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">generator_class</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">urlconf</span><span class="o">=</span><span class="n">urlconf</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="n">patterns</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Avoid import cycle on APIView</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
+    <span class="k">return</span> <span class="n">SchemaView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span>
+        <span class="n">renderer_classes</span><span class="o">=</span><span class="n">renderer_classes</span><span class="p">,</span>
+        <span class="n">schema_generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
+        <span class="n">public</span><span class="o">=</span><span class="n">public</span><span class="p">,</span>
+        <span class="n">authentication_classes</span><span class="o">=</span><span class="n">authentication_classes</span><span class="p">,</span>
+        <span class="n">permission_classes</span><span class="o">=</span><span class="n">permission_classes</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">rest_framework.schemas</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

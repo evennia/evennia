@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.conch.manhole &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.conch.manhole</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.conch.manhole</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.conch.test.test_manhole -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Line-input oriented interactive interpreter loop.</span>
+
+<span class="sd">Provides classes for handling Python source input and arbitrary output</span>
+<span class="sd">interactively from a Twisted application.  Also included is syntax coloring</span>
+<span class="sd">code with support for VT102 terminals, control code handling (^C, ^D, ^Q),</span>
+<span class="sd">and reasonable handling of Deferreds.</span>
+
+<span class="sd">@author: Jp Calderone</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">code</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tokenize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exception</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch</span><span class="w"> </span><span class="kn">import</span> <span class="n">recvline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.htmlizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenPrinter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.monkey</span><span class="w"> </span><span class="kn">import</span> <span class="n">MonkeyPatcher</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FileWrapper</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Minimal write-file-like object.</span>
+
+<span class="sd">    Writes are translated into addOutput calls on an object passed to</span>
+<span class="sd">    __init__.  Newlines are also converted from network to local style.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">softspace</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o</span> <span class="o">=</span> <span class="n">o</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">addOutput</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">writelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ManholeInterpreter</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">InteractiveInterpreter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interactive Interpreter with special output and Deferred support.</span>
+
+<span class="sd">    Aside from the features provided by L{code.InteractiveInterpreter}, this</span>
+<span class="sd">    class captures sys.stdout output and redirects it to the appropriate</span>
+<span class="sd">    location (the Manhole protocol instance).  It also treats Deferreds</span>
+<span class="sd">    which reach the top-level specially: each is formatted to the user with</span>
+<span class="sd">    a unique identifier and a new callback and errback added to it, each of</span>
+<span class="sd">    which will format the unique identifier and the result with which the</span>
+<span class="sd">    Deferred fires and then pass it on to the next participant in the</span>
+<span class="sd">    callback chain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">numDeferreds</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&lt;console&gt;&quot;</span><span class="p">):</span>
+        <span class="n">code</span><span class="o">.</span><span class="n">InteractiveInterpreter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetBuffer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monkeyPatcher</span> <span class="o">=</span> <span class="n">MonkeyPatcher</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monkeyPatcher</span><span class="o">.</span><span class="n">addPatch</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;displayhook&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">displayhook</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monkeyPatcher</span><span class="o">.</span><span class="n">addPatch</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;excepthook&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excepthook</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monkeyPatcher</span><span class="o">.</span><span class="n">addPatch</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;stdout&quot;</span><span class="p">,</span> <span class="n">FileWrapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resetBuffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the input buffer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Push a line to the interpreter.</span>
+
+<span class="sd">        The line should not have a trailing newline; it may have</span>
+<span class="sd">        internal newlines.  The line is appended to a buffer and the</span>
+<span class="sd">        interpreter&#39;s runsource() method is called with the</span>
+<span class="sd">        concatenated contents of the buffer as source.  If this</span>
+<span class="sd">        indicates that the command was executed or invalid, the buffer</span>
+<span class="sd">        is reset; otherwise, the command is incomplete, and the buffer</span>
+<span class="sd">        is left as it was after the line was appended.  The return</span>
+<span class="sd">        value is 1 if more input is required, 0 if the line was dealt</span>
+<span class="sd">        with in some way (this is the same as runsource()).</span>
+
+<span class="sd">        @param line: line of text</span>
+<span class="sd">        @type line: L{bytes}</span>
+<span class="sd">        @return: L{bool} from L{code.InteractiveInterpreter.runsource}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">more</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runsource</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">more</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resetBuffer</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">more</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">runcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monkeyPatcher</span><span class="p">:</span>
+            <span class="n">code</span><span class="o">.</span><span class="n">InteractiveInterpreter</span><span class="o">.</span><span class="n">runcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">excepthook</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">excType</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
+        <span class="n">excValue</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">,</span>
+        <span class="n">excTraceback</span><span class="p">:</span> <span class="n">TracebackType</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format exception tracebacks and write them to the output handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">code_obj</span> <span class="o">=</span> <span class="n">excTraceback</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_code</span>
+        <span class="k">if</span> <span class="n">code_obj</span><span class="o">.</span><span class="n">co_filename</span> <span class="o">==</span> <span class="n">code</span><span class="o">.</span><span class="vm">__file__</span> <span class="ow">and</span> <span class="n">code_obj</span><span class="o">.</span><span class="n">co_name</span> <span class="o">==</span> <span class="s2">&quot;runcode&quot;</span><span class="p">:</span>
+            <span class="n">traceback</span> <span class="o">=</span> <span class="n">excTraceback</span><span class="o">.</span><span class="n">tb_next</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Workaround for https://github.com/python/cpython/issues/122478,</span>
+            <span class="c1"># present e.g. in Python 3.12.6:</span>
+            <span class="n">traceback</span> <span class="o">=</span> <span class="n">excTraceback</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">format_exception</span><span class="p">(</span><span class="n">excType</span><span class="p">,</span> <span class="n">excValue</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">displayhook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locals</span><span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">):</span>
+            <span class="c1"># XXX Ick, where is my &quot;hasFired()&quot; interface?</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;Deferred #</span><span class="si">%d</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)][</span><span class="mi">0</span><span class="p">],))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numDeferreds</span>
+                <span class="n">d</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">numDeferreds</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cbDisplayDeferred</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ebDisplayDeferred</span><span class="p">,</span>
+                    <span class="n">callbackArgs</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">obj</span><span class="p">),</span>
+                    <span class="n">errbackArgs</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">obj</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;Deferred #</span><span class="si">%d</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbDisplayDeferred</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Deferred #</span><span class="si">%d</span><span class="s2"> called back: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">result</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebDisplayDeferred</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failure</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Deferred #</span><span class="si">%d</span><span class="s2"> failed: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">failure</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingDeferreds</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">failure</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">isAsync</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">addOutput</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">isAsync</span><span class="p">)</span>
+
+
+<span class="n">CTRL_C</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x03</span><span class="s2">&quot;</span>
+<span class="n">CTRL_D</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x04</span><span class="s2">&quot;</span>
+<span class="n">CTRL_BACKSLASH</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1c</span><span class="s2">&quot;</span>
+<span class="n">CTRL_L</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x0c</span><span class="s2">&quot;</span>
+<span class="n">CTRL_A</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x01</span><span class="s2">&quot;</span>
+<span class="n">CTRL_E</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x05</span><span class="s2">&quot;</span>
+
+
+<div class="viewcode-block" id="Manhole">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Manhole</span><span class="p">(</span><span class="n">recvline</span><span class="o">.</span><span class="n">HistoricRecvLine</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mediator between a fancy line source and an interactive interpreter.</span>
+
+<span class="sd">    This accepts lines from its transport and passes them on to a</span>
+<span class="sd">    L{ManholeInterpreter}.  Control commands (^C, ^D, ^\) are also handled</span>
+<span class="sd">    with something approximating their normal terminal-mode behavior.  It</span>
+<span class="sd">    can optionally be constructed with a dict which will be used as the</span>
+<span class="sd">    local namespace for any code executed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">namespace</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Manhole.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">recvline</span><span class="o">.</span><span class="n">HistoricRecvLine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Manhole.connectionMade">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.connectionMade">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">recvline</span><span class="o">.</span><span class="n">HistoricRecvLine</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span> <span class="o">=</span> <span class="n">ManholeInterpreter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_C</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_INT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_D</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_EOF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_L</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_FF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_A</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_HOME</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_E</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_END</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_BACKSLASH</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_QUIT</span></div>
+
+
+<div class="viewcode-block" id="Manhole.handle_INT">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.handle_INT">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_INT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle ^C as an interrupt keystroke by resetting the current input</span>
+<span class="sd">        variables to their initial state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pn</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">resetBuffer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;KeyboardInterrupt&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Manhole.handle_EOF">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.handle_EOF">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_EOF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\a</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_QUIT</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Manhole.handle_FF">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.handle_FF">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_FF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a &#39;form feed&#39; byte - generally used to request a screen</span>
+<span class="sd">        refresh/redraw.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">eraseDisplay</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorHome</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drawInputLine</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Manhole.handle_QUIT">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.handle_QUIT">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_QUIT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_needsNewline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">lastWrite</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">E&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Manhole.addOutput">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.addOutput">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">isAsync</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isAsync</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">eraseLine</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorBackward</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">isAsync</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needsNewline</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">:</span>
+                <span class="n">oldBuffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deliverBuffer</span><span class="p">(</span><span class="n">oldBuffer</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Manhole.lineReceived">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.Manhole.lineReceived">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lineReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">more</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pn</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">more</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needsNewline</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">])</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">VT102Writer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Colorizer for Python tokens.</span>
+
+<span class="sd">    A series of tokens are written to instances of this object.  Each is</span>
+<span class="sd">    colored in a particular way.  The final line of the result of this is</span>
+<span class="sd">    generally added to the output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">typeToColor</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[31m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;keyword&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[32m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parameter&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[33m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1;33m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[35m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[36m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[37m&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">normalColor</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">written</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeToColor</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">and</span> <span class="n">token</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">written</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">written</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">written</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalColor</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">written</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lastColorizedLine</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tokenize and colorize the given Python source.</span>
+
+<span class="sd">    Returns a VT102-format colorized version of the last line of C{source}.</span>
+
+<span class="sd">    @param source: Python source code</span>
+<span class="sd">    @type source: L{str} or L{bytes}</span>
+<span class="sd">    @return: L{bytes} of colorized source</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">VT102Writer</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">TokenPrinter</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">write</span><span class="p">)</span><span class="o">.</span><span class="n">printtoken</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">readline</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">tokenType</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="n">p</span><span class="p">(</span><span class="n">tokenType</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ColoredManhole</span><span class="p">(</span><span class="n">Manhole</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A REPL which syntax colors input as users type it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getSource</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string containing the currently entered source.</span>
+
+<span class="sd">        This is only the code which will be considered for execution</span>
+<span class="sd">        next.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">characterReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch</span><span class="p">,</span> <span class="n">moreCharactersComing</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;insert&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span><span class="p">,</span> <span class="n">ch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">moreCharactersComing</span><span class="p">:</span>
+            <span class="c1"># Skip it all, we&#39;ll get called with another character in</span>
+            <span class="c1"># like 2 femtoseconds.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t bother to try to color whitespace</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSource</span><span class="p">()</span>
+
+        <span class="c1"># Try to write some junk</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">coloredLine</span> <span class="o">=</span> <span class="n">lastColorizedLine</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">TokenError</span><span class="p">:</span>
+            <span class="c1"># We couldn&#39;t do it.  Strange.  Oh well, just add the character.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Success!  Clear the source on this line.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">eraseLine</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorBackward</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="p">)</span>
+
+            <span class="c1"># And write a new, colorized one.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pn</span><span class="p">]</span> <span class="o">+</span> <span class="n">coloredLine</span><span class="p">)</span>
+
+            <span class="c1"># And move the cursor to where it belongs</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span>
+            <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorBackward</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.conch.manhole</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

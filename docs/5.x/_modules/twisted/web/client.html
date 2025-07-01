@@ -1,0 +1,1960 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.web.client &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.web.client</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.web.test.test_webclient,twisted.web.test.test_agent -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">HTTP client.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">http.cookiejar</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieJar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urldefrag</span><span class="p">,</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlunparse</span> <span class="k">as</span> <span class="n">_urlunparse</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">implementer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">incremental</span><span class="w"> </span><span class="kn">import</span> <span class="n">Version</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.abstract</span><span class="w"> </span><span class="kn">import</span> <span class="n">isIPv6Address</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.endpoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">HostnameEndpoint</span><span class="p">,</span> <span class="n">wrapClientTLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">IOpenSSLContextFactory</span><span class="p">,</span> <span class="n">IProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">nativeString</span><span class="p">,</span> <span class="n">networkString</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">proxyForInterface</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.deprecate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">deprecatedModuleAttribute</span><span class="p">,</span>
+    <span class="n">getDeprecationWarningString</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.failure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Failure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">error</span><span class="p">,</span> <span class="n">http</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web._newclient</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ensureValidMethod</span><span class="p">,</span> <span class="n">_ensureValidURI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.http_headers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">_nameEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.iweb</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">UNKNOWN_LENGTH</span><span class="p">,</span>
+    <span class="n">IAgent</span><span class="p">,</span>
+    <span class="n">IAgentEndpointFactory</span><span class="p">,</span>
+    <span class="n">IBodyProducer</span><span class="p">,</span>
+    <span class="n">IPolicyForHTTPS</span><span class="p">,</span>
+    <span class="n">IResponse</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># For the purpose of type-checking we want our faked-out types to be identical to the types they are replacing.</span>
+<span class="c1"># For the purpose of the impementation, we want to start</span>
+<span class="c1"># with a blank slate so that we don&#39;t accidentally use</span>
+<span class="c1"># any of the real implementation.</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">email.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmailMessage</span> <span class="k">as</span> <span class="n">_InfoType</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">http.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPResponse</span> <span class="k">as</span> <span class="n">_ResponseBase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span> <span class="k">as</span> <span class="n">_RequestBase</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_RequestBase</span> <span class="o">=</span> <span class="nb">object</span>
+    <span class="n">_ResponseBase</span> <span class="o">=</span> <span class="nb">object</span>
+    <span class="n">_InfoType</span> <span class="o">=</span> <span class="nb">object</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">urlunparse</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">_urlunparse</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;charmap&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;charmap&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PartialDownloadError</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">Error</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Page was only partially downloaded, we got disconnected in middle.</span>
+
+<span class="sd">    @ivar response: All of the response body which was downloaded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">URI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A URI object.</span>
+
+<span class="sd">    @see: U{https://tools.ietf.org/html/draft-ietf-httpbis-p1-messaging-21}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @type scheme: L{bytes}</span>
+<span class="sd">        @param scheme: URI scheme specifier.</span>
+
+<span class="sd">        @type netloc: L{bytes}</span>
+<span class="sd">        @param netloc: Network location component.</span>
+
+<span class="sd">        @type host: L{bytes}</span>
+<span class="sd">        @param host: Host name. For IPv6 address literals the brackets are</span>
+<span class="sd">            stripped.</span>
+
+<span class="sd">        @type port: L{int}</span>
+<span class="sd">        @param port: Port number.</span>
+
+<span class="sd">        @type path: L{bytes}</span>
+<span class="sd">        @param path: Hierarchical path.</span>
+
+<span class="sd">        @type params: L{bytes}</span>
+<span class="sd">        @param params: Parameters for last path segment.</span>
+
+<span class="sd">        @type query: L{bytes}</span>
+<span class="sd">        @param query: Query string.</span>
+
+<span class="sd">        @type fragment: L{bytes}</span>
+<span class="sd">        @param fragment: Fragment identifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span> <span class="o">=</span> <span class="n">scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span> <span class="o">=</span> <span class="n">netloc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fragment</span> <span class="o">=</span> <span class="n">fragment</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fromBytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">defaultPort</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the given URI into a L{URI}.</span>
+
+<span class="sd">        @type uri: C{bytes}</span>
+<span class="sd">        @param uri: URI to parse.</span>
+
+<span class="sd">        @type defaultPort: C{int} or L{None}</span>
+<span class="sd">        @param defaultPort: An alternate value to use as the port if the URI</span>
+<span class="sd">            does not include one.</span>
+
+<span class="sd">        @rtype: L{URI}</span>
+<span class="sd">        @return: Parsed URI instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">defaultPort</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;https&quot;</span><span class="p">:</span>
+                <span class="n">defaultPort</span> <span class="o">=</span> <span class="mi">443</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">defaultPort</span> <span class="o">=</span> <span class="mi">80</span>
+
+        <span class="k">if</span> <span class="sa">b</span><span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">netloc</span><span class="p">:</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">netloc</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">defaultPort</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">defaultPort</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">toBytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assemble the individual parts of the I{URI} into a fully formed I{URI}.</span>
+
+<span class="sd">        @rtype: C{bytes}</span>
+<span class="sd">        @return: A fully formed I{URI}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">urlunparse</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fragment</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">originForm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The absolute I{URI} path including I{URI} parameters, query string and</span>
+<span class="sd">        fragment identifier.</span>
+
+<span class="sd">        @see: U{https://tools.ietf.org/html/draft-ietf-httpbis-p1-messaging-21#section-5.3}</span>
+
+<span class="sd">        @return: The absolute path in original form.</span>
+<span class="sd">        @rtype: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The HTTP bis draft says the origin form should not include the</span>
+        <span class="c1"># fragment.</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">((</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;/&quot;</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct a full (&quot;absolute&quot;) URL by combining a &quot;base URL&quot; with another</span>
+<span class="sd">    URL. Informally, this uses components of the base URL, in particular the</span>
+<span class="sd">    addressing scheme, the network location and (part of) the path, to provide</span>
+<span class="sd">    missing components in the relative URL.</span>
+
+<span class="sd">    Additionally, the fragment identifier is preserved according to the HTTP</span>
+<span class="sd">    1.1 bis draft.</span>
+
+<span class="sd">    @type base: C{bytes}</span>
+<span class="sd">    @param base: Base URL.</span>
+
+<span class="sd">    @type url: C{bytes}</span>
+<span class="sd">    @param url: URL to combine with C{base}.</span>
+
+<span class="sd">    @return: An absolute URL resulting from the combination of C{base} and</span>
+<span class="sd">        C{url}.</span>
+
+<span class="sd">    @see: L{urllib.parse.urljoin()}</span>
+
+<span class="sd">    @see: U{https://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-22#section-7.1.2}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base</span><span class="p">,</span> <span class="n">baseFrag</span> <span class="o">=</span> <span class="n">urldefrag</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">urlFrag</span> <span class="o">=</span> <span class="n">urldefrag</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="n">urlFrag</span> <span class="ow">or</span> <span class="n">baseFrag</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_makeGetterFactory</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">factoryFactory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and connect an HTTP page getting factory.</span>
+
+<span class="sd">    Any additional positional or keyword arguments are used when calling</span>
+<span class="sd">    C{factoryFactory}.</span>
+
+<span class="sd">    @param factoryFactory: Factory factory that is called with C{url}, C{args}</span>
+<span class="sd">        and C{kwargs} to produce the getter</span>
+
+<span class="sd">    @param contextFactory: Context factory to use when creating a secure</span>
+<span class="sd">        connection, defaulting to L{None}</span>
+
+<span class="sd">    @return: The factory created by C{factoryFactory}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">_ensureValidURI</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">factoryFactory</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="k">if</span> <span class="n">uri</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;https&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssl</span>
+
+        <span class="k">if</span> <span class="n">contextFactory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">contextFactory</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">ClientContextFactory</span><span class="p">()</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">connectSSL</span><span class="p">(</span><span class="n">nativeString</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">uri</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">contextFactory</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="n">nativeString</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">),</span> <span class="n">uri</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">factory</span>
+
+
+<span class="c1"># The code which follows is based on the new HTTP client implementation.  It</span>
+<span class="c1"># should be significantly better than anything above, though it is not yet</span>
+<span class="c1"># feature equivalent.</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web._newclient</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HTTP11ClientProtocol</span><span class="p">,</span>
+    <span class="n">PotentialDataLoss</span><span class="p">,</span>
+    <span class="n">Request</span><span class="p">,</span>
+    <span class="n">RequestGenerationFailed</span><span class="p">,</span>
+    <span class="n">RequestNotSent</span><span class="p">,</span>
+    <span class="n">RequestTransmissionFailed</span><span class="p">,</span>
+    <span class="n">Response</span><span class="p">,</span>
+    <span class="n">ResponseDone</span><span class="p">,</span>
+    <span class="n">ResponseFailed</span><span class="p">,</span>
+    <span class="n">ResponseNeverReceived</span><span class="p">,</span>
+    <span class="n">_WrapperException</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.web.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemeNotSupported</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">OpenSSL</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSL</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">SSL</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.ssl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">CertificateOptions</span><span class="p">,</span>
+        <span class="n">optionsForClientTLS</span><span class="p">,</span>
+        <span class="n">platformTrust</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_requireSSL</span><span class="p">(</span><span class="n">decoratee</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The decorated method requires pyOpenSSL to be present, or it raises</span>
+<span class="sd">    L{NotImplementedError}.</span>
+
+<span class="sd">    @param decoratee: A function which requires pyOpenSSL.</span>
+<span class="sd">    @type decoratee: L{callable}</span>
+
+<span class="sd">    @return: A function which raises L{NotImplementedError} if pyOpenSSL is not</span>
+<span class="sd">        installed; otherwise, if it is installed, simply return C{decoratee}.</span>
+<span class="sd">    @rtype: L{callable}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">SSL</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">decoratee</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">raiseNotImplemented</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            pyOpenSSL is not available.</span>
+
+<span class="sd">            @param a: The positional arguments for C{decoratee}.</span>
+
+<span class="sd">            @param kw: The keyword arguments for C{decoratee}.</span>
+
+<span class="sd">            @raise NotImplementedError: Always.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;SSL support unavailable&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">raiseNotImplemented</span>
+    <span class="k">return</span> <span class="n">decoratee</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WebClientContextFactory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is deprecated.  Please simply use L{Agent} as-is, or if you want</span>
+<span class="sd">    to customize something, use L{BrowserLikePolicyForHTTPS}.</span>
+
+<span class="sd">    A L{WebClientContextFactory} is an HTTPS policy which totally ignores the</span>
+<span class="sd">    hostname and port.  It performs basic certificate verification, however the</span>
+<span class="sd">    lack of validation of service identity (e.g.  hostname validation) means it</span>
+<span class="sd">    is still vulnerable to man-in-the-middle attacks.  Don&#39;t use it any more.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_getCertificateOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a L{CertificateOptions}.</span>
+
+<span class="sd">        @param hostname: ignored</span>
+
+<span class="sd">        @param port: ignored</span>
+
+<span class="sd">        @return: A new CertificateOptions instance.</span>
+<span class="sd">        @rtype: L{CertificateOptions}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">CertificateOptions</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">SSL</span><span class="o">.</span><span class="n">SSLv23_METHOD</span><span class="p">,</span> <span class="n">trustRoot</span><span class="o">=</span><span class="n">platformTrust</span><span class="p">())</span>
+
+    <span class="nd">@_requireSSL</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an L{OpenSSL.SSL.Context}.</span>
+
+<span class="sd">        @param hostname: ignored</span>
+<span class="sd">        @param port: ignored</span>
+
+<span class="sd">        @return: A new SSL context.</span>
+<span class="sd">        @rtype: L{OpenSSL.SSL.Context}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCertificateOptions</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span><span class="o">.</span><span class="n">getContext</span><span class="p">()</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IPolicyForHTTPS</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BrowserLikePolicyForHTTPS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SSL connection creator for web clients.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trustRoot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trustRoot</span> <span class="o">=</span> <span class="n">trustRoot</span>
+
+    <span class="nd">@_requireSSL</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">creatorForNetloc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a L{client connection creator</span>
+<span class="sd">        &lt;twisted.internet.interfaces.IOpenSSLClientConnectionCreator&gt;} for a</span>
+<span class="sd">        given network location.</span>
+
+<span class="sd">        @param hostname: The hostname part of the URI.</span>
+<span class="sd">        @type hostname: L{bytes}</span>
+
+<span class="sd">        @param port: The port part of the URI.</span>
+<span class="sd">        @type port: L{int}</span>
+
+<span class="sd">        @return: a connection creator with appropriate verification</span>
+<span class="sd">            restrictions set</span>
+<span class="sd">        @rtype: L{client connection creator</span>
+<span class="sd">            &lt;twisted.internet.interfaces.IOpenSSLClientConnectionCreator&gt;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">optionsForClientTLS</span><span class="p">(</span><span class="n">hostname</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span> <span class="n">trustRoot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trustRoot</span><span class="p">)</span>
+
+
+<span class="n">deprecatedModuleAttribute</span><span class="p">(</span>
+    <span class="n">Version</span><span class="p">(</span><span class="s2">&quot;Twisted&quot;</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">getDeprecationWarningString</span><span class="p">(</span>
+        <span class="n">WebClientContextFactory</span><span class="p">,</span>
+        <span class="n">Version</span><span class="p">(</span><span class="s2">&quot;Twisted&quot;</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">replacement</span><span class="o">=</span><span class="n">BrowserLikePolicyForHTTPS</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">WebClientContextFactory</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span>
+    <span class="n">WebClientContextFactory</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IPolicyForHTTPS</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HostnameCachingHTTPSPolicy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    IPolicyForHTTPS that wraps a L{IPolicyForHTTPS} and caches the created</span>
+<span class="sd">    L{IOpenSSLClientConnectionCreator}.</span>
+
+<span class="sd">    This policy will cache up to C{cacheSize}</span>
+<span class="sd">    L{client connection creators &lt;twisted.internet.interfaces.</span>
+<span class="sd">    IOpenSSLClientConnectionCreator&gt;} for reuse in subsequent requests to</span>
+<span class="sd">    the same hostname.</span>
+
+<span class="sd">    @ivar _policyForHTTPS: See C{policyforHTTPS} parameter of L{__init__}.</span>
+
+<span class="sd">    @ivar _cache: A cache associating hostnames to their</span>
+<span class="sd">        L{client connection creators &lt;twisted.internet.interfaces.</span>
+<span class="sd">        IOpenSSLClientConnectionCreator&gt;}.</span>
+<span class="sd">    @type _cache: L{collections.OrderedDict}</span>
+
+<span class="sd">    @ivar _cacheSize: See C{cacheSize} parameter of L{__init__}.</span>
+
+<span class="sd">    @since: Twisted 19.2.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policyforHTTPS</span><span class="p">,</span> <span class="n">cacheSize</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param policyforHTTPS: The IPolicyForHTTPS to wrap.</span>
+<span class="sd">        @type policyforHTTPS: L{IPolicyForHTTPS}</span>
+
+<span class="sd">        @param cacheSize: The maximum size of the hostname cache.</span>
+<span class="sd">        @type cacheSize: L{int}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_policyForHTTPS</span> <span class="o">=</span> <span class="n">policyforHTTPS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cacheSize</span> <span class="o">=</span> <span class="n">cacheSize</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">creatorForNetloc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a L{client connection creator</span>
+<span class="sd">        &lt;twisted.internet.interfaces.IOpenSSLClientConnectionCreator&gt;} for a</span>
+<span class="sd">        given network location and cache it for future use.</span>
+
+<span class="sd">        @param hostname: The hostname part of the URI.</span>
+<span class="sd">        @type hostname: L{bytes}</span>
+
+<span class="sd">        @param port: The port part of the URI.</span>
+<span class="sd">        @type port: L{int}</span>
+
+<span class="sd">        @return: a connection creator with appropriate verification</span>
+<span class="sd">            restrictions set</span>
+<span class="sd">        @rtype: L{client connection creator</span>
+<span class="sd">            &lt;twisted.internet.interfaces.IOpenSSLClientConnectionCreator&gt;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">hostname</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policyForHTTPS</span><span class="o">.</span><span class="n">creatorForNetloc</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">host</span><span class="p">]</span> <span class="o">=</span> <span class="n">creator</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cacheSize</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">creator</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IOpenSSLContextFactory</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ContextFactoryWithContext</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A L{_ContextFactoryWithContext} is like a</span>
+<span class="sd">    L{twisted.internet.ssl.ContextFactory} with a pre-created context.</span>
+
+<span class="sd">    @ivar _context: A Context.</span>
+<span class="sd">    @type _context: L{OpenSSL.SSL.Context}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a L{_ContextFactoryWithContext} with a context.</span>
+
+<span class="sd">        @param context: An SSL context.</span>
+<span class="sd">        @type context: L{OpenSSL.SSL.Context}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getContext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the context created by</span>
+<span class="sd">        L{_DeprecatedToCurrentPolicyForHTTPS._webContextFactory}.</span>
+
+<span class="sd">        @return: A context.</span>
+<span class="sd">        @rtype: L{OpenSSL.SSL.Context}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IPolicyForHTTPS</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_DeprecatedToCurrentPolicyForHTTPS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adapt a web context factory to a normal context factory.</span>
+
+<span class="sd">    @ivar _webContextFactory: An object providing a getContext method with</span>
+<span class="sd">        C{hostname} and C{port} arguments.</span>
+<span class="sd">    @type _webContextFactory: L{WebClientContextFactory} (or object with a</span>
+<span class="sd">        similar C{getContext} method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">webContextFactory</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wrap a web context factory in an L{IPolicyForHTTPS}.</span>
+
+<span class="sd">        @param webContextFactory: An object providing a getContext method with</span>
+<span class="sd">            C{hostname} and C{port} arguments.</span>
+<span class="sd">        @type webContextFactory: L{WebClientContextFactory} (or object with a</span>
+<span class="sd">            similar C{getContext} method).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_webContextFactory</span> <span class="o">=</span> <span class="n">webContextFactory</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">creatorForNetloc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called the wrapped web context factory&#39;s C{getContext} method with a</span>
+<span class="sd">        hostname and port number and return the resulting context object.</span>
+
+<span class="sd">        @param hostname: The hostname part of the URI.</span>
+<span class="sd">        @type hostname: L{bytes}</span>
+
+<span class="sd">        @param port: The port part of the URI.</span>
+<span class="sd">        @type port: L{int}</span>
+
+<span class="sd">        @return: A context factory.</span>
+<span class="sd">        @rtype: L{IOpenSSLContextFactory}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webContextFactory</span><span class="o">.</span><span class="n">getContext</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_ContextFactoryWithContext</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FileBodyProducer">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IBodyProducer</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FileBodyProducer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    L{FileBodyProducer} produces bytes from an input file object incrementally</span>
+<span class="sd">    and writes them to a consumer.</span>
+
+<span class="sd">    Since file-like objects cannot be read from in an event-driven manner,</span>
+<span class="sd">    L{FileBodyProducer} uses a L{Cooperator} instance to schedule reads from</span>
+<span class="sd">    the file.  This process is also paused and resumed based on notifications</span>
+<span class="sd">    from the L{IConsumer} provider being written to.</span>
+
+<span class="sd">    The file is closed after it has been read, or if the producer is stopped</span>
+<span class="sd">    early.</span>
+
+<span class="sd">    @ivar _inputFile: Any file-like object, bytes read from which will be</span>
+<span class="sd">        written to a consumer.</span>
+
+<span class="sd">    @ivar _cooperate: A method like L{Cooperator.cooperate} which is used to</span>
+<span class="sd">        schedule all reads.</span>
+
+<span class="sd">    @ivar _readSize: The number of bytes to read from C{_inputFile} at a time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FileBodyProducer.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputFile</span><span class="p">,</span> <span class="n">cooperator</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">readSize</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputFile</span> <span class="o">=</span> <span class="n">inputFile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cooperate</span> <span class="o">=</span> <span class="n">cooperator</span><span class="o">.</span><span class="n">cooperate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_readSize</span> <span class="o">=</span> <span class="n">readSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determineLength</span><span class="p">(</span><span class="n">inputFile</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_determineLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fObj</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine how many bytes can be read out of C{fObj} (assuming it is not</span>
+<span class="sd">        modified from this point on).  If the determination cannot be made,</span>
+<span class="sd">        return C{UNKNOWN_LENGTH}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">seek</span> <span class="o">=</span> <span class="n">fObj</span><span class="o">.</span><span class="n">seek</span>
+            <span class="n">tell</span> <span class="o">=</span> <span class="n">fObj</span><span class="o">.</span><span class="n">tell</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UNKNOWN_LENGTH</span>
+        <span class="n">originalPosition</span> <span class="o">=</span> <span class="n">tell</span><span class="p">()</span>
+        <span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">tell</span><span class="p">()</span>
+        <span class="n">seek</span><span class="p">(</span><span class="n">originalPosition</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">end</span> <span class="o">-</span> <span class="n">originalPosition</span>
+
+<div class="viewcode-block" id="FileBodyProducer.stopProducing">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer.stopProducing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permanently stop writing bytes from the file to the consumer by</span>
+<span class="sd">        stopping the underlying L{CooperativeTask}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">task</span><span class="o">.</span><span class="n">TaskFinished</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="FileBodyProducer.startProducing">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer.startProducing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a cooperative task which will read bytes from the input file and</span>
+<span class="sd">        write them to C{consumer}.  Return a L{Deferred} which fires after all</span>
+<span class="sd">        bytes have been written.  If this L{Deferred} is cancelled before it is</span>
+<span class="sd">        fired, stop reading and writing bytes.</span>
+
+<span class="sd">        @param consumer: Any L{IConsumer} provider</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cooperate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_writeloop</span><span class="p">(</span><span class="n">consumer</span><span class="p">))</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">whenDone</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">maybeStopped</span><span class="p">(</span><span class="n">reason</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">defer</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stopProducing</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">TaskStopped</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">reason</span>
+            <span class="c1"># IBodyProducer.startProducing&#39;s Deferred isn&#39;t supposed to fire if</span>
+            <span class="c1"># stopProducing is called.</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">()</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ignored</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">maybeStopped</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_writeloop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an iterator which reads one chunk of bytes from the input file</span>
+<span class="sd">        and writes them to the consumer for each time it is iterated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputFile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_readSize</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">bytes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inputFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="n">consumer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="FileBodyProducer.pauseProducing">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer.pauseProducing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pauseProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Temporarily suspend copying bytes from the input file to the consumer</span>
+<span class="sd">        by pausing the L{CooperativeTask} which drives that activity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FileBodyProducer.resumeProducing">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.FileBodyProducer.resumeProducing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resumeProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Undo the effects of a previous C{pauseProducing} and resume copying</span>
+<span class="sd">        bytes to the consumer by resuming the L{CooperativeTask} which drives</span>
+<span class="sd">        the write activity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_HTTP11ClientFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A factory for L{HTTP11ClientProtocol}, used by L{HTTPConnectionPool}.</span>
+
+<span class="sd">    @ivar _quiescentCallback: The quiescent callback to be passed to protocol</span>
+<span class="sd">        instances, used to return them to the connection pool.</span>
+
+<span class="sd">    @ivar _metadata: Metadata about the low-level connection details,</span>
+<span class="sd">        used to make the repr more useful.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quiescentCallback</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quiescentCallback</span> <span class="o">=</span> <span class="n">quiescentCallback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;_HTTP11ClientFactory(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_quiescentCallback</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">HTTP11ClientProtocol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quiescentCallback</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_RetryingHTTP11ClientProtocol</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for L{HTTP11ClientProtocol} that automatically retries requests.</span>
+
+<span class="sd">    @ivar _clientProtocol: The underlying L{HTTP11ClientProtocol}.</span>
+
+<span class="sd">    @ivar _newConnection: A callable that creates a new connection for a</span>
+<span class="sd">        retry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clientProtocol</span><span class="p">,</span> <span class="n">newConnection</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clientProtocol</span> <span class="o">=</span> <span class="n">clientProtocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newConnection</span> <span class="o">=</span> <span class="n">newConnection</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shouldRetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicate whether request should be retried.</span>
+
+<span class="sd">        Only returns C{True} if method is idempotent, no response was</span>
+<span class="sd">        received, the reason for the failed request was not due to</span>
+<span class="sd">        user-requested cancellation, and no body was sent. The latter</span>
+<span class="sd">        requirement may be relaxed in the future, and PUT added to approved</span>
+<span class="sd">        method list.</span>
+
+<span class="sd">        @param method: The method of the request.</span>
+<span class="sd">        @type method: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;TRACE&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">exception</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">RequestNotSent</span><span class="p">,</span> <span class="n">RequestTransmissionFailed</span><span class="p">,</span> <span class="n">ResponseNeverReceived</span><span class="p">),</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="n">_WrapperException</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">aFailure</span> <span class="ow">in</span> <span class="n">exception</span><span class="o">.</span><span class="n">reasons</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">aFailure</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">defer</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">bodyProducer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do a request, and retry once (with a new connection) if it fails in</span>
+<span class="sd">        a retryable manner.</span>
+
+<span class="sd">        @param request: A L{Request} instance that will be requested using the</span>
+<span class="sd">            wrapped protocol.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clientProtocol</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">failed</span><span class="p">(</span><span class="n">reason</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shouldRetry</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">reason</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">bodyProducer</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newConnection</span><span class="p">()</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">connection</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">reason</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+
+<div class="viewcode-block" id="HTTPConnectionPool">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.HTTPConnectionPool">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HTTPConnectionPool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A pool of persistent HTTP connections.</span>
+
+<span class="sd">    Features:</span>
+<span class="sd">     - Cached connections will eventually time out.</span>
+<span class="sd">     - Limits on maximum number of persistent connections.</span>
+
+<span class="sd">    Connections are stored using keys, which should be chosen such that any</span>
+<span class="sd">    connections stored under a given key can be used interchangeably.</span>
+
+<span class="sd">    Failed requests done using previously cached connections will be retried</span>
+<span class="sd">    once if they use an idempotent method (e.g. GET), in case the HTTP server</span>
+<span class="sd">    timed them out.</span>
+
+<span class="sd">    @ivar persistent: Boolean indicating whether connections should be</span>
+<span class="sd">        persistent. Connections are persistent by default.</span>
+
+<span class="sd">    @ivar maxPersistentPerHost: The maximum number of cached persistent</span>
+<span class="sd">        connections for a C{host:port} destination.</span>
+<span class="sd">    @type maxPersistentPerHost: C{int}</span>
+
+<span class="sd">    @ivar cachedConnectionTimeout: Number of seconds a cached persistent</span>
+<span class="sd">        connection will stay open before disconnecting.</span>
+
+<span class="sd">    @ivar retryAutomatically: C{boolean} indicating whether idempotent</span>
+<span class="sd">        requests should be retried once if no response was received.</span>
+
+<span class="sd">    @ivar _factory: The factory used to connect to the proxy.</span>
+
+<span class="sd">    @ivar _connections: Map (scheme, host, port) to lists of</span>
+<span class="sd">        L{HTTP11ClientProtocol} instances.</span>
+
+<span class="sd">    @ivar _timeouts: Map L{HTTP11ClientProtocol} instances to a</span>
+<span class="sd">        C{IDelayedCall} instance of their timeout.</span>
+
+<span class="sd">    @since: 12.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_factory</span> <span class="o">=</span> <span class="n">_HTTP11ClientFactory</span>
+    <span class="n">maxPersistentPerHost</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">cachedConnectionTimeout</span> <span class="o">=</span> <span class="mi">240</span>
+    <span class="n">retryAutomatically</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+<div class="viewcode-block" id="HTTPConnectionPool.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.HTTPConnectionPool.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="n">persistent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="HTTPConnectionPool.getConnection">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.HTTPConnectionPool.getConnection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supply a connection, newly created or retrieved from the pool, to be</span>
+<span class="sd">        used for one HTTP request.</span>
+
+<span class="sd">        The connection will remain out of the pool (not available to be</span>
+<span class="sd">        returned from future calls to this method) until one HTTP request has</span>
+<span class="sd">        been completed over it.</span>
+
+<span class="sd">        Afterwards, if the connection is still open, it will automatically be</span>
+<span class="sd">        added to the pool.</span>
+
+<span class="sd">        @param key: A unique key identifying connections that can be used</span>
+<span class="sd">            interchangeably.</span>
+
+<span class="sd">        @param endpoint: An endpoint that can be used to open a new connection</span>
+<span class="sd">            if no cached connection is available.</span>
+
+<span class="sd">        @return: A C{Deferred} that will fire with a L{HTTP11ClientProtocol}</span>
+<span class="sd">           (or a wrapper) that can be used to send a single HTTP request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Try to get cached version:</span>
+        <span class="n">connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">connections</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># Cancel timeout:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">connection</span><span class="p">]</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">connection</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;QUIESCENT&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">retryAutomatically</span><span class="p">:</span>
+                    <span class="n">newConnection</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newConnection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+                    <span class="n">connection</span> <span class="o">=</span> <span class="n">_RetryingHTTP11ClientProtocol</span><span class="p">(</span>
+                        <span class="n">connection</span><span class="p">,</span> <span class="n">newConnection</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newConnection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_newConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new connection.</span>
+
+<span class="sd">        This implements the new connection code path for L{getConnection}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">quiescentCallback</span><span class="p">(</span><span class="n">protocol</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_putConnection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">protocol</span><span class="p">)</span>
+
+        <span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">(</span><span class="n">quiescentCallback</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">endpoint</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_removeConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a connection from the cache and disconnect it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">connection</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_putConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a persistent connection to the pool. This will be called by</span>
+<span class="sd">        L{HTTP11ClientProtocol} when the connection becomes quiescent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;QUIESCENT&quot;</span><span class="p">:</span>
+            <span class="c1"># Log with traceback for debugging purposes:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;BUG: Non-quiescent protocol added to connection pool.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">failure</span><span class="p">(</span>
+                    <span class="s2">&quot;BUG: Non-quiescent protocol added to connection pool.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">connections</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxPersistentPerHost</span><span class="p">:</span>
+            <span class="n">dropped</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">dropped</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">dropped</span><span class="p">]</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">dropped</span><span class="p">]</span>
+        <span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cachedConnectionTimeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_removeConnection</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">connection</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="n">connection</span><span class="p">]</span> <span class="o">=</span> <span class="n">cid</span>
+
+<div class="viewcode-block" id="HTTPConnectionPool.closeCachedConnections">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.HTTPConnectionPool.closeCachedConnections">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closeCachedConnections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close all persistent connections and remove them from the pool.</span>
+
+<span class="sd">        @return: L{defer.Deferred} that fires when all connections have been</span>
+<span class="sd">            closed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">protocols</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">protocols</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">abort</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">dc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dc</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">gatherResults</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ign</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AgentBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class offering common facilities for L{Agent}-type classes.</span>
+
+<span class="sd">    @ivar _reactor: The C{IReactorTime} implementation which will be used by</span>
+<span class="sd">        the pool, and perhaps by subclasses as well.</span>
+
+<span class="sd">    @ivar _pool: The L{HTTPConnectionPool} used to manage HTTP connections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="n">HTTPConnectionPool</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">pool</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_computeHostValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the string to use for the value of the I{Host} header, based on</span>
+<span class="sd">        the given scheme, host name, and port number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">isIPv6Address</span><span class="p">(</span><span class="n">nativeString</span><span class="p">(</span><span class="n">host</span><span class="p">)):</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">host</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;]&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="sa">b</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;https&quot;</span><span class="p">,</span> <span class="mi">443</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">host</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;%b:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_requestWithEndpoint</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">parsedURI</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="p">,</span> <span class="n">requestPath</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Issue a new request, given the endpoint and the path sent as part of</span>
+<span class="sd">        the request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;method=</span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2"> is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="si">}</span><span class="s2">, but must be bytes&quot;</span><span class="p">)</span>
+
+        <span class="n">method</span> <span class="o">=</span> <span class="n">_ensureValidMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="c1"># Create minimal headers, if necessary:</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">headers</span><span class="o">.</span><span class="n">hasHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Host&quot;</span><span class="p">):</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">headers</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span>
+                <span class="sa">b</span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_computeHostValue</span><span class="p">(</span>
+                    <span class="n">parsedURI</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">parsedURI</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">parsedURI</span><span class="o">.</span><span class="n">port</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">getConnection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">cbConnected</span><span class="p">(</span><span class="n">proto</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">proto</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="n">Request</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span>
+                    <span class="n">method</span><span class="p">,</span>
+                    <span class="n">requestPath</span><span class="p">,</span>
+                    <span class="n">headers</span><span class="p">,</span>
+                    <span class="n">bodyProducer</span><span class="p">,</span>
+                    <span class="n">persistent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">persistent</span><span class="p">,</span>
+                    <span class="n">parsedURI</span><span class="o">=</span><span class="n">parsedURI</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">cbConnected</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgentEndpointFactory</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_StandardEndpointFactory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standard HTTP endpoint destinations - TCP for HTTP, TCP+TLS for HTTPS.</span>
+
+<span class="sd">    @ivar _policyForHTTPS: A web context factory which will be used to create</span>
+<span class="sd">        SSL context objects for any SSL connections the agent needs to make.</span>
+
+<span class="sd">    @ivar _connectTimeout: If not L{None}, the timeout passed to</span>
+<span class="sd">        L{HostnameEndpoint} for specifying the connection timeout.</span>
+
+<span class="sd">    @ivar _bindAddress: If not L{None}, the address passed to</span>
+<span class="sd">        L{HostnameEndpoint} for specifying the local address to bind to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">contextFactory</span><span class="p">,</span> <span class="n">connectTimeout</span><span class="p">,</span> <span class="n">bindAddress</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param reactor: A provider to use to create endpoints.</span>
+<span class="sd">        @type reactor: see L{HostnameEndpoint.__init__} for acceptable reactor</span>
+<span class="sd">            types.</span>
+
+<span class="sd">        @param contextFactory: A factory for TLS contexts, to control the</span>
+<span class="sd">            verification parameters of OpenSSL.</span>
+<span class="sd">        @type contextFactory: L{IPolicyForHTTPS}.</span>
+
+<span class="sd">        @param connectTimeout: The amount of time that this L{Agent} will wait</span>
+<span class="sd">            for the peer to accept a connection.</span>
+<span class="sd">        @type connectTimeout: L{float} or L{None}</span>
+
+<span class="sd">        @param bindAddress: The local address for client sockets to bind to.</span>
+<span class="sd">        @type bindAddress: L{bytes} or L{None}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_policyForHTTPS</span> <span class="o">=</span> <span class="n">contextFactory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectTimeout</span> <span class="o">=</span> <span class="n">connectTimeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bindAddress</span> <span class="o">=</span> <span class="n">bindAddress</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">endpointForURI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect directly over TCP for C{b&#39;http&#39;} scheme, and TLS for</span>
+<span class="sd">        C{b&#39;https&#39;}.</span>
+
+<span class="sd">        @param uri: L{URI} to connect to.</span>
+
+<span class="sd">        @return: Endpoint to connect to.</span>
+<span class="sd">        @rtype: L{IStreamClientEndpoint}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectTimeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectTimeout</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;bindAddress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bindAddress</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;The host of the provided URI (</span><span class="si">{uri.host!r}</span><span class="s2">) &quot;</span>
+                    <span class="s2">&quot;contains non-ASCII octets, it should be ASCII &quot;</span>
+                    <span class="s2">&quot;decodable.&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">HostnameEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reactor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">uri</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;http&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">endpoint</span>
+        <span class="k">elif</span> <span class="n">uri</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;https&quot;</span><span class="p">:</span>
+            <span class="n">connectionCreator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policyForHTTPS</span><span class="o">.</span><span class="n">creatorForNetloc</span><span class="p">(</span>
+                <span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">uri</span><span class="o">.</span><span class="n">port</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">wrapClientTLS</span><span class="p">(</span><span class="n">connectionCreator</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SchemeNotSupported</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported scheme: </span><span class="si">{</span><span class="n">uri</span><span class="o">.</span><span class="n">scheme</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Agent">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.Agent">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgent</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Agent</span><span class="p">(</span><span class="n">_AgentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    L{Agent} is a very basic HTTP client.  It supports I{HTTP} and I{HTTPS}</span>
+<span class="sd">    scheme URIs.</span>
+
+<span class="sd">    @ivar _pool: An L{HTTPConnectionPool} instance.</span>
+
+<span class="sd">    @ivar _endpointFactory: The L{IAgentEndpointFactory} which will</span>
+<span class="sd">        be used to create endpoints for outgoing connections.</span>
+
+<span class="sd">    @since: 9.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Agent.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.Agent.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reactor</span><span class="p">,</span>
+        <span class="n">contextFactory</span><span class="o">=</span><span class="n">BrowserLikePolicyForHTTPS</span><span class="p">(),</span>
+        <span class="n">connectTimeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bindAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an L{Agent}.</span>
+
+<span class="sd">        @param reactor: A reactor for this L{Agent} to place outgoing</span>
+<span class="sd">            connections.</span>
+<span class="sd">        @type reactor: see L{HostnameEndpoint.__init__} for acceptable reactor</span>
+<span class="sd">            types.</span>
+
+<span class="sd">        @param contextFactory: A factory for TLS contexts, to control the</span>
+<span class="sd">            verification parameters of OpenSSL.  The default is to use a</span>
+<span class="sd">            L{BrowserLikePolicyForHTTPS}, so unless you have special</span>
+<span class="sd">            requirements you can leave this as-is.</span>
+<span class="sd">        @type contextFactory: L{IPolicyForHTTPS}.</span>
+
+<span class="sd">        @param connectTimeout: The amount of time that this L{Agent} will wait</span>
+<span class="sd">            for the peer to accept a connection.</span>
+<span class="sd">        @type connectTimeout: L{float}</span>
+
+<span class="sd">        @param bindAddress: The local address for client sockets to bind to.</span>
+<span class="sd">        @type bindAddress: L{bytes}</span>
+
+<span class="sd">        @param pool: An L{HTTPConnectionPool} instance, or L{None}, in which</span>
+<span class="sd">            case a non-persistent L{HTTPConnectionPool} instance will be</span>
+<span class="sd">            created.</span>
+<span class="sd">        @type pool: L{HTTPConnectionPool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">IPolicyForHTTPS</span><span class="o">.</span><span class="n">providedBy</span><span class="p">(</span><span class="n">contextFactory</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="n">contextFactory</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot; was passed as the HTTPS policy for an Agent, but it does &quot;</span>
+                <span class="s2">&quot;not provide IPolicyForHTTPS.  Since Twisted 14.0, you must &quot;</span>
+                <span class="s2">&quot;pass a provider of IPolicyForHTTPS.&quot;</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">contextFactory</span> <span class="o">=</span> <span class="n">_DeprecatedToCurrentPolicyForHTTPS</span><span class="p">(</span><span class="n">contextFactory</span><span class="p">)</span>
+        <span class="n">endpointFactory</span> <span class="o">=</span> <span class="n">_StandardEndpointFactory</span><span class="p">(</span>
+            <span class="n">reactor</span><span class="p">,</span> <span class="n">contextFactory</span><span class="p">,</span> <span class="n">connectTimeout</span><span class="p">,</span> <span class="n">bindAddress</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">endpointFactory</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Agent.usingEndpointFactory">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.Agent.usingEndpointFactory">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">usingEndpointFactory</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">endpointFactory</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new L{Agent} that will use the endpoint factory to figure</span>
+<span class="sd">        out how to connect to the server.</span>
+
+<span class="sd">        @param reactor: A reactor for this L{Agent} to place outgoing</span>
+<span class="sd">            connections.</span>
+<span class="sd">        @type reactor: see L{HostnameEndpoint.__init__} for acceptable reactor</span>
+<span class="sd">            types.</span>
+
+<span class="sd">        @param endpointFactory: Used to construct endpoints which the</span>
+<span class="sd">            HTTP client will connect with.</span>
+<span class="sd">        @type endpointFactory: an L{IAgentEndpointFactory} provider.</span>
+
+<span class="sd">        @param pool: An L{HTTPConnectionPool} instance, or L{None}, in which</span>
+<span class="sd">            case a non-persistent L{HTTPConnectionPool} instance will be</span>
+<span class="sd">            created.</span>
+<span class="sd">        @type pool: L{HTTPConnectionPool}</span>
+
+<span class="sd">        @return: A new L{Agent}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">agent</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">agent</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">endpointFactory</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">agent</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">endpointFactory</span><span class="p">,</span> <span class="n">pool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new L{Agent}.</span>
+
+<span class="sd">        @param reactor: A reactor for this L{Agent} to place outgoing</span>
+<span class="sd">            connections.</span>
+<span class="sd">        @type reactor: see L{HostnameEndpoint.__init__} for acceptable reactor</span>
+<span class="sd">            types.</span>
+
+<span class="sd">        @param endpointFactory: Used to construct endpoints which the</span>
+<span class="sd">            HTTP client will connect with.</span>
+<span class="sd">        @type endpointFactory: an L{IAgentEndpointFactory} provider.</span>
+
+<span class="sd">        @param pool: An L{HTTPConnectionPool} instance, or L{None}, in which</span>
+<span class="sd">            case a non-persistent L{HTTPConnectionPool} instance will be</span>
+<span class="sd">            created.</span>
+<span class="sd">        @type pool: L{HTTPConnectionPool}</span>
+
+<span class="sd">        @return: A new L{Agent}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_AgentBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpointFactory</span> <span class="o">=</span> <span class="n">endpointFactory</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_getEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an endpoint for the given URI, using C{self._endpointFactory}.</span>
+
+<span class="sd">        @param uri: The URI of the request.</span>
+<span class="sd">        @type uri: L{URI}</span>
+
+<span class="sd">        @return: An endpoint which can be used to connect to given address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpointFactory</span><span class="o">.</span><span class="n">endpointForURI</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Agent.request">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.Agent.request">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Issue a request to the server indicated by the given C{uri}.</span>
+
+<span class="sd">        An existing connection from the connection pool may be used or a new</span>
+<span class="sd">        one may be created.</span>
+
+<span class="sd">        I{HTTP} and I{HTTPS} schemes are supported in C{uri}.</span>
+
+<span class="sd">        @see: L{twisted.web.iweb.IAgent.request}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">_ensureValidURI</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">parsedURI</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndpoint</span><span class="p">(</span><span class="n">parsedURI</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">SchemeNotSupported</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">Failure</span><span class="p">())</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">parsedURI</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">parsedURI</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">parsedURI</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requestWithEndpoint</span><span class="p">(</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="n">parsedURI</span><span class="p">,</span>
+            <span class="n">headers</span><span class="p">,</span>
+            <span class="n">bodyProducer</span><span class="p">,</span>
+            <span class="n">parsedURI</span><span class="o">.</span><span class="n">originForm</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgent</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProxyAgent</span><span class="p">(</span><span class="n">_AgentBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An HTTP agent able to cross HTTP proxies.</span>
+
+<span class="sd">    @ivar _proxyEndpoint: The endpoint used to connect to the proxy.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">reactor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">reactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+        <span class="n">_AgentBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proxyEndpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Issue a new request via the configured proxy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">_ensureValidURI</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="c1"># Cache *all* connections under the same key, since we are only</span>
+        <span class="c1"># connecting to a single destination, the proxy:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http-proxy&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proxyEndpoint</span><span class="p">)</span>
+
+        <span class="c1"># To support proxying HTTPS via CONNECT, we will use key</span>
+        <span class="c1"># (&quot;http-proxy-CONNECT&quot;, scheme, host, port), and an endpoint that</span>
+        <span class="c1"># wraps _proxyEndpoint with an additional callback to do the CONNECT.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requestWithEndpoint</span><span class="p">(</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_proxyEndpoint</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">uri</span><span class="p">),</span>
+            <span class="n">headers</span><span class="p">,</span>
+            <span class="n">bodyProducer</span><span class="p">,</span>
+            <span class="n">uri</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_FakeStdlibRequest</span><span class="p">(</span><span class="n">_RequestBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A fake L{urllib.request.Request} object for L{cookiejar} to work with.</span>
+
+<span class="sd">    @see: U{urllib.request.Request</span>
+<span class="sd">        &lt;https://docs.python.org/3/library/urllib.request.html#urllib.request.Request&gt;}</span>
+
+<span class="sd">    @ivar uri: Request URI.</span>
+
+<span class="sd">    @ivar headers: Request headers.</span>
+
+<span class="sd">    @ivar type: The scheme of the URI.</span>
+
+<span class="sd">    @ivar host: The host[:port] of the URI.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="c1"># The received headers managed using Twisted API.</span>
+    <span class="n">_twistedHeaders</span><span class="p">:</span> <span class="n">Headers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a fake  request.</span>
+
+<span class="sd">        @param uri: Request URI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_twistedHeaders</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+
+        <span class="n">_uri</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">_uri</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">_uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">_uri</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">_uri</span><span class="o">.</span><span class="n">port</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">((</span><span class="sa">b</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;https&quot;</span><span class="p">,</span> <span class="mi">443</span><span class="p">)):</span>
+            <span class="c1"># If it&#39;s not a schema on the regular port, add the port.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">_uri</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin_req_host</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">_uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unverifiable</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twistedHeaders</span><span class="o">.</span><span class="n">hasHeader</span><span class="p">(</span><span class="n">networkString</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_unredirected_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_twistedHeaders</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span><span class="n">networkString</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">networkString</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twistedHeaders</span><span class="o">.</span><span class="n">getRawHeaders</span><span class="p">(</span><span class="n">networkString</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">nativeString</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">headers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_unverifiable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># In theory this shouldn&#39;t be hardcoded.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_FakeUrllibResponseInfo</span><span class="p">(</span><span class="n">_InfoType</span><span class="p">):</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">IResponse</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># type:ignore[override]</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getRawHeaders</span><span class="p">(</span><span class="n">networkString</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">default</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="p">[</span><span class="n">nativeString</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">h</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_FakeStdlibResponse</span><span class="p">(</span><span class="n">_ResponseBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A fake L{urllib.response.Response} object for L{http.cookiejar} to work</span>
+<span class="sd">    with.</span>
+
+<span class="sd">    @ivar response: Underlying Twisted Web response.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">response</span><span class="p">:</span> <span class="n">IResponse</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">IResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_InfoType</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_FakeUrllibResponseInfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgent</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CookieAgent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    L{CookieAgent} extends the basic L{Agent} to add RFC-compliant handling of</span>
+<span class="sd">    HTTP cookies.  Cookies are written to and extracted from a L{CookieJar}</span>
+<span class="sd">    instance.</span>
+
+<span class="sd">    The same cookie jar instance will be used for any requests through this</span>
+<span class="sd">    agent, mutating it whenever a I{Set-Cookie} header appears in a response.</span>
+
+<span class="sd">    @ivar _agent: Underlying Twisted Web agent to issue requests through.</span>
+
+<span class="sd">    @ivar cookieJar: Initialized cookie jar to read cookies from and store</span>
+<span class="sd">        cookies to.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_agent</span><span class="p">:</span> <span class="n">IAgent</span>
+    <span class="n">cookieJar</span><span class="p">:</span> <span class="n">CookieJar</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">IAgent</span><span class="p">,</span> <span class="n">cookieJar</span><span class="p">:</span> <span class="n">CookieJar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span> <span class="o">=</span> <span class="n">agent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cookieJar</span> <span class="o">=</span> <span class="n">cookieJar</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+        <span class="n">uri</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Headers</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bodyProducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IBodyProducer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">IResponse</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Issue a new request to the wrapped L{Agent}.</span>
+
+<span class="sd">        Send a I{Cookie} header if a cookie for C{uri} is stored in</span>
+<span class="sd">        L{CookieAgent.cookieJar}. Cookies are automatically extracted and</span>
+<span class="sd">        stored from requests.</span>
+
+<span class="sd">        If a C{&#39;cookie&#39;} header appears in C{headers} it will override the</span>
+<span class="sd">        automatic cookie header obtained from the cookie jar.</span>
+
+<span class="sd">        @see: L{Agent.request}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">actualHeaders</span> <span class="o">=</span> <span class="n">headers</span> <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="n">lastRequest</span> <span class="o">=</span> <span class="n">_FakeStdlibRequest</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="c1"># Setting a cookie header explicitly will disable automatic request</span>
+        <span class="c1"># cookies.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">actualHeaders</span><span class="o">.</span><span class="n">hasHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Cookie&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cookieJar</span><span class="o">.</span><span class="n">add_cookie_header</span><span class="p">(</span><span class="n">lastRequest</span><span class="p">)</span>
+            <span class="n">cookieHeader</span> <span class="o">=</span> <span class="n">lastRequest</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="s2">&quot;Cookie&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cookieHeader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">actualHeaders</span> <span class="o">=</span> <span class="n">actualHeaders</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">actualHeaders</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Cookie&quot;</span><span class="p">,</span> <span class="n">networkString</span><span class="p">(</span><span class="n">cookieHeader</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">actualHeaders</span><span class="p">,</span> <span class="n">bodyProducer</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extractCookies</span><span class="p">,</span> <span class="n">lastRequest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extractCookies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">IResponse</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">_FakeStdlibRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract response cookies and store them in the cookie jar.</span>
+
+<span class="sd">        @param response: the Twisted Web response that we are processing.</span>
+
+<span class="sd">        @param request: A L{_FakeStdlibRequest} wrapping our Twisted request,</span>
+<span class="sd">            for L{CookieJar} to extract cookies from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cookieJar</span><span class="o">.</span><span class="n">extract_cookies</span><span class="p">(</span><span class="n">_FakeStdlibResponse</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GzipDecoder</span><span class="p">(</span><span class="n">proxyForInterface</span><span class="p">(</span><span class="n">IResponse</span><span class="p">)):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for a L{Response} instance which handles gzip&#39;ed body.</span>
+
+<span class="sd">    @ivar original: The original L{Response} object.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">UNKNOWN_LENGTH</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">deliverBody</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override C{deliverBody} to wrap the given C{protocol} with</span>
+<span class="sd">        L{_GzipProtocol}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="o">.</span><span class="n">deliverBody</span><span class="p">(</span><span class="n">_GzipProtocol</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_GzipProtocol</span><span class="p">(</span><span class="n">proxyForInterface</span><span class="p">(</span><span class="n">IProtocol</span><span class="p">)):</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A L{Protocol} implementation which wraps another one, transparently</span>
+<span class="sd">    decompressing received data.</span>
+
+<span class="sd">    @ivar _zlibDecompress: A zlib decompress object used to decompress the data</span>
+<span class="sd">        stream.</span>
+
+<span class="sd">    @ivar _response: A reference to the original response, in case of errors.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original</span> <span class="o">=</span> <span class="n">protocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_response</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zlibDecompress</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompressobj</span><span class="p">(</span><span class="mi">16</span> <span class="o">+</span> <span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decompress C{data} with the zlib decompressor, forwarding the raw data</span>
+<span class="sd">        to the original protocol.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rawData</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zlibDecompress</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">zlib</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResponseFailed</span><span class="p">([</span><span class="n">Failure</span><span class="p">()],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rawData</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">rawData</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forward the connection lost event, flushing remaining data from the</span>
+<span class="sd">        decompressor if any.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rawData</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zlibDecompress</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">zlib</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResponseFailed</span><span class="p">([</span><span class="n">reason</span><span class="p">,</span> <span class="n">Failure</span><span class="p">()],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rawData</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">rawData</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="o">.</span><span class="n">connectionLost</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgent</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ContentDecoderAgent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An L{Agent} wrapper to handle encoded content.</span>
+
+<span class="sd">    It takes care of declaring the support for content in the</span>
+<span class="sd">    I{Accept-Encoding} header and automatically decompresses the received data</span>
+<span class="sd">    if the I{Content-Encoding} header indicates a supported encoding.</span>
+
+<span class="sd">    For example::</span>
+
+<span class="sd">        agent = ContentDecoderAgent(Agent(reactor),</span>
+<span class="sd">                                    [(b&#39;gzip&#39;, GzipDecoder)])</span>
+
+<span class="sd">    @param agent: The agent to wrap</span>
+<span class="sd">    @type agent: L{IAgent}</span>
+
+<span class="sd">    @param decoders: A sequence of (name, decoder) objects. The name</span>
+<span class="sd">        declares which encoding the decoder supports. The decoder must accept</span>
+<span class="sd">        an L{IResponse} and return an L{IResponse} when called. The order</span>
+<span class="sd">        determines how the decoders are advertised to the server. Names must</span>
+<span class="sd">        be unique.not be duplicated.</span>
+<span class="sd">    @type decoders: sequence of (L{bytes}, L{callable}) tuples</span>
+
+<span class="sd">    @since: 11.1</span>
+
+<span class="sd">    @see: L{GzipDecoder}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">decoders</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span> <span class="o">=</span> <span class="n">agent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_decoders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">decoders</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_supported</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">decoder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">decoder</span> <span class="ow">in</span> <span class="n">decoders</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a client request which declares supporting compressed content.</span>
+
+<span class="sd">        @see: L{Agent.request}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">addRawHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Accept-Encoding&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supported</span><span class="p">)</span>
+        <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handleResponse</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handleResponse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the response is encoded, and wrap it to handle decompression.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">contentEncodingHeaders</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getRawHeaders</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Content-Encoding&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">contentEncodingHeaders</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">contentEncodingHeaders</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">contentEncodingHeaders</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">contentEncodingHeaders</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">decoder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decoders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">decoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">decoder</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Add it back</span>
+                <span class="n">contentEncodingHeaders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">contentEncodingHeaders</span><span class="p">:</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">setRawHeaders</span><span class="p">(</span>
+                <span class="sa">b</span><span class="s2">&quot;Content-Encoding&quot;</span><span class="p">,</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">contentEncodingHeaders</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">removeHeader</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Content-Encoding&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="n">_canonicalHeaderName</span> <span class="o">=</span> <span class="n">_nameEncoder</span><span class="o">.</span><span class="n">encode</span>
+<span class="n">_defaultSensitiveHeaders</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="sa">b</span><span class="s2">&quot;Authorization&quot;</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;Cookie&quot;</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;Cookie2&quot;</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;Proxy-Authorization&quot;</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IAgent</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RedirectAgent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An L{Agent} wrapper which handles HTTP redirects.</span>
+
+<span class="sd">    The implementation is rather strict: 301 and 302 behaves like 307, not</span>
+<span class="sd">    redirecting automatically on methods different from I{GET} and I{HEAD}.</span>
+
+<span class="sd">    See L{BrowserLikeRedirectAgent} for a redirecting Agent that behaves more</span>
+<span class="sd">    like a web browser.</span>
+
+<span class="sd">    @param redirectLimit: The maximum number of times the agent is allowed to</span>
+<span class="sd">        follow redirects before failing with a L{error.InfiniteRedirection}.</span>
+
+<span class="sd">    @param sensitiveHeaderNames: An iterable of C{bytes} enumerating the names</span>
+<span class="sd">        of headers that must not be transmitted when redirecting to a different</span>
+<span class="sd">        origins.  These will be consulted in addition to the protocol-specified</span>
+<span class="sd">        set of headers that contain sensitive information.</span>
+
+<span class="sd">    @cvar _redirectResponses: A L{list} of HTTP status codes to be redirected</span>
+<span class="sd">        for I{GET} and I{HEAD} methods.</span>
+
+<span class="sd">    @cvar _seeOtherResponses: A L{list} of HTTP status codes to be redirected</span>
+<span class="sd">        for any method and the method altered to I{GET}.</span>
+
+<span class="sd">    @since: 11.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_redirectResponses</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">MOVED_PERMANENTLY</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">FOUND</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">TEMPORARY_REDIRECT</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">PERMANENT_REDIRECT</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">_seeOtherResponses</span> <span class="o">=</span> <span class="p">[</span><span class="n">http</span><span class="o">.</span><span class="n">SEE_OTHER</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent</span><span class="p">:</span> <span class="n">IAgent</span><span class="p">,</span>
+        <span class="n">redirectLimit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">sensitiveHeaderNames</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span> <span class="o">=</span> <span class="n">agent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirectLimit</span> <span class="o">=</span> <span class="n">redirectLimit</span>
+        <span class="n">sensitive</span> <span class="o">=</span> <span class="p">{</span><span class="n">_canonicalHeaderName</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">sensitiveHeaderNames</span><span class="p">}</span>
+        <span class="n">sensitive</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_defaultSensitiveHeaders</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sensitiveHeaderNames</span> <span class="o">=</span> <span class="n">sensitive</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a client request following HTTP redirects.</span>
+
+<span class="sd">        @see: L{Agent.request}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">bodyProducer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handleResponse</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolveLocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requestURI</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve the redirect location against the request I{URI}.</span>
+
+<span class="sd">        @type requestURI: C{bytes}</span>
+<span class="sd">        @param requestURI: The request I{URI}.</span>
+
+<span class="sd">        @type location: C{bytes}</span>
+<span class="sd">        @param location: The redirect location.</span>
+
+<span class="sd">        @rtype: C{bytes}</span>
+<span class="sd">        @return: Final resolved I{URI}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_urljoin</span><span class="p">(</span><span class="n">requestURI</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handleRedirect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">redirectCount</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a redirect response, checking the number of redirects already</span>
+<span class="sd">        followed, and extracting the location header fields.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">redirectCount</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirectLimit</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">InfiniteRedirection</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Infinite redirection detected&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">uri</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ResponseFailed</span><span class="p">([</span><span class="n">Failure</span><span class="p">(</span><span class="n">err</span><span class="p">)],</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">locationHeaders</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getRawHeaders</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">locationHeaders</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">RedirectWithNoLocation</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;No location header field&quot;</span><span class="p">,</span> <span class="n">uri</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ResponseFailed</span><span class="p">([</span><span class="n">Failure</span><span class="p">(</span><span class="n">err</span><span class="p">)],</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolveLocation</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">locationHeaders</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="n">parsedURI</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">parsedLocation</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+            <span class="n">sameOrigin</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">parsedURI</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="n">parsedLocation</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="n">parsedURI</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">parsedLocation</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="n">parsedURI</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="n">parsedLocation</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sameOrigin</span><span class="p">:</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="n">rawName</span><span class="p">:</span> <span class="n">rawValue</span>
+                        <span class="k">for</span> <span class="n">rawName</span><span class="p">,</span> <span class="n">rawValue</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">getAllRawHeaders</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">rawName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sensitiveHeaderNames</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+        <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_chainResponse</span><span class="p">(</span><span class="n">newResponse</span><span class="p">):</span>
+            <span class="n">newResponse</span><span class="o">.</span><span class="n">setPreviousResponse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newResponse</span>
+
+        <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_chainResponse</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handleResponse</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">redirectCount</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handleResponse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">redirectCount</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the response, making another request if it indicates a redirect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirectResponses</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;HEAD&quot;</span><span class="p">):</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">PageRedirect</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ResponseFailed</span><span class="p">([</span><span class="n">Failure</span><span class="p">(</span><span class="n">err</span><span class="p">)],</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handleRedirect</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">redirectCount</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seeOtherResponses</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handleRedirect</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">redirectCount</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BrowserLikeRedirectAgent</span><span class="p">(</span><span class="n">RedirectAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An L{Agent} wrapper which handles HTTP redirects in the same fashion as web</span>
+<span class="sd">    browsers.</span>
+
+<span class="sd">    Unlike L{RedirectAgent}, the implementation is more relaxed: 301 and 302</span>
+<span class="sd">    behave like 303, redirecting automatically on any method and altering the</span>
+<span class="sd">    redirect request to a I{GET}.</span>
+
+<span class="sd">    @see: L{RedirectAgent}</span>
+
+<span class="sd">    @since: 13.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_redirectResponses</span> <span class="o">=</span> <span class="p">[</span><span class="n">http</span><span class="o">.</span><span class="n">TEMPORARY_REDIRECT</span><span class="p">]</span>
+    <span class="n">_seeOtherResponses</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">MOVED_PERMANENTLY</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">FOUND</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">SEE_OTHER</span><span class="p">,</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">PERMANENT_REDIRECT</span><span class="p">,</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ReadBodyProtocol</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Protocol that collects data sent to it.</span>
+
+<span class="sd">    This is a helper for L{IResponse.deliverBody}, which collects the body and</span>
+<span class="sd">    fires a deferred with it.</span>
+
+<span class="sd">    @ivar deferred: See L{__init__}.</span>
+<span class="sd">    @ivar status: See L{__init__}.</span>
+<span class="sd">    @ivar message: See L{__init__}.</span>
+
+<span class="sd">    @ivar dataBuffer: list of byte-strings received</span>
+<span class="sd">    @type dataBuffer: L{list} of L{bytes}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">deferred</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param status: Status of L{IResponse}</span>
+<span class="sd">        @ivar status: L{int}</span>
+
+<span class="sd">        @param message: Message of L{IResponse}</span>
+<span class="sd">        @type message: L{bytes}</span>
+
+<span class="sd">        @param deferred: deferred to fire when response is complete</span>
+<span class="sd">        @type deferred: L{Deferred} firing with L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span> <span class="o">=</span> <span class="n">deferred</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataBuffer</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accumulate some more bytes from the response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataBuffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deliver the accumulated response bytes to the waiting L{Deferred}, if</span>
+<span class="sd">        the response body has been completely received without error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ResponseDone</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataBuffer</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">PotentialDataLoss</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span>
+                <span class="n">PartialDownloadError</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataBuffer</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="readBody">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.discord.html#evennia.contrib.rpg.llm.llm_client.readBody">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">readBody</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">IResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the body of an L{IResponse} and return it as a byte string.</span>
+
+<span class="sd">    This is a helper function for clients that don&#39;t want to incrementally</span>
+<span class="sd">    receive the body of an HTTP response.</span>
+
+<span class="sd">    @param response: The HTTP response for which the body will be read.</span>
+<span class="sd">    @type response: L{IResponse} provider</span>
+
+<span class="sd">    @return: A L{Deferred} which will fire with the body of the response.</span>
+<span class="sd">        Cancelling it will close the connection to the server immediately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="n">deferred</span><span class="p">:</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">[</span><span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancel a L{readBody} call, close the connection to the HTTP server</span>
+<span class="sd">        immediately, if it is still open.</span>
+
+<span class="sd">        @param deferred: The cancelled L{defer.Deferred}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">abort</span> <span class="o">=</span> <span class="n">getAbort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">abort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">()</span>
+
+    <span class="n">d</span><span class="p">:</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">(</span><span class="n">cancel</span><span class="p">)</span>
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">_ReadBodyProtocol</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">phrase</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getAbort</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="s2">&quot;abortConnection&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">response</span><span class="o">.</span><span class="n">deliverBody</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">protocol</span><span class="o">.</span><span class="n">transport</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">getAbort</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Using readBody with a transport that does not have an &quot;</span>
+            <span class="s2">&quot;abortConnection method&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BrowserLikePolicyForHTTPS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BrowserLikeRedirectAgent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ContentDecoderAgent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CookieAgent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GzipDecoder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HTTPConnectionPool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PartialDownloadError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ProxyAgent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;readBody&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RedirectAgent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RequestGenerationFailed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RequestTransmissionFailed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Response&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResponseDone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResponseFailed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResponseNeverReceived&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;URI&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.web.client</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.db.models.functions.text &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.models.functions.text</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.db.models.functions.text</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotSupportedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.expressions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Func</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">CharField</span><span class="p">,</span> <span class="n">IntegerField</span><span class="p">,</span> <span class="n">TextField</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cast</span><span class="p">,</span> <span class="n">Coalesce</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.lookups</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transform</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySQLSHA2Mixin</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;SHA2(</span><span class="si">%%</span><span class="s2">(expressions)s, </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OracleHashMixin</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;LOWER(RAWTOHEX(STANDARD_HASH(UTL_I18N.STRING_TO_RAW(&quot;</span>
+                <span class="s2">&quot;</span><span class="si">%(expressions)s</span><span class="s2">, &#39;AL32UTF8&#39;), &#39;</span><span class="si">%(function)s</span><span class="s2">&#39;)))&quot;</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQLSHAMixin</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_postgresql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;ENCODE(DIGEST(</span><span class="si">%(expressions)s</span><span class="s2">, &#39;</span><span class="si">%(function)s</span><span class="s2">&#39;), &#39;hex&#39;)&quot;</span><span class="p">,</span>
+            <span class="n">function</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Chr</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;CHR&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;chr&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">function</span><span class="o">=</span><span class="s2">&quot;CHAR&quot;</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(function)s</span><span class="s2">(</span><span class="si">%(expressions)s</span><span class="s2"> USING utf16)&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(function)s</span><span class="s2">(</span><span class="si">%(expressions)s</span><span class="s2"> USING NCHAR_CS)&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;CHAR&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConcatPair</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concatenate two arguments together. This is used by `Concat` because not</span>
+<span class="sd">    all backend databases support more than two arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;CONCAT&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pipes_concat_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">coalesced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coalesce</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ConcatPair</span><span class="p">,</span> <span class="n">coalesced</span><span class="p">)</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;(</span><span class="si">%(expressions)s</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="n">arg_joiner</span><span class="o">=</span><span class="s2">&quot; || &quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">as_sqlite</span> <span class="o">=</span> <span class="n">pipes_concat_sql</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_postgresql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">set_source_expressions</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="n">expression</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expression</span><span class="o">.</span><span class="n">output_field</span><span class="p">,</span> <span class="p">(</span><span class="n">CharField</span><span class="p">,</span> <span class="n">TextField</span><span class="p">))</span>
+                    <span class="k">else</span> <span class="n">Cast</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">TextField</span><span class="p">())</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">expression</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">get_source_expressions</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">pipes_concat_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="c1"># Use CONCAT_WS with an empty separator so that NULLs are ignored.</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">function</span><span class="o">=</span><span class="s2">&quot;CONCAT_WS&quot;</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(function)s</span><span class="s2">(&#39;&#39;, </span><span class="si">%(expressions)s</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">coalesce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># null on either side results in null for expression, wrap with coalesce</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">set_source_expressions</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">Coalesce</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">Value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">expression</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">get_source_expressions</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">c</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Concat</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concatenate text fields together. Backends that result in an entire</span>
+<span class="sd">    null expression when any arguments are null will wrap each argument in</span>
+<span class="sd">    coalesce functions to ensure a non-null result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(expressions)s</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expressions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Concat must take at least two expressions&quot;</span><span class="p">)</span>
+        <span class="n">paired</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paired</span><span class="p">(</span><span class="n">expressions</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output_field&quot;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">paired</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_paired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">output_field</span><span class="p">):</span>
+        <span class="c1"># wrap pairs of expressions in successive concat functions</span>
+        <span class="c1"># exp = [a, b, c, d]</span>
+        <span class="c1"># -&gt; ConcatPair(a, ConcatPair(b, ConcatPair(c, d))))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expressions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ConcatPair</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">output_field</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ConcatPair</span><span class="p">(</span>
+            <span class="n">expressions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_paired</span><span class="p">(</span><span class="n">expressions</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">output_field</span><span class="o">=</span><span class="n">output_field</span><span class="p">),</span>
+            <span class="n">output_field</span><span class="o">=</span><span class="n">output_field</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LEFT&quot;</span>
+    <span class="n">arity</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        expression: the name of a field, or an expression returning a string</span>
+<span class="sd">        length: the number of characters to return from the start of the string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;length&#39; must be greater than 0.&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_substr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Substr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_substr</span><span class="p">()</span><span class="o">.</span><span class="n">as_oracle</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_substr</span><span class="p">()</span><span class="o">.</span><span class="n">as_sqlite</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Length</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the number of characters in the expression.&quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LENGTH&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;length&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;CHAR_LENGTH&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="Lower">
+<a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.channels.Lower">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Lower</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LOWER&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;lower&quot;</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LPad</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LPAD&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">fill_text</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;length&#39; must be greater or equal to 0.&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">fill_text</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LTrim</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LTRIM&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;ltrim&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MD5</span><span class="p">(</span><span class="n">OracleHashMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;MD5&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;md5&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Ord</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;ASCII&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;ord&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;ORD&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;UNICODE&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Repeat</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;REPEAT&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;number&#39; must be greater or equal to 0.&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">expression</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Length</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="o">*</span> <span class="n">number</span>
+        <span class="n">rpad</span> <span class="o">=</span> <span class="n">RPad</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">expression</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rpad</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Replace</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;REPLACE&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Reverse</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;REVERSE&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;reverse&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="c1"># REVERSE in Oracle is undocumented and doesn&#39;t support multi-byte</span>
+        <span class="c1"># strings. Use a special subquery instead.</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">bare_select_suffix</span>
+        <span class="n">sql</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;(SELECT LISTAGG(s) WITHIN GROUP (ORDER BY n DESC) FROM &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(SELECT LEVEL n, SUBSTR(%(expressions)s, LEVEL, 1) s</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;CONNECT BY LEVEL &lt;= LENGTH(</span><span class="si">%(expressions)s</span><span class="s2">)) &quot;</span>
+                <span class="s2">&quot;GROUP BY </span><span class="si">%(expressions)s</span><span class="s2">)&quot;</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sql</span><span class="p">,</span> <span class="n">params</span> <span class="o">*</span> <span class="mi">3</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="n">Left</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;RIGHT&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_substr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Substr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Value</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_expressions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RPad</span><span class="p">(</span><span class="n">LPad</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;RPAD&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RTrim</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;RTRIM&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;rtrim&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SHA1</span><span class="p">(</span><span class="n">OracleHashMixin</span><span class="p">,</span> <span class="n">PostgreSQLSHAMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SHA1&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;sha1&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SHA224</span><span class="p">(</span><span class="n">MySQLSHA2Mixin</span><span class="p">,</span> <span class="n">PostgreSQLSHAMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SHA224&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;sha224&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span><span class="s2">&quot;SHA224 is not supported on Oracle.&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SHA256</span><span class="p">(</span><span class="n">MySQLSHA2Mixin</span><span class="p">,</span> <span class="n">OracleHashMixin</span><span class="p">,</span> <span class="n">PostgreSQLSHAMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SHA256&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;sha256&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SHA384</span><span class="p">(</span><span class="n">MySQLSHA2Mixin</span><span class="p">,</span> <span class="n">OracleHashMixin</span><span class="p">,</span> <span class="n">PostgreSQLSHAMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SHA384&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;sha384&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SHA512</span><span class="p">(</span><span class="n">MySQLSHA2Mixin</span><span class="p">,</span> <span class="n">OracleHashMixin</span><span class="p">,</span> <span class="n">PostgreSQLSHAMixin</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SHA512&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;sha512&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StrIndex</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a positive integer corresponding to the 1-indexed position of the</span>
+<span class="sd">    first occurrence of a substring inside another string, or 0 if the</span>
+<span class="sd">    substring is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;INSTR&quot;</span>
+    <span class="n">arity</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_postgresql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;STRPOS&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Substr</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;SUBSTRING&quot;</span>
+    <span class="n">output_field</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        expression: the name of a field, or an expression returning a string</span>
+<span class="sd">        pos: an integer &gt; 0, or an expression returning an integer</span>
+<span class="sd">        length: an optional number of characters to return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;pos&#39; must be greater than 0&quot;</span><span class="p">)</span>
+        <span class="n">expressions</span> <span class="o">=</span> <span class="p">[</span><span class="n">expression</span><span class="p">,</span> <span class="n">pos</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expressions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;SUBSTR&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;SUBSTR&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Trim</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;TRIM&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;trim&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Upper</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;UPPER&quot;</span>
+    <span class="n">lookup_name</span> <span class="o">=</span> <span class="s2">&quot;upper&quot;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.models.functions.text</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

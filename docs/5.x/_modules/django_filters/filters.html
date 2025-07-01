@@ -1,0 +1,907 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django_filters.filters &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django_filters.filters</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django_filters.filters</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaxValueValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOOKUP_SEP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.forms.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">pretty_name</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.itercompat</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">now</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EMPTY_VALUES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.fields</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseCSVField</span><span class="p">,</span>
+    <span class="n">BaseRangeField</span><span class="p">,</span>
+    <span class="n">ChoiceField</span><span class="p">,</span>
+    <span class="n">DateRangeField</span><span class="p">,</span>
+    <span class="n">DateTimeRangeField</span><span class="p">,</span>
+    <span class="n">IsoDateTimeField</span><span class="p">,</span>
+    <span class="n">IsoDateTimeRangeField</span><span class="p">,</span>
+    <span class="n">LookupChoiceField</span><span class="p">,</span>
+    <span class="n">ModelChoiceField</span><span class="p">,</span>
+    <span class="n">ModelMultipleChoiceField</span><span class="p">,</span>
+    <span class="n">MultipleChoiceField</span><span class="p">,</span>
+    <span class="n">RangeField</span><span class="p">,</span>
+    <span class="n">TimeRangeField</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model_field</span><span class="p">,</span> <span class="n">label_for_filter</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;AllValuesFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;AllValuesMultipleFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BaseCSVFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BaseInFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BaseRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BooleanFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CharFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DateFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DateFromToRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DateRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DateTimeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DateTimeFromToRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DurationFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Filter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;IsoDateTimeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;IsoDateTimeFromToRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LookupChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ModelChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ModelMultipleChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MultipleChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;NumberFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;NumericRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;OrderingFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;RangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TimeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TimeRangeFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TypedChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TypedMultipleChoiceFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UUIDFilter&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Filter</span><span class="p">:</span>
+    <span class="n">creation_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">Field</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lookup_expr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distinct</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lookup_expr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lookup_expr</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_LOOKUP_EXPR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">field_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="n">lookup_expr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="o">=</span> <span class="n">distinct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;required&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">creation_counter</span> <span class="o">=</span> <span class="n">Filter</span><span class="o">.</span><span class="n">creation_counter</span>
+        <span class="n">Filter</span><span class="o">.</span><span class="n">creation_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return filter method based on whether we&#39;re excluding</span>
+<span class="sd">           or simply filtering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">exclude</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="k">else</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">method</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter method needs to be lazily resolved, as it may be dependent on</span>
+<span class="sd">        the &#39;parent&#39; FilterSet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">fget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c1"># clear existing FilterMethod</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="n">FilterMethod</span><span class="p">):</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span>
+
+            <span class="c1"># override filter w/ FilterMethod.</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">FilterMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">**</span><span class="n">method</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">():</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">fget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">label_for_filter</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">**</span><span class="n">label</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_field&#39;</span><span class="p">):</span>
+            <span class="n">field_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DISABLE_HELP_TEXT</span><span class="p">:</span>
+                <span class="n">field_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;help_text&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_class</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">field_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">EMPTY_VALUES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">qs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span><span class="p">:</span>
+            <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span><span class="p">)</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_method</span><span class="p">(</span><span class="n">qs</span><span class="p">)(</span><span class="o">**</span><span class="p">{</span><span class="n">lookup</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">qs</span>
+
+
+<div class="viewcode-block" id="CharFilter">
+<a class="viewcode-back" href="../../api/evennia.web.api.filters.html#evennia.web.api.filters.CharFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BooleanFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">NullBooleanField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ChoiceFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">ChoiceField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">null_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;null_value&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">NULL_CHOICE_VALUE</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">null_value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_method</span><span class="p">(</span><span class="n">qs</span><span class="p">)(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span><span class="p">):</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="k">else</span> <span class="n">qs</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TypedChoiceFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">TypedChoiceField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UUIDFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">UUIDField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MultipleChoiceFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This filter performs OR(by default) or AND(using conjoined=True) query</span>
+<span class="sd">    on the selected options.</span>
+
+<span class="sd">    Advanced usage</span>
+<span class="sd">    --------------</span>
+<span class="sd">    Depending on your application logic, when all or no choices are selected,</span>
+<span class="sd">    filtering may be a no-operation. In this case you may wish to avoid the</span>
+<span class="sd">    filtering overhead, particularly if using a `distinct` call.</span>
+
+<span class="sd">    You can override `get_filter_predicate` to use a custom filter.</span>
+<span class="sd">    By default it will use the filter&#39;s name for the key, and the value will</span>
+<span class="sd">    be the model object - or in case of passing in `to_field_name` the</span>
+<span class="sd">    value of that attribute on the model.</span>
+
+<span class="sd">    Set `always_filter` to `False` after instantiation to enable the default</span>
+<span class="sd">    `is_noop` test. You can override `is_noop` if you need a different test</span>
+<span class="sd">    for your application.</span>
+
+<span class="sd">    `distinct` defaults to `True` as to-many relationships will generally</span>
+<span class="sd">    require this.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">MultipleChoiceField</span>
+
+    <span class="n">always_filter</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;distinct&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conjoined</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;conjoined&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">null_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;null_value&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">NULL_CHOICE_VALUE</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_noop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` to short-circuit unnecessary and potentially slow</span>
+<span class="sd">        filtering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">always_filter</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># A reasonable default for being a noop...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;required&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">choices</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># Even though not a noop, no point filtering if empty.</span>
+            <span class="k">return</span> <span class="n">qs</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_noop</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">qs</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjoined</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">null_value</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filter_predicate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjoined</span><span class="p">:</span>
+                <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_method</span><span class="p">(</span><span class="n">qs</span><span class="p">)(</span><span class="o">**</span><span class="n">predicate</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">|=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="n">predicate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjoined</span><span class="p">:</span>
+            <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_method</span><span class="p">(</span><span class="n">qs</span><span class="p">)(</span><span class="n">q</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="k">else</span> <span class="n">qs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_filter_predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">!=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_LOOKUP_EXPR</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">LOOKUP_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">to_field_name</span><span class="p">)}</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TypedMultipleChoiceFilter</span><span class="p">(</span><span class="n">MultipleChoiceFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">TypedMultipleChoiceField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DateFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DateField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DateTimeFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DateTimeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IsoDateTimeFilter</span><span class="p">(</span><span class="n">DateTimeFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses IsoDateTimeField to support filtering on ISO 8601 formatted datetimes.</span>
+
+<span class="sd">    For context see:</span>
+
+<span class="sd">    * https://code.djangoproject.com/ticket/23448</span>
+<span class="sd">    * https://github.com/encode/django-rest-framework/issues/1338</span>
+<span class="sd">    * https://github.com/carltongibson/django-filter/pull/264</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">IsoDateTimeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">TimeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DurationFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DurationField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">QuerySetRequestMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add callable functionality to filters that support the ``queryset``</span>
+<span class="sd">    argument. If the ``queryset`` is callable, then it **must** accept the</span>
+<span class="sd">    ``request`` object as a single argument.</span>
+
+<span class="sd">    This is useful for filtering querysets by properties on the ``request``</span>
+<span class="sd">    object, such as the user.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        def departments(request):</span>
+<span class="sd">            company = request.user.company</span>
+<span class="sd">            return company.department_set.all()</span>
+
+<span class="sd">        class EmployeeFilter(filters.FilterSet):</span>
+<span class="sd">            department = filters.ModelChoiceFilter(queryset=departments)</span>
+<span class="sd">            ...</span>
+
+<span class="sd">    The above example restricts the set of departments to those in the logged-in</span>
+<span class="sd">    user&#39;s associated company.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;queryset&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">request</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span>
+
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">queryset</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">queryset</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">queryset</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">()</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">queryset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;queryset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">queryset</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">field</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelChoiceFilter</span><span class="p">(</span><span class="n">QuerySetRequestMixin</span><span class="p">,</span> <span class="n">ChoiceFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">ModelChoiceField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;empty_label&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">EMPTY_CHOICE_LABEL</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelMultipleChoiceFilter</span><span class="p">(</span><span class="n">QuerySetRequestMixin</span><span class="p">,</span> <span class="n">MultipleChoiceFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">ModelMultipleChoiceField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NumberFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DecimalField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_max_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a MaxValueValidator for the field, or None to disable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MaxValueValidator</span><span class="p">(</span><span class="mf">1e50</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_field&#39;</span><span class="p">):</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">field</span>
+            <span class="n">max_validator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_validator</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">max_validator</span><span class="p">:</span>
+                <span class="n">field</span><span class="o">.</span><span class="n">validators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_validator</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NumericRangeFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">RangeField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="s1">&#39;startswith&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="s1">&#39;endswith&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RangeFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">RangeField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="s1">&#39;range&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="s1">&#39;gte&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">start</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="s1">&#39;lte&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">stop</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_truncate</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DateRangeFilter</span><span class="p">(</span><span class="n">ChoiceFilter</span><span class="p">):</span>
+    <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;today&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Today&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;yesterday&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Yesterday&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;week&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Past 7 days&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;This month&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;This year&#39;</span><span class="p">)),</span>
+    <span class="p">]</span>
+
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;today&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">qs</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__year&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__month&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__day&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">day</span>
+        <span class="p">}),</span>
+        <span class="s1">&#39;yesterday&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">qs</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__year&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="p">(</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__month&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="p">(</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__day&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="p">(</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+        <span class="p">}),</span>
+        <span class="s1">&#39;week&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">qs</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__gte&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">_truncate</span><span class="p">(</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)),</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__lt&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">_truncate</span><span class="p">(</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+        <span class="p">}),</span>
+        <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">qs</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__year&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__month&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span>
+        <span class="p">}),</span>
+        <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">qs</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__year&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">:</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+        <span class="p">}),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">choices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">choices</span>
+        <span class="k">if</span> <span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">filters</span>
+
+        <span class="n">unique</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span> <span class="o">^</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">unique</span><span class="p">,</span> \
+            <span class="s2">&quot;Keys must be present in both &#39;choices&#39; and &#39;filters&#39;. Missing keys: &quot;</span> \
+            <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unique</span><span class="p">))</span>
+
+        <span class="c1"># TODO: remove assertion in 2.1</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;options&#39;</span><span class="p">),</span> \
+            <span class="s2">&quot;The &#39;options&#39; attribute has been replaced by &#39;choices&#39; and &#39;filters&#39;. &quot;</span> \
+            <span class="s2">&quot;See: https://django-filter.readthedocs.io/en/master/guide/migration.html&quot;</span>
+
+        <span class="c1"># null choice not relevant</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;null_label&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">qs</span>
+
+        <span class="k">assert</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span>
+
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="n">value</span><span class="p">](</span><span class="n">qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinct</span> <span class="k">else</span> <span class="n">qs</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DateFromToRangeFilter</span><span class="p">(</span><span class="n">RangeFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">DateRangeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DateTimeFromToRangeFilter</span><span class="p">(</span><span class="n">RangeFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">DateTimeRangeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IsoDateTimeFromToRangeFilter</span><span class="p">(</span><span class="n">RangeFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">IsoDateTimeRangeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeRangeFilter</span><span class="p">(</span><span class="n">RangeFilter</span><span class="p">):</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">TimeRangeField</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AllValuesFilter</span><span class="p">(</span><span class="n">ChoiceFilter</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_default_manager</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">qs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">field</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AllValuesMultipleFilter</span><span class="p">(</span><span class="n">MultipleChoiceFilter</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_default_manager</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">qs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">field</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseCSVFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for CSV type filters, such as IN and RANGE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_field_class</span> <span class="o">=</span> <span class="n">BaseCSVField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;help_text&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Multiple values may be separated by commas.&#39;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">class</span><span class="w"> </span><span class="nc">ConcreteCSVField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_field_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_class</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="n">ConcreteCSVField</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_class_name</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_class</span> <span class="o">=</span> <span class="n">ConcreteCSVField</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_field_class_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_class</span><span class="p">,</span> <span class="n">lookup_expr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a suitable class name for the concrete field class. This is not</span>
+<span class="sd">        completely reliable, as not all field class names are of the format</span>
+<span class="sd">        &lt;Type&gt;Field.</span>
+
+<span class="sd">        ex::</span>
+
+<span class="sd">            BaseCSVFilter._field_class_name(DateTimeField, &#39;year__in&#39;)</span>
+
+<span class="sd">            returns &#39;DateTimeYearInField&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># DateTimeField =&gt; DateTime</span>
+        <span class="n">type_name</span> <span class="o">=</span> <span class="n">field_class</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">type_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;Field&#39;</span><span class="p">):</span>
+            <span class="n">type_name</span> <span class="o">=</span> <span class="n">type_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="c1"># year__in =&gt; YearIn</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">lookup_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">LOOKUP_SEP</span><span class="p">)</span>
+        <span class="n">expression_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">)</span>
+
+        <span class="c1"># DateTimeYearInField</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">Field&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">type_name</span><span class="p">,</span> <span class="n">expression_name</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseInFilter</span><span class="p">(</span><span class="n">BaseCSVFilter</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lookup_expr&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseRangeFilter</span><span class="p">(</span><span class="n">BaseCSVFilter</span><span class="p">):</span>
+    <span class="n">base_field_class</span> <span class="o">=</span> <span class="n">BaseRangeField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lookup_expr&#39;</span><span class="p">,</span> <span class="s1">&#39;range&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LookupChoiceFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A combined filter that allows users to select the lookup expression from a dropdown.</span>
+
+<span class="sd">    * ``lookup_choices`` is an optional argument that accepts multiple input</span>
+<span class="sd">      formats, and is ultimately normlized as the choices used in the lookup</span>
+<span class="sd">      dropdown. See ``.get_lookup_choices()`` for more information.</span>
+
+<span class="sd">    * ``field_class`` is an optional argument that allows you to set the inner</span>
+<span class="sd">      form field class used to validate the value. Default: ``forms.CharField``</span>
+
+<span class="sd">    ex::</span>
+
+<span class="sd">        price = django_filters.LookupChoiceFilter(</span>
+<span class="sd">            field_class=forms.DecimalField,</span>
+<span class="sd">            lookup_choices=[</span>
+<span class="sd">                (&#39;exact&#39;, &#39;Equals&#39;),</span>
+<span class="sd">                (&#39;gt&#39;, &#39;Greater than&#39;),</span>
+<span class="sd">                (&#39;lt&#39;, &#39;Less than&#39;),</span>
+<span class="sd">            ]</span>
+<span class="sd">        )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">field_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span>
+    <span class="n">outer_class</span> <span class="o">=</span> <span class="n">LookupChoiceField</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lookup_choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">field_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">empty_label</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;empty_label&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">EMPTY_CHOICE_LABEL</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">LookupChoiceFilter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup_choices</span> <span class="o">=</span> <span class="n">lookup_choices</span>
+        <span class="k">if</span> <span class="n">field_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_class</span> <span class="o">=</span> <span class="n">field_class</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lookup</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize the lookup into a tuple of ``(lookup expression, display value)``</span>
+
+<span class="sd">        If the ``lookup`` is already a tuple, the tuple is not altered.</span>
+<span class="sd">        If the ``lookup`` is a string, a tuple is returned with the lookup</span>
+<span class="sd">        expression used as the basis for the display value.</span>
+
+<span class="sd">        ex::</span>
+
+<span class="sd">            &gt;&gt;&gt; LookupChoiceFilter.normalize_lookup((&#39;exact&#39;, &#39;Equals&#39;))</span>
+<span class="sd">            (&#39;exact&#39;, &#39;Equals&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; LookupChoiceFilter.normalize_lookup(&#39;has_key&#39;)</span>
+<span class="sd">            (&#39;has_key&#39;, &#39;Has key&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lookup</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">lookup</span><span class="p">,</span> <span class="n">pretty_name</span><span class="p">(</span><span class="n">lookup</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">lookup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lookup</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lookup_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the lookup choices in a format suitable for ``django.forms.ChoiceField``.</span>
+<span class="sd">        If the filter is initialized with ``lookup_choices``, this value is normalized</span>
+<span class="sd">        and passed to the underlying ``LookupChoiceField``. If no choices are provided,</span>
+<span class="sd">        they are generated from the corresponding model field&#39;s registered lookups.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lookups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_choices</span>
+        <span class="k">if</span> <span class="n">lookups</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">get_model_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span>
+            <span class="n">lookups</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_lookups</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize_lookup</span><span class="p">(</span><span class="n">lookup</span><span class="p">)</span> <span class="k">for</span> <span class="n">lookup</span> <span class="ow">in</span> <span class="n">lookups</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_field&#39;</span><span class="p">):</span>
+            <span class="n">inner_field</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">field</span>
+            <span class="n">lookups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lookup_choices</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outer_class</span><span class="p">(</span>
+                <span class="n">inner_field</span><span class="p">,</span> <span class="n">lookups</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">empty_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">empty_label</span><span class="p">,</span>
+                <span class="n">required</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;required&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">lookup</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lookup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup_expr</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">lookup_expr</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">lookup</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OrderingFilter</span><span class="p">(</span><span class="n">BaseCSVFilter</span><span class="p">,</span> <span class="n">ChoiceFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enable queryset ordering. As an extension of ``ChoiceFilter`` it accepts</span>
+<span class="sd">    two additional arguments that are used to build the ordering choices.</span>
+
+<span class="sd">    * ``fields`` is a mapping of {model field name: parameter name}. The</span>
+<span class="sd">      parameter names are exposed in the choices and mask/alias the field</span>
+<span class="sd">      names used in the ``order_by()`` call. Similar to field ``choices``,</span>
+<span class="sd">      ``fields`` accepts the &#39;list of two-tuples&#39; syntax that retains order.</span>
+<span class="sd">      ``fields`` may also just be an iterable of strings. In this case, the</span>
+<span class="sd">      field names simply double as the exposed parameter names.</span>
+
+<span class="sd">    * ``field_labels`` is an optional argument that allows you to customize</span>
+<span class="sd">      the display label for the corresponding parameter. It accepts a mapping</span>
+<span class="sd">      of {field name: human readable label}. Keep in mind that the key is the</span>
+<span class="sd">      field name, and not the exposed parameter name.</span>
+
+<span class="sd">    Additionally, you can just provide your own ``choices`` if you require</span>
+<span class="sd">    explicit control over the exposed options. For example, when you might</span>
+<span class="sd">    want to disable descending sort options.</span>
+
+<span class="sd">    This filter is also CSV-based, and accepts multiple ordering params. The</span>
+<span class="sd">    default select widget does not enable the use of this, but it is useful</span>
+<span class="sd">    for APIs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">descending_fmt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (descending)&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``fields`` may be either a mapping or an iterable.</span>
+<span class="sd">        ``field_labels`` must be a map of field names to display labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_fields</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">field_labels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;field_labels&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;choices&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_choices</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">field_labels</span><span class="p">)</span>
+
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Ordering&#39;</span><span class="p">))</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;help_text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;null_label&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ordering_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="n">descending</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">param</span>
+        <span class="n">field_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">field_name</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">field_name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">EMPTY_VALUES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">qs</span>
+
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ordering_value</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="o">*</span><span class="n">ordering</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize the fields into an ordered map of {field name: param name}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># fields is a mapping, copy into new OrderedDict</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+        <span class="c1"># convert iterable of values =&gt; iterable of pairs (field name, param name)</span>
+        <span class="k">assert</span> <span class="n">is_iterable</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> \
+            <span class="s2">&quot;&#39;fields&#39; must be an iterable (e.g., a list, tuple, or mapping).&quot;</span>
+
+        <span class="c1"># fields is an iterable of field names</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span>
+                   <span class="n">is_iterable</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># may need to be wrapped in parens</span>
+                   <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">),</span> \
+            <span class="s2">&quot;&#39;fields&#39; must contain strings or (field name, param name) pairs.&quot;</span>
+
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span>
+        <span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="n">ascending</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="n">pretty_name</span><span class="p">(</span><span class="n">param</span><span class="p">))))</span>
+            <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">descending</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">descending_fmt</span> <span class="o">%</span> <span class="n">label</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">ascending</span>
+        <span class="p">]</span>
+
+        <span class="c1"># interleave the ascending and descending choices</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ascending</span><span class="p">,</span> <span class="n">descending</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FilterMethod</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This helper is used to override Filter.filter() when a &#39;method&#39; argument</span>
+<span class="sd">    is passed. It proxies the call to the actual method on the filter&#39;s parent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">filter_instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">EMPTY_VALUES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">qs</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve the method on the parent filterset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span>
+
+        <span class="c1"># noop if &#39;method&#39; is a function</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">method</span>
+
+        <span class="c1"># otherwise, method is the name of a method on the parent FilterSet.</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">),</span> \
+            <span class="s2">&quot;Filter &#39;</span><span class="si">%s</span><span class="s2">&#39; must have a parent FilterSet to find &#39;.</span><span class="si">%s</span><span class="s2">()&#39;&quot;</span> <span class="o">%</span>  \
+            <span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">),</span> \
+            <span class="s2">&quot;Expected parent FilterSet &#39;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&#39; to have a &#39;.</span><span class="si">%s</span><span class="s2">()&#39; method.&quot;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">method</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django_filters.filters</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

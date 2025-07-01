@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>textwrap &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">textwrap</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for textwrap</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Text wrapping and filling.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Copyright (C) 1999-2001 Gregory P. Ward.</span>
+<span class="c1"># Copyright (C) 2002, 2003 Python Software Foundation.</span>
+<span class="c1"># Written by Greg Ward &lt;gward@python.net&gt;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TextWrapper&#39;</span><span class="p">,</span> <span class="s1">&#39;wrap&#39;</span><span class="p">,</span> <span class="s1">&#39;fill&#39;</span><span class="p">,</span> <span class="s1">&#39;dedent&#39;</span><span class="p">,</span> <span class="s1">&#39;indent&#39;</span><span class="p">,</span> <span class="s1">&#39;shorten&#39;</span><span class="p">]</span>
+
+<span class="c1"># Hardcode the recognized whitespace characters to the US-ASCII</span>
+<span class="c1"># whitespace characters.  The main reason for doing this is that</span>
+<span class="c1"># some Unicode spaces (like \u00a0) are non-breaking whitespaces.</span>
+<span class="n">_whitespace</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t\n\x0b\x0c\r</span><span class="s1"> &#39;</span>
+
+<div class="viewcode-block" id="TextWrapper">
+<a class="viewcode-back" href="../api/evennia.utils.evtable.html#evennia.contrib.base_systems.building_menu.building_menu.TextWrapper">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TextWrapper</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for wrapping/filling text.  The public interface consists of</span>
+<span class="sd">    the wrap() and fill() methods; the other methods are just there for</span>
+<span class="sd">    subclasses to override in order to tweak the default behaviour.</span>
+<span class="sd">    If you want to completely replace the main wrapping algorithm,</span>
+<span class="sd">    you&#39;ll probably have to override _wrap_chunks().</span>
+
+<span class="sd">    Several instance attributes control various aspects of wrapping:</span>
+<span class="sd">      width (default: 70)</span>
+<span class="sd">        the maximum width of wrapped lines (unless break_long_words</span>
+<span class="sd">        is false)</span>
+<span class="sd">      initial_indent (default: &quot;&quot;)</span>
+<span class="sd">        string that will be prepended to the first line of wrapped</span>
+<span class="sd">        output.  Counts towards the line&#39;s width.</span>
+<span class="sd">      subsequent_indent (default: &quot;&quot;)</span>
+<span class="sd">        string that will be prepended to all lines save the first</span>
+<span class="sd">        of wrapped output; also counts towards each line&#39;s width.</span>
+<span class="sd">      expand_tabs (default: true)</span>
+<span class="sd">        Expand tabs in input text to spaces before further processing.</span>
+<span class="sd">        Each tab will become 0 .. &#39;tabsize&#39; spaces, depending on its position</span>
+<span class="sd">        in its line.  If false, each tab is treated as a single character.</span>
+<span class="sd">      tabsize (default: 8)</span>
+<span class="sd">        Expand tabs in input text to 0 .. &#39;tabsize&#39; spaces, unless</span>
+<span class="sd">        &#39;expand_tabs&#39; is false.</span>
+<span class="sd">      replace_whitespace (default: true)</span>
+<span class="sd">        Replace all whitespace characters in the input text by spaces</span>
+<span class="sd">        after tab expansion.  Note that if expand_tabs is false and</span>
+<span class="sd">        replace_whitespace is true, every tab will be converted to a</span>
+<span class="sd">        single space!</span>
+<span class="sd">      fix_sentence_endings (default: false)</span>
+<span class="sd">        Ensure that sentence-ending punctuation is always followed</span>
+<span class="sd">        by two spaces.  Off by default because the algorithm is</span>
+<span class="sd">        (unavoidably) imperfect.</span>
+<span class="sd">      break_long_words (default: true)</span>
+<span class="sd">        Break words longer than &#39;width&#39;.  If false, those words will not</span>
+<span class="sd">        be broken, and some lines might be longer than &#39;width&#39;.</span>
+<span class="sd">      break_on_hyphens (default: true)</span>
+<span class="sd">        Allow breaking hyphenated words. If true, wrapping will occur</span>
+<span class="sd">        preferably on whitespaces and right after hyphens part of</span>
+<span class="sd">        compound words.</span>
+<span class="sd">      drop_whitespace (default: true)</span>
+<span class="sd">        Drop leading and trailing whitespace from lines.</span>
+<span class="sd">      max_lines (default: None)</span>
+<span class="sd">        Truncate wrapped lines.</span>
+<span class="sd">      placeholder (default: &#39; [...]&#39;)</span>
+<span class="sd">        Append to the last line of truncated text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">unicode_whitespace_trans</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="n">_whitespace</span><span class="p">),</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+
+    <span class="c1"># This funky little regex is just the trick for splitting</span>
+    <span class="c1"># text up into word-wrappable chunks.  E.g.</span>
+    <span class="c1">#   &quot;Hello there -- you goof-ball, use the -b option!&quot;</span>
+    <span class="c1"># splits into</span>
+    <span class="c1">#   Hello/ /there/ /--/ /you/ /goof-/ball,/ /use/ /the/ /-b/ /option!</span>
+    <span class="c1"># (after stripping out empty strings).</span>
+    <span class="n">word_punct</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[\w!&quot;</span><span class="se">\&#39;</span><span class="s1">&amp;.,?]&#39;</span>
+    <span class="n">letter</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[^\d\W]&#39;</span>
+    <span class="n">whitespace</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">_whitespace</span><span class="p">)</span>
+    <span class="n">nowhitespace</span> <span class="o">=</span> <span class="s1">&#39;[^&#39;</span> <span class="o">+</span> <span class="n">whitespace</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">wordsep_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        ( # any whitespace</span>
+<span class="s1">          </span><span class="si">%(ws)s</span><span class="s1">+</span>
+<span class="s1">        | # em-dash between words</span>
+<span class="s1">          (?&lt;=</span><span class="si">%(wp)s</span><span class="s1">) -{2,} (?=\w)</span>
+<span class="s1">        | # word, possibly hyphenated</span>
+<span class="s1">          </span><span class="si">%(nws)s</span><span class="s1">+? (?:</span>
+<span class="s1">            # hyphenated word</span>
+<span class="s1">              -(?: (?&lt;=</span><span class="si">%(lt)s{2}</span><span class="s1">-) | (?&lt;=</span><span class="si">%(lt)s</span><span class="s1">-</span><span class="si">%(lt)s</span><span class="s1">-))</span>
+<span class="s1">              (?= </span><span class="si">%(lt)s</span><span class="s1"> -? </span><span class="si">%(lt)s</span><span class="s1">)</span>
+<span class="s1">            | # end of word</span>
+<span class="s1">              (?=</span><span class="si">%(ws)s</span><span class="s1">|\Z)</span>
+<span class="s1">            | # em-dash</span>
+<span class="s1">              (?&lt;=</span><span class="si">%(wp)s</span><span class="s1">) (?=-{2,}\w)</span>
+<span class="s1">            )</span>
+<span class="s1">        )&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;wp&#39;</span><span class="p">:</span> <span class="n">word_punct</span><span class="p">,</span> <span class="s1">&#39;lt&#39;</span><span class="p">:</span> <span class="n">letter</span><span class="p">,</span>
+                <span class="s1">&#39;ws&#39;</span><span class="p">:</span> <span class="n">whitespace</span><span class="p">,</span> <span class="s1">&#39;nws&#39;</span><span class="p">:</span> <span class="n">nowhitespace</span><span class="p">},</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">word_punct</span><span class="p">,</span> <span class="n">letter</span><span class="p">,</span> <span class="n">nowhitespace</span>
+
+    <span class="c1"># This less funky little regex just split on recognized spaces. E.g.</span>
+    <span class="c1">#   &quot;Hello there -- you goof-ball, use the -b option!&quot;</span>
+    <span class="c1"># splits into</span>
+    <span class="c1">#   Hello/ /there/ /--/ /you/ /goof-ball,/ /use/ /the/ /-b/ /option!/</span>
+    <span class="n">wordsep_simple_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">+)&#39;</span> <span class="o">%</span> <span class="n">whitespace</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">whitespace</span>
+
+    <span class="c1"># XXX this is not locale- or charset-aware -- string.lowercase</span>
+    <span class="c1"># is US-ASCII only (and therefore English-only)</span>
+    <span class="n">sentence_end_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[a-z]&#39;</span>             <span class="c1"># lowercase letter</span>
+                                 <span class="sa">r</span><span class="s1">&#39;[\.\!\?]&#39;</span>          <span class="c1"># sentence-ending punct.</span>
+                                 <span class="sa">r</span><span class="s1">&#39;[\&quot;</span><span class="se">\&#39;</span><span class="s1">]?&#39;</span>           <span class="c1"># optional end-of-quote</span>
+                                 <span class="sa">r</span><span class="s1">&#39;\Z&#39;</span><span class="p">)</span>               <span class="c1"># end of chunk</span>
+
+<div class="viewcode-block" id="TextWrapper.__init__">
+<a class="viewcode-back" href="../api/evennia.utils.evtable.html#evennia.contrib.base_systems.building_menu.building_menu.TextWrapper.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+                 <span class="n">initial_indent</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">subsequent_indent</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">expand_tabs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">replace_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">fix_sentence_endings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">break_long_words</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">drop_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">break_on_hyphens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">tabsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                 <span class="o">*</span><span class="p">,</span>
+                 <span class="n">max_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39; [...]&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_indent</span> <span class="o">=</span> <span class="n">initial_indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subsequent_indent</span> <span class="o">=</span> <span class="n">subsequent_indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expand_tabs</span> <span class="o">=</span> <span class="n">expand_tabs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replace_whitespace</span> <span class="o">=</span> <span class="n">replace_whitespace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_sentence_endings</span> <span class="o">=</span> <span class="n">fix_sentence_endings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_long_words</span> <span class="o">=</span> <span class="n">break_long_words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_whitespace</span> <span class="o">=</span> <span class="n">drop_whitespace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_on_hyphens</span> <span class="o">=</span> <span class="n">break_on_hyphens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabsize</span> <span class="o">=</span> <span class="n">tabsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_lines</span> <span class="o">=</span> <span class="n">max_lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeholder</span></div>
+
+
+
+    <span class="c1"># -- Private methods -----------------------------------------------</span>
+    <span class="c1"># (possibly useful for subclasses to override)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_munge_whitespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_munge_whitespace(text : string) -&gt; string</span>
+
+<span class="sd">        Munge whitespace in text: expand tabs and convert all other</span>
+<span class="sd">        whitespace characters to spaces.  Eg. &quot; foo\\tbar\\n\\nbaz&quot;</span>
+<span class="sd">        becomes &quot; foo    bar  baz&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_tabs</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">expandtabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace_whitespace</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unicode_whitespace_trans</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_split(text : string) -&gt; [string]</span>
+
+<span class="sd">        Split the text to wrap into indivisible chunks.  Chunks are</span>
+<span class="sd">        not quite the same as words; see _wrap_chunks() for full</span>
+<span class="sd">        details.  As an example, the text</span>
+<span class="sd">          Look, goof-ball -- use the -b option!</span>
+<span class="sd">        breaks into the following chunks:</span>
+<span class="sd">          &#39;Look,&#39;, &#39; &#39;, &#39;goof-&#39;, &#39;ball&#39;, &#39; &#39;, &#39;--&#39;, &#39; &#39;,</span>
+<span class="sd">          &#39;use&#39;, &#39; &#39;, &#39;the&#39;, &#39; &#39;, &#39;-b&#39;, &#39; &#39;, &#39;option!&#39;</span>
+<span class="sd">        if break_on_hyphens is True, or in:</span>
+<span class="sd">          &#39;Look,&#39;, &#39; &#39;, &#39;goof-ball&#39;, &#39; &#39;, &#39;--&#39;, &#39; &#39;,</span>
+<span class="sd">          &#39;use&#39;, &#39; &#39;, &#39;the&#39;, &#39; &#39;, &#39;-b&#39;, &#39; &#39;, option!&#39;</span>
+<span class="sd">        otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_on_hyphens</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wordsep_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wordsep_simple_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chunks</span> <span class="k">if</span> <span class="n">c</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">chunks</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_sentence_endings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_fix_sentence_endings(chunks : [string])</span>
+
+<span class="sd">        Correct for sentence endings buried in &#39;chunks&#39;.  Eg. when the</span>
+<span class="sd">        original text contains &quot;... foo.\\nBar ...&quot;, munge_whitespace()</span>
+<span class="sd">        and split() will convert that to [..., &quot;foo.&quot;, &quot; &quot;, &quot;Bar&quot;, ...]</span>
+<span class="sd">        which has one too few spaces; this method simply changes the one</span>
+<span class="sd">        space to two.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">patsearch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_end_re</span><span class="o">.</span><span class="n">search</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chunks</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot; &quot;</span> <span class="ow">and</span> <span class="n">patsearch</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">chunks</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_long_word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reversed_chunks</span><span class="p">,</span> <span class="n">cur_line</span><span class="p">,</span> <span class="n">cur_len</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_handle_long_word(chunks : [string],</span>
+<span class="sd">                             cur_line : [string],</span>
+<span class="sd">                             cur_len : int, width : int)</span>
+
+<span class="sd">        Handle a chunk of text (most likely a word, not whitespace) that</span>
+<span class="sd">        is too long to fit in any line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Figure out when indent is larger than the specified width, and make</span>
+        <span class="c1"># sure at least one character is stripped off on every pass</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">space_left</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">space_left</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">cur_len</span>
+
+        <span class="c1"># If we&#39;re allowed to break long words, then do so: put as much</span>
+        <span class="c1"># of the next chunk onto the current line as will fit.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_long_words</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">space_left</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">reversed_chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_on_hyphens</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">space_left</span><span class="p">:</span>
+                <span class="c1"># break after last hyphen, but only if there are</span>
+                <span class="c1"># non-hyphens before it</span>
+                <span class="n">hyphen</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">space_left</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hyphen</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="s1">&#39;-&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[:</span><span class="n">hyphen</span><span class="p">]):</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">hyphen</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">[:</span><span class="n">end</span><span class="p">])</span>
+            <span class="n">reversed_chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span>
+
+        <span class="c1"># Otherwise, we have to preserve the long word intact.  Only add</span>
+        <span class="c1"># it to the current line if there&#39;s nothing already there --</span>
+        <span class="c1"># that minimizes how much we violate the width constraint.</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">cur_line</span><span class="p">:</span>
+            <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reversed_chunks</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+
+        <span class="c1"># If we&#39;re not allowed to break long words, and there&#39;s already</span>
+        <span class="c1"># text on the current line, do nothing.  Next time through the</span>
+        <span class="c1"># main loop of _wrap_chunks(), we&#39;ll wind up here again, but</span>
+        <span class="c1"># cur_len will be zero, so the next line will be entirely</span>
+        <span class="c1"># devoted to the long word that we can&#39;t handle right now.</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_wrap_chunks(chunks : [string]) -&gt; [string]</span>
+
+<span class="sd">        Wrap a sequence of text chunks and return a list of lines of</span>
+<span class="sd">        length &#39;self.width&#39; or less.  (If &#39;break_long_words&#39; is false,</span>
+<span class="sd">        some lines may be longer than this.)  Chunks correspond roughly</span>
+<span class="sd">        to words and the whitespace between them: each chunk is</span>
+<span class="sd">        indivisible (modulo &#39;break_long_words&#39;), but a line break can</span>
+<span class="sd">        come between any two chunks.  Chunks should not have internal</span>
+<span class="sd">        whitespace; ie. a chunk is either all whitespace or a &quot;word&quot;.</span>
+<span class="sd">        Whitespace chunks will be removed from the beginning and end of</span>
+<span class="sd">        lines, but apart from that whitespace is preserved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid width </span><span class="si">%r</span><span class="s2"> (must be &gt; 0)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lines</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsequent_indent</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_indent</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indent</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;placeholder too large for max width&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Arrange in reverse order so items can be efficiently popped</span>
+        <span class="c1"># from a stack of chucks.</span>
+        <span class="n">chunks</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
+
+            <span class="c1"># Start the list of chunks that will make up the current line.</span>
+            <span class="c1"># cur_len is just the length of all the chunks in cur_line.</span>
+            <span class="n">cur_line</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cur_len</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># Figure out which static string will prefix this line.</span>
+            <span class="k">if</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsequent_indent</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_indent</span>
+
+            <span class="c1"># Maximum width for this line.</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">indent</span><span class="p">)</span>
+
+            <span class="c1"># First chunk on line is whitespace -- drop it, unless this</span>
+            <span class="c1"># is the very beginning of the text (ie. no lines started yet).</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_whitespace</span> <span class="ow">and</span> <span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="c1"># Can at least squeeze this chunk onto the current line.</span>
+                <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+                    <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+                    <span class="n">cur_len</span> <span class="o">+=</span> <span class="n">l</span>
+
+                <span class="c1"># Nope, this line is full.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># The current line is full, and the next chunk is too big to</span>
+            <span class="c1"># fit on *any* line (not just this one).</span>
+            <span class="k">if</span> <span class="n">chunks</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_long_word</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">cur_line</span><span class="p">,</span> <span class="n">cur_len</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+                <span class="n">cur_len</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">cur_line</span><span class="p">))</span>
+
+            <span class="c1"># If the last chunk on this line is all whitespace, drop it.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_whitespace</span> <span class="ow">and</span> <span class="n">cur_line</span> <span class="ow">and</span> <span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">cur_len</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span> <span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">cur_line</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lines</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lines</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="ow">not</span> <span class="n">chunks</span> <span class="ow">or</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">drop_whitespace</span> <span class="ow">and</span>
+                     <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span>
+                     <span class="ow">not</span> <span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="ow">and</span> <span class="n">cur_len</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">):</span>
+                    <span class="c1"># Convert current line back to a string and store it in</span>
+                    <span class="c1"># list of all lines (return value).</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_line</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="n">cur_line</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span>
+                            <span class="n">cur_len</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">):</span>
+                            <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="p">)</span>
+                            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_line</span><span class="p">))</span>
+                            <span class="k">break</span>
+                        <span class="n">cur_len</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">del</span> <span class="n">cur_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">lines</span><span class="p">:</span>
+                            <span class="n">prev_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prev_line</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="p">)</span> <span class="o">&lt;=</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+                                <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_line</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span>
+                                <span class="k">break</span>
+                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span>
+                    <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">lines</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_munge_whitespace</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># -- Public interface ----------------------------------------------</span>
+
+<div class="viewcode-block" id="TextWrapper.wrap">
+<a class="viewcode-back" href="../api/evennia.utils.evtable.html#evennia.contrib.base_systems.building_menu.building_menu.TextWrapper.wrap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;wrap(text : string) -&gt; [string]</span>
+
+<span class="sd">        Reformat the single paragraph in &#39;text&#39; so it fits in lines of</span>
+<span class="sd">        no more than &#39;self.width&#39; columns, and return a list of wrapped</span>
+<span class="sd">        lines.  Tabs in &#39;text&#39; are expanded with string.expandtabs(),</span>
+<span class="sd">        and all other whitespace characters (including newline) are</span>
+<span class="sd">        converted to space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_chunks</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_sentence_endings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fix_sentence_endings</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_chunks</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TextWrapper.fill">
+<a class="viewcode-back" href="../api/evennia.utils.evtable.html#evennia.contrib.base_systems.building_menu.building_menu.TextWrapper.fill">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;fill(text : string) -&gt; string</span>
+
+<span class="sd">        Reformat the single paragraph in &#39;text&#39; to fit in lines of no</span>
+<span class="sd">        more than &#39;self.width&#39; columns, and return a new string</span>
+<span class="sd">        containing the entire wrapped paragraph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="c1"># -- Convenience interface ---------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap a single paragraph of text, returning a list of wrapped lines.</span>
+
+<span class="sd">    Reformat the single paragraph in &#39;text&#39; so it fits in lines of no</span>
+<span class="sd">    more than &#39;width&#39; columns, and return a list of wrapped lines.  By</span>
+<span class="sd">    default, tabs in &#39;text&#39; are expanded with string.expandtabs(), and</span>
+<span class="sd">    all other whitespace characters (including newline) are converted to</span>
+<span class="sd">    space.  See TextWrapper class for available keyword args to customize</span>
+<span class="sd">    wrapping behaviour.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">TextWrapper</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fill a single paragraph of text, returning a new string.</span>
+
+<span class="sd">    Reformat the single paragraph in &#39;text&#39; to fit in lines of no more</span>
+<span class="sd">    than &#39;width&#39; columns, and return a new string containing the entire</span>
+<span class="sd">    wrapped paragraph.  As with wrap(), tabs are expanded and other</span>
+<span class="sd">    whitespace characters converted to space.  See TextWrapper class for</span>
+<span class="sd">    available keyword args to customize wrapping behaviour.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">TextWrapper</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">shorten</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collapse and truncate the given text to fit in the given width.</span>
+
+<span class="sd">    The text first has its whitespace collapsed.  If it then fits in</span>
+<span class="sd">    the *width*, it is returned as is.  Otherwise, as many words</span>
+<span class="sd">    as possible are joined and then the placeholder is appended::</span>
+
+<span class="sd">        &gt;&gt;&gt; textwrap.shorten(&quot;Hello  world!&quot;, width=12)</span>
+<span class="sd">        &#39;Hello world!&#39;</span>
+<span class="sd">        &gt;&gt;&gt; textwrap.shorten(&quot;Hello  world!&quot;, width=11)</span>
+<span class="sd">        &#39;Hello [...]&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">TextWrapper</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">max_lines</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+
+
+<span class="c1"># -- Loosely related functionality -------------------------------------</span>
+
+<span class="n">_whitespace_only_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[ </span><span class="se">\t</span><span class="s1">]+$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_leading_whitespace_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;(^[ </span><span class="se">\t</span><span class="s1">]*)(?:[^ </span><span class="se">\t\n</span><span class="s1">])&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+<div class="viewcode-block" id="dedent">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.unixcommand.unixcommand.html#evennia.contrib.base_systems.building_menu.building_menu.dedent">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove any common leading whitespace from every line in `text`.</span>
+
+<span class="sd">    This can be used to make triple-quoted strings line up with the left</span>
+<span class="sd">    edge of the display, while still presenting them in the source code</span>
+<span class="sd">    in indented form.</span>
+
+<span class="sd">    Note that tabs and spaces are both treated as whitespace, but they</span>
+<span class="sd">    are not equal: the lines &quot;  hello&quot; and &quot;\\thello&quot; are</span>
+<span class="sd">    considered to have no common leading whitespace.</span>
+
+<span class="sd">    Entirely blank lines are normalized to a newline character.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Look for the longest leading string of spaces and tabs common to</span>
+    <span class="c1"># all lines.</span>
+    <span class="n">margin</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">_whitespace_only_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="n">indents</span> <span class="o">=</span> <span class="n">_leading_whitespace_re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">indent</span> <span class="ow">in</span> <span class="n">indents</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">margin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="n">indent</span>
+
+        <span class="c1"># Current line more deeply indented than previous winner:</span>
+        <span class="c1"># no change (previous winner is still on top).</span>
+        <span class="k">elif</span> <span class="n">indent</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># Current line consistent with and no deeper than previous winner:</span>
+        <span class="c1"># it&#39;s the new winner.</span>
+        <span class="k">elif</span> <span class="n">margin</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">indent</span><span class="p">):</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="n">indent</span>
+
+        <span class="c1"># Find the largest common whitespace between current line and previous</span>
+        <span class="c1"># winner.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">margin</span><span class="p">,</span> <span class="n">indent</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">y</span><span class="p">:</span>
+                    <span class="n">margin</span> <span class="o">=</span> <span class="n">margin</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">break</span>
+
+    <span class="c1"># sanity check (testing/debugging only)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">margin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">margin</span><span class="p">),</span> \
+                   <span class="s2">&quot;line = </span><span class="si">%r</span><span class="s2">, margin = </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">margin</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">margin</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?m)^&#39;</span> <span class="o">+</span> <span class="n">margin</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">indent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds &#39;prefix&#39; to the beginning of selected lines in &#39;text&#39;.</span>
+
+<span class="sd">    If &#39;predicate&#39; is provided, &#39;prefix&#39; will only be added to the lines</span>
+<span class="sd">    where &#39;predicate(line)&#39; is True. If &#39;predicate&#39; is not provided,</span>
+<span class="sd">    it will default to adding &#39;prefix&#39; to all non-empty lines that do not</span>
+<span class="sd">    consist solely of whitespace characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># str.splitlines(True) doesn&#39;t produce empty string.</span>
+        <span class="c1">#  &#39;&#39;.splitlines(True) =&gt; []</span>
+        <span class="c1">#  &#39;foo\n&#39;.splitlines(True) =&gt; [&#39;foo\n&#39;]</span>
+        <span class="c1"># So we can use just `not s.isspace()` here.</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">isspace</span><span class="p">()</span>
+
+    <span class="n">prefixed_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">predicate</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="n">prefixed_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="n">prefixed_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefixed_lines</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1">#print dedent(&quot;\tfoo\n\tbar&quot;)</span>
+    <span class="c1">#print dedent(&quot;  \thello there\n  \t  how are you?&quot;)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;Hello there.</span><span class="se">\n</span><span class="s2">  This is indented.&quot;</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">textwrap</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

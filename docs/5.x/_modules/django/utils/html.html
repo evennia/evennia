@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.utils.html &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.html</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.utils.html</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;HTML utilities suitable for global use.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTMLParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_qsl</span><span class="p">,</span> <span class="n">quote</span><span class="p">,</span> <span class="n">unquote</span><span class="p">,</span> <span class="n">urlencode</span><span class="p">,</span> <span class="n">urlsplit</span><span class="p">,</span> <span class="n">urlunsplit</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SuspiciousOperation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemovedInDjango60Warning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.encoding</span><span class="w"> </span><span class="kn">import</span> <span class="n">punycode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">Promise</span><span class="p">,</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">keep_lazy</span><span class="p">,</span> <span class="n">keep_lazy_text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFC3986_GENDELIMS</span><span class="p">,</span> <span class="n">RFC3986_SUBDELIMS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.regex_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">_lazy_re_compile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.safestring</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafeData</span><span class="p">,</span> <span class="n">SafeString</span><span class="p">,</span> <span class="n">mark_safe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_newlines</span>
+
+<span class="c1"># https://html.spec.whatwg.org/#void-elements</span>
+<span class="n">VOID_ELEMENTS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="s2">&quot;area&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;base&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;br&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;col&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;embed&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;img&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;link&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;meta&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;param&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;track&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;wbr&quot;</span><span class="p">,</span>
+        <span class="c1"># Deprecated tags.</span>
+        <span class="s2">&quot;frame&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;spacer&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">MAX_URL_LENGTH</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">MAX_STRIP_TAGS_DEPTH</span> <span class="o">=</span> <span class="mi">50</span>
+
+
+<div class="viewcode-block" id="escape">
+<a class="viewcode-back" href="../../../api/evennia.web.website.forms.html#evennia.utils.escape">[docs]</a>
+<span class="nd">@keep_lazy</span><span class="p">(</span><span class="n">SafeString</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">escape</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the given text with ampersands, quotes and angle brackets encoded</span>
+<span class="sd">    for use in HTML.</span>
+
+<span class="sd">    Always escape input, even if it&#39;s already escaped and marked as such.</span>
+<span class="sd">    This may result in double-escaping. If this is a concern, use</span>
+<span class="sd">    conditional_escape() instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">SafeString</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)))</span></div>
+
+
+
+<span class="n">_js_escapes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u005C&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u0027&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u0022&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003E&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003C&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u0026&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003D&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u002D&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003B&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u0060&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\u2028</span><span class="s2">&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u2028&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\u2029</span><span class="s2">&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u2029&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Escape every ASCII character with a value less than 32.</span>
+<span class="n">_js_escapes</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">z</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u</span><span class="si">%04X</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+
+
+<span class="nd">@keep_lazy</span><span class="p">(</span><span class="n">SafeString</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">escapejs</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hex encode characters for use in JavaScript strings.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">_js_escapes</span><span class="p">))</span>
+
+
+<span class="n">_json_script_escapes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003E&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u003C&quot;</span><span class="p">,</span>
+    <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">):</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u0026&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">json_script</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">element_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escape all the HTML/XML special characters with their unicode escapes, so</span>
+<span class="sd">    value is safe to be output anywhere except for inside a tag attribute. Wrap</span>
+<span class="sd">    the escaped JSON in a script tag.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.serializers.json</span><span class="w"> </span><span class="kn">import</span> <span class="n">DjangoJSONEncoder</span>
+
+    <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">encoder</span> <span class="ow">or</span> <span class="n">DjangoJSONEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+        <span class="n">_json_script_escapes</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">element_id</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&lt;script id=&quot;</span><span class="si">{}</span><span class="s1">&quot; type=&quot;application/json&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/script&gt;&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">element_id</span><span class="p">,</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">json_str</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&lt;script type=&quot;application/json&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/script&gt;&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">mark_safe</span><span class="p">(</span><span class="n">json_str</span><span class="p">),)</span>
+    <span class="k">return</span> <span class="n">format_html</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">conditional_escape</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to escape(), except that it doesn&#39;t operate on pre-escaped strings.</span>
+
+<span class="sd">    This function relies on the __html__ convention used both by Django&#39;s</span>
+<span class="sd">    SafeData class and by third-party libraries like markupsafe.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;__html__&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">__html__</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">escape</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="format_html">
+<a class="viewcode-back" href="../../../api/evennia.web.admin.objects.html#evennia.utils.format_html">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">format_html</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to str.format, but pass all arguments through conditional_escape(),</span>
+<span class="sd">    and call mark_safe() on the result. This function should be used instead</span>
+<span class="sd">    of str.format or % interpolation to build up small HTML fragments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># RemovedInDjango60Warning: when the deprecation ends, replace with:</span>
+        <span class="c1"># raise TypeError(&quot;args or kwargs must be provided.&quot;)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Calling format_html() without passing args or kwargs is deprecated.&quot;</span><span class="p">,</span>
+            <span class="n">RemovedInDjango60Warning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">args_safe</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">conditional_escape</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">kwargs_safe</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">conditional_escape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">format_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">args_safe</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_safe</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">format_html_join</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="n">format_string</span><span class="p">,</span> <span class="n">args_generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper of format_html, for the common case of a group of arguments that</span>
+<span class="sd">    need to be formatted using the same format string, and then joined using</span>
+<span class="sd">    &#39;sep&#39;. &#39;sep&#39; is also passed through conditional_escape.</span>
+
+<span class="sd">    &#39;args_generator&#39; should be an iterator that returns the sequence of &#39;args&#39;</span>
+<span class="sd">    that will be passed to format_html.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">      format_html_join(&#39;\n&#39;, &quot;&lt;li&gt;{} {}&lt;/li&gt;&quot;, ((u.first_name, u.last_name)</span>
+<span class="sd">                                                  for u in users))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span>
+        <span class="n">conditional_escape</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">format_html</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">args_generator</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linebreaks</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert newlines into &lt;p&gt; and &lt;br&gt;s.&quot;&quot;&quot;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">normalize_newlines</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">paras</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">{2,}&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">autoescape</span><span class="p">:</span>
+        <span class="n">paras</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">%s</span><span class="s2">&lt;/p&gt;&quot;</span> <span class="o">%</span> <span class="n">escape</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paras</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">paras</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">%s</span><span class="s2">&lt;/p&gt;&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paras</span><span class="p">]</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">paras</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MLStripper</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">convert_charrefs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fed</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_entityref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&amp;</span><span class="si">%s</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_charref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&amp;#</span><span class="si">%s</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fed</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_strip_once</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Internal tag stripping utility used by strip_tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">MLStripper</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="strip_tags">
+<a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.strip_tags">[docs]</a>
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">strip_tags</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the given HTML with all tags stripped.&quot;&quot;&quot;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="c1"># Note: in typical case this loop executes _strip_once twice (the second</span>
+    <span class="c1"># execution does not remove any more tags).</span>
+    <span class="n">strip_tags_depth</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">strip_tags_depth</span> <span class="o">&gt;=</span> <span class="n">MAX_STRIP_TAGS_DEPTH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SuspiciousOperation</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="n">_strip_once</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">new_value</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">):</span>
+            <span class="c1"># _strip_once wasn&#39;t able to detect more tags.</span>
+            <span class="k">break</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
+        <span class="n">strip_tags_depth</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">strip_spaces_between_tags</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the given HTML with spaces between tags removed.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&gt;\s+&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&lt;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">smart_urlquote</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quote a URL if it isn&#39;t already quoted.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">unquote_quote</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">unquote</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+        <span class="c1"># Tilde is part of RFC 3986 Section 2.3 Unreserved Characters,</span>
+        <span class="c1"># see also https://bugs.python.org/issue16285</span>
+        <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">RFC3986_SUBDELIMS</span> <span class="o">+</span> <span class="n">RFC3986_GENDELIMS</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Handle IDN before quoting.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># invalid IPv6 URL (normally square brackets in hostname part).</span>
+        <span class="k">return</span> <span class="n">unquote_quote</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">netloc</span> <span class="o">=</span> <span class="n">punycode</span><span class="p">(</span><span class="n">netloc</span><span class="p">)</span>  <span class="c1"># IDN -&gt; ACE</span>
+    <span class="k">except</span> <span class="ne">UnicodeError</span><span class="p">:</span>  <span class="c1"># invalid domain part</span>
+        <span class="k">return</span> <span class="n">unquote_quote</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+        <span class="c1"># Separately unquoting key/value, so as to not mix querystring separators</span>
+        <span class="c1"># included in query values. See #22267.</span>
+        <span class="n">query_parts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">unquote</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">unquote</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">parse_qsl</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">keep_blank_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="c1"># urlencode will take care of quoting</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">query_parts</span><span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">unquote_quote</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">fragment</span> <span class="o">=</span> <span class="n">unquote_quote</span><span class="p">(</span><span class="n">fragment</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">urlunsplit</span><span class="p">((</span><span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CountsDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Urlizer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert any URLs in text into clickable links.</span>
+
+<span class="sd">    Work on http://, https://, www. links, and also on links ending in one of</span>
+<span class="sd">    the original seven gTLDs (.com, .edu, .gov, .int, .mil, .net, and .org).</span>
+<span class="sd">    Links can have trailing punctuation (periods, commas, close-parens) and</span>
+<span class="sd">    leading punctuation (opening parens) and it&#39;ll still do the right thing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">trailing_punctuation_chars</span> <span class="o">=</span> <span class="s2">&quot;.,:;!&quot;</span>
+    <span class="n">wrapping_punctuation</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">)]</span>
+
+    <span class="n">simple_url_re</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^https?://\[?\w&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="n">simple_url_2_re</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^www\.|^(?!http)\w[^@]+\.(com|edu|gov|int|mil|net|org)($|/.*)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span>
+    <span class="p">)</span>
+    <span class="n">word_split_re</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;([\s&lt;&gt;&quot;&#39;]+)&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">mailto_template</span> <span class="o">=</span> <span class="s2">&quot;mailto:</span><span class="si">{local}</span><span class="s2">@</span><span class="si">{domain}</span><span class="s2">&quot;</span>
+    <span class="n">url_template</span> <span class="o">=</span> <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{href}</span><span class="s1">&quot;</span><span class="si">{attrs}</span><span class="s1">&gt;</span><span class="si">{url}</span><span class="s1">&lt;/a&gt;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">trim_url_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nofollow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If trim_url_limit is not None, truncate the URLs in the link text</span>
+<span class="sd">        longer than this limit to trim_url_limit - 1 characters and append an</span>
+<span class="sd">        ellipsis.</span>
+
+<span class="sd">        If nofollow is True, give the links a rel=&quot;nofollow&quot; attribute.</span>
+
+<span class="sd">        If autoescape is True, autoescape the link text and URLs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">safe_input</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">SafeData</span><span class="p">)</span>
+
+        <span class="n">words</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_split_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle_word</span><span class="p">(</span>
+                    <span class="n">word</span><span class="p">,</span>
+                    <span class="n">safe_input</span><span class="o">=</span><span class="n">safe_input</span><span class="p">,</span>
+                    <span class="n">trim_url_limit</span><span class="o">=</span><span class="n">trim_url_limit</span><span class="p">,</span>
+                    <span class="n">nofollow</span><span class="o">=</span><span class="n">nofollow</span><span class="p">,</span>
+                    <span class="n">autoescape</span><span class="o">=</span><span class="n">autoescape</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_word</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">word</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">safe_input</span><span class="p">,</span>
+        <span class="n">trim_url_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nofollow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">autoescape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">word</span> <span class="ow">or</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">word</span> <span class="ow">or</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">word</span><span class="p">:</span>
+            <span class="c1"># lead: Punctuation trimmed from the beginning of the word.</span>
+            <span class="c1"># middle: State of the word.</span>
+            <span class="c1"># trail: Punctuation trimmed from the end of the word.</span>
+            <span class="n">lead</span><span class="p">,</span> <span class="n">middle</span><span class="p">,</span> <span class="n">trail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trim_punctuation</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+            <span class="c1"># Make URL we want to point to.</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">nofollow_attr</span> <span class="o">=</span> <span class="s1">&#39; rel=&quot;nofollow&quot;&#39;</span> <span class="k">if</span> <span class="n">nofollow</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">MAX_URL_LENGTH</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_url_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">middle</span><span class="p">):</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">smart_urlquote</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="n">middle</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">MAX_URL_LENGTH</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_url_2_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">middle</span><span class="p">):</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">smart_urlquote</span><span class="p">(</span><span class="s2">&quot;http://</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">html</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="n">middle</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">middle</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_email_simple</span><span class="p">(</span><span class="n">middle</span><span class="p">):</span>
+                <span class="n">local</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">domain</span> <span class="o">=</span> <span class="n">punycode</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">UnicodeError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">word</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mailto_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="n">local</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+                <span class="n">nofollow_attr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="c1"># Make link.</span>
+            <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+                <span class="n">trimmed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trim_url</span><span class="p">(</span><span class="n">middle</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">trim_url_limit</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">autoescape</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">safe_input</span><span class="p">:</span>
+                    <span class="n">lead</span><span class="p">,</span> <span class="n">trail</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">lead</span><span class="p">),</span> <span class="n">escape</span><span class="p">(</span><span class="n">trail</span><span class="p">)</span>
+                    <span class="n">trimmed</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">trimmed</span><span class="p">)</span>
+                <span class="n">middle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">href</span><span class="o">=</span><span class="n">escape</span><span class="p">(</span><span class="n">url</span><span class="p">),</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="n">nofollow_attr</span><span class="p">,</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">trimmed</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lead</span><span class="si">}{</span><span class="n">middle</span><span class="si">}{</span><span class="n">trail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">safe_input</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">autoescape</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">safe_input</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">autoescape</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">word</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">trim_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">…&quot;</span> <span class="o">%</span> <span class="n">x</span><span class="p">[:</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapping_punctuation_openings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapping_punctuation</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trailing_punctuation_chars_no_semicolon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trailing_punctuation_chars_has_semicolon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;;&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">trim_punctuation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Trim trailing and wrapping punctuation from `word`. Return the items of</span>
+<span class="sd">        the new state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Strip all opening wrapping punctuation.</span>
+        <span class="n">middle</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapping_punctuation_openings</span><span class="p">)</span>
+        <span class="n">lead</span> <span class="o">=</span> <span class="n">word</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)]</span>
+        <span class="n">trail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Continue trimming until middle remains unchanged.</span>
+        <span class="n">trimmed_something</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">CountsDict</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="n">middle</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">trimmed_something</span> <span class="ow">and</span> <span class="n">middle</span><span class="p">:</span>
+            <span class="n">trimmed_something</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Trim wrapping punctuation.</span>
+            <span class="k">for</span> <span class="n">opening</span><span class="p">,</span> <span class="n">closing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapping_punctuation</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">counts</span><span class="p">[</span><span class="n">opening</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">counts</span><span class="p">[</span><span class="n">closing</span><span class="p">]:</span>
+                    <span class="n">rstripped</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">closing</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rstripped</span> <span class="o">!=</span> <span class="n">middle</span><span class="p">:</span>
+                        <span class="n">strip</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">closing</span><span class="p">]</span> <span class="o">-</span> <span class="n">counts</span><span class="p">[</span><span class="n">opening</span><span class="p">]</span>
+                        <span class="n">trail</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="o">-</span><span class="n">strip</span><span class="p">:]</span>
+                        <span class="n">middle</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[:</span><span class="o">-</span><span class="n">strip</span><span class="p">]</span>
+                        <span class="n">trimmed_something</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">counts</span><span class="p">[</span><span class="n">closing</span><span class="p">]</span> <span class="o">-=</span> <span class="n">strip</span>
+
+            <span class="n">amp</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">amp</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">rstripped</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rstripped</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars_no_semicolon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rstripped</span> <span class="o">!=</span> <span class="n">middle</span><span class="p">:</span>
+                <span class="n">trail</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">rstripped</span><span class="p">)</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">trail</span>
+                <span class="n">middle</span> <span class="o">=</span> <span class="n">rstripped</span>
+                <span class="n">trimmed_something</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars_has_semicolon</span> <span class="ow">and</span> <span class="n">middle</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                <span class="c1"># Only strip if not part of an HTML entity.</span>
+                <span class="n">potential_entity</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="n">amp</span><span class="p">:]</span>
+                <span class="n">escaped</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="n">potential_entity</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">escaped</span> <span class="o">==</span> <span class="n">potential_entity</span> <span class="ow">or</span> <span class="n">escaped</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                    <span class="n">rstripped</span> <span class="o">=</span> <span class="n">middle</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trailing_punctuation_chars</span><span class="p">)</span>
+                    <span class="n">trail_start</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rstripped</span><span class="p">)</span>
+                    <span class="n">amount_trailing_semicolons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">amp</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">amount_trailing_semicolons</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1"># Leave up to most recent semicolon as might be an entity.</span>
+                        <span class="n">recent_semicolon</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="n">trail_start</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+                        <span class="n">middle_semicolon_index</span> <span class="o">=</span> <span class="n">recent_semicolon</span> <span class="o">+</span> <span class="n">trail_start</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">trail</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="n">middle_semicolon_index</span><span class="p">:]</span> <span class="o">+</span> <span class="n">trail</span>
+                        <span class="n">middle</span> <span class="o">=</span> <span class="n">rstripped</span> <span class="o">+</span> <span class="n">middle</span><span class="p">[</span><span class="n">trail_start</span><span class="p">:</span><span class="n">middle_semicolon_index</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">trail</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[</span><span class="n">trail_start</span><span class="p">:]</span> <span class="o">+</span> <span class="n">trail</span>
+                        <span class="n">middle</span> <span class="o">=</span> <span class="n">rstripped</span>
+                    <span class="n">trimmed_something</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">lead</span><span class="p">,</span> <span class="n">middle</span><span class="p">,</span> <span class="n">trail</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_email_simple</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if value looks like an email address.&quot;&quot;&quot;</span>
+        <span class="c1"># An @ must be in the middle of the value.</span>
+        <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># value contains more than one @.</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Max length for domain name labels is 63 characters per RFC 1034.</span>
+        <span class="c1"># Helps to avoid ReDoS vectors in the domain part.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">63</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Dot must be in p2 (e.g. example.com)</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p2</span> <span class="ow">or</span> <span class="n">p2</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="n">urlizer</span> <span class="o">=</span> <span class="n">Urlizer</span><span class="p">()</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">urlize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">trim_url_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nofollow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">urlizer</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">,</span> <span class="n">trim_url_limit</span><span class="o">=</span><span class="n">trim_url_limit</span><span class="p">,</span> <span class="n">nofollow</span><span class="o">=</span><span class="n">nofollow</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="n">autoescape</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">avoid_wrapping</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Avoid text wrapping in the middle of a phrase by adding non-breaking</span>
+<span class="sd">    spaces where there previously were normal spaces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\xa0</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">html_safe</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator that defines the __html__ method. This helps non-Django</span>
+<span class="sd">    templates to detect classes whose __str__ methods return SafeString.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;__html__&quot;</span> <span class="ow">in</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;can&#39;t apply @html_safe to </span><span class="si">%s</span><span class="s2"> because it defines &quot;</span>
+            <span class="s2">&quot;__html__().&quot;</span> <span class="o">%</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;__str__&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;can&#39;t apply @html_safe to </span><span class="si">%s</span><span class="s2"> because it doesn&#39;t &quot;</span>
+            <span class="s2">&quot;define __str__().&quot;</span> <span class="o">%</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="p">)</span>
+    <span class="n">klass_str</span> <span class="o">=</span> <span class="n">klass</span><span class="o">.</span><span class="fm">__str__</span>
+    <span class="n">klass</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">klass_str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="n">klass</span><span class="o">.</span><span class="n">__html__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">klass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.html</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

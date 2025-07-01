@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.utils.decorators &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.decorators</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.utils.decorators</h1><div class="highlight"><pre>
+<span></span><span class="s2">&quot;Functions that help with dynamically creating decorators for views.&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span><span class="p">,</span> <span class="n">update_wrapper</span><span class="p">,</span> <span class="n">wraps</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">asgiref.sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">iscoroutinefunction</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">classonlymethod</span><span class="p">(</span><span class="nb">classmethod</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;This method is available only on the class, not on instances.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_method_wrapper</span><span class="p">(</span><span class="n">_wrapper</span><span class="p">,</span> <span class="n">decorator</span><span class="p">):</span>
+    <span class="c1"># _multi_decorate()&#39;s bound_method isn&#39;t available in this scope. Cheat by</span>
+    <span class="c1"># using it on a dummy function.</span>
+    <span class="nd">@decorator</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="n">update_wrapper</span><span class="p">(</span><span class="n">_wrapper</span><span class="p">,</span> <span class="n">dummy</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_multi_decorate</span><span class="p">(</span><span class="n">decorators</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorate `method` with one or more function decorators. `decorators` can be</span>
+<span class="sd">    a single decorator or an iterable of decorators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">decorators</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+        <span class="c1"># Apply a list/tuple of decorators if &#39;decorators&#39; is one. Decorator</span>
+        <span class="c1"># functions are applied so that the call order is the same as the</span>
+        <span class="c1"># order in which they appear in the iterable.</span>
+        <span class="n">decorators</span> <span class="o">=</span> <span class="n">decorators</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">decorators</span> <span class="o">=</span> <span class="p">[</span><span class="n">decorators</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># bound_method has the signature that &#39;decorator&#39; expects i.e. no</span>
+        <span class="c1"># &#39;self&#39; argument, but it&#39;s a closure over self so it can call</span>
+        <span class="c1"># &#39;func&#39;. Also, wrap method.__get__() in a function because new</span>
+        <span class="c1"># attributes can&#39;t be set on bound method objects, only on functions.</span>
+        <span class="n">bound_method</span> <span class="o">=</span> <span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)(</span><span class="n">partial</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))))</span>
+        <span class="k">for</span> <span class="n">dec</span> <span class="ow">in</span> <span class="n">decorators</span><span class="p">:</span>
+            <span class="n">bound_method</span> <span class="o">=</span> <span class="n">dec</span><span class="p">(</span><span class="n">bound_method</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bound_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Copy any attributes that a decorator adds to the function it decorates.</span>
+    <span class="k">for</span> <span class="n">dec</span> <span class="ow">in</span> <span class="n">decorators</span><span class="p">:</span>
+        <span class="n">_update_method_wrapper</span><span class="p">(</span><span class="n">_wrapper</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+    <span class="c1"># Preserve any existing attributes of &#39;method&#39;, including the name.</span>
+    <span class="n">update_wrapper</span><span class="p">(</span><span class="n">_wrapper</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_wrapper</span>
+
+
+<div class="viewcode-block" id="method_decorator">
+<a class="viewcode-back" href="../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.method_decorator">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">method_decorator</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a function decorator into a method decorator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># &#39;obj&#39; can be a class or a function. If &#39;obj&#39; is a function at the time it</span>
+    <span class="c1"># is passed to _dec,  it will eventually be a method of the class it is</span>
+    <span class="c1"># defined on. If &#39;obj&#39; is a class, the &#39;name&#39; is required to be the name</span>
+    <span class="c1"># of the method that will be decorated.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dec</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_multi_decorate</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The keyword argument `name` must be the name of a method &quot;</span>
+                <span class="s2">&quot;of the decorated class: </span><span class="si">%s</span><span class="s2">. Got &#39;</span><span class="si">%s</span><span class="s2">&#39; instead.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot decorate &#39;</span><span class="si">%s</span><span class="s2">&#39; as it isn&#39;t a callable attribute of &quot;</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">_wrapper</span> <span class="o">=</span> <span class="n">_multi_decorate</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_wrapper</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="c1"># Don&#39;t worry about making _dec look similar to a list/tuple as it&#39;s rather</span>
+    <span class="c1"># meaningless.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+        <span class="n">update_wrapper</span><span class="p">(</span><span class="n">_dec</span><span class="p">,</span> <span class="n">decorator</span><span class="p">)</span>
+    <span class="c1"># Change the name to aid debugging.</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">decorator</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">decorator</span><span class="o">.</span><span class="vm">__class__</span>
+    <span class="n">_dec</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;method_decorator(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="n">_dec</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">decorator_from_middleware_with_args</span><span class="p">(</span><span class="n">middleware_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Like decorator_from_middleware, but return a function</span>
+<span class="sd">    that accepts the arguments to be passed to the middleware_class.</span>
+<span class="sd">    Use like::</span>
+
+<span class="sd">         cache_page = decorator_from_middleware_with_args(CacheMiddleware)</span>
+<span class="sd">         # ...</span>
+
+<span class="sd">         @cache_page(3600)</span>
+<span class="sd">         def my_view(request):</span>
+<span class="sd">             # ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">make_middleware_decorator</span><span class="p">(</span><span class="n">middleware_class</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">decorator_from_middleware</span><span class="p">(</span><span class="n">middleware_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a middleware class (not an instance), return a view decorator. This</span>
+<span class="sd">    lets you use middleware functionality on a per-view basis. The middleware</span>
+<span class="sd">    is created with no params passed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">make_middleware_decorator</span><span class="p">(</span><span class="n">middleware_class</span><span class="p">)()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_middleware_decorator</span><span class="p">(</span><span class="n">middleware_class</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">m_args</span><span class="p">,</span> <span class="o">**</span><span class="n">m_kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="n">view_func</span><span class="p">):</span>
+            <span class="n">middleware</span> <span class="o">=</span> <span class="n">middleware_class</span><span class="p">(</span><span class="n">view_func</span><span class="p">,</span> <span class="o">*</span><span class="n">m_args</span><span class="p">,</span> <span class="o">**</span><span class="n">m_kwargs</span><span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">_pre_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_request&quot;</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_view&quot;</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view_func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">_process_exception</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_exception&quot;</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_exception</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exception</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                <span class="k">raise</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">_post_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s2">&quot;render&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">render</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_template_response&quot;</span><span class="p">):</span>
+                        <span class="n">response</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_template_response</span><span class="p">(</span>
+                            <span class="n">request</span><span class="p">,</span> <span class="n">response</span>
+                        <span class="p">)</span>
+                    <span class="c1"># Defer running of process_response until after the template</span>
+                    <span class="c1"># has been rendered:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_response&quot;</span><span class="p">):</span>
+
+                        <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+                        <span class="n">response</span><span class="o">.</span><span class="n">add_post_render_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="s2">&quot;process_response&quot;</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+
+            <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">view_func</span><span class="p">):</span>
+
+                <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_view_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">_pre_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">view_func</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">_process_exception</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">result</span>
+
+                    <span class="k">return</span> <span class="n">_post_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">_view_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">_pre_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">result</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">response</span> <span class="o">=</span> <span class="n">view_func</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">_process_exception</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">result</span>
+
+                    <span class="k">return</span> <span class="n">_post_process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">wraps</span><span class="p">(</span><span class="n">view_func</span><span class="p">)(</span><span class="n">_view_wrapper</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_decorator</span>
+
+    <span class="k">return</span> <span class="n">_make_decorator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sync_and_async_middleware</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mark a middleware factory as returning a hybrid middleware supporting both</span>
+<span class="sd">    types of request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">sync_capable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">async_capable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sync_only_middleware</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mark a middleware factory as returning a sync middleware.</span>
+<span class="sd">    This is the default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">sync_capable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">async_capable</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">async_only_middleware</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark a middleware factory as returning an async middleware.&quot;&quot;&quot;</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">sync_capable</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">async_capable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">func</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.decorators</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.conch.ssh.userauth &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.conch.ssh.userauth</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.conch.ssh.userauth</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.conch.test.test_userauth -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of the ssh-userauth service.</span>
+<span class="sd">Currently implemented authentication types are public-key and password.</span>
+
+<span class="sd">Maintainer: Paul Swartz</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch</span><span class="w"> </span><span class="kn">import</span> <span class="n">error</span><span class="p">,</span> <span class="n">interfaces</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch.ssh</span><span class="w"> </span><span class="kn">import</span> <span class="n">keys</span><span class="p">,</span> <span class="n">service</span><span class="p">,</span> <span class="n">transport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.conch.ssh.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">NS</span><span class="p">,</span> <span class="n">getNS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.cred</span><span class="w"> </span><span class="kn">import</span> <span class="n">credentials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.cred.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnauthorizedLogin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">failure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">nativeString</span>
+
+
+<div class="viewcode-block" id="SSHUserAuthServer">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SSHUserAuthServer</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">SSHService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A service implementing the server side of the &#39;ssh-userauth&#39; service.  It</span>
+<span class="sd">    is used to authenticate the user on the other side as being able to access</span>
+<span class="sd">    this server.</span>
+
+<span class="sd">    @ivar name: the name of this service: &#39;ssh-userauth&#39;</span>
+<span class="sd">    @type name: L{bytes}</span>
+<span class="sd">    @ivar authenticatedWith: a list of authentication methods that have</span>
+<span class="sd">        already been used.</span>
+<span class="sd">    @type authenticatedWith: L{list}</span>
+<span class="sd">    @ivar loginTimeout: the number of seconds we wait before disconnecting</span>
+<span class="sd">        the user for taking too long to authenticate</span>
+<span class="sd">    @type loginTimeout: L{int}</span>
+<span class="sd">    @ivar attemptsBeforeDisconnect: the number of failed login attempts we</span>
+<span class="sd">        allow before disconnecting.</span>
+<span class="sd">    @type attemptsBeforeDisconnect: L{int}</span>
+<span class="sd">    @ivar loginAttempts: the number of login attempts that have been made</span>
+<span class="sd">    @type loginAttempts: L{int}</span>
+<span class="sd">    @ivar passwordDelay: the number of seconds to delay when the user gives</span>
+<span class="sd">        an incorrect password</span>
+<span class="sd">    @type passwordDelay: L{int}</span>
+<span class="sd">    @ivar interfaceToMethod: a L{dict} mapping credential interfaces to</span>
+<span class="sd">        authentication methods.  The server checks to see which of the</span>
+<span class="sd">        cred interfaces have checkers and tells the client that those methods</span>
+<span class="sd">        are valid for authentication.</span>
+<span class="sd">    @type interfaceToMethod: L{dict}</span>
+<span class="sd">    @ivar supportedAuthentications: A list of the supported authentication</span>
+<span class="sd">        methods.</span>
+<span class="sd">    @type supportedAuthentications: L{list} of L{bytes}</span>
+<span class="sd">    @ivar user: the last username the client tried to authenticate with</span>
+<span class="sd">    @type user: L{bytes}</span>
+<span class="sd">    @ivar method: the current authentication method</span>
+<span class="sd">    @type method: L{bytes}</span>
+<span class="sd">    @ivar nextService: the service the user wants started after authentication</span>
+<span class="sd">        has been completed.</span>
+<span class="sd">    @type nextService: L{bytes}</span>
+<span class="sd">    @ivar portal: the L{twisted.cred.portal.Portal} we are using for</span>
+<span class="sd">        authentication</span>
+<span class="sd">    @type portal: L{twisted.cred.portal.Portal}</span>
+<span class="sd">    @ivar clock: an object with a callLater method.  Stubbed out for testing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;ssh-userauth&quot;</span>
+    <span class="n">loginTimeout</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="c1"># 10 minutes before we disconnect them</span>
+    <span class="n">attemptsBeforeDisconnect</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="c1"># 20 login attempts before a disconnect</span>
+    <span class="n">passwordDelay</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># number of seconds to delay on a failed password</span>
+    <span class="n">clock</span> <span class="o">=</span> <span class="n">reactor</span>
+    <span class="n">interfaceToMethod</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">credentials</span><span class="o">.</span><span class="n">ISSHPrivateKey</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">,</span>
+        <span class="n">credentials</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SSHUserAuthServer.serviceStarted">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.serviceStarted">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serviceStarted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the userauth service is started.  Set up instance</span>
+<span class="sd">        variables, check if we should allow password authentication (only</span>
+<span class="sd">        allow if the outgoing connection is encrypted) and set up a login</span>
+<span class="sd">        timeout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">authenticatedWith</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loginAttempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextService</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">portal</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">listCredentialsInterfaces</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaceToMethod</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceToMethod</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">isEncrypted</span><span class="p">(</span><span class="s2">&quot;in&quot;</span><span class="p">):</span>
+            <span class="c1"># don&#39;t let us transport password in plaintext</span>
+            <span class="k">if</span> <span class="sa">b</span><span class="s2">&quot;password&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cancelLoginTimeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loginTimeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeoutAuthentication</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SSHUserAuthServer.serviceStopped">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.serviceStopped">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serviceStopped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the userauth service is stopped.  Cancel the login timeout</span>
+<span class="sd">        if it&#39;s still going.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cancelLoginTimeout</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancelLoginTimeout</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancelLoginTimeout</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SSHUserAuthServer.timeoutAuthentication">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.timeoutAuthentication">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">timeoutAuthentication</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the user has timed out on authentication.  Disconnect</span>
+<span class="sd">        with a DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cancelLoginTimeout</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendDisconnect</span><span class="p">(</span>
+            <span class="n">transport</span><span class="o">.</span><span class="n">DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;you took too long&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SSHUserAuthServer.tryAuth">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.tryAuth">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tryAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to authenticate the user with the given method.  Dispatches to a</span>
+<span class="sd">        auth_* method.</span>
+
+<span class="sd">        @param kind: the authentication method to try.</span>
+<span class="sd">        @type kind: L{bytes}</span>
+<span class="sd">        @param user: the username the client is authenticating with.</span>
+<span class="sd">        @type user: L{bytes}</span>
+<span class="sd">        @param data: authentication specific data sent by the client.</span>
+<span class="sd">        @type data: L{bytes}</span>
+<span class="sd">        @return: A Deferred called back if the method succeeded, or erred back</span>
+<span class="sd">            if it failed.</span>
+<span class="sd">        @rtype: C{defer.Deferred}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{user!r}</span><span class="s2"> trying auth </span><span class="si">{kind!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">(</span><span class="s2">&quot;unsupported authentication, failing&quot;</span><span class="p">))</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">kind</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;auth_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
+                    <span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> return None instead of a Deferred&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bad auth type: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SSHUserAuthServer.ssh_USERAUTH_REQUEST">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.ssh_USERAUTH_REQUEST">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_REQUEST</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The client has requested authentication.  Payload::</span>
+<span class="sd">            string user</span>
+<span class="sd">            string next service</span>
+<span class="sd">            string method</span>
+<span class="sd">            &lt;authentication specific data&gt;</span>
+
+<span class="sd">        @type packet: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span><span class="p">,</span> <span class="n">nextService</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="ow">or</span> <span class="n">nextService</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextService</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authenticatedWith</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># clear auth state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextService</span> <span class="o">=</span> <span class="n">nextService</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tryAuth</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ebBadAuth</span><span class="p">(</span><span class="n">failure</span><span class="o">.</span><span class="n">Failure</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">(</span><span class="s2">&quot;auth returned none&quot;</span><span class="p">)))</span>
+            <span class="k">return</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbFinishedAuth</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebMaybeBadAuth</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebBadAuth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbFinishedAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The callback when user has successfully been authenticated.  For a</span>
+<span class="sd">        description of the arguments, see L{twisted.cred.portal.Portal.login}.</span>
+<span class="sd">        We start the service requested by the user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">avatar</span><span class="p">,</span> <span class="n">logout</span><span class="p">)</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">avatar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">logoutFunction</span> <span class="o">=</span> <span class="n">logout</span>
+        <span class="n">service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">getService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextService</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">service</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not get next service: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nextService</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{user!r}</span><span class="s2"> authenticated with </span><span class="si">{method!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span><span class="n">MSG_USERAUTH_SUCCESS</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">setService</span><span class="p">(</span><span class="n">service</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebMaybeBadAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An intermediate errback.  If the reason is</span>
+<span class="sd">        error.NotEnoughAuthentication, we send a MSG_USERAUTH_FAILURE, but</span>
+<span class="sd">        with the partial success indicator set.</span>
+
+<span class="sd">        @type reason: L{twisted.python.failure.Failure}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reason</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">NotEnoughAuthentication</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span>
+            <span class="n">MSG_USERAUTH_FAILURE</span><span class="p">,</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="p">))</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xff</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebBadAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The final errback in the authentication chain.  If the reason is</span>
+<span class="sd">        error.IgnoreAuthentication, we simply return; the authentication</span>
+<span class="sd">        method has sent its own response.  Otherwise, send a failure message</span>
+<span class="sd">        and (if the method is not &#39;none&#39;) increment the number of login</span>
+<span class="sd">        attempts.</span>
+
+<span class="sd">        @type reason: L{twisted.python.failure.Failure}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">IgnoreAuthentication</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{user!r}</span><span class="s2"> failed auth </span><span class="si">{method!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">UnauthorizedLogin</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;unauthorized login: </span><span class="si">{message}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">reason</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">reason</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ConchError</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;reason: </span><span class="si">{reason}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">failure</span><span class="p">(</span>
+                    <span class="s2">&quot;Error checking auth for user </span><span class="si">{user}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">failure</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span>
+                    <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loginAttempts</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loginAttempts</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">attemptsBeforeDisconnect</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendDisconnect</span><span class="p">(</span>
+                    <span class="n">transport</span><span class="o">.</span><span class="n">DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE</span><span class="p">,</span>
+                    <span class="sa">b</span><span class="s2">&quot;too many bad auths&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span>
+            <span class="n">MSG_USERAUTH_FAILURE</span><span class="p">,</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supportedAuthentications</span><span class="p">))</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="SSHUserAuthServer.auth_publickey">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.auth_publickey">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_publickey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Public key authentication.  Payload::</span>
+<span class="sd">            byte has signature</span>
+<span class="sd">            string algorithm name</span>
+<span class="sd">            string key blob</span>
+<span class="sd">            [string signature] (if has signature is True)</span>
+
+<span class="sd">        Create a SSHPublicKey credential and verify it using our portal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hasSig</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">algName</span><span class="p">,</span> <span class="n">blob</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">keys</span><span class="o">.</span><span class="n">Key</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">keys</span><span class="o">.</span><span class="n">BadKeyError</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Unsupported key type </span><span class="si">{}</span><span class="s2"> or bad key&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">algName</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">UnauthorizedLogin</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">hasSig</span> <span class="ow">and</span> <span class="n">getNS</span><span class="p">(</span><span class="n">rest</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">hasSig</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sessionID</span><span class="p">)</span>
+                <span class="o">+</span> <span class="nb">bytes</span><span class="p">((</span><span class="n">MSG_USERAUTH_REQUEST</span><span class="p">,))</span>
+                <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nextService</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="nb">bytes</span><span class="p">((</span><span class="n">hasSig</span><span class="p">,))</span>
+                <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">algName</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">SSHPrivateKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">algName</span><span class="p">,</span> <span class="n">blob</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interfaces</span><span class="o">.</span><span class="n">IConchUser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">SSHPrivateKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">algName</span><span class="p">,</span> <span class="n">blob</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interfaces</span><span class="o">.</span><span class="n">IConchUser</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ebCheckKey</span><span class="p">,</span> <span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebCheckKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back if the user did not sent a signature.  If reason is</span>
+<span class="sd">        error.ValidPublicKey then this key is valid for the user to</span>
+<span class="sd">        authenticate with.  Send MSG_USERAUTH_PK_OK.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reason</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ValidPublicKey</span><span class="p">)</span>
+        <span class="c1"># if we make it here, it means that the publickey is valid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span><span class="n">MSG_USERAUTH_PK_OK</span><span class="p">,</span> <span class="n">packet</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">failure</span><span class="o">.</span><span class="n">Failure</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">IgnoreAuthentication</span><span class="p">())</span>
+
+<div class="viewcode-block" id="SSHUserAuthServer.auth_password">
+<a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHUserAuthServer.auth_password">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Password authentication.  Payload::</span>
+<span class="sd">            string password</span>
+
+<span class="sd">        Make a UsernamePassword credential and verify it with our portal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">UsernamePassword</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interfaces</span><span class="o">.</span><span class="n">IConchUser</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ebPassword</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebPassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the password is invalid, wait before sending the failure in order</span>
+<span class="sd">        to delay brute-force password guessing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">passwordDelay</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SSHUserAuthClient</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">SSHService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A service implementing the client side of &#39;ssh-userauth&#39;.</span>
+
+<span class="sd">    This service will try all authentication methods provided by the server,</span>
+<span class="sd">    making callbacks for more information when necessary.</span>
+
+<span class="sd">    @ivar name: the name of this service: &#39;ssh-userauth&#39;</span>
+<span class="sd">    @type name: L{str}</span>
+<span class="sd">    @ivar preferredOrder: a list of authentication methods that should be used</span>
+<span class="sd">        first, in order of preference, if supported by the server</span>
+<span class="sd">    @type preferredOrder: L{list}</span>
+<span class="sd">    @ivar user: the name of the user to authenticate as</span>
+<span class="sd">    @type user: L{bytes}</span>
+<span class="sd">    @ivar instance: the service to start after authentication has finished</span>
+<span class="sd">    @type instance: L{service.SSHService}</span>
+<span class="sd">    @ivar authenticatedWith: a list of strings of authentication methods we&#39;ve tried</span>
+<span class="sd">    @type authenticatedWith: L{list} of L{bytes}</span>
+<span class="sd">    @ivar triedPublicKeys: a list of public key objects that we&#39;ve tried to</span>
+<span class="sd">        authenticate with</span>
+<span class="sd">    @type triedPublicKeys: L{list} of L{Key}</span>
+<span class="sd">    @ivar lastPublicKey: the last public key object we&#39;ve tried to authenticate</span>
+<span class="sd">        with</span>
+<span class="sd">    @type lastPublicKey: L{Key}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;ssh-userauth&quot;</span>
+    <span class="n">preferredOrder</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;keyboard-interactive&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">serviceStarted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">authenticatedWith</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triedPublicKeys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastPublicKey</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">askForAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">extraData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a MSG_USERAUTH_REQUEST.</span>
+
+<span class="sd">        @param kind: the authentication method to try.</span>
+<span class="sd">        @type kind: L{bytes}</span>
+<span class="sd">        @param extraData: method-specific data to go in the packet</span>
+<span class="sd">        @type extraData: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastAuth</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span>
+            <span class="n">MSG_USERAUTH_REQUEST</span><span class="p">,</span>
+            <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span> <span class="o">+</span> <span class="n">extraData</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tryAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dispatch to an authentication method.</span>
+
+<span class="sd">        @param kind: the authentication method</span>
+<span class="sd">        @type kind: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">nativeString</span><span class="p">(</span><span class="n">kind</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;trying to auth with </span><span class="si">{kind}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;auth_&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ebAuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generic callback for a failed authentication attempt.  Respond by</span>
+<span class="sd">        asking for the list of accepted methods (the &#39;none&#39; method)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_SUCCESS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We received a MSG_USERAUTH_SUCCESS.  The server has accepted our</span>
+<span class="sd">        authentication, so start the next service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">setService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_FAILURE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We received a MSG_USERAUTH_FAILURE.  Payload::</span>
+<span class="sd">            string methods</span>
+<span class="sd">            byte partial success</span>
+
+<span class="sd">        If partial success is C{True}, then the previous method succeeded but is</span>
+<span class="sd">        not sufficient for authentication. C{methods} is a comma-separated list</span>
+<span class="sd">        of accepted authentication methods.</span>
+
+<span class="sd">        We sort the list of methods by their position in C{self.preferredOrder},</span>
+<span class="sd">        removing methods that have already succeeded. We then call</span>
+<span class="sd">        C{self.tryAuth} with the most preferred method.</span>
+
+<span class="sd">        @param packet: the C{MSG_USERAUTH_FAILURE} payload.</span>
+<span class="sd">        @type packet: L{bytes}</span>
+
+<span class="sd">        @return: a L{defer.Deferred} that will be callbacked with L{None} as</span>
+<span class="sd">            soon as all authentication methods have been tried, or L{None} if no</span>
+<span class="sd">            more authentication methods are available.</span>
+<span class="sd">        @rtype: C{defer.Deferred} or L{None}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">canContinue</span><span class="p">,</span> <span class="n">partial</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+        <span class="n">partial</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">partial</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">partial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authenticatedWith</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastAuth</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">orderByPreference</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Invoked once per authentication method in order to extract a</span>
+<span class="sd">            comparison key which is then used for sorting.</span>
+
+<span class="sd">            @param meth: the authentication method.</span>
+<span class="sd">            @type meth: L{bytes}</span>
+
+<span class="sd">            @return: the comparison key for C{meth}.</span>
+<span class="sd">            @rtype: L{int}</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preferredOrder</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preferredOrder</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># put the element at the end of the list.</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preferredOrder</span><span class="p">)</span>
+
+        <span class="n">canContinue</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">meth</span>
+                <span class="k">for</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">canContinue</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">meth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">authenticatedWith</span>
+            <span class="p">),</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">orderByPreference</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;can continue with: </span><span class="si">{methods}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="n">canContinue</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cbUserauthFailure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">iter</span><span class="p">(</span><span class="n">canContinue</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbUserauthFailure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendDisconnect</span><span class="p">(</span>
+                <span class="n">transport</span><span class="o">.</span><span class="n">DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE</span><span class="p">,</span>
+                <span class="sa">b</span><span class="s2">&quot;no more authentication methods available&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">maybeDeferred</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tryAuth</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbUserauthFailure</span><span class="p">,</span> <span class="n">iterator</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_PK_OK</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This message (number 60) can mean several different messages depending</span>
+<span class="sd">        on the current authentication type.  We dispatch to individual methods</span>
+<span class="sd">        in order to handle this request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="s2">&quot;ssh_USERAUTH_PK_OK_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nativeString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastAuth</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;_&quot;</span><span class="p">)),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_PK_OK_publickey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is MSG_USERAUTH_PK.  Our public key is valid, so we create a</span>
+<span class="sd">        signature and try to authenticate with it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">publicKey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastPublicKey</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sessionID</span><span class="p">)</span>
+            <span class="o">+</span> <span class="nb">bytes</span><span class="p">((</span><span class="n">MSG_USERAUTH_REQUEST</span><span class="p">,))</span>
+            <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x01</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">sshType</span><span class="p">())</span>
+            <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">blob</span><span class="p">())</span>
+        <span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signData</span><span class="p">(</span><span class="n">publicKey</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="c1"># this will fail, we&#39;ll move on</span>
+            <span class="k">return</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbSignedData</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebAuth</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_PK_OK_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is MSG_USERAUTH_PASSWD_CHANGEREQ.  The password given has expired.</span>
+<span class="sd">        We ask for an old password and a new password, then send both back to</span>
+<span class="sd">        the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prompt</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oldPass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newPass</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPassword</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Old Password: &quot;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setOldPass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebAuth</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ignored</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPassword</span><span class="p">(</span><span class="n">prompt</span><span class="p">))</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setNewPass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebAuth</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ssh_USERAUTH_PK_OK_keyboard_interactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is MSG_USERAUTH_INFO_RESPONSE.  The server has sent us the</span>
+<span class="sd">        questions it wants us to answer, so we ask the user and sent the</span>
+<span class="sd">        responses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">instruction</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">numPrompts</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;!L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[:</span><span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+        <span class="n">prompts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numPrompts</span><span class="p">):</span>
+            <span class="n">prompt</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">getNS</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">echo</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">prompts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prompt</span><span class="p">,</span> <span class="n">echo</span><span class="p">))</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGenericAnswers</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">instruction</span><span class="p">,</span> <span class="n">prompts</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbGenericAnswers</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebAuth</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbSignedData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signedData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back out of self.signData with the signed data.  Send the</span>
+<span class="sd">        authentication request with the signature.</span>
+
+<span class="sd">        @param signedData: the data signed by the user&#39;s private key.</span>
+<span class="sd">        @type signedData: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">publicKey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastPublicKey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span>
+            <span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">,</span>
+            <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x01</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">sshType</span><span class="p">())</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">blob</span><span class="p">())</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">signedData</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setOldPass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back when we are choosing a new password.  Simply store the old</span>
+<span class="sd">        password for now.</span>
+
+<span class="sd">        @param op: the old password as entered by the user</span>
+<span class="sd">        @type op: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oldPass</span> <span class="o">=</span> <span class="n">op</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setNewPass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">np</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back when we are choosing a new password.  Get the old password</span>
+<span class="sd">        and send the authentication message with both.</span>
+
+<span class="sd">        @param np: the new password as entered by the user</span>
+<span class="sd">        @type np: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oldPass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oldPass</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xff</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">np</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbGenericAnswers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">responses</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back when we are finished answering keyboard-interactive</span>
+<span class="sd">        questions.  Send the info back to the server in a</span>
+<span class="sd">        MSG_USERAUTH_INFO_RESPONSE.</span>
+
+<span class="sd">        @param responses: a list of L{bytes} responses</span>
+<span class="sd">        @type responses: L{list}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;!L&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">+=</span> <span class="n">NS</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF8&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">sendPacket</span><span class="p">(</span><span class="n">MSG_USERAUTH_INFO_RESPONSE</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_publickey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to authenticate with a public key.  Ask the user for a public key;</span>
+<span class="sd">        if the user has one, send the request to the server and return True.</span>
+<span class="sd">        Otherwise, return False.</span>
+
+<span class="sd">        @rtype: L{bool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">maybeDeferred</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getPublicKey</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addBoth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbGetPublicKey</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbGetPublicKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publicKey</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">publicKey</span><span class="p">,</span> <span class="n">keys</span><span class="o">.</span><span class="n">Key</span><span class="p">):</span>  <span class="c1"># failure or None</span>
+            <span class="n">publicKey</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">publicKey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lastPublicKey</span> <span class="o">=</span> <span class="n">publicKey</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triedPublicKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">publicKey</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;using key of type </span><span class="si">{keyType}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">keyType</span><span class="o">=</span><span class="n">publicKey</span><span class="o">.</span><span class="n">type</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span>
+                <span class="sa">b</span><span class="s2">&quot;publickey&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">sshType</span><span class="p">())</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">publicKey</span><span class="o">.</span><span class="n">blob</span><span class="p">())</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_password</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to authenticate with a password.  Ask the user for a password.</span>
+<span class="sd">        If the user will return a password, return True.  Otherwise, return</span>
+<span class="sd">        False.</span>
+
+<span class="sd">        @rtype: L{bool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPassword</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbPassword</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ebAuth</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># returned None, don&#39;t do password auth</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_keyboard_interactive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to authenticate with keyboard-interactive authentication.  Send</span>
+<span class="sd">        the request to the server and return True.</span>
+
+<span class="sd">        @rtype: L{bool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;authing with keyboard-interactive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;keyboard-interactive&quot;</span><span class="p">,</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbPassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back when the user gives a password.  Send the request to the</span>
+<span class="sd">        server.</span>
+
+<span class="sd">        @param password: the password the user entered</span>
+<span class="sd">        @type password: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">askForAuth</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">NS</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">signData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publicKey</span><span class="p">,</span> <span class="n">signData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sign the given data with the given public key.</span>
+
+<span class="sd">        By default, this will call getPrivateKey to get the private key,</span>
+<span class="sd">        then sign the data using Key.sign().</span>
+
+<span class="sd">        This method is factored out so that it can be overridden to use</span>
+<span class="sd">        alternate methods, such as a key agent.</span>
+
+<span class="sd">        @param publicKey: The public key object returned from L{getPublicKey}</span>
+<span class="sd">        @type publicKey: L{keys.Key}</span>
+
+<span class="sd">        @param signData: the data to be signed by the private key.</span>
+<span class="sd">        @type signData: L{bytes}</span>
+<span class="sd">        @return: a Deferred that&#39;s called back with the signature</span>
+<span class="sd">        @rtype: L{defer.Deferred}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPrivateKey</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cbSignData</span><span class="p">,</span> <span class="n">signData</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cbSignData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">privateKey</span><span class="p">,</span> <span class="n">signData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called back when the private key is returned.  Sign the data and</span>
+<span class="sd">        return the signature.</span>
+
+<span class="sd">        @param privateKey: the private key object</span>
+<span class="sd">        @type privateKey: L{keys.Key}</span>
+<span class="sd">        @param signData: the data to be signed by the private key.</span>
+<span class="sd">        @type signData: L{bytes}</span>
+<span class="sd">        @return: the signature</span>
+<span class="sd">        @rtype: L{bytes}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">privateKey</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">signData</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getPublicKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a public key for the user.  If no more public keys are</span>
+<span class="sd">        available, return L{None}.</span>
+
+<span class="sd">        This implementation always returns L{None}.  Override it in a</span>
+<span class="sd">        subclass to actually find and return a public key object.</span>
+
+<span class="sd">        @rtype: L{Key} or L{None}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getPrivateKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a L{Deferred} that will be called back with the private key</span>
+<span class="sd">        object corresponding to the last public key from getPublicKey().</span>
+<span class="sd">        If the private key is not available, errback on the Deferred.</span>
+
+<span class="sd">        @rtype: L{Deferred} called back with L{Key}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getPassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a L{Deferred} that will be called back with a password.</span>
+<span class="sd">        prompt is a string to display for the password, or None for a generic</span>
+<span class="sd">        &#39;user@hostname&#39;s password: &#39;.</span>
+
+<span class="sd">        @type prompt: L{bytes}/L{None}</span>
+<span class="sd">        @rtype: L{defer.Deferred}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getGenericAnswers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">instruction</span><span class="p">,</span> <span class="n">prompts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a L{Deferred} with the responses to the promopts.</span>
+
+<span class="sd">        @param name: The name of the authentication currently in progress.</span>
+<span class="sd">        @param instruction: Describes what the authentication wants.</span>
+<span class="sd">        @param prompts: A list of (prompt, echo) pairs, where prompt is a</span>
+<span class="sd">        string to display and echo is a boolean indicating whether the</span>
+<span class="sd">        user&#39;s response should be echoed as they type it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">())</span>
+
+
+<span class="n">MSG_USERAUTH_REQUEST</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MSG_USERAUTH_FAILURE</span> <span class="o">=</span> <span class="mi">51</span>
+<span class="n">MSG_USERAUTH_SUCCESS</span> <span class="o">=</span> <span class="mi">52</span>
+<span class="n">MSG_USERAUTH_BANNER</span> <span class="o">=</span> <span class="mi">53</span>
+<span class="n">MSG_USERAUTH_INFO_RESPONSE</span> <span class="o">=</span> <span class="mi">61</span>
+<span class="n">MSG_USERAUTH_PK_OK</span> <span class="o">=</span> <span class="mi">60</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="n">k</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;MSG_&quot;</span><span class="p">:</span>
+        <span class="n">messages</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+
+<span class="n">SSHUserAuthServer</span><span class="o">.</span><span class="n">protocolMessages</span> <span class="o">=</span> <span class="n">messages</span>
+<span class="n">SSHUserAuthClient</span><span class="o">.</span><span class="n">protocolMessages</span> <span class="o">=</span> <span class="n">messages</span>
+<span class="k">del</span> <span class="n">messages</span>
+<span class="k">del</span> <span class="n">v</span>
+
+<span class="c1"># Doubles, not included in the protocols&#39; mappings</span>
+<span class="n">MSG_USERAUTH_PASSWD_CHANGEREQ</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">MSG_USERAUTH_INFO_REQUEST</span> <span class="o">=</span> <span class="mi">60</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.conch.ssh.userauth</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

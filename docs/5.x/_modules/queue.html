@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>queue &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">queue</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for queue</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;A multi-producer, multi-consumer queue.&#39;&#39;&#39;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">heapq</span><span class="w"> </span><span class="kn">import</span> <span class="n">heappush</span><span class="p">,</span> <span class="n">heappop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">monotonic</span> <span class="k">as</span> <span class="n">time</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">_queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleQueue</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">SimpleQueue</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Empty&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Full&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShutDown&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Queue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PriorityQueue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LifoQueue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SimpleQueue&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">_queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Empty</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="s1">&#39;Exception raised by Queue.get(block=0)/get_nowait().&#39;</span>
+        <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Full</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="s1">&#39;Exception raised by Queue.put(block=0)/put_nowait().&#39;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ShutDown</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Raised when put/get with shut-down queue.&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="Queue">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Queue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Create a queue object with a given maximum size.</span>
+
+<span class="sd">    If maxsize is &lt;= 0, the queue size is infinite.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Queue.__init__">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">=</span> <span class="n">maxsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">maxsize</span><span class="p">)</span>
+
+        <span class="c1"># mutex must be held whenever the queue is mutating.  All methods</span>
+        <span class="c1"># that acquire mutex must release it before returning.  mutex</span>
+        <span class="c1"># is shared between the three conditions, so acquiring and</span>
+        <span class="c1"># releasing the conditions also acquires and releases mutex.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="c1"># Notify not_empty whenever an item is added to the queue; a</span>
+        <span class="c1"># thread waiting to get is notified then.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">)</span>
+
+        <span class="c1"># Notify not_full whenever an item is removed from the queue;</span>
+        <span class="c1"># a thread waiting to put is notified then.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">)</span>
+
+        <span class="c1"># Notify all_tasks_done whenever the number of unfinished tasks</span>
+        <span class="c1"># drops to zero; thread waiting to join() is notified to resume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Queue shutdown state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Queue.task_done">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.task_done">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">task_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Indicate that a formerly enqueued task is complete.</span>
+
+<span class="sd">        Used by Queue consumer threads.  For each get() used to fetch a task,</span>
+<span class="sd">        a subsequent call to task_done() tells the queue that the processing</span>
+<span class="sd">        on the task is complete.</span>
+
+<span class="sd">        If a join() is currently blocking, it will resume when all items</span>
+<span class="sd">        have been processed (meaning that a task_done() call was received</span>
+<span class="sd">        for every item that had been put() into the queue).</span>
+
+<span class="sd">        shutdown(immediate=True) calls task_done() for each remaining item in</span>
+<span class="sd">        the queue.</span>
+
+<span class="sd">        Raises a ValueError if called more times than there were items</span>
+<span class="sd">        placed in the queue.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span><span class="p">:</span>
+            <span class="n">unfinished</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">unfinished</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">unfinished</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;task_done() called too many times&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">=</span> <span class="n">unfinished</span></div>
+
+
+<div class="viewcode-block" id="Queue.join">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.join">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Blocks until all items in the Queue have been gotten and processed.</span>
+
+<span class="sd">        The count of unfinished tasks goes up whenever an item is added to the</span>
+<span class="sd">        queue. The count goes down whenever a consumer thread calls task_done()</span>
+<span class="sd">        to indicate the item was retrieved and all work on it is complete.</span>
+
+<span class="sd">        When the count of unfinished tasks drops to zero, join() unblocks.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Queue.qsize">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.qsize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return the approximate size of the queue (not reliable!).&#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Queue.empty">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.empty">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return True if the queue is empty, False otherwise (not reliable!).</span>
+
+<span class="sd">        This method is likely to be removed at some point.  Use qsize() == 0</span>
+<span class="sd">        as a direct substitute, but be aware that either approach risks a race</span>
+<span class="sd">        condition where a queue can grow before the result of empty() or</span>
+<span class="sd">        qsize() can be used.</span>
+
+<span class="sd">        To create code that needs to wait for all queued tasks to be</span>
+<span class="sd">        completed, the preferred technique is to use the join() method.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Queue.full">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.full">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return True if the queue is full, False otherwise (not reliable!).</span>
+
+<span class="sd">        This method is likely to be removed at some point.  Use qsize() &gt;= n</span>
+<span class="sd">        as a direct substitute, but be aware that either approach risks a race</span>
+<span class="sd">        condition where a queue can shrink before the result of full() or</span>
+<span class="sd">        qsize() can be used.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Queue.put">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.put">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Put an item into the queue.</span>
+
+<span class="sd">        If optional args &#39;block&#39; is true and &#39;timeout&#39; is None (the default),</span>
+<span class="sd">        block if necessary until a free slot is available. If &#39;timeout&#39; is</span>
+<span class="sd">        a non-negative number, it blocks at most &#39;timeout&#39; seconds and raises</span>
+<span class="sd">        the Full exception if no free slot was available within that time.</span>
+<span class="sd">        Otherwise (&#39;block&#39; is false), put an item on the queue if a free slot</span>
+<span class="sd">        is immediately available, else raise the Full exception (&#39;timeout&#39;</span>
+<span class="sd">        is ignored in that case).</span>
+
+<span class="sd">        Raises ShutDown if the queue has been shut down.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ShutDown</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">Full</span>
+                <span class="k">elif</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">ShutDown</span>
+                <span class="k">elif</span> <span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;timeout&#39; must be a non-negative number&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+                    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
+                        <span class="n">remaining</span> <span class="o">=</span> <span class="n">endtime</span> <span class="o">-</span> <span class="n">time</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">Full</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">ShutDown</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Queue.get">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Remove and return an item from the queue.</span>
+
+<span class="sd">        If optional args &#39;block&#39; is true and &#39;timeout&#39; is None (the default),</span>
+<span class="sd">        block if necessary until an item is available. If &#39;timeout&#39; is</span>
+<span class="sd">        a non-negative number, it blocks at most &#39;timeout&#39; seconds and raises</span>
+<span class="sd">        the Empty exception if no item was available within that time.</span>
+<span class="sd">        Otherwise (&#39;block&#39; is false), return an item if one is immediately</span>
+<span class="sd">        available, else raise the Empty exception (&#39;timeout&#39; is ignored</span>
+<span class="sd">        in that case).</span>
+
+<span class="sd">        Raises ShutDown if the queue has been shut down and is empty,</span>
+<span class="sd">        or if the queue has been shut down immediately.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">ShutDown</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">Empty</span>
+            <span class="k">elif</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="n">ShutDown</span>
+            <span class="k">elif</span> <span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;timeout&#39; must be a non-negative number&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                    <span class="n">remaining</span> <span class="o">=</span> <span class="n">endtime</span> <span class="o">-</span> <span class="n">time</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">Empty</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="n">ShutDown</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">item</span></div>
+
+
+<div class="viewcode-block" id="Queue.put_nowait">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.put_nowait">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Put an item into the queue without blocking.</span>
+
+<span class="sd">        Only enqueue the item if a free slot is immediately available.</span>
+<span class="sd">        Otherwise raise the Full exception.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Queue.get_nowait">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.get_nowait">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Remove and return an item from the queue without blocking.</span>
+
+<span class="sd">        Only get an item if one is immediately available. Otherwise</span>
+<span class="sd">        raise the Empty exception.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Queue.shutdown">
+<a class="viewcode-back" href="../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.Queue.shutdown">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">immediate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Shut-down the queue, making queue gets and puts raise ShutDown.</span>
+
+<span class="sd">        By default, gets will only raise once the queue is empty. Set</span>
+<span class="sd">        &#39;immediate&#39; to True to make gets raise immediately instead.</span>
+
+<span class="sd">        All blocked callers of put() and get() will be unblocked. If</span>
+<span class="sd">        &#39;immediate&#39;, a task is marked as done for each item remaining in</span>
+<span class="sd">        the queue, which may unblock callers of join().</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">immediate</span><span class="p">:</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qsize</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">unfinished_tasks</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="c1"># release all blocked threads in `join()`</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_tasks_done</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+            <span class="c1"># All getters need to re-check queue-empty to raise ShutDown</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">not_empty</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">not_full</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Override these methods to implement other queue organizations</span>
+    <span class="c1"># (e.g. stack or priority queue).</span>
+    <span class="c1"># These will only be called with appropriate locks held</span>
+
+    <span class="c1"># Initialize the queue representation</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="c1"># Put a new item in the queue</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="c1"># Get an item from the queue</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">GenericAlias</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PriorityQueue</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Variant of Queue that retrieves open entries in priority order (lowest first).</span>
+
+<span class="sd">    Entries are typically tuples of the form:  (priority number, data).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LifoQueue</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Variant of Queue that retrieves most recently added entries first.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_PySimpleQueue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Simple, unbounded FIFO queue.</span>
+
+<span class="sd">    This pure Python implementation is not reentrant.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Note: while this pure Python version provides fairness</span>
+    <span class="c1"># (by using a threading.Semaphore which is itself fair, being based</span>
+    <span class="c1">#  on threading.Condition), fairness is not part of the API contract.</span>
+    <span class="c1"># This allows the C version to use a different implementation.</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Put the item on the queue.</span>
+
+<span class="sd">        The optional &#39;block&#39; and &#39;timeout&#39; arguments are ignored, as this method</span>
+<span class="sd">        never blocks.  They are provided for compatibility with the Queue class.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Remove and return an item from the queue.</span>
+
+<span class="sd">        If optional args &#39;block&#39; is true and &#39;timeout&#39; is None (the default),</span>
+<span class="sd">        block if necessary until an item is available. If &#39;timeout&#39; is</span>
+<span class="sd">        a non-negative number, it blocks at most &#39;timeout&#39; seconds and raises</span>
+<span class="sd">        the Empty exception if no item was available within that time.</span>
+<span class="sd">        Otherwise (&#39;block&#39; is false), return an item if one is immediately</span>
+<span class="sd">        available, else raise the Empty exception (&#39;timeout&#39; is ignored</span>
+<span class="sd">        in that case).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;timeout&#39; must be a non-negative number&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">Empty</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Put an item into the queue without blocking.</span>
+
+<span class="sd">        This is exactly equivalent to `put(item, block=False)` and is only provided</span>
+<span class="sd">        for compatibility with the Queue class.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Remove and return an item from the queue without blocking.</span>
+
+<span class="sd">        Only get an item if one is immediately available. Otherwise</span>
+<span class="sd">        raise the Empty exception.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return True if the queue is empty, False otherwise (not reliable!).&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return the approximate size of the queue (not reliable!).&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">)</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">GenericAlias</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">SimpleQueue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">SimpleQueue</span> <span class="o">=</span> <span class="n">_PySimpleQueue</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">queue</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

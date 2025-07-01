@@ -1,0 +1,1472 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.internet.base &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=245aff17" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.base</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.internet.base</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.test.test_internet,twisted.internet.test.test_core -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Very basic functionality for a Reactor implementation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>  <span class="c1"># needed only for sync-dns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">heapq</span><span class="w"> </span><span class="kn">import</span> <span class="n">heapify</span><span class="p">,</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_stack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">NewType</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">classImplements</span><span class="p">,</span> <span class="n">implementer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">defer</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">fdesc</span><span class="p">,</span> <span class="n">main</span><span class="p">,</span> <span class="n">threads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet._resolver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ComplexResolverSimplifier</span> <span class="k">as</span> <span class="n">_ComplexResolverSimplifier</span><span class="p">,</span>
+    <span class="n">GAIResolver</span> <span class="k">as</span> <span class="n">_GAIResolver</span><span class="p">,</span>
+    <span class="n">SimpleResolverComplexifier</span> <span class="k">as</span> <span class="n">_SimpleResolverComplexifier</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span><span class="p">,</span> <span class="n">DeferredList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IAddress</span><span class="p">,</span>
+    <span class="n">IConnector</span><span class="p">,</span>
+    <span class="n">IDelayedCall</span><span class="p">,</span>
+    <span class="n">IHostnameResolver</span><span class="p">,</span>
+    <span class="n">IProtocol</span><span class="p">,</span>
+    <span class="n">IReactorCore</span><span class="p">,</span>
+    <span class="n">IReactorFromThreads</span><span class="p">,</span>
+    <span class="n">IReactorPluggableNameResolver</span><span class="p">,</span>
+    <span class="n">IReactorPluggableResolver</span><span class="p">,</span>
+    <span class="n">IReactorThreads</span><span class="p">,</span>
+    <span class="n">IReactorTime</span><span class="p">,</span>
+    <span class="n">IReadDescriptor</span><span class="p">,</span>
+    <span class="n">IResolverSimple</span><span class="p">,</span>
+    <span class="n">IWriteDescriptor</span><span class="p">,</span>
+    <span class="n">_ISupportsExitSignalCapturing</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">reflect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.failure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Failure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">callWithLogger</span> <span class="k">as</span> <span class="n">_callWithLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">platform</span><span class="p">,</span> <span class="n">seconds</span> <span class="k">as</span> <span class="n">runtimeSeconds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalHandling</span><span class="p">,</span> <span class="n">_WithoutSignalHandling</span><span class="p">,</span> <span class="n">_WithSignalHandling</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.tcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="c1"># This import is for side-effects!  Even if you don&#39;t see any code using it</span>
+<span class="c1"># in this module, don&#39;t delete it.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">threadable</span>
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">supportsThreads</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.threadpool</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">ThreadPool</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[misc, assignment]</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+<span class="c1"># Pre-allocate some static application-code failure logging handlers so that we</span>
+<span class="c1"># do not need to allocate them in performance-sensitive bits of code below.</span>
+<span class="n">_topHandler</span> <span class="o">=</span> <span class="n">_log</span><span class="o">.</span><span class="n">failureHandler</span><span class="p">(</span><span class="s2">&quot;Unexpected error in main loop&quot;</span><span class="p">)</span>
+<span class="n">_threadCallHandler</span> <span class="o">=</span> <span class="n">_log</span><span class="o">.</span><span class="n">failureHandler</span><span class="p">(</span><span class="s2">&quot;while calling from thread&quot;</span><span class="p">)</span>
+<span class="n">_systemEventHandler</span> <span class="o">=</span> <span class="n">_log</span><span class="o">.</span><span class="n">failureHandler</span><span class="p">(</span><span class="s2">&quot;While calling system event trigger handler&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DelayedCall">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall">[docs]</a>
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IDelayedCall</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelayedCall</span><span class="p">:</span>
+    <span class="c1"># enable .debug to record creator call stack, and it will be logged if</span>
+    <span class="c1"># an exception occurs while the function is being run</span>
+    <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_repr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># In debug mode, the call stack at the time of instantiation.</span>
+    <span class="n">creator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="DelayedCall.__init__">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+        <span class="n">kw</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">cancel</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s2">&quot;DelayedCall&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="n">reset</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s2">&quot;DelayedCall&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="n">seconds</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtimeSeconds</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param time: Seconds from the epoch at which to call C{func}.</span>
+<span class="sd">        @param func: The callable to call.</span>
+<span class="sd">        @param args: The positional arguments to pass to the callable.</span>
+<span class="sd">        @param kw: The keyword arguments to pass to the callable.</span>
+<span class="sd">        @param cancel: A callable which will be called with this</span>
+<span class="sd">            DelayedCall before cancellation.</span>
+<span class="sd">        @param reset: A callable which will be called with this</span>
+<span class="sd">            DelayedCall after changing this DelayedCall&#39;s scheduled</span>
+<span class="sd">            execution time. The callable should adjust any necessary</span>
+<span class="sd">            scheduling details to ensure this DelayedCall is invoked</span>
+<span class="sd">            at the new appropriate time.</span>
+<span class="sd">        @param seconds: If provided, a no-argument callable which will be</span>
+<span class="sd">            used to determine the current time any time that information is</span>
+<span class="sd">            needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kw</span> <span class="o">=</span> <span class="n">time</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetter</span> <span class="o">=</span> <span class="n">reset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canceller</span> <span class="o">=</span> <span class="n">cancel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">=</span> <span class="n">seconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">format_stack</span><span class="p">()[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.getTime">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.getTime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the time at which this call will fire</span>
+
+<span class="sd">        @return: The number of seconds after the epoch at which this call is</span>
+<span class="sd">            scheduled to be made.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.cancel">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.cancel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unschedule this call</span>
+
+<span class="sd">        @raise AlreadyCancelled: Raised if this call has already been</span>
+<span class="sd">            unscheduled.</span>
+
+<span class="sd">        @raise AlreadyCalled: Raised if this call has already been made.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCancelled</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCalled</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canceller</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kw</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.reset">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secondsFromNow</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reschedule this call for a different time</span>
+
+<span class="sd">        @param secondsFromNow: The number of seconds from the time of the</span>
+<span class="sd">            C{reset} call at which this call will be scheduled.</span>
+
+<span class="sd">        @raise AlreadyCancelled: Raised if this call has been cancelled.</span>
+<span class="sd">        @raise AlreadyCalled: Raised if this call has already been made.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCancelled</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCalled</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span> <span class="o">+</span> <span class="n">secondsFromNow</span>
+            <span class="k">if</span> <span class="n">newTime</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">newTime</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resetter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">=</span> <span class="n">newTime</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.delay">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.delay">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secondsLater</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reschedule this call for a later time</span>
+
+<span class="sd">        @param secondsLater: The number of seconds after the originally</span>
+<span class="sd">            scheduled time for which to reschedule this call.</span>
+
+<span class="sd">        @raise AlreadyCancelled: Raised if this call has been cancelled.</span>
+<span class="sd">        @raise AlreadyCalled: Raised if this call has already been made.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCancelled</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">AlreadyCalled</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">+=</span> <span class="n">secondsLater</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">activate_delay</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resetter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.activate_delay">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.activate_delay">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">activate_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
+
+<div class="viewcode-block" id="DelayedCall.active">
+<a class="viewcode-back" href="../../../api/evennia.server.portal.tests.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.DelayedCall.active">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether this call is still pending</span>
+
+<span class="sd">        @return: True if this call has not yet been made or cancelled,</span>
+<span class="sd">            False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;DelayedCall&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement C{&lt;=} operator between two L{DelayedCall} instances.</span>
+
+<span class="sd">        Comparison is based on the C{time} attribute (unadjusted by the</span>
+<span class="sd">        delayed time).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;DelayedCall&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement C{&lt;} operator between two L{DelayedCall} instances.</span>
+
+<span class="sd">        Comparison is based on the C{time} attribute (unadjusted by the</span>
+<span class="sd">        delayed time).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement C{repr()} for L{DelayedCall} instances.</span>
+
+<span class="sd">        @returns: String containing details of the L{DelayedCall}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">):</span>
+            <span class="c1"># This code should be replaced by a utility function in reflect;</span>
+            <span class="c1"># see ticket #6066:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">imClass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;im_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">imClass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">func</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">imClass</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&lt;DelayedCall 0x</span><span class="si">%x</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">s] called=</span><span class="si">%s</span><span class="s2"> cancelled=</span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">now</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">called</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">L</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="s2">&quot;(&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kw</span><span class="p">:</span>
+                    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kw</span><span class="p">:</span>
+                <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kw</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">traceback at creation: </span><span class="se">\n\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">)))</span>
+        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">L</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IResolverSimple</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThreadedResolver</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    L{ThreadedResolver} uses a reactor, a threadpool, and</span>
+<span class="sd">    L{socket.gethostbyname} to perform name lookups without blocking the</span>
+<span class="sd">    reactor thread.  It also supports timeouts indepedently from whatever</span>
+<span class="sd">    timeout logic L{socket.gethostbyname} might have.</span>
+
+<span class="sd">    @ivar reactor: The reactor the threadpool of which will be used to call</span>
+<span class="sd">        L{socket.gethostbyname} and the I/O thread of which the result will be</span>
+<span class="sd">        delivered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactor</span><span class="p">:</span> <span class="s2">&quot;ReactorBase&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IDelayedCall</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Failure</span><span class="p">:</span>
+        <span class="n">lookupError</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">DNSLookupError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;address </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> not found: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Failure</span><span class="p">(</span><span class="n">lookupError</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lookupDeferred</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">userDeferred</span><span class="p">,</span> <span class="n">cancelCall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">[</span><span class="n">lookupDeferred</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">[</span><span class="n">lookupDeferred</span><span class="p">]</span>
+        <span class="n">userDeferred</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fail</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;timeout error&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_checkTimeout</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Failure</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lookupDeferred</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">userDeferred</span><span class="p">,</span> <span class="n">cancelCall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">[</span><span class="n">lookupDeferred</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">[</span><span class="n">lookupDeferred</span><span class="p">]</span>
+            <span class="n">cancelCall</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Failure</span><span class="p">):</span>
+                <span class="n">userDeferred</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fail</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">userDeferred</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getHostByName</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{twisted.internet.interfaces.IResolverSimple.getHostByName}.</span>
+
+<span class="sd">        Note that the elements of C{timeout} are summed and the result is used</span>
+<span class="sd">        as a timeout for the lookup.  Any intermediate timeout or retry logic</span>
+<span class="sd">        is left up to the platform via L{socket.gethostbyname}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="n">timeoutDelay</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">timeoutDelay</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">userDeferred</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+        <span class="n">lookupDeferred</span> <span class="o">=</span> <span class="n">threads</span><span class="o">.</span><span class="n">deferToThreadPool</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">IReactorFromThreads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="p">),</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">IReactorThreads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="p">)</span><span class="o">.</span><span class="n">getThreadPool</span><span class="p">(),</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cancelCall</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">IReactorTime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="p">)</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span>
+            <span class="n">timeoutDelay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lookupDeferred</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runningQueries</span><span class="p">[</span><span class="n">lookupDeferred</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">userDeferred</span><span class="p">,</span> <span class="n">cancelCall</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">lookupDeferred</span><span class="o">.</span><span class="n">addBoth</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_checkTimeout</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lookupDeferred</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">userDeferred</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IResolverSimple</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockingResolver</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getHostByName</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;address </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> not found&quot;</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">DNSLookupError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+
+<span class="n">_ThreePhaseEventTriggerCallable</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="n">_ThreePhaseEventTrigger</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span>
+    <span class="n">_ThreePhaseEventTriggerCallable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="n">_ThreePhaseEventTriggerHandle</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span>
+    <span class="s2">&quot;_ThreePhaseEventTriggerHandle&quot;</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ThreePhaseEventTriggerCallable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ThreePhaseEvent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collection of callables (with arguments) which can be invoked as a group in</span>
+<span class="sd">    a particular order.</span>
+
+<span class="sd">    This provides the underlying implementation for the reactor&#39;s system event</span>
+<span class="sd">    triggers.  An instance of this class tracks triggers for all phases of a</span>
+<span class="sd">    single type of event.</span>
+
+<span class="sd">    @ivar before: A list of the before-phase triggers containing three-tuples</span>
+<span class="sd">        of a callable, a tuple of positional arguments, and a dict of keyword</span>
+<span class="sd">        arguments</span>
+
+<span class="sd">    @ivar finishedBefore: A list of the before-phase triggers which have</span>
+<span class="sd">        already been executed.  This is only populated in the C{&#39;BEFORE&#39;} state.</span>
+
+<span class="sd">    @ivar during: A list of the during-phase triggers containing three-tuples</span>
+<span class="sd">        of a callable, a tuple of positional arguments, and a dict of keyword</span>
+<span class="sd">        arguments</span>
+
+<span class="sd">    @ivar after: A list of the after-phase triggers containing three-tuples</span>
+<span class="sd">        of a callable, a tuple of positional arguments, and a dict of keyword</span>
+<span class="sd">        arguments</span>
+
+<span class="sd">    @ivar state: A string indicating what is currently going on with this</span>
+<span class="sd">        object.  One of C{&#39;BASE&#39;} (for when nothing in particular is happening;</span>
+<span class="sd">        this is the initial value), C{&#39;BEFORE&#39;} (when the before-phase triggers</span>
+<span class="sd">        are in the process of being executed).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_ThreePhaseEventTrigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">during</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_ThreePhaseEventTrigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_ThreePhaseEventTrigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;BASE&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addTrigger</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">callable</span><span class="p">:</span> <span class="n">_ThreePhaseEventTriggerCallable</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a trigger to the indicate phase.</span>
+
+<span class="sd">        @param phase: One of C{&#39;before&#39;}, C{&#39;during&#39;}, or C{&#39;after&#39;}.</span>
+
+<span class="sd">        @param callable: An object to be called when this event is triggered.</span>
+<span class="sd">        @param args: Positional arguments to pass to C{callable}.</span>
+<span class="sd">        @param kwargs: Keyword arguments to pass to C{callable}.</span>
+
+<span class="sd">        @return: An opaque handle which may be passed to L{removeTrigger} to</span>
+<span class="sd">            reverse the effects of calling this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;invalid phase&quot;</span><span class="p">)</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">((</span><span class="n">phase</span><span class="p">,</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeTrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">:</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a previously added trigger callable.</span>
+
+<span class="sd">        @param handle: An object previously returned by L{addTrigger}.  The</span>
+<span class="sd">            trigger added by that call will be removed.</span>
+
+<span class="sd">        @raise ValueError: If the trigger associated with C{handle} has already</span>
+<span class="sd">            been removed or if C{handle} is not a valid handle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;removeTrigger_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)(</span><span class="n">handle</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeTrigger_BASE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">:</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just try to remove the trigger.</span>
+
+<span class="sd">        @see: removeTrigger</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">phase</span><span class="p">,</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">handle</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid trigger handle&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;invalid phase&quot;</span><span class="p">)</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeTrigger_BEFORE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">:</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the trigger if it has yet to be executed, otherwise emit a</span>
+<span class="sd">        warning that in the future an exception will be raised when removing an</span>
+<span class="sd">        already-executed trigger.</span>
+
+<span class="sd">        @see: removeTrigger</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phase</span><span class="p">,</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">handle</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="s2">&quot;before&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeTrigger_BASE</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">finishedBefore</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Removing already-fired system event triggers will raise an &quot;</span>
+                <span class="s2">&quot;exception in a future version of Twisted.&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">removeTrigger_BASE</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fireEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the triggers added to this event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;BEFORE&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finishedBefore</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">beforeResults</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">:</span>
+            <span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finishedBefore</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">with</span> <span class="n">_systemEventHandler</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Deferred</span><span class="p">):</span>
+                <span class="n">beforeResults</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">DeferredList</span><span class="p">(</span><span class="n">beforeResults</span><span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_continueFiring</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_continueFiring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the during and after phase triggers for this event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;BASE&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finishedBefore</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">during</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">phase</span><span class="p">:</span>
+                <span class="nb">callable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">_systemEventHandler</span><span class="p">:</span>
+                    <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IReactorPluggableNameResolver</span><span class="p">,</span> <span class="n">IReactorPluggableResolver</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PluggableResolverMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A mixin which implements the pluggable resolver reactor interfaces.</span>
+
+<span class="sd">    @ivar resolver: The installed L{IResolverSimple}.</span>
+<span class="sd">    @ivar _nameResolver: The installed L{IHostnameResolver}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">resolver</span><span class="p">:</span> <span class="n">IResolverSimple</span> <span class="o">=</span> <span class="n">BlockingResolver</span><span class="p">()</span>
+    <span class="n">_nameResolver</span><span class="p">:</span> <span class="n">IHostnameResolver</span> <span class="o">=</span> <span class="n">_SimpleResolverComplexifier</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+
+    <span class="c1"># IReactorPluggableResolver</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">installResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolver</span><span class="p">:</span> <span class="n">IResolverSimple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IResolverSimple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{IReactorPluggableResolver}.</span>
+
+<span class="sd">        @param resolver: see L{IReactorPluggableResolver}.</span>
+
+<span class="sd">        @return: see L{IReactorPluggableResolver}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">IResolverSimple</span><span class="o">.</span><span class="n">providedBy</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+        <span class="n">oldResolver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolver</span> <span class="o">=</span> <span class="n">resolver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nameResolver</span> <span class="o">=</span> <span class="n">_SimpleResolverComplexifier</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">oldResolver</span>
+
+    <span class="c1"># IReactorPluggableNameResolver</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">installNameResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolver</span><span class="p">:</span> <span class="n">IHostnameResolver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IHostnameResolver</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{IReactorPluggableNameResolver}.</span>
+
+<span class="sd">        @param resolver: See L{IReactorPluggableNameResolver}.</span>
+
+<span class="sd">        @return: see L{IReactorPluggableNameResolver}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previousNameResolver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nameResolver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nameResolver</span> <span class="o">=</span> <span class="n">resolver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolver</span> <span class="o">=</span> <span class="n">_ComplexResolverSimplifier</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">previousNameResolver</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nameResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IHostnameResolver</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of read-only</span>
+<span class="sd">        L{IReactorPluggableNameResolver.nameResolver}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nameResolver</span>
+
+
+<span class="n">_SystemEventID</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;_SystemEventID&quot;</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ThreePhaseEventTriggerHandle</span><span class="p">])</span>
+<span class="n">_ThreadCall</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span>
+
+<span class="n">_DEFAULT_DELAYED_CALL_LOGGING_HANDLER</span> <span class="o">=</span> <span class="n">_log</span><span class="o">.</span><span class="n">failureHandler</span><span class="p">(</span><span class="s2">&quot;while handling timed call&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IReactorCore</span><span class="p">,</span> <span class="n">IReactorTime</span><span class="p">,</span> <span class="n">_ISupportsExitSignalCapturing</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReactorBase</span><span class="p">(</span><span class="n">PluggableResolverMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default base class for Reactors.</span>
+
+<span class="sd">    @ivar _stopped: A flag which is true between paired calls to C{reactor.run}</span>
+<span class="sd">        and C{reactor.stop}.  This should be replaced with an explicit state</span>
+<span class="sd">        machine.</span>
+<span class="sd">    @ivar _justStopped: A flag which is true between the time C{reactor.stop}</span>
+<span class="sd">        is called and the time the shutdown system event is fired.  This is</span>
+<span class="sd">        used to determine whether that event should be fired after each</span>
+<span class="sd">        iteration through the mainloop.  This should be replaced with an</span>
+<span class="sd">        explicit state machine.</span>
+<span class="sd">    @ivar _started: A flag which is true from the time C{reactor.run} is called</span>
+<span class="sd">        until the time C{reactor.run} returns.  This is used to prevent calls</span>
+<span class="sd">        to C{reactor.run} on a running reactor.  This should be replaced with</span>
+<span class="sd">        an explicit state machine.</span>
+<span class="sd">    @ivar running: See L{IReactorCore.running}</span>
+<span class="sd">    @ivar _registerAsIOThread: A flag controlling whether the reactor will</span>
+<span class="sd">        register the thread it is running in as the I/O thread when it starts.</span>
+<span class="sd">        If C{True}, registration will be done, otherwise it will not be.</span>
+<span class="sd">    @ivar _exitSignal: See L{_ISupportsExitSignalCapturing._exitSignal}</span>
+
+<span class="sd">    @ivar _installSignalHandlers: A flag which indicates whether any signal</span>
+<span class="sd">        handlers will be installed during startup.  This includes handlers for</span>
+<span class="sd">        SIGCHLD to monitor child processes, and SIGINT, SIGTERM, and SIGBREAK</span>
+
+<span class="sd">    @ivar _signals: An object which knows how to install and uninstall the</span>
+<span class="sd">        reactor&#39;s signal-handling behavior.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_registerAsIOThread</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">installed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">usingThreads</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_exitSignal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Set to something meaningful between startRunning and shortly before run</span>
+    <span class="c1"># returns.  We don&#39;t know the value to be used by `run` until that method</span>
+    <span class="c1"># itself is called and we learn the value of installSignalHandlers.</span>
+    <span class="c1"># However, we can use a no-op implementation until then.</span>
+    <span class="n">_signals</span><span class="p">:</span> <span class="n">SignalHandling</span> <span class="o">=</span> <span class="n">_WithoutSignalHandling</span><span class="p">()</span>
+
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;twisted.internet.reactor&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_ThreadCall</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ThreePhaseEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_justStopped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startedBefore</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># reactor internal readers, e.g. the waker.</span>
+        <span class="c1"># Using Any as the type here… unable to find a suitable defined interface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internalReaders</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waker</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Arrange for the running attribute to change to True at the right time</span>
+        <span class="c1"># and let a subclass possibly do other things at that time (eg install</span>
+        <span class="c1"># signal handlers).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reallyStartRunning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crash</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnectAll</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">supportsThreads</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initThreads</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">installWaker</span><span class="p">()</span>
+
+    <span class="c1"># Signal handling pieces</span>
+    <span class="n">_installSignalHandlers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_makeSignalHandling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">installSignalHandlers</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalHandling</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an appropriate signal handling object.</span>
+
+<span class="sd">        @param installSignalHandlers: Indicate whether to even try to do any</span>
+<span class="sd">            signal handling.  If C{False} then the result will be a no-op</span>
+<span class="sd">            implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">installSignalHandlers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signalsFactory</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">_WithoutSignalHandling</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_signalsFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalHandling</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a signal handling object that implements the basic behavior of</span>
+<span class="sd">        stopping the reactor on SIGINT, SIGBREAK, and SIGTERM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_WithSignalHandling</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigInt</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigBreak</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigTerm</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_addInternalReader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">IReadDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a read descriptor which is part of the implementation of the</span>
+<span class="sd">        reactor itself.</span>
+
+<span class="sd">        The read descriptor will not be removed by L{IReactorFDSet.removeAll}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internalReaders</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addReader</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_removeInternalReader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">IReadDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a read descriptor which is part of the implementation of the</span>
+<span class="sd">        reactor itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internalReaders</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">removeReader</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">installSignalHandlers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startRunning</span><span class="p">(</span><span class="n">installSignalHandlers</span><span class="o">=</span><span class="n">installSignalHandlers</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mainLoop</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="o">.</span><span class="n">uninstall</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mainLoop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_topHandler</span><span class="p">:</span>
+                <span class="c1"># Advance simulation time in delayed event processors.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runUntilCurrent</span><span class="p">()</span>
+                <span class="n">t2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">()</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="ow">and</span> <span class="n">t2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doIteration</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Main loop terminated.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># override in subclasses</span>
+
+    <span class="n">_lock</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">installWaker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement installWaker&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wakeUp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wake up the event loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">waker</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waker</span><span class="o">.</span><span class="n">wakeUp</span><span class="p">()</span>
+        <span class="c1"># if the waker isn&#39;t installed, the reactor isn&#39;t running, and</span>
+        <span class="c1"># therefore doesn&#39;t need to be woken up</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">doIteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do one iteration over the readers and writers which have been added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement doIteration&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addReader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">IReadDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement addReader&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addWriter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">IWriteDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement addWriter&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeReader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">IReadDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement removeReader&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeWriter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">IWriteDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement removeWriter&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeAll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">IReadDescriptor</span><span class="p">,</span> <span class="n">IWriteDescriptor</span><span class="p">]]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement removeAll&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getReaders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IReadDescriptor</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement getReaders&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getWriters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IWriteDescriptor</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement getWriters&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># IReactorCore</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a Deferred that will resolve a hostname.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="c1"># XXX - This is *less than* &#39;::&#39;, and will screw up IPv6 servers</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">abstract</span><span class="o">.</span><span class="n">isIPAddress</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolver</span><span class="o">.</span><span class="n">getHostByName</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.stop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">ReactorNotRunning</span><span class="p">(</span><span class="s2">&quot;Can&#39;t stop reactor that isn&#39;t running.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_justStopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startedBefore</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">crash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.crash.</span>
+
+<span class="sd">        Reset reactor state tracking attributes and re-initialize certain</span>
+<span class="sd">        state-transition helpers which were set up in C{__init__} but later</span>
+<span class="sd">        destroyed (through use).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reallyStartRunning</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigInt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FrameType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a SIGINT interrupt.</span>
+
+<span class="sd">        @param number: See handler specification in L{signal.signal}</span>
+<span class="sd">        @param frame: See handler specification in L{signal.signal}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Received SIGINT, shutting down.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exitSignal</span> <span class="o">=</span> <span class="n">number</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FrameType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a SIGBREAK interrupt.</span>
+
+<span class="sd">        @param number: See handler specification in L{signal.signal}</span>
+<span class="sd">        @param frame: See handler specification in L{signal.signal}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Received SIGBREAK, shutting down.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exitSignal</span> <span class="o">=</span> <span class="n">number</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigTerm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FrameType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a SIGTERM interrupt.</span>
+
+<span class="sd">        @param number: See handler specification in L{signal.signal}</span>
+<span class="sd">        @param frame: See handler specification in L{signal.signal}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Received SIGTERM, shutting down.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callFromThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exitSignal</span> <span class="o">=</span> <span class="n">number</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnectAll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect every reader, and writer in the system.&quot;&quot;&quot;</span>
+        <span class="n">selectables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeAll</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">reader</span> <span class="ow">in</span> <span class="n">selectables</span><span class="p">:</span>
+            <span class="n">_callWithLogger</span><span class="p">(</span>
+                <span class="n">reader</span><span class="p">,</span> <span class="n">reader</span><span class="o">.</span><span class="n">connectionLost</span><span class="p">,</span> <span class="n">Failure</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">CONNECTION_LOST</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.iterate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runUntilCurrent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doIteration</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fireSystemEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eventType</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.fireSystemEvent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">eventType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">fireEvent</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addSystemEventTrigger</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">eventType</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_SystemEventID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.addSystemEventTrigger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">builtins</span><span class="o">.</span><span class="n">callable</span><span class="p">(</span><span class="nb">callable</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">callable</span><span class="si">}</span><span class="s2"> is not callable&quot;</span>
+        <span class="k">if</span> <span class="n">eventType</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="p">[</span><span class="n">eventType</span><span class="p">]</span> <span class="o">=</span> <span class="n">_ThreePhaseEvent</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">_SystemEventID</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">eventType</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="p">[</span><span class="n">eventType</span><span class="p">]</span><span class="o">.</span><span class="n">addTrigger</span><span class="p">(</span>
+                    <span class="n">phase</span><span class="p">,</span> <span class="nb">callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">removeSystemEventTrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triggerID</span><span class="p">:</span> <span class="n">_SystemEventID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.removeSystemEventTrigger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eventType</span><span class="p">,</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">triggerID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eventTriggers</span><span class="p">[</span><span class="n">eventType</span><span class="p">]</span><span class="o">.</span><span class="n">removeTrigger</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">callWhenRunning</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_SystemEventID</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorCore.callWhenRunning.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span>
+                <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="nb">callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startRunning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">installSignalHandlers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method called when reactor starts: do some initialization and fire</span>
+<span class="sd">        startup events.</span>
+
+<span class="sd">        Don&#39;t call this directly, call reactor.run() instead: it should take</span>
+<span class="sd">        care of calling this.</span>
+
+<span class="sd">        This method is somewhat misnamed.  The reactor will not necessarily be</span>
+<span class="sd">        in the running state by the time this method returns.  The only</span>
+<span class="sd">        guarantee is that it will be on its way to the running state.</span>
+
+<span class="sd">        @param installSignalHandlers: A flag which, if set, indicates that</span>
+<span class="sd">            handlers for a number of (implementation-defined) signals should be</span>
+<span class="sd">            installed during startup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">ReactorAlreadyRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startedBefore</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">ReactorNotRestartable</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="o">.</span><span class="n">uninstall</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_installSignalHandlers</span> <span class="o">=</span> <span class="n">installSignalHandlers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makeSignalHandling</span><span class="p">(</span><span class="n">installSignalHandlers</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registerAsIOThread</span><span class="p">:</span>
+            <span class="n">threadable</span><span class="o">.</span><span class="n">registerAsIOThread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireSystemEvent</span><span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reallyStartRunning</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method called to transition to the running state.  This should happen</span>
+<span class="sd">        in the I{during startup} event trigger phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_installSignalHandlers</span><span class="p">:</span>
+            <span class="c1"># Make sure this happens before after-startup events, since the</span>
+            <span class="c1"># expectation of after-startup is that the reactor is fully</span>
+            <span class="c1"># initialized.  Don&#39;t do it right away for historical reasons</span>
+            <span class="c1"># (perhaps some before-startup triggers don&#39;t want there to be a</span>
+            <span class="c1"># custom SIGCHLD handler so that they can run child processes with</span>
+            <span class="c1"># some blocking api).</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
+
+    <span class="c1"># IReactorTime</span>
+
+    <span class="n">seconds</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">runtimeSeconds</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">callLater</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="nb">object</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DelayedCall</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See twisted.internet.interfaces.IReactorTime.callLater.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">delay</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> is not greater than or equal to 0 seconds&quot;</span>
+        <span class="n">delayedCall</span> <span class="o">=</span> <span class="n">DelayedCall</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span> <span class="o">+</span> <span class="n">delay</span><span class="p">,</span>
+            <span class="nb">callable</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">kw</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancelCallLater</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_moveCallLaterSooner</span><span class="p">,</span>
+            <span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delayedCall</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">delayedCall</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_moveCallLaterSooner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delayedCall</span><span class="p">:</span> <span class="n">DelayedCall</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Linear time find: slow.</span>
+        <span class="n">heap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">heap</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">delayedCall</span><span class="p">)</span>
+
+            <span class="c1"># Move elt up the heap until it rests at the right place.</span>
+            <span class="n">elt</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">pos</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+                <span class="k">if</span> <span class="n">heap</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">elt</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="c1"># move parent down</span>
+                <span class="n">heap</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">parent</span>
+            <span class="n">heap</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">elt</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># element was not found in heap - oh well...</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cancelCallLater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delayedCall</span><span class="p">:</span> <span class="n">DelayedCall</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getDelayedCalls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">IDelayedCall</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{twisted.internet.interfaces.IReactorTime.getDelayedCalls}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">x</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">cancelled</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_insertNewDelayedCalls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># This function is called twice per reactor iteration, once in</span>
+        <span class="c1"># timeout() and once in runUntilCurrent(), and in most cases there</span>
+        <span class="c1"># won&#39;t be any new timeouts. So have a fast path for the empty case.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">cancelled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">activate_delay</span><span class="p">()</span>
+                <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">,</span> <span class="n">call</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newTimedCalls</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the longest time the reactor may sleep (waiting on I/O</span>
+<span class="sd">        notification, perhaps) before it must wake up to service a time-related</span>
+<span class="sd">        event.</span>
+
+<span class="sd">        @return: The maximum number of seconds the reactor may sleep.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># insert new delayed calls to make sure to include them in timeout value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insertNewDelayedCalls</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+
+        <span class="c1"># Pick a somewhat arbitrary maximum possible value for the timeout.</span>
+        <span class="c1"># This value is 2 ** 31 / 1000, which is the number of seconds which can</span>
+        <span class="c1"># be represented as an integer number of milliseconds in a signed 32 bit</span>
+        <span class="c1"># integer.  This particular limit is imposed by the epoll_wait(3)</span>
+        <span class="c1"># interface which accepts a timeout as a C &quot;int&quot; type and treats it as</span>
+        <span class="c1"># representing a number of milliseconds.</span>
+        <span class="n">longest</span> <span class="o">=</span> <span class="mi">2147483</span>
+
+        <span class="c1"># Don&#39;t let the delay be in the past (negative) or exceed a plausible</span>
+        <span class="c1"># maximum (platform-imposed) interval.</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">longest</span><span class="p">,</span> <span class="n">delay</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">runUntilCurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run all pending timed calls.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">:</span>
+            <span class="c1"># Keep track of how many calls we actually make, as we&#39;re</span>
+            <span class="c1"># making them, in case another call is added to the queue</span>
+            <span class="c1"># while we&#39;re in this loop.</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">_threadCallHandler</span><span class="p">:</span>
+                    <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">[:</span><span class="n">count</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wakeUp</span><span class="p">()</span>
+
+        <span class="c1"># insert new delayed calls now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insertNewDelayedCalls</span><span class="p">()</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">):</span>
+            <span class="n">call</span> <span class="o">=</span> <span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">cancelled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">delayed_time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">activate_delay</span><span class="p">()</span>
+                <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">,</span> <span class="n">call</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">logHandler</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_log</span><span class="o">.</span><span class="n">failuresHandled</span><span class="p">(</span>
+                    <span class="s2">&quot;while handling timed call {previous()}&quot;</span><span class="p">,</span>
+                    <span class="n">previous</span><span class="o">=</span><span class="k">lambda</span> <span class="n">creator</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; C: from a DelayedCall created here:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot; C:&quot;</span>
+                        <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">creator</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> C:&quot;</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">creator</span>
+                <span class="c1"># A much faster logging handler for the common case where extra</span>
+                <span class="c1"># debug info is not being output:</span>
+                <span class="k">else</span> <span class="n">_DEFAULT_DELAYED_CALL_LOGGING_HANDLER</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">logHandler</span><span class="p">:</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">call</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">call</span><span class="o">.</span><span class="n">kw</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">&gt;</span> <span class="mi">50</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">cancelled</span>
+            <span class="p">]</span>
+            <span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pendingTimedCalls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_justStopped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_justStopped</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireSystemEvent</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+    <span class="c1"># IReactorThreads</span>
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">supportsThreads</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="n">ThreadPool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">threadpool</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># ID of the trigger starting the threadpool</span>
+        <span class="n">_threadpoolStartupID</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># ID of the trigger stopping the threadpool</span>
+        <span class="n">threadpoolShutdownID</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_initThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">installNameResolver</span><span class="p">(</span>
+                <span class="n">_GAIResolver</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">IReactorThreads</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getThreadPool</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">usingThreads</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># `IReactorFromThreads` defines the first named argument as</span>
+        <span class="c1"># `callable: Callable[..., Any]` but this defines it as `f`</span>
+        <span class="c1"># really both should be defined using py3.8 positional only</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">callFromThread</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            See</span>
+<span class="sd">            L{twisted.internet.interfaces.IReactorFromThreads.callFromThread}.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> is not callable&quot;</span>
+            <span class="c1"># lists are thread-safe in CPython, but not in Jython</span>
+            <span class="c1"># this is probably a bug in Jython, but until fixed this code</span>
+            <span class="c1"># won&#39;t work in Jython.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wakeUp</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_initThreadPool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Create the threadpool accessible with callFromThread.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;twisted.internet.reactor&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_threadpoolStartupID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callWhenRunning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadpoolShutdownID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span>
+                <span class="s2">&quot;during&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopThreadPool</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_uninstallHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="o">.</span><span class="n">uninstall</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_stopThreadPool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Stop the reactor threadpool.  This method is only valid if there</span>
+<span class="sd">            is currently a threadpool (created by L{_initThreadPool}).  It</span>
+<span class="sd">            is not intended to be called directly; instead, it will be</span>
+<span class="sd">            called by a shutdown trigger created in L{_initThreadPool}.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_threadpoolStartupID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadpoolShutdownID</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">triggers</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">removeSystemEventTrigger</span><span class="p">(</span><span class="n">trigger</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_threadpoolStartupID</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadpoolShutdownID</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">getThreadPool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThreadPool</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            See L{twisted.internet.interfaces.IReactorThreads.getThreadPool}.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initThreadPool</span><span class="p">()</span>
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadpool</span>
+
+        <span class="c1"># `IReactorInThreads` defines the first named argument as</span>
+        <span class="c1"># `callable: Callable[..., Any]` but this defines it as `_callable`</span>
+        <span class="c1"># really both should be defined using py3.8 positional only</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">callInThread</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">_callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            See L{twisted.internet.interfaces.IReactorInThreads.callInThread}.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getThreadPool</span><span class="p">()</span><span class="o">.</span><span class="n">callInThread</span><span class="p">(</span><span class="n">_callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">suggestThreadPoolSize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            See L{twisted.internet.interfaces.IReactorThreads.suggestThreadPoolSize}.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getThreadPool</span><span class="p">()</span><span class="o">.</span><span class="n">adjustPoolsize</span><span class="p">(</span><span class="n">maxthreads</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># This is for signal handlers.</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">callFromThread</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> is not callable&quot;</span>
+            <span class="c1"># See comment in the other callFromThread implementation.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadCallQueue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">supportsThreads</span><span class="p">():</span>
+    <span class="n">classImplements</span><span class="p">(</span><span class="n">ReactorBase</span><span class="p">,</span> <span class="n">IReactorThreads</span><span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IConnector</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseConnector</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic implementation of L{IConnector}.</span>
+
+<span class="sd">    State can be: &quot;connecting&quot;, &quot;connected&quot;, &quot;disconnected&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timeoutID</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">factoryStarted</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">ClientFactory</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">reactor</span><span class="p">:</span> <span class="n">ReactorBase</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;disconnected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">reactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect whatever our state is.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;connecting&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stopConnecting</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;connected&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_makeTransport</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Client&quot;</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start connection to remote server.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;disconnected&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;can&#39;t connect in this state&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;connecting&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">factoryStarted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">doStart</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factoryStarted</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Client</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makeTransport</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeoutID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">failIfNotConnected</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop attempting to connect.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;connecting&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">NotConnectingError</span><span class="p">(</span><span class="s2">&quot;we&#39;re not trying to connect&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;disconnected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">failIfNotConnected</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">UserError</span><span class="p">())</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancelTimeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeoutID</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timeoutID</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeoutID</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">IAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IProtocol</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelTimeout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="n">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelTimeout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;disconnected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;disconnected&quot;</span><span class="p">:</span>
+            <span class="c1"># factory hasn&#39;t called our connect() method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">doStop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factoryStarted</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="n">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;disconnected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;disconnected&quot;</span><span class="p">:</span>
+            <span class="c1"># factory hasn&#39;t called our connect() method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">doStop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factoryStarted</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getDestination</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IAddress</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; did not implement &quot;</span> <span class="s2">&quot;getDestination&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{}</span><span class="s2"> instance at 0x</span><span class="si">{:x}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span>
+            <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getDestination</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BasePort</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">FileDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic implementation of a ListeningPort.</span>
+
+<span class="sd">    Note: This does not actually implement IListeningPort.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">addressFamily</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">AddressFamily</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+    <span class="n">socketType</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">SocketKind</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">createInternetSocket</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addressFamily</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socketType</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fdesc</span><span class="o">.</span><span class="n">_setCloseOnExec</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">doWrite</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Failure</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raises a RuntimeError&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;doWrite called on a </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">reflect</span><span class="o">.</span><span class="n">qual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">))</span>
+
+
+<span class="n">__all__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.base</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
