@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 5.0.0
+
+Jul 1, 2025
 
 Updated dependencies: Django >5.2 (<5.3), Twisted >24 (<25).
 Python versions: 3.11, 3.12, 3.13.
