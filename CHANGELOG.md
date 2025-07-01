@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 5.0.0
+
+Jul 1, 2025
 
 Updated dependencies: Django >5.2 (<5.3), Twisted >24 (<25).
 Python versions: 3.11, 3.12, 3.13.
@@ -97,7 +99,7 @@ This upgrade requires running `evennia migrate` on your existing database
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
 [issue3788]: https://github.com/evennia/evennia/issues/3788
-[issue3790]: https://github.com/evennia/evennia/issues/3790
+[issue3790]: hthps://github.com/evennia/evennia/issues/3790
 
 
 
