@@ -66,7 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main-branch">Main branch</a></li>
+<li><a class="reference internal" href="#evennia-5-0-0">Evennia 5.0.0</a></li>
 <li><a class="reference internal" href="#evennia-4-5-0">Evennia 4.5.0</a></li>
 <li><a class="reference internal" href="#evennia-4-4-1">Evennia 4.4.1</a></li>
 <li><a class="reference internal" href="#evennia-4-4-0">Evennia 4.4.0</a></li>
@@ -181,6 +181,8 @@
   
     <li><a href="Changelog.html">latest (main branch)</a></li>
 
+    <li><a href="../5.x/index.html">v5.0.0 branch (outdated)</a></li>
+  
     <li><a href="../4.x/index.html">v4.0.0 branch (outdated)</a></li>
   
     <li><a href="../3.x/index.html">v3.0.0 branch (outdated)</a></li>
@@ -201,8 +203,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main-branch">
-<h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-5-0-0">
+<h2>Evennia 5.0.0<a class="headerlink" href="#evennia-5-0-0" title="Permalink to this headline">¶</a></h2>
+<p>Jul 1, 2025</p>
 <p>Updated dependencies: Django &gt;5.2 (&lt;5.3), Twisted &gt;24 (&lt;25).
 Python versions: 3.11, 3.12, 3.13.</p>
 <p>This upgrade requires running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> on your existing database
@@ -218,6 +221,7 @@ class variable instead of the <code class="docutils literal notranslate"><span c
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3757">Feat</a>: Add more i18n strings to <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> for easier translation (JohnFi)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3783">Feat</a>: Support users of <code class="docutils literal notranslate"><span class="pre">ruff</span></code> linter by adding compatible config in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> (jaborsh)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3777">Feat</a>: New contrib <code class="docutils literal notranslate"><span class="pre">debugpy</span></code> for debugging Evennia with in VSCode with <code class="docutils literal notranslate"><span class="pre">debugpy</span></code> adapter (electroglyph)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3795">Feat</a>: Support evennia launcher for use with <code class="docutils literal notranslate"><span class="pre">uv</span></code> installation (TehomCD)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3677">Fix</a>: Make sure that <code class="docutils literal notranslate"><span class="pre">DefaultAccount.create</span></code> normalizes to empty
 strings instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if no name is provided, also enforce string type (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3682">Fix</a>: Allow in-game help searching for commands natively starting
