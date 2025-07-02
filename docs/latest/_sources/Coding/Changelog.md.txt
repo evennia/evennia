@@ -1,5 +1,15 @@
 # Changelog
 
+## Evennia 5.0.1
+
+Jul 2, 2025
+
+- [Fix][issue3696]: Fix Django version minimum string being too picky, causing
+  confusing warning message on startup (Griatch)
+
+[issue3796]: https://github.com/evennia/evennia/issues/3796
+
+
 ## Evennia 5.0.0
 
 Jul 1, 2025
