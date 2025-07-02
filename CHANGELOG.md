@@ -1,5 +1,14 @@
 # Changelog
 
+## Evennia main branch
+
+- [Fix][issue3696]: Fix Django version minimum string being too picky (Griatch)
+
+
+[issue3796]: https://github.com/evennia/evennia/issues/3796
+
+
+
 ## Evennia 5.0.0
 
 Jul 1, 2025
