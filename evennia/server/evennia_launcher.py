@@ -1314,7 +1314,7 @@ def check_main_evennia_dependencies():
         else:
             django_version = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
             # only the main version (1.5, not 1.5.4.0)
-            django_version = ".".join(django_version.split(".")[:3])
+            django_version = ".".join(django_version.split("."))
             django_curr = LooseVersion(django_version)
             django_min = LooseVersion(DJANGO_MIN)
             django_max = LooseVersion(DJANGO_MAX_TESTED)
