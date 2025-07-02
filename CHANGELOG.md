@@ -4,7 +4,7 @@
 
 Jul 2, 2025
 
-- [Fix][issue3696]: Fix Django version minimum string being too picky, causing
+- [Fix][issue3796]: Fix Django version minimum string being too picky, causing
   confusing warning message on startup (Griatch)
 
 [issue3796]: https://github.com/evennia/evennia/issues/3796
