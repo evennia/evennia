@@ -22,10 +22,18 @@ author = "The Evennia developer community"
 # This will be used for multi-version selection options.
 release = "latest"
 
+# -- Add Sphinx 7.X Custom CSS -----------------------------------------------
+
+html_static_path = ["_static"]
+html_css_files = [
+    "custom.css",
+]
+
+
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "sphinx_multiversion",
+    #"sphinx_multiversion",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
@@ -53,10 +61,10 @@ html_static_path = ["_static"]
 # which branches to include in multi-versioned docs
 # smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
 # smv_branch_whitelist = r"^develop$|^master$|^v1.0$"
-smv_branch_whitelist = r"^main$"
-smv_outputdir_format = "{config.release}"
+#smv_branch_whitelist = r"^main$"
+#smv_outputdir_format = "{config.release}"
 # don't make docs for tags
-smv_tag_whitelist = r"^$"
+#smv_tag_whitelist = r"^$"
 
 # used to fill in versioning.html links for versions that are not actually built.
 # These are also read from the deploy.py script. These are also the names of
@@ -65,19 +73,30 @@ latest_version = "latest"
 legacy_versions = ["5.x", "4.x", "3.x", "2.x", "1.x", "0.x"]
 legacy_branches = ["v5.0.0", "v4.0.0", "v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
 
+DOCS_BASE = "https://www.evennia.com/docs/"
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
-    # this is read by versioning.html template (sidebar)
-
-    # set this when building legacy docs, to show the 'you are reading an old version' headers
-    current_is_legacy = False
-
+    # Add "latest" (main) version
+    context["versions"] = [
+        {
+            "release": "latest",
+            "name": "main",
+            "url": f"{DOCS_BASE}latest/index.html"
+        }
+    ]
+    # Add legacy versions
     LVersion = namedtuple("legacy_version", ["release", "name", "url", "branch"])
     context["legacy_versions"] = [
-        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html", branch=branch)
-        for (vers, branch) in zip(legacy_versions, legacy_branches)
+        LVersion(
+            release=branch,            # e.g. v5.0.0
+            name=vers,                 # e.g. 5.x
+            url=f"{DOCS_BASE}{vers}/index.html",  # absolute path!
+            branch=branch
+        )
+        for vers, branch in zip(legacy_versions, legacy_branches)
     ]
-    context["current_is_legacy"] = current_is_legacy
+    context["current_is_legacy"] = False
+
 
 
 # -- Options for HTML output -------------------------------------------------
