@@ -157,6 +157,8 @@ We use the `my.awesomegame.com` example here and here are the ports
 - `4001` is the standard Evennia webserver port (firewall closed!)
 - `4002` is the default Evennia websocket port (we use the same number for
   the outgoing wss port, so this should be open in firewall).
+- `4000` is the default Telnet port for Evennia, and we proxy through HAProxy
+  so `7000` can used for Secure Telnet connections instead.
 
 ```shell
 # base stuff to set up haproxy
@@ -183,6 +185,14 @@ listen evennia-https-website
 listen evennia-secure-websocket
     bind my.awesomegame.com:4002 ssl no-sslv3 no-tlsv10 crt /etc/letsencrypt/live/my.awesomegame.com/my.awesomegame.com.pem
     server localhost 127.0.0.1:4002
+    timeout client 10m
+    timeout server 10m
+    timeout connect 5m
+
+listen evennia-secure-telnet
+    bind my.awesomegame.com:7000 ssl no-sslv3 no-tlsv10 crt /etc/letsencrypt/live/my.awesomegame.com/my.awesomegame.com.pem
+    server localhost 127.0.0.1:4000
+    mode tcp
     timeout client 10m
     timeout server 10m
     timeout connect 5m
