@@ -595,7 +595,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add(self.command_handler_class)
+        here.scripts.add(self.combat_handler_class)
 
 
 class CmdAttack(Command):
