@@ -7,7 +7,8 @@ evennia.contrib.grid.ingame\_map\_display
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

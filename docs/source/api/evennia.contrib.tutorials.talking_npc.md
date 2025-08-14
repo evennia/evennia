@@ -7,7 +7,8 @@ evennia.contrib.tutorials.talking\_npc
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

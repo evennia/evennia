@@ -7,7 +7,8 @@ evennia.contrib.grid.slow\_exit
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

@@ -7,7 +7,8 @@ evennia.contrib.tutorials.evadventure.batchscripts
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

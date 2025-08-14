@@ -7,7 +7,8 @@ evennia.typeclasses
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

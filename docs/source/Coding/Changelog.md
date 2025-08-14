@@ -1,10 +1,19 @@
 # Changelog
 
+## Main branch
+
+- [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
+- [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
+
+[pull3799]: https://github.com/evennia/evennia/issues/3799
+[pull3800]: https://github.com/evennia/evennia/issues/3800
+
+
 ## Evennia 5.0.1
 
 Jul 2, 2025
 
-- [Fix][issue3696]: Fix Django version minimum string being too picky, causing
+- [Fix][issue3796]: Fix Django version minimum string being too picky, causing
   confusing warning message on startup (Griatch)
 
 [issue3796]: https://github.com/evennia/evennia/issues/3796

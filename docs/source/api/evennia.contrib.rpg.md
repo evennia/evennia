@@ -7,6 +7,8 @@ evennia.contrib.rpg
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
 
 .. toctree::
    :maxdepth: 6

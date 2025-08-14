@@ -7,13 +7,8 @@ evennia.web
    :undoc-members:
    :show-inheritance:
 
-
-
-.. toctree::
-   :maxdepth: 6
-
-   evennia.web.urls
-
+Subpackages
+-----------
 
 .. toctree::
    :maxdepth: 6
@@ -24,5 +19,13 @@ evennia.web
    evennia.web.utils
    evennia.web.webclient
    evennia.web.website
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 6
+
+   evennia.web.urls
 
 ```

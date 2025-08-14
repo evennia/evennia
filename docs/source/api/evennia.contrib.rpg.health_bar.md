@@ -7,7 +7,8 @@ evennia.contrib.rpg.health\_bar
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

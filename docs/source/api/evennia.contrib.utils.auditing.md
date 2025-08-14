@@ -7,7 +7,8 @@ evennia.contrib.utils.auditing
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

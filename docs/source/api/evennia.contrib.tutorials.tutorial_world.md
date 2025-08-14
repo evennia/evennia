@@ -7,7 +7,8 @@ evennia.contrib.tutorials.tutorial\_world
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

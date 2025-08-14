@@ -7,7 +7,17 @@ evennia.utils
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
 
+.. toctree::
+   :maxdepth: 6
+
+   evennia.utils.idmapper
+   evennia.utils.verb_conjugation
+
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6
@@ -34,12 +44,5 @@ evennia.utils
    evennia.utils.text2html
    evennia.utils.utils
    evennia.utils.validatorfuncs
-
-
-.. toctree::
-   :maxdepth: 6
-
-   evennia.utils.idmapper
-   evennia.utils.verb_conjugation
 
 ```

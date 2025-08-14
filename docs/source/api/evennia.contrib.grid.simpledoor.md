@@ -7,7 +7,8 @@ evennia.contrib.grid.simpledoor
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

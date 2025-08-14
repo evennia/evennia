@@ -7,7 +7,8 @@ evennia.web.templatetags
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

@@ -7,7 +7,8 @@ evennia.contrib.game\_systems.puzzles
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

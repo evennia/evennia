@@ -7,7 +7,8 @@ evennia.contrib.grid.extended\_room
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

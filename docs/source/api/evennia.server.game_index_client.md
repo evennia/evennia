@@ -7,7 +7,8 @@ evennia.server.game\_index\_client
    :undoc-members:
    :show-inheritance:
 
-
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 6

@@ -7,6 +7,8 @@ evennia.contrib.base\_systems
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
 
 .. toctree::
    :maxdepth: 6
