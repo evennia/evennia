@@ -106,7 +106,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">nullcontext</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldError</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_DB_ALIAS</span><span class="p">,</span> <span class="n">DatabaseError</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_DB_ALIAS</span><span class="p">,</span> <span class="n">DatabaseError</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">transaction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOOKUP_SEP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
@@ -191,6 +191,45 @@
         <span class="p">)</span>
         <span class="n">query</span><span class="o">.</span><span class="n">promote_joins</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">clause</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">replace_expressions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replacements</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">replacements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">connector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connector</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">negated</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">child_replacement</span> <span class="o">=</span> <span class="n">child</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span> <span class="o">=</span> <span class="n">child</span>
+                <span class="k">if</span> <span class="n">LOOKUP_SEP</span> <span class="ow">in</span> <span class="n">lhs</span><span class="p">:</span>
+                    <span class="n">path</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="n">LOOKUP_SEP</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">lhs</span>
+                    <span class="n">lookup</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">F</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">field_replacement</span> <span class="o">:=</span> <span class="n">field</span><span class="o">.</span><span class="n">replace_expressions</span><span class="p">(</span><span class="n">replacements</span><span class="p">)</span>
+                <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">field</span><span class="p">:</span>
+                    <span class="c1"># Handle the implicit __exact case by falling back to an</span>
+                    <span class="c1"># extra transform when get_lookup returns no match for the</span>
+                    <span class="c1"># last component of the path.</span>
+                    <span class="k">if</span> <span class="n">lookup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">lookup</span> <span class="o">=</span> <span class="s2">&quot;exact&quot;</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">lookup_class</span> <span class="o">:=</span> <span class="n">field_replacement</span><span class="o">.</span><span class="n">get_lookup</span><span class="p">(</span><span class="n">lookup</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">transform_class</span> <span class="o">:=</span> <span class="n">field_replacement</span><span class="o">.</span><span class="n">get_transform</span><span class="p">(</span><span class="n">lookup</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">field_replacement</span> <span class="o">=</span> <span class="n">transform_class</span><span class="p">(</span><span class="n">field_replacement</span><span class="p">)</span>
+                            <span class="n">lookup</span> <span class="o">=</span> <span class="s2">&quot;exact&quot;</span>
+                            <span class="n">lookup_class</span> <span class="o">=</span> <span class="n">field_replacement</span><span class="o">.</span><span class="n">get_lookup</span><span class="p">(</span><span class="n">lookup</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rhs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">lookup</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
+                        <span class="n">lookup_class</span> <span class="o">=</span> <span class="n">field_replacement</span><span class="o">.</span><span class="n">get_lookup</span><span class="p">(</span><span class="s2">&quot;isnull&quot;</span><span class="p">)</span>
+                        <span class="n">rhs</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">lookup_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">child_replacement</span> <span class="o">=</span> <span class="n">lookup_class</span><span class="p">(</span><span class="n">field_replacement</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child_replacement</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">replace_expressions</span><span class="p">(</span><span class="n">replacements</span><span class="p">)</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_replacement</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

@@ -689,7 +689,7 @@
             <span class="k">return</span>
         <span class="n">here</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> starts a fight!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="c1"># Add a turn handler script to the room, which starts combat.</span>
-        <span class="n">here</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command_handler_class</span><span class="p">)</span></div></div>
+        <span class="n">here</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combat_handler_class</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
