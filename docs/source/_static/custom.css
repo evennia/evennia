@@ -1,0 +1,444 @@
+/* ===========================================================================
+   Evennia Docs Custom CSS for Sphinx 7.x
+   (Auto-generated: ports all styles from live Evennia nature.css,
+   adapted for modern Sphinx, minimal layout overrides)
+
+   COMMENTS:
+   - All major overrides/fixes are documented.
+   - Responsive and layout hacks are clearly marked for Sphinx 7.x compatibility.
+   - “Magic values” from live Evennia docs are annotated for traceability.
+   ========================================================================== */
+
+/* --- Imports & Font Setup --- */
+@import url("https://fonts.googleapis.com/css?family=Arvo:400,700,400italic");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic");
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+/* --- Page Layout & Core Backgrounds --- */
+/* HACK: Body and wrappers for Evennia look. Padding/margin settings ensure consistent backgrounds and edge gutters. */
+body {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    background-color: #eee !important;
+    color: #555;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 24px !important;   /* Adjust padding as you like */
+}
+.bodywrapper {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Container styling for max-width, background, shadow, and border-radius—matches Evennia's live docs. */
+div.document {
+    background-color: #eeeeea !important;
+    max-width: 1090px;   /* Copied from live Evennia for page width */
+    margin: 0 0;
+    box-shadow: 0 0 4px 0 #ececec;
+    border-radius: 6px;
+}
+div.body {
+    background-color: #f1f1ef !important;
+    color: #3E4349;
+    padding: 0 30px 30px 30px;
+    font-size: 0.9em;
+    margin-top: -9px;
+}
+div.documentwrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+div.bodywrapper {
+    width: 79%;
+    box-sizing: border-box;
+}
+hr {
+    border: 1px solid #B1B4B6;
+}
+
+/* --- Header/Footer Bar --- */
+/* Header & footer bars: color, margin, radius, and link color tuned for Evennia branding */
+div.related {
+    background-color: #dbe9f0 !important;
+    line-height: 32px;
+    color: #9FA0A0;
+    font-size: 0.9em;
+    max-width: 1090px;
+    margin: 0 0;
+    border-radius: 0 0 6px 6px;
+}
+div.related a {
+    color: #565F62;
+    text-shadow: none;
+}
+div.footer {
+    color: #555;
+    width: 100%;
+    padding: 13px 0;
+    text-align: center;
+    font-size: 75%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+div.footer a {
+    color: #444;
+    text-decoration: underline;
+}
+
+/* --- Logo Centering --- */
+/* Center Evennia logo in sidebar or header—matches live docs. */
+.logo {
+    padding-left: 1px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: -12px;
+    opacity: 0.8;
+}
+
+/* --- Sidebar --- */
+/* SIDEBAR LAYOUT: Custom overrides to maintain left sidebar (pre-Sphinx 7 behavior)
+   and adapt sidebar coloring/spacing to Evennia's look as of July 2025. */
+div.sphinxsidebar {
+    font-size: 0.75em;
+    line-height: 1.5em;
+    background-color: #fafaf8;
+    border-right: 1px solid #e4e4dc;
+    background: #eeeeea;
+}
+div.sphinxsidebarwrapper {
+    padding: 20px 0;
+}
+div.sphinxsidebar h3,
+div.sphinxsidebar h4 {
+    font-family: Arvo, sans-serif;
+    color: #4f4f4f;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin: 0;
+    padding: 5px 10px;
+    background-color: #dbe9f0 !important;
+    border-radius: 2px;
+    margin-top: 15px;
+    margin-bottom: 4px;
+}
+div.sphinxsidebar h4 {
+    font-size: 1.1em;
+}
+div.sphinxsidebar h3 a {
+    color: #444;
+    text-shadow: none;
+}
+div.sphinxsidebar p {
+    color: #888;
+    padding: 5px 20px;
+}
+div.sphinxsidebar ul {
+    margin: 10px 20px;
+    padding: 0;
+    color: #000;
+}
+div.sphinxsidebar a {
+    color: #444;
+}
+div.sphinxsidebar input {
+    border: 1px solid #ccc;
+    font-family: Arvo, sans-serif;
+    font-size: 1em;
+    background-color: #f7f7f7;
+}
+div.sphinxsidebar .searchformwrapper {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/* --- Main Content Headers --- */
+/* HEADINGS: Matches Evennia live doc headers for background, border, and text style */
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-family: Arvo, Monaco, serif;
+    background-color: #f7f7f3 !important;
+    font-weight: normal;
+    color: #212224;
+    margin: 30px 0px 10px 0px;
+    padding: 5px 0 5px 10px;
+    text-shadow: 0px 1px 0 white;
+    border-bottom: 1px solid #c6d7df;
+    border-left: 10px solid #cfdde8;
+    border-top: 0px solid #cfdde8;
+}
+div.body h1 { margin-top: 20px solid #fff; font-size: 230%; }
+div.body h2 { font-size: 150%; }
+div.body h3 { font-size: 120%; }
+div.body h4 { font-size: 110%; }
+div.body h5 { font-size: 100%; }
+div.body h6 { font-size: 100%; }
+
+/* --- Blockquotes --- */
+blockquote {
+    font-style: italic;
+    color: #797979;
+    background-color: #e1e8e2;
+    border: 1px solid #c7cdc8;
+    padding-left: 14px;
+    padding-right: 15px;
+    margin-left: 0;
+    width: 96%;
+    border-left-style: dotted;
+    border-left-width: medium;
+    position: relative;
+}
+blockquote:before {
+    content: "!";
+    float: left;
+    font-size: 230%;
+    opacity: 0.3;
+    padding-right: 5px;
+}
+
+/* --- Admonitions, Notes, Warnings --- */
+div.note, .admonition.note {
+    background-color: #e1e8e2 !important;
+    border: 1px solid #ccc;
+    font-style: italic;
+    text-indent: -2.9em;
+    padding-left: 3.5em;
+}
+div.note > p { text-indent: 0em; }
+div.important, .admonition.important {
+    background-color: #fbf7c3 !important;
+    border: 1px solid #c8c59b;
+    font-style: italic;
+    text-indent: -5.5em;
+    padding-left: 6.1em;
+}
+div.important > p { text-indent: 0em; }
+div.warning, .admonition.warning {
+    background-color: #ffe4e4 !important;
+    border: 1px solid #f66;
+    font-style: italic;
+    text-indent: -4.6em;
+    padding-left: 5.2em;
+}
+div.warning > p { text-indent: 0em; }
+div.seealso {
+    background-color: #ffc;
+    border: 1px solid #ff6;
+}
+div.topic, aside.topic {
+    background-color: #eee;
+}
+div.attention { background-color: #e5f3ff; border-color: #65b9ff; }
+div.danger { background-color: #fff2f0; border-color: #f33; }
+p.admonition-title {
+    margin-right: 0.2em;
+    display: inline;
+    font-weight: bold;
+    padding-right: 0.6em;
+}
+p.admonition-title:after { content: ":"; }
+div.admonition p.admonition-title + p { display: inline; }
+
+/* --- Version added/changed/deprecated boxes --- */
+.versionadded { background-color: #e9f6e1; }
+.versionchanged { background-color: #b7e6e8; padding-left: 10px; }
+.deprecated { background-color: #fff3f3; }
+
+/* --- Lists & Lists in API Docs --- */
+li > p:first-child { margin-top: 0px; margin-bottom: 0px; }
+li > p { margin-top: 0px; margin-bottom: 0px; }
+dl.field-list.simple > dd.field-odd > ul.simple > li > ul { margin-left: 24px; }
+dd.field-odd > ul.simple > li > ul > li > dl.simple { margin-bottom: -8px; }
+
+/* --- Code blocks, Inline code, API highlighting --- */
+/* Pygments highlighting is loaded separately—only container backgrounds here. */
+div.highlight {
+    background-color: #f1f1ef !important;
+    border-left: 4px double #7ea6b3;
+    border-radius: 4px;
+    margin: 18px 0;
+}
+.highlight .hll { background-color: #ffffcc !important; border-radius: 5px; }
+pre {
+    padding: 10px;
+    background-color: #e3e3e3;
+    color: #222;
+    line-height: 1.2em;
+    border: 1px solid #C6C9CB;
+    font-size: 1.1em;
+    margin: 1.5em 0 1.5em 0;
+    box-shadow: 1px 1px 1px #d8d8d8;
+}
+pre, div[class*="highlight-"] { clear: none; }
+code {
+    background-color: #f7f7f7 !important;
+    color: #6e0e0e !important;
+    font-size: 0.9em;
+    font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-weight: normal;
+    border-radius: 3px;
+    padding: 1px 4px;
+}
+.viewcode-back {
+    font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+div.viewcode-block:target {
+    background-color: #f4e9d9;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+}
+div.code-block-caption {
+    background-color: #ddd;
+    color: #222;
+    border: 1px solid #C6C9CB;
+}
+
+/* --- API/Class/Method Styling --- */
+.class {
+    font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: 0.9em;
+    background-color: #f5ffff;
+    padding: 5px;
+}
+.method {
+    background-color: #e3ecec;
+    padding: 5px;
+    font-size: 1.0em;
+}
+.sig-param {
+    font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+.sig-paren { margin-left: 1px; }
+.property {
+    font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+dl.class > dd > p,
+dl.method > dd > p {
+    font-style: italic;
+}
+code.descname { font-size: 0.9em; }
+.function { background-color: #eff; padding: 5px; }
+.exception { background-color: #fff9f9; padding: 5px; }
+div.linenodiv>pre {
+    font-size: 0.9em;
+    line-height: 153%;
+    padding-right: 0;
+    padding-top: 8px;
+}
+
+/* --- Develop branch warning header --- */
+.develop {
+    background-color: #ffe4e4;
+    align-content: center;
+    width: auto;
+    text-align: center;
+    letter-spacing: 15px;
+}
+
+/* --- Miscellaneous Tweaks --- */
+a {
+    color: #005B81;
+    text-decoration: underline;
+    text-decoration-color: #fff;
+    text-decoration-color: #bdcbdf;
+}
+a:hover {
+    color: #0492CA;
+    text-decoration: underline;
+    text-decoration-color: #9bbed5;
+}
+a:visited { color: #551A8B; }
+a.headerlink { color: #7caeb7; font-size: 0.8em; padding: 0 4px 0 4px; text-decoration: none; }
+a.headerlink:hover { color: #7caeb7; }
+ul.sidebar-links { list-style: none; padding-left: 0; margin: 14px 0; }
+ul.sidebar-links li { padding-bottom: 2px; }
+
+/* --- Responsive Tweaks --- */
+/* These media queries are for legacy mobile and tablet support. */
+@media print, screen and (max-width: 960px) {
+    div.body { min-width: auto; max-width: none; padding: 0 30px 30px 30px; }
+    div.bodywrapper { margin-left: 0px; margin-top: 110px; }
+    div.document, div.documentwrapper, div.bodywrapper { margin: 0 !important; }
+    #top-link { display: none; }
+}
+@media print, screen and (max-width: 720px) {
+    div.related>ul { visibility: hidden; }
+    div.related>ul>li.nav-item.nav-item-0 { visibility: visible; }
+}
+@media print, screen and (max-width: 480px) {
+    div.body { box-sizing: border-box; padding: 5px; }
+    div.sphinxsidebar, div.document, div.documentwrapper, div.bodywrapper { width: 100%; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━ Sidebar Responsive Layout Fix ━━━━━━━━━━━━━━━━━━━ */
+/* -- Force old-style left sidebar layout for Sphinx 7 -- 
+   Sphinx 7+ switched to a single-column mobile-first layout;
+   this hack restores flex-row with sidebar left/content right for desktop.
+   Remove this when upstream Sphinx supports left sidebars natively again.
+*/
+.document {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Sidebar goes left, main content right */
+.sphinxsidebar {
+    order: 0 !important;
+    width: 18vw !important;
+    min-width: 170px !important;
+    max-width: 228.891px !important; /* Magic number: matches live Evennia sidebar width at 1200px */
+    flex-shrink: 0 !important;
+    box-sizing: border-box;
+    position: static !important;
+    z-index: 10 !important;
+    background-clip: padding-box;
+    overflow-y: auto;
+    max-height: 100vh;
+    margin: 0 !important;
+}
+
+/* Main content fills remaining space */
+.documentwrapper {
+    order: 1 !important;
+    flex: 1 1 0 !important;   /* THIS is what fills the rest! */
+    min-width: 0 !important;  /* Required for flex overflow to work */
+    width: auto !important;
+    max-width: none !important;
+    box-sizing: border-box;
+    margin: 0 !important;     /* Remove any stray margin */
+    padding: 0 !important;
+}
+
+/* Mobile: Stack vertically again at 480px, matches legacy Sphinx/Evennia */
+@media screen and (max-width: 480px) {
+    .document {
+        flex-direction: column !important;
+    }
+    .sphinxsidebar,
+    .documentwrapper {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100vw !important;
+    }
+    .sphinxsidebar {
+        margin-bottom: 24px !important;
+    }
+}
+
+/* Avoid pop-under: clear floats just in case */
+.clearer {
+    display: none !important;
+}
+
+/* End of Evennia custom CSS */
