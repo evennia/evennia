@@ -4,11 +4,10 @@ evennia.contrib.tutorials.tutorial\_world
 
 .. automodule:: evennia.contrib.tutorials.tutorial_world
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

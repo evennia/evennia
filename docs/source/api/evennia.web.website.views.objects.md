@@ -4,7 +4,7 @@ evennia.web.website.views.objects
 
 .. automodule:: evennia.web.website.views.objects
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 ```

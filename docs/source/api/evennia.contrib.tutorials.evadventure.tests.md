@@ -4,11 +4,10 @@ evennia.contrib.tutorials.evadventure.tests
 
 .. automodule:: evennia.contrib.tutorials.evadventure.tests
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

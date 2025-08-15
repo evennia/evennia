@@ -4,20 +4,10 @@ evennia.contrib.tutorials.evadventure
 
 .. automodule:: evennia.contrib.tutorials.evadventure
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 6
-
-   evennia.contrib.tutorials.evadventure.batchscripts
-   evennia.contrib.tutorials.evadventure.tests
-
-Submodules
-----------
 
 .. toctree::
    :maxdepth: 6
@@ -42,5 +32,12 @@ Submodules
    evennia.contrib.tutorials.evadventure.rules
    evennia.contrib.tutorials.evadventure.shops
    evennia.contrib.tutorials.evadventure.utils
+
+
+.. toctree::
+   :maxdepth: 6
+
+   evennia.contrib.tutorials.evadventure.batchscripts
+   evennia.contrib.tutorials.evadventure.tests
 
 ```

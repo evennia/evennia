@@ -4,11 +4,10 @@ evennia.contrib.grid.simpledoor
 
 .. automodule:: evennia.contrib.grid.simpledoor
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

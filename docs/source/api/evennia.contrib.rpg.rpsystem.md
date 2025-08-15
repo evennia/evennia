@@ -4,11 +4,10 @@ evennia.contrib.rpg.rpsystem
 
 .. automodule:: evennia.contrib.rpg.rpsystem
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

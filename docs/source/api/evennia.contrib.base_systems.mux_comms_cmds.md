@@ -4,11 +4,10 @@ evennia.contrib.base\_systems.mux\_comms\_cmds
 
 .. automodule:: evennia.contrib.base_systems.mux_comms_cmds
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

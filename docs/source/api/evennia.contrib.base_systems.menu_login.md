@@ -4,11 +4,10 @@ evennia.contrib.base\_systems.menu\_login
 
 .. automodule:: evennia.contrib.base_systems.menu_login
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

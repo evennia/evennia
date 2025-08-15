@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.turnbattle
 
 .. automodule:: evennia.contrib.game_systems.turnbattle
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

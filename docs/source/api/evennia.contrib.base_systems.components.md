@@ -4,11 +4,10 @@ evennia.contrib.base\_systems.components
 
 .. automodule:: evennia.contrib.base_systems.components
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

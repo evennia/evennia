@@ -4,11 +4,10 @@ evennia.web.api
 
 .. automodule:: evennia.web.api
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.crafting
 
 .. automodule:: evennia.contrib.game_systems.crafting
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

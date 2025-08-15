@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.achievements
 
 .. automodule:: evennia.contrib.game_systems.achievements
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

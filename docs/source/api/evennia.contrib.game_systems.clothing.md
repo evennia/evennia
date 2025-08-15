@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.clothing
 
 .. automodule:: evennia.contrib.game_systems.clothing
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

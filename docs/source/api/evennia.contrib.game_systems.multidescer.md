@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.multidescer
 
 .. automodule:: evennia.contrib.game_systems.multidescer
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

@@ -4,11 +4,10 @@ evennia.contrib.full\_systems.evscaperoom
 
 .. automodule:: evennia.contrib.full_systems.evscaperoom
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

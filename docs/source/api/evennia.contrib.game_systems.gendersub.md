@@ -4,11 +4,10 @@ evennia.contrib.game\_systems.gendersub
 
 .. automodule:: evennia.contrib.game_systems.gendersub
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

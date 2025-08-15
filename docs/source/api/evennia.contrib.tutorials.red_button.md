@@ -4,11 +4,10 @@ evennia.contrib.tutorials.red\_button
 
 .. automodule:: evennia.contrib.tutorials.red_button
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

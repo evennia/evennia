@@ -4,11 +4,10 @@ evennia.contrib.base\_systems.ingame\_python
 
 .. automodule:: evennia.contrib.base_systems.ingame_python
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

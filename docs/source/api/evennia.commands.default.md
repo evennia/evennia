@@ -4,11 +4,10 @@ evennia.commands.default
 
 .. automodule:: evennia.commands.default
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

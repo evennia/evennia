@@ -4,11 +4,9 @@ evennia.contrib.utils
 
 .. automodule:: evennia.contrib.utils
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 6

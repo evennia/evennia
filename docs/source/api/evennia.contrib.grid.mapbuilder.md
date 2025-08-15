@@ -4,11 +4,10 @@ evennia.contrib.grid.mapbuilder
 
 .. automodule:: evennia.contrib.grid.mapbuilder
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6
