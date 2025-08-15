@@ -64,7 +64,7 @@ def deploy():
     # copy built branches to current dir
     os.system("ls")
 
-    os.system(f"mdkir {latest_version}")
+    os.system(f"mkdir {latest_version}")
 
     os.system("cp -Rf build/html/* {latest_version}/")
 
